@@ -1,0 +1,18 @@
+### GET request to example server
+POST http://{{localhost}}/api/sms/verification-code
+Content-Type: application/json
+Accept: application/json
+
+{
+  "phoneNumber": "01023353927"
+}
+
+###
+POST http://{{localhost}}/api/sms/verification-code/confirm
+Content-Type: application/json
+Accept: application/json
+
+{
+  "phoneNumber": "01023353927",
+  "verificationCode": 465634
+}

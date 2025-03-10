@@ -1,26 +1,58 @@
 plugins {
-	id("groovy")
+	kotlin("jvm") version "1.9.25"
+	kotlin("plugin.spring") version "1.9.25"
+	id("org.springframework.boot") version "3.3.4"
+	id("io.spring.dependency-management") version "1.1.6"
 }
 
-group = "com.konkuk"
-version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
-
-repositories {
-	mavenCentral()
+allprojects {
+	repositories {
+		mavenCentral()
+	}
 }
 
 subprojects {
-	apply {
-		plugin("groovy")
-	}
+	apply(plugin = "org.springframework.boot")
+	apply(plugin = "io.spring.dependency-management")
+	apply(plugin = "kotlin")
+	apply(plugin = "kotlin-spring")
+	apply(plugin = "kotlin-kapt")
 
-	group = "com.konkuk"
-	version = "0.0.1-SNAPSHOT"
+	allOpen {
+		annotation("jakarta.persistence.Entity")
+		annotation("jakarta.persistence.MappedSuperclass")
+		annotation("jakarta.persistence.Embeddable")
+	}
 
 	dependencies {
-		implementation("org.codehaus.groovy:groovy-all:3.0.16")
+		// KoTest
+		testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.5")
+		testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.5")
+		testImplementation("io.kotest:kotest-extensions-jvm:5.5.5")
+		testImplementation("io.kotest:kotest-property-jvm:5.5.5")
+		testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
+
+		// Mockk
+		testImplementation("com.ninja-squad:springmockk:4.0.0")
 	}
 
+	group = "com.s2w"
+	version = "0.0.1-SNAPSHOT"
 	tasks.register("prepareKotlinBuildScriptModel"){}
+
+	java {
+		toolchain {
+			languageVersion.set(JavaLanguageVersion.of(21))
+		}
+	}
+
+	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+		kotlinOptions {
+			freeCompilerArgs = freeCompilerArgs + "-Xjsr305=strict"
+		}
+	}
+
+	tasks.withType<Test> {
+		useJUnitPlatform()
+	}
 }
