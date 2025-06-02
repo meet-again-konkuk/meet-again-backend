@@ -1,6 +1,6 @@
-package com.konkuk.ma.domain.member.api.request
+package com.konkuk.ma.domain.member.entity
 
-class SignUpRequest(
+class MemberEntity(
     val email: String,
 
     val password: String,

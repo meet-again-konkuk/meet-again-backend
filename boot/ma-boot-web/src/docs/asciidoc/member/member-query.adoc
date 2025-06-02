@@ -1,0 +1,31 @@
+= 회원 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 닉네임 중복 확인 API
+
+=== 요청
+
+include::{snippets}/check-duplicated-nickname/http-request.adoc[]
+
+=== 요청 파라미터
+
+include::{snippets}/check-duplicated-nickname/query-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/check-duplicated-nickname/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/check-duplicated-nickname/response-fields.adoc[]
+
+=== 유효하지 않은 닉네임 형식으로 요청 시
+
+include::{snippets}/check-duplicated-nickname-invalid-format/http-request.adoc[]
+
+include::{snippets}/check-duplicated-nickname-invalid-format/http-response.adoc[]

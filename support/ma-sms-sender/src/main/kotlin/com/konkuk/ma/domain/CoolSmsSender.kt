@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain
 
-import com.konkuk.ma.auth.domain.SmsSender
+import com.konkuk.ma.auth.domain.port.SmsSender
 import com.konkuk.ma.auth.domain.SmsVerification
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.service.DefaultMessageService

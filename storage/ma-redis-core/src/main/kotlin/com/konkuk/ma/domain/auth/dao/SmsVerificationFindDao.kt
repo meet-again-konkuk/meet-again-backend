@@ -13,4 +13,11 @@ class SmsVerificationFindDao(
             ?.toString()
             ?.toInt()
     }
+
+    fun getConfirmed(phoneNumber: String): Boolean {
+        return redisTemplate.opsForValue()
+            .get(phoneNumber)
+            ?.toString()
+            ?.toBoolean() ?: false
+    }
 }

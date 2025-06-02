@@ -11,9 +11,14 @@ class SmsVerificationSaveDao(
 ) {
     companion object {
         const val SMS_VERIFICATION_EXPIRE_MINUTE = 3L
+        const val CONFIRM_VERIFICATION_EXPIRE_MINUTE = 10L
     }
 
     fun save(smsVerification: SmsVerification) {
         redisTemplate.opsForValue().set(smsVerification.phoneNumber, smsVerification.verificationCode.toString(), SMS_VERIFICATION_EXPIRE_MINUTE, TimeUnit.MINUTES)
+    }
+
+    fun save(phoneNumber: String) {
+        redisTemplate.opsForValue().set(phoneNumber, true, CONFIRM_VERIFICATION_EXPIRE_MINUTE, TimeUnit.MINUTES)
     }
 }
