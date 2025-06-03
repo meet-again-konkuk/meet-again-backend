@@ -12,4 +12,6 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.57.0")
+    testImplementation("org.jetbrains.exposed:exposed-java-time:0.57.0")
 }

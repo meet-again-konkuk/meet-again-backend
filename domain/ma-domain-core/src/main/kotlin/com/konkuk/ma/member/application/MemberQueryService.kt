@@ -12,4 +12,8 @@ class MemberQueryService(
     fun checkDuplicatedNickname(nickname: String): Boolean {
         return memberQueryRepository.existsByNickname(nickname)
     }
+
+    fun checkDuplicatedEmail(email: String): Boolean {
+        return memberQueryRepository.existsByEmail(email)
+    }
 }

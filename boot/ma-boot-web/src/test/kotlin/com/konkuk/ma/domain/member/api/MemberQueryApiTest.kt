@@ -64,4 +64,45 @@ class MemberQueryApiTest(
                 )
             )
     }
+
+    test("이메일 중복 확인 API 문서화") {
+        // Given
+        val email = "test@example.com"
+
+        // When & Then
+        every { memberQueryService.checkDuplicatedEmail(email) } returns false
+
+        mockMvc.getJson("/api/members/duplicated-email")
+        { param("email", email) }
+            .andExpect {
+                status { { isOk() } }
+                jsonPath("$.email").value(email)
+                jsonPath("$.duplicated").value(false) }
+            .andDocument(
+                "check-duplicated-email",
+                requestParam(
+                    "email" requestParam "회원 이메일" example "test@example.com"
+                ),
+                responseBody(
+                    "email" responseType STRING means "회원 이메일",
+                    "duplicated" responseType BOOLEAN means "중복 여부"
+                )
+            )
+    }
+
+    test("유효하지 않은 이메일 형식으로 요청 시 실패") {
+        // Given
+        val invalidEmail = "invalid-email"
+
+        // When & Then
+        mockMvc.getJson("/api/members/duplicated-email")
+        { param("email", invalidEmail) }
+            .andExpect { status { isBadRequest() } }
+            .andDocument(
+                "check-duplicated-email-invalid-format",
+                requestParam(
+                    "email" requestParam "유효하지 않은 형식의 이메일" example "invalid-email"
+                )
+            )
+    }
 })
