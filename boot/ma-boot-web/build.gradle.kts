@@ -18,6 +18,7 @@ dependencies {
 	implementation(project(":domain:ma-domain-core"))
 	runtimeOnly(project(":config:ma-config-yaml-importer"))
 	runtimeOnly(project(":support:ma-sms-sender"))
+	runtimeOnly(project(":support:ma-crypto-core"))
 	runtimeOnly(project(":storage:ma-db-core"))
 	runtimeOnly(project(":storage:ma-redis-core"))
 }
