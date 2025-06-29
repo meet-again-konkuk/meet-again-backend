@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.domain.member.api.request.SignUpRequest
+import com.konkuk.ma.domain.member.api.request.toCommand
 import com.konkuk.ma.domain.member.api.response.SignUpResponse
 import com.konkuk.ma.member.application.SignUpService
 import jakarta.validation.Valid
@@ -19,16 +20,7 @@ class SignUpApi(
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     fun signUp(@Valid @RequestBody request: SignUpRequest): SignUpResponse {
-        val memberId = signUpService.signUp(
-            email = request.email,
-            password = request.password,
-            nickname = request.nickname,
-            phoneNumber = request.phoneNumber,
-            name = request.name,
-            birthDate = request.birthDate,
-            highSchool = request.highSchool,
-            university = request.university
-        )
+        val memberId = signUpService.signUp(request.toCommand())
         
         return SignUpResponse(
             memberId = memberId,

@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.repository
 
 import com.konkuk.ma.domain.member.dao.MemberValidateDao
-import com.konkuk.ma.member.domain.MemberQueryRepository
+import com.konkuk.ma.member.domain.port.MemberQueryRepository
 import org.springframework.stereotype.Repository
 
 @Repository

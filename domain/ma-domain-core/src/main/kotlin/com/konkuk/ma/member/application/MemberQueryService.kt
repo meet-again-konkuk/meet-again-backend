@@ -1,6 +1,6 @@
 package com.konkuk.ma.member.application
 
-import com.konkuk.ma.member.domain.MemberQueryRepository
+import com.konkuk.ma.member.domain.port.MemberQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

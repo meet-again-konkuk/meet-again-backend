@@ -1,4 +1,4 @@
-package com.konkuk.ma.member.domain
+package com.konkuk.ma.member.domain.port
 
 interface MemberQueryRepository {
     fun existsByNickname(nickname: String): Boolean
