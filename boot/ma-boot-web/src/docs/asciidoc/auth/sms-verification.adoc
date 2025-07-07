@@ -1,0 +1,59 @@
+= SMS 인증 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== SMS 인증 코드 발송 API
+
+=== 요청
+
+include::{snippets}/sms-send-verification-code/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/sms-send-verification-code/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/sms-send-verification-code/http-response.adoc[]
+
+=== 유효하지 않은 휴대폰 번호로 요청 시
+
+include::{snippets}/sms-send-verification-code-invalid-phone/http-request.adoc[]
+
+include::{snippets}/sms-send-verification-code-invalid-phone/http-response.adoc[]
+
+== SMS 인증 코드 확인 API
+
+=== 요청 (성공)
+
+include::{snippets}/sms-confirm-verification-code-success/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/sms-confirm-verification-code-success/request-fields.adoc[]
+
+=== 응답 (성공)
+
+include::{snippets}/sms-confirm-verification-code-success/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/sms-confirm-verification-code-success/response-fields.adoc[]
+
+=== 요청 (실패)
+
+include::{snippets}/sms-confirm-verification-code-failure/http-request.adoc[]
+
+=== 응답 (실패)
+
+include::{snippets}/sms-confirm-verification-code-failure/http-response.adoc[]
+
+=== 유효하지 않은 휴대폰 번호로 요청 시
+
+include::{snippets}/sms-confirm-verification-code-invalid-phone/http-request.adoc[]
+
+include::{snippets}/sms-confirm-verification-code-invalid-phone/http-response.adoc[] 

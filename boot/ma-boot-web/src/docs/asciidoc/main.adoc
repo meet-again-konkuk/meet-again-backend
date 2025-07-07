@@ -1,0 +1,40 @@
+= MEET AGAIN REST API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[introduction]]
+== 소개
+
+Meet Again 서비스 Backend API 문서
+
+* link:overview.html[개요,window=_blank]
+
+[[member]]
+== 회원
+
+회원 도메인과 관련된 API 입니다.
+
+[[member-signup]]
+=== 회원가입
+
+* link:member/member-command.html[회원 Command API,window=_blank]
+
+[[member-query]]
+=== 회원 조회
+
+* link:member/member-query.html[회원 Query API,window=_blank]
+
+[[auth]]
+== 인증
+
+인증 도메인과 관련된 API 입니다.
+
+[[sms-verification]]
+=== SMS 인증
+
+* link:auth/sms-verification.html[SMS 인증 API,window=_blank]
+
