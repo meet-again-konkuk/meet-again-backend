@@ -5,7 +5,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import org.jetbrains.exposed.spring.SpringTransactionManager
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.transaction.PlatformTransactionManager
@@ -27,15 +26,11 @@ abstract class DatabaseTestConfig: FunSpec() {
 
     init {
         beforeEach {
-            transaction {
-                SchemaUtils.create(MemberTable)
-            }
+            SchemaUtils.create(MemberTable)
         }
 
         afterEach {
-            transaction {
-                SchemaUtils.drop(MemberTable)
-            }
+            SchemaUtils.drop(MemberTable)
         }
     }
 } 
