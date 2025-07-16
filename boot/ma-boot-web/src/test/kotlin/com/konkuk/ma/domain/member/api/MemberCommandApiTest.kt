@@ -9,7 +9,7 @@ import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.extension.responseType
-import com.konkuk.ma.member.application.SignUpService
+import com.konkuk.ma.member.application.MemberCommandService
 import com.konkuk.ma.member.application.command.NewMemberCommand
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
@@ -19,12 +19,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
-@WebMvcTest(SignUpApi::class)
+@WebMvcTest(MemberCommandApi::class)
 @BaseApiTest
-class SignUpApiTest(
+class MemberCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    @MockkBean private val signUpService: SignUpService
+    @MockkBean private val memberCommandService: MemberCommandService
 ) : FunSpec({
 
     test("signUp - 유효한 회원가입 요청시 성공한다") {
@@ -42,7 +42,7 @@ class SignUpApiTest(
         )
 
         every {
-            signUpService.signUp(
+            memberCommandService.signUp(
                 NewMemberCommand(
                     email = "test@example.com",
                     password = "password123",

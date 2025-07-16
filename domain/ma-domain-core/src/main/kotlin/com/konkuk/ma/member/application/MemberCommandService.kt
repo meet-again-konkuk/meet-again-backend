@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class SignUpService(
+class MemberCommandService(
     private val memberCommandRepository: MemberCommandRepository,
     private val memberValidator: MemberValidator,
     private val passwordEncryptor: PasswordEncryptor
