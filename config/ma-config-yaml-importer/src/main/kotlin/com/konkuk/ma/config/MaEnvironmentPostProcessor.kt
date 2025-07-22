@@ -14,7 +14,7 @@ class MaEnvironmentPostProcessor : EnvironmentPostProcessor {
         private const val CONFIG_PATH = "classpath*:config/"
         private const val FILE_PATTERN = "application-*"
         private val YAML_EXTENSIONS = listOf(".yml", ".yaml")
-        private const val MERGED_PROPERTY_SOURCE_NAME = "asm-merged-config"
+        private const val MERGED_PROPERTY_SOURCE_NAME = "ma-merged-config"
         private const val PROFILE_KEY = "spring.config.activate.on-profile"
     }
 
@@ -39,7 +39,24 @@ class MaEnvironmentPostProcessor : EnvironmentPostProcessor {
         val resolver = PathMatchingResourcePatternResolver()
         val mergedProperties = mutableMapOf<String, Any>()
 
-        // 모든 YAML 확장자에 대해 설정 파일 검색
+        YAML_EXTENSIONS.forEach { extension ->
+            val appPattern = "classpath*:application" + extension
+            val appResources = resolver.getResources(appPattern)
+
+            appResources.forEach { resource ->
+                mergeCommonProperties(resource, mergedProperties)
+            }
+        }
+
+        YAML_EXTENSIONS.forEach { extension ->
+            val commonPattern = CONFIG_PATH + "application" + extension
+            val commonResources = resolver.getResources(commonPattern)
+
+            commonResources.forEach { resource ->
+                mergeCommonProperties(resource, mergedProperties)
+            }
+        }
+
         YAML_EXTENSIONS.forEach { extension ->
             val searchPattern = CONFIG_PATH + FILE_PATTERN + extension
             val resources = resolver.getResources(searchPattern)
@@ -50,6 +67,28 @@ class MaEnvironmentPostProcessor : EnvironmentPostProcessor {
         }
 
         return mergedProperties
+    }
+
+    private fun mergeCommonProperties(
+        resource: Resource,
+        mergedProperties: MutableMap<String, Any>
+    ) {
+        val loader = YamlPropertySourceLoader()
+        val propertySources = loader.load(resource.filename, resource)
+
+        propertySources.forEach { propertySource ->
+            val sourceMap = propertySource.source as Map<*, *>
+
+            // 공통 설정은 프로파일 체크 없이 모두 로드
+            sourceMap.forEach { (key, value) ->
+                val keyStr = key.toString()
+                // spring.config.activate.on-profile 키는 제외
+                if (keyStr != PROFILE_KEY) {
+                    // 로딩 순서가 보장되므로 나중에 로드된 값이 우선 (app 모듈이 마지막)
+                    mergedProperties[keyStr] = value.toString()
+                }
+            }
+        }
     }
 
     /**
@@ -71,14 +110,14 @@ class MaEnvironmentPostProcessor : EnvironmentPostProcessor {
             if (profileInFile in activeProfiles) {
                 sourceMap.forEach { (key, value) ->
                     val keyStr = key.toString()
-                    // 중복 키는 먼저 발견된 값을 유지 (덮어쓰기 방지)
-                    if (!mergedProperties.containsKey(keyStr)) {
-                        mergedProperties[keyStr] = value.toString()
-                    }
+                    // 프로파일별 설정은 공통 설정을 오버라이드 (덮어쓰기 허용)
+                    mergedProperties[keyStr] = value.toString()
                 }
             }
         }
     }
+
+
 
     /**
      * 병합된 설정을 Spring Environment에 PropertySource로 추가
