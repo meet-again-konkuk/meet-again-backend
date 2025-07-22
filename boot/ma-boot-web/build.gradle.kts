@@ -21,6 +21,7 @@ dependencies {
 	runtimeOnly(project(":config:ma-config-yaml-importer"))
 	runtimeOnly(project(":support:ma-sms-sender"))
 	runtimeOnly(project(":support:ma-crypto-core"))
+	runtimeOnly(project(":support:ma-jwt-core"))
 	runtimeOnly(project(":storage:ma-db-core"))
 	runtimeOnly(project(":storage:ma-redis-core"))
 
