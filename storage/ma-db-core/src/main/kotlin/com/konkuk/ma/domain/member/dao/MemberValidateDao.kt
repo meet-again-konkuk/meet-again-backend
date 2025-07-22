@@ -3,7 +3,6 @@ package com.konkuk.ma.domain.member.dao
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import org.jetbrains.exposed.sql.intLiteral
-import org.jetbrains.exposed.sql.select
 import org.springframework.stereotype.Component
 
 @Component
