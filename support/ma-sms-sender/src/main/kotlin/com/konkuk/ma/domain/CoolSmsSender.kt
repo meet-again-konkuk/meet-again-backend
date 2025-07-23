@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain
 
-import com.konkuk.ma.auth.domain.port.SmsSender
 import com.konkuk.ma.auth.domain.SmsVerification
+import com.konkuk.ma.auth.domain.port.SmsSender
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.service.DefaultMessageService
 import org.springframework.stereotype.Component
@@ -12,6 +12,7 @@ class CoolSmsSender(
 ) : SmsSender {
     override fun sendSmsVerificationCode(phoneNumber: String): SmsVerification {
         val verificationCode = (100000..999999).random()
+        print("verification code $verificationCode")
         val message = Message(
             from = "01026643927",
             to = phoneNumber,
