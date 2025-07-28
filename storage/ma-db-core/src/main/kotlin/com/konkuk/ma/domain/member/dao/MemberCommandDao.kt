@@ -1,23 +1,26 @@
 package com.konkuk.ma.domain.member.dao
 
-import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import com.konkuk.ma.member.domain.NewMember
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.springframework.stereotype.Component
 
 @Component
 class MemberCommandDao {
     
-    fun save(memberEntity: MemberEntity): Long {
+    fun save(newMember: NewMember): Long {
         return MemberTable.insertAndGetId { row ->
-            row[email] = memberEntity.email
-            row[password] = memberEntity.password
-            row[nickname] = memberEntity.nickname
-            row[phoneNumber] = memberEntity.phoneNumber
-            row[name] = memberEntity.name
-            row[birthDate] = memberEntity.birthDate
-            row[highSchool] = memberEntity.highSchool
-            row[university] = memberEntity.university
+            row[email] = newMember.email
+            row[password] = newMember.password
+            row[nickname] = newMember.nickname
+            row[phoneNumber] = newMember.phoneNumber
+            row[name] = newMember.name
+            row[birthDate] = newMember.birthDate
+            row[highSchool] = newMember.highSchool
+            row[university] = newMember.university
+            row[createdBy] = newMember.email
+            row[lastModifiedBy] = newMember.email
+
         }.value
     }
 } 
