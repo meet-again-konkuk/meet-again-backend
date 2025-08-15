@@ -7,8 +7,14 @@ import org.springframework.stereotype.Component
 @Component
 class MemberValidator(
     private val memberQueryRepository: MemberQueryRepository,
-    private val smsRepository: SmsRepository
+    private val smsRepository: SmsRepository,
 ) {
+    fun validateNewMember(newMember: NewMember) {
+        checkDuplicatedNickname(newMember.nickname)
+        checkDuplicatedEmail(newMember.email)
+        checkSmsVerification(newMember.phoneNumber)
+    }
+
     private fun checkDuplicatedNickname(nickname: String) {
         if (memberQueryRepository.existsByNickname(nickname)) {
             throw IllegalArgumentException("이미 사용중인 닉네임입니다.")
@@ -25,11 +31,5 @@ class MemberValidator(
         if (!smsRepository.getConfirmed(phoneNumber)) {
             throw IllegalArgumentException("휴대폰 번호 인증이 완료되지 않았습니다.")
         }
-    }
-
-    fun validateNewMember(newMember: NewMember) {
-        checkDuplicatedNickname(newMember.nickname)
-        checkDuplicatedEmail(newMember.email)
-        checkSmsVerification(newMember.phoneNumber)
     }
 }

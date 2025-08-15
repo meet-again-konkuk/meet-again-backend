@@ -23,7 +23,7 @@ class MemberValidateDao {
             .firstOrNull() != null
     }
 
-    fun findByEmail(email: String): MemberEntity? {
+    fun findByEmail(email: String): MemberEntity {
         return MemberTable.select(
             MemberTable.email,
             MemberTable.password,
@@ -33,9 +33,8 @@ class MemberValidateDao {
             MemberTable.birthDate,
             MemberTable.highSchool,
             MemberTable.university
-        ).where {
-            (MemberTable.email eq email)
-        }.limit(1)
+        ).where { (MemberTable.email eq email) }
+            .limit(1)
             .firstOrNull()
             ?.let { row ->
                 MemberEntity(
@@ -48,6 +47,6 @@ class MemberValidateDao {
                     highSchool = row[MemberTable.highSchool],
                     university = row[MemberTable.university]
                 )
-            }
+            } ?: throw IllegalArgumentException("해당 이메일로 등록된 사용자가 없습니다.")
     }
 }

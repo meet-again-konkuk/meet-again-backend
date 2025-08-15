@@ -17,7 +17,8 @@ class MemberQueryCoreRepository(
         return memberValidateDao.existsByEmail(email)
     }
 
-    override fun findByEmail(email: String): Member? {
-        return memberValidateDao.findByEmail(email)?.toDomain()
+    override fun findByEmail(email: String): Member {
+        return memberValidateDao.findByEmail(email)
+            .toDomain()
     }
 }

@@ -1,5 +1,6 @@
 package com.konkuk.ma.member.domain
 
+import com.konkuk.ma.member.domain.port.PasswordEncryptor
 import java.time.LocalDate
 
 class Member(
@@ -34,5 +35,12 @@ class Member(
                 university = university
             )
         }
+    }
+
+    fun matches(inputPassword: String, passwordEncryptor: PasswordEncryptor): Boolean {
+        if (!passwordEncryptor.matches(inputPassword, password)) {
+            throw IllegalArgumentException("비밀번호가 올바르지 않습니다.")
+        }
+        return true
     }
 } 

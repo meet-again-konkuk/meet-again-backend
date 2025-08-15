@@ -24,11 +24,7 @@ class MemberQueryService(
 
     fun login(loginCommand: LoginCommand): LoginResult {
         val member = memberQueryRepository.findByEmail(loginCommand.email)
-            ?: throw IllegalArgumentException("해당 이메일로 등록된 사용자가 없습니다.")
-
-        if (!passwordEncryptor.matches(loginCommand.password, member.password)) {
-            throw IllegalArgumentException("비밀번호가 올바르지 않습니다.")
-        }
+        member.matches(loginCommand.password, passwordEncryptor)
 
         val accessToken = tokenGenerator.generateAccessToken(member.email)
         val refreshToken = tokenGenerator.generateRefreshToken(member.email)
