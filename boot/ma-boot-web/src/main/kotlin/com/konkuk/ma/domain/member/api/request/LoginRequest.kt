@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.member.api.request
 
-import com.konkuk.ma.member.application.command.LoginCommand
+import com.konkuk.ma.auth.application.command.LoginCommand
 
 class LoginRequest(
     val email: String,

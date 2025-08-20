@@ -20,7 +20,6 @@ class MemberCommandDao {
             row[university] = newMember.university
             row[createdBy] = newMember.email
             row[lastModifiedBy] = newMember.email
-
         }.value
     }
 } 

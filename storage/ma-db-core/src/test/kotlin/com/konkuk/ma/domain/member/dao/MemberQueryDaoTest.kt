@@ -8,10 +8,10 @@ import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.insert
 import org.springframework.test.context.ContextConfiguration
 
-@ContextConfiguration(classes = [TestDatabaseConfig::class, MemberValidateDao::class])
+@ContextConfiguration(classes = [TestDatabaseConfig::class, MemberQueryDao::class])
 @DatabaseTest
-class MemberValidateDaoTest(
-    private val memberValidateDao: MemberValidateDao
+class MemberQueryDaoTest(
+    private val memberQueryDao: MemberQueryDao
 ) : DatabaseTestConfig() {
 
     init {
@@ -27,7 +27,7 @@ class MemberValidateDaoTest(
             }
 
             // When
-            val result = memberValidateDao.existsByNickname(nickname)
+            val result = memberQueryDao.existsByNickname(nickname)
 
             // Then
             result shouldBe true
@@ -38,7 +38,7 @@ class MemberValidateDaoTest(
             val nickname = "nonExistentNickname"
 
             // When
-            val result = memberValidateDao.existsByNickname(nickname)
+            val result = memberQueryDao.existsByNickname(nickname)
 
             // Then
             result shouldBe false
@@ -56,7 +56,7 @@ class MemberValidateDaoTest(
             }
 
             // When
-            val result = memberValidateDao.existsByEmail(email)
+            val result = memberQueryDao.existsByEmail(email)
 
             // Then
             result shouldBe true
@@ -67,7 +67,7 @@ class MemberValidateDaoTest(
             val email = "nonexistent@example.com"
 
             // When
-            val result = memberValidateDao.existsByEmail(email)
+            val result = memberQueryDao.existsByEmail(email)
 
             // Then
             result shouldBe false
@@ -87,7 +87,7 @@ class MemberValidateDaoTest(
             }
 
             // When
-            val result = memberValidateDao.existsByEmail(searchEmail)
+            val result = memberQueryDao.existsByEmail(searchEmail)
 
             // Then
             result shouldBe false // 정확히 매치되지 않으므로 false
@@ -98,7 +98,7 @@ class MemberValidateDaoTest(
             val nickname = ""
 
             // When
-            val result = memberValidateDao.existsByNickname(nickname)
+            val result = memberQueryDao.existsByNickname(nickname)
 
             // Then
             result shouldBe false
@@ -109,7 +109,7 @@ class MemberValidateDaoTest(
             val email = ""
 
             // When
-            val result = memberValidateDao.existsByEmail(email)
+            val result = memberQueryDao.existsByEmail(email)
 
             // Then
             result shouldBe false

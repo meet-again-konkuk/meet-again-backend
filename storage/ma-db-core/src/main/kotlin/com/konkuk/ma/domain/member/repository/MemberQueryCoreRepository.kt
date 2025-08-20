@@ -1,24 +1,24 @@
 package com.konkuk.ma.domain.member.repository
 
-import com.konkuk.ma.domain.member.dao.MemberValidateDao
+import com.konkuk.ma.domain.member.dao.MemberQueryDao
 import com.konkuk.ma.member.domain.Member
 import com.konkuk.ma.member.domain.port.MemberQueryRepository
 import org.springframework.stereotype.Repository
 
 @Repository
 class MemberQueryCoreRepository(
-    private val memberValidateDao: MemberValidateDao
+    private val memberQueryDao: MemberQueryDao
 ) : MemberQueryRepository {
     override fun existsByNickname(nickname: String): Boolean {
-        return memberValidateDao.existsByNickname(nickname)
+        return memberQueryDao.existsByNickname(nickname)
     }
 
     override fun existsByEmail(email: String): Boolean {
-        return memberValidateDao.existsByEmail(email)
+        return memberQueryDao.existsByEmail(email)
     }
 
     override fun findByEmail(email: String): Member {
-        return memberValidateDao.findByEmail(email)
+        return memberQueryDao.findByEmail(email)
             .toDomain()
     }
 }

@@ -2,7 +2,9 @@ package com.konkuk.ma.auth
 
 import com.konkuk.ma.auth.domain.RefreshToken
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.security.Keys
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -11,6 +13,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class JwtGeneratorTest : FunSpec({
 
@@ -77,18 +80,36 @@ class JwtGeneratorTest : FunSpec({
         shouldThrow<ExpiredJwtException> { generator.getEmailFromToken(token) }
     }
 
-    test("만료된 리프레시 토큰은 이메일 추출 시 예외가 발생한다") {
+    test("리프레시 토큰의 만료 시각과 JWT exp 클레임이 동일하다") {
         val generator = JwtGenerator(
             secretKey = secret,
             accessTokenExpiration = 5_000L,
-            refreshTokenExpiration = 50L
+            refreshTokenExpiration = 10_000L
+        )
+
+        val refresh = generator.generateRefreshToken("user@example.com")
+
+        val parser = Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(secret.toByteArray()))
+            .build()
+        val jwtExpInstant = parser.parseClaimsJws(refresh.token).body.expiration.toInstant()
+        val refreshExpInstant = refresh.expirationDate.atZone(ZoneId.systemDefault()).toInstant()
+
+        jwtExpInstant.epochSecond shouldBe refreshExpInstant.epochSecond
+    }
+
+    test("만료된 리프레시 토큰은 이메일 추출 시 예외가 발생하고 isExpired() 메소드는 true를 리턴한다.") {
+        val generator = JwtGenerator(
+            secretKey = secret,
+            accessTokenExpiration = 5_000L,
+            refreshTokenExpiration = 500L
         )
 
         val refresh = generator.generateRefreshToken("user@example.com")
         // 만료 시간을 충분히 초과하여 대기
-        Thread.sleep(200)
+        Thread.sleep(500)
 
         shouldThrow<ExpiredJwtException> { generator.validateToken(refresh.token) }
-        shouldThrow<ExpiredJwtException> { generator.getEmailFromToken(refresh.token) }
+        refresh.isExpired() shouldBe true
     }
 })

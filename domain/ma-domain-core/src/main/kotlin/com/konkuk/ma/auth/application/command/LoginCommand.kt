@@ -1,4 +1,4 @@
-package com.konkuk.ma.member.application.command
+package com.konkuk.ma.auth.application.command
 
 class LoginCommand(
     val email: String,
