@@ -38,3 +38,13 @@ Meet Again 서비스 Backend API 문서
 
 * link:auth/sms-verification.html[SMS 인증 API,window=_blank]
 
+[[auth-login]]
+=== 로그인
+
+* link:auth/login.html[로그인 API,window=_blank]
+
+[[auth-refresh]]
+=== 리프레시 토큰 재발급
+
+* link:auth/refresh-token.html[리프레시 토큰 재발급 API,window=_blank]
+

@@ -1,0 +1,117 @@
+# ==========================================
+# 회원 관리 API 테스트
+# ==========================================
+
+### 3. 이메일 중복 확인 (회원가입 전 권장)
+GET http://{{localhost}}/api/members/duplicated-email?email=test@example.com
+Accept: application/json
+
+### 4. 닉네임 중복 확인 (회원가입 전 권장)
+GET http://{{localhost}}/api/members/duplicated-nickname?nickname=testuser
+Accept: application/json
+
+### 5. 회원가입 API (모든 필드 포함)
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "phoneNumber": "01023353927",
+  "nickname": "testuser",
+  "name": "김테스트",
+  "birthDate": "1990-01-01",
+  "highSchool": "테스트고등학교",
+  "university": "테스트대학교"
+}
+
+### 6. 회원가입 API (선택 필드 제외)
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "simple@example.com",
+  "password": "simplepass123",
+  "phoneNumber": "01087654321",
+  "nickname": "simple",
+  "name": "간단한사용자",
+  "birthDate": "1992-12-25",
+  "highSchool": null,
+  "university": null
+}
+
+# ==========================================
+# 유효성 검증 테스트
+# ==========================================
+
+### 7. 유효성 검증 테스트 - 잘못된 이메일 형식
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "invalid-email",
+  "password": "password123",
+  "phoneNumber": "01012345678",
+  "nickname": "testuser",
+  "name": "김테스트",
+  "birthDate": "1990-01-01"
+}
+
+### 8. 유효성 검증 테스트 - 약한 비밀번호 (8자 미만, 숫자 없음)
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "weak",
+  "phoneNumber": "01012345678",
+  "nickname": "testuser2",
+  "name": "김테스트2",
+  "birthDate": "1990-01-01"
+}
+
+### 9. 유효성 검증 테스트 - 잘못된 휴대폰 번호
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test3@example.com",
+  "password": "password123",
+  "phoneNumber": "010123456789",
+  "nickname": "testuser3",
+  "name": "김테스트3",
+  "birthDate": "1990-01-01"
+}
+
+### 10. 유효성 검증 테스트 - 잘못된 닉네임 (특수문자 포함)
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test4@example.com",
+  "password": "password123",
+  "phoneNumber": "01012345678",
+  "nickname": "test@user",
+  "name": "김테스트4",
+  "birthDate": "1990-01-01"
+}
+
+### 11. 유효성 검증 테스트 - 잘못된 이름 (영어 포함)
+POST http://{{localhost}}/api/members/sign-up
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test5@example.com",
+  "password": "password123",
+  "phoneNumber": "01012345678",
+  "nickname": "testuser5",
+  "name": "김Test",
+  "birthDate": "1990-01-01"
+}

@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 class RefreshTokenService(
     private val tokenGenerator: TokenGenerator,
 
-    private val refreshTokenValidator: RefreshTokenValidator,
-
     private val refreshTokenRepository: RefreshTokenRepository,
+
+    private val refreshTokenValidator: RefreshTokenValidator,
 
     private val refreshTokenGenerator: RefreshTokenGenerator,
 

@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.domain.member.api.request.SignUpRequest
-import com.konkuk.ma.domain.member.api.request.toCommand
 import com.konkuk.ma.domain.member.api.response.SignUpResponse
 import com.konkuk.ma.member.application.MemberCommandService
 import jakarta.validation.Valid

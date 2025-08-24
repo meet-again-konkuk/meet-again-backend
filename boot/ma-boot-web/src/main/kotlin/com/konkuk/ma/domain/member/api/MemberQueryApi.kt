@@ -2,15 +2,11 @@ package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.domain.member.api.request.DuplicatedEmailRequest
 import com.konkuk.ma.domain.member.api.request.DuplicatedNicknameRequest
-import com.konkuk.ma.domain.member.api.request.LoginRequest
 import com.konkuk.ma.domain.member.api.response.CheckDuplicatedEmailResponse
 import com.konkuk.ma.domain.member.api.response.CheckDuplicatedNicknameResponse
-import com.konkuk.ma.domain.member.api.response.LoginResponse
 import com.konkuk.ma.member.application.MemberQueryService
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -34,18 +30,6 @@ class MemberQueryApi(
         return CheckDuplicatedEmailResponse(
             email = request.email,
             duplicated = duplicated
-        )
-    }
-
-    @PostMapping("/login")
-    fun login(@Validated @RequestBody request: LoginRequest): LoginResponse {
-        val loginResult = memberQueryService.login(request.toLoginCommand())
-        
-        return LoginResponse(
-            accessToken = loginResult.accessToken,
-            refreshToken = loginResult.refreshToken,
-            email = loginResult.email,
-            nickname = loginResult.nickname
         )
     }
 }

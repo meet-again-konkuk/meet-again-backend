@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 로그인 API 문서
+
+== 로그인
+
+=== 요청
+
+include::{snippets}/auth-login/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/auth-login/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/auth-login/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/auth-login/response-fields.adoc[]
+
+=== 유효하지 않은 이메일로 요청 시
+
+include::{snippets}/auth-login-invalid-email/http-request.adoc[]
+
+include::{snippets}/auth-login-invalid-email/http-response.adoc[]
