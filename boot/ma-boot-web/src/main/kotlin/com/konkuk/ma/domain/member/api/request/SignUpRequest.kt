@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.member.api.request
 
-import com.konkuk.ma.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.member.application.command.NewMemberCommand
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

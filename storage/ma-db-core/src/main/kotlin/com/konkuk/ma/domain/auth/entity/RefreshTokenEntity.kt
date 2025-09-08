@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.entity
 
-import com.konkuk.ma.auth.domain.RefreshToken
+import com.konkuk.ma.domain.auth.domain.RefreshToken
 import java.time.LocalDateTime
 
 class RefreshTokenEntity(

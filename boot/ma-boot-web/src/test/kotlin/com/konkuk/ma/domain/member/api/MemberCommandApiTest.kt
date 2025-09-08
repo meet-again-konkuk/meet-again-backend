@@ -9,8 +9,8 @@ import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.extension.responseType
-import com.konkuk.ma.member.application.MemberCommandService
-import com.konkuk.ma.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.member.application.MemberCommandService
+import com.konkuk.ma.domain.member.application.command.NewMemberCommand
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every

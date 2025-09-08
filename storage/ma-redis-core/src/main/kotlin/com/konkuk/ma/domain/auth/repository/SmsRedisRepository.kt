@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.auth.repository
 
-import com.konkuk.ma.auth.domain.SmsVerification
-import com.konkuk.ma.auth.domain.port.SmsRepository
+import com.konkuk.ma.domain.auth.domain.SmsVerification
+import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.auth.dao.SmsVerificationFindDao
 import com.konkuk.ma.domain.auth.dao.SmsVerificationSaveDao
 import org.springframework.stereotype.Repository

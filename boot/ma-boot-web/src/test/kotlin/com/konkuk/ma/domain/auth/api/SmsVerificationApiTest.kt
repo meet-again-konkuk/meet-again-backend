@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.konkuk.ma.auth.application.SmsVerificationService
+import com.konkuk.ma.domain.auth.application.SmsVerificationService
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.NUMBER

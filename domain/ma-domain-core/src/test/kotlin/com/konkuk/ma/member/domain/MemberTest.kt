@@ -1,6 +1,7 @@
 package com.konkuk.ma.member.domain
 
-import com.konkuk.ma.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.member.domain.Member
+import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

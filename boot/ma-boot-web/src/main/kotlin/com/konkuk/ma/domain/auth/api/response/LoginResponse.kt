@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.api.response
 
-import com.konkuk.ma.auth.domain.LoginInfo
+import com.konkuk.ma.domain.auth.domain.LoginInfo
 
 class LoginResponse(
     val email: String,

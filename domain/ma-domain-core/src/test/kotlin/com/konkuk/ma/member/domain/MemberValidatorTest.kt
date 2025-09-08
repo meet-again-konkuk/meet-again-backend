@@ -1,7 +1,9 @@
 package com.konkuk.ma.member.domain
 
-import com.konkuk.ma.auth.domain.port.SmsRepository
-import com.konkuk.ma.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.domain.auth.domain.port.SmsRepository
+import com.konkuk.ma.domain.member.domain.MemberValidator
+import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

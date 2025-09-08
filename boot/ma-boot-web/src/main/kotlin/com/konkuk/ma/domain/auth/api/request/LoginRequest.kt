@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.api.request
 
-import com.konkuk.ma.auth.application.command.LoginCommand
+import com.konkuk.ma.domain.auth.application.command.LoginCommand
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 

@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.member.entity
 
-import com.konkuk.ma.member.domain.Member
+import com.konkuk.ma.domain.member.domain.Member
 import java.time.LocalDate
 
 class MemberEntity(

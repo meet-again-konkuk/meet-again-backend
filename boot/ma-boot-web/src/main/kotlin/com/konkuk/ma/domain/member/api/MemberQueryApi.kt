@@ -4,7 +4,7 @@ import com.konkuk.ma.domain.member.api.request.DuplicatedEmailRequest
 import com.konkuk.ma.domain.member.api.request.DuplicatedNicknameRequest
 import com.konkuk.ma.domain.member.api.response.CheckDuplicatedEmailResponse
 import com.konkuk.ma.domain.member.api.response.CheckDuplicatedNicknameResponse
-import com.konkuk.ma.member.application.MemberQueryService
+import com.konkuk.ma.domain.member.application.MemberQueryService
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

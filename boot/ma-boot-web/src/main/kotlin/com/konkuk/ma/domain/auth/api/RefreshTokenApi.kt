@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.api
 
-import com.konkuk.ma.auth.application.RefreshTokenService
+import com.konkuk.ma.domain.auth.application.RefreshTokenService
 import com.konkuk.ma.domain.auth.api.request.RefreshTokenRequest
 import com.konkuk.ma.domain.auth.api.response.LoginResponse
 import jakarta.validation.Valid

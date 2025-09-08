@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.dao
 
-import com.konkuk.ma.auth.domain.RefreshToken
+import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.entity.RefreshTokenEntity
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.common.RowEntityMapper

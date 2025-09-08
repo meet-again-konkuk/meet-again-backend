@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- application.yml에서 프로퍼티 가져오기 -->
+    <springProperty scope="context" name="applicationName" source="spring.application.name" defaultValue="unknown-app"/>
+    <springProperty scope="context" name="logstashHost" source="elk.logstash.host"/>
+    <springProperty scope="context" name="logstashPort" source="elk.logstash.port"/>
+    <!-- local, dev 환경용 콘솔 출력 (일반 텍스트) -->
+    <property name="LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}:%-4relative] %green([%thread]) %highlight(%-5level) %logger{36} %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"
+    />
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- stage, prod 환경용 콘솔 출력 (JSON 형태 - ELK 수집용) -->
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <version/>
+                <logLevel/>
+                <message/>
+                <mdc/>
+                <arguments/>
+                <stackTrace/>
+                <loggerName/>
+                <threadName/>
+                <pattern>
+                    <pattern>
+                        {
+                        "application": "${applicationName}",
+                        "environment": "${spring.profiles.active:-default}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- 파일 출력을 위한 appender (local, dev 환경용) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logstash TCP Appender (선택사항 - 직접 Logstash로 전송) -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${logstashHost}:${logstashPort}</destination>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <version/>
+                <logLevel/>
+                <message/>
+                <mdc/>
+                <arguments/>
+                <stackTrace/>
+                <loggerName/>
+                <threadName/>
+                <pattern>
+                    <pattern>
+                        {
+                        "application": "${applicationName}",
+                        "environment": "${spring.profiles.active:-default}",
+                        "host": "${HOSTNAME:-unknown}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+        <ringBufferSize>16384</ringBufferSize>
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+    <!-- local 환경 설정 - 파일 로그 + 콘솔 (DEBUG 레벨) -->
+    <springProfile name="local">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+        <logger name="com.s2w.asm" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </logger>
+    </springProfile>
+
+    <!-- dev 환경 설정 - 파일 로그 + 콘솔 (DEBUG 레벨) -->
+    <springProfile name="dev">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+        <logger name="com.s2w.asm" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </logger>
+    </springProfile>
+
+    <!-- stage 환경 설정 - JSON 콘솔 출력 (Logstash 연결 문제로 일시 비활성화) -->
+    <springProfile name="stage">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_JSON"/>
+            <appender-ref ref="LOGSTASH"/>
+        </root>
+        <logger name="com.s2w.asm" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE_JSON"/>
+            <appender-ref ref="LOGSTASH"/>
+        </logger>
+    </springProfile>
+
+    <!-- prod 환경 설정 - JSON 콘솔 (ELK 수집용) + Logstash 직접 전송 -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_JSON"/>
+            <appender-ref ref="LOGSTASH"/>
+        </root>
+        <logger name="com.s2w.asm" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE_JSON"/>
+            <appender-ref ref="LOGSTASH"/>
+        </logger>
+    </springProfile>
+
+    <!-- 기본 설정 (프로파일이 지정되지 않은 경우) -->
+    <springProfile name="!local,!dev,!stage,!prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+</configuration> 

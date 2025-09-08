@@ -1,6 +1,6 @@
 package com.konkuk.ma.auth
 
-import com.konkuk.ma.auth.domain.RefreshToken
+import com.konkuk.ma.domain.auth.domain.RefreshToken
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
@@ -20,7 +20,7 @@ class JwtGeneratorTest : FunSpec({
     val secret = "a".repeat(64) // 512-bit key for HS256
 
     test("액세스 토큰은 생성되고 유효하며, 이메일(subject)이 일치한다") {
-        val generator = JwtGenerator(
+        val generator = JwtManager(
             secretKey = secret,
             accessTokenExpiration = 5_000L,
             refreshTokenExpiration = 30_000L
@@ -34,7 +34,7 @@ class JwtGeneratorTest : FunSpec({
     }
 
     test("리프레시 토큰은 값 객체로 반환되고, 만료 시각이 적절하다") {
-        val generator = JwtGenerator(
+        val generator = JwtManager(
             secretKey = secret,
             accessTokenExpiration = 5_000L,
             refreshTokenExpiration = 10_000L
@@ -51,7 +51,7 @@ class JwtGeneratorTest : FunSpec({
     }
 
     test("형식이 잘못된 토큰은 검증에 실패한다") {
-        val generator = JwtGenerator(
+        val generator = JwtManager(
             secretKey = secret,
             accessTokenExpiration = 5_000L,
             refreshTokenExpiration = 10_000L
@@ -64,7 +64,7 @@ class JwtGeneratorTest : FunSpec({
     }
 
     test("만료된 토큰은 검증에 실패하고, 이메일 추출 시 예외가 발생한다") {
-        val generator = JwtGenerator(
+        val generator = JwtManager(
             secretKey = secret,
             accessTokenExpiration = 50L,
             refreshTokenExpiration = 10_000L
@@ -81,7 +81,7 @@ class JwtGeneratorTest : FunSpec({
     }
 
     test("리프레시 토큰의 만료 시각과 JWT exp 클레임이 동일하다") {
-        val generator = JwtGenerator(
+        val generator = JwtManager(
             secretKey = secret,
             accessTokenExpiration = 5_000L,
             refreshTokenExpiration = 10_000L
@@ -99,7 +99,7 @@ class JwtGeneratorTest : FunSpec({
     }
 
     test("만료된 리프레시 토큰은 이메일 추출 시 예외가 발생하고 isExpired() 메소드는 true를 리턴한다.") {
-        val generator = JwtGenerator(
+        val generator = JwtManager(
             secretKey = secret,
             accessTokenExpiration = 5_000L,
             refreshTokenExpiration = 500L

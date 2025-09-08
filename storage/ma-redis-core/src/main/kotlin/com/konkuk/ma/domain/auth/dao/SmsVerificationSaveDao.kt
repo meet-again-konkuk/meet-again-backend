@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.dao
 
-import com.konkuk.ma.auth.domain.SmsVerification
+import com.konkuk.ma.domain.auth.domain.SmsVerification
 import java.util.concurrent.TimeUnit
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component

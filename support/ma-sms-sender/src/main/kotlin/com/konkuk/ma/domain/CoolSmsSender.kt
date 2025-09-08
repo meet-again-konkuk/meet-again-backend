@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain
 
-import com.konkuk.ma.auth.domain.SmsVerification
-import com.konkuk.ma.auth.domain.port.SmsSender
+import com.konkuk.ma.domain.auth.domain.SmsVerification
+import com.konkuk.ma.domain.auth.domain.port.SmsSender
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.service.DefaultMessageService
 import org.springframework.stereotype.Component

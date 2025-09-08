@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.auth.api
 
-import com.konkuk.ma.auth.application.SmsVerificationService
+import com.konkuk.ma.domain.auth.application.SmsVerificationService
 import com.konkuk.ma.domain.auth.api.request.SmsSendRequest
 import com.konkuk.ma.domain.auth.api.request.SmsVerificationConfirmRequest
 import com.konkuk.ma.domain.auth.api.response.SmsVerificationConfirmResponse

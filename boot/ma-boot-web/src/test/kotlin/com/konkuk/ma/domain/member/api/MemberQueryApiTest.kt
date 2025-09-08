@@ -8,7 +8,7 @@ import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.extension.responseType
-import com.konkuk.ma.member.application.MemberQueryService
+import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every

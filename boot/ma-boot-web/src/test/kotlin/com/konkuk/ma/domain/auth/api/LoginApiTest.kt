@@ -1,9 +1,9 @@
 package com.konkuk.ma.domain.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.konkuk.ma.auth.application.LoginService
-import com.konkuk.ma.auth.domain.LoginInfo
-import com.konkuk.ma.auth.domain.RefreshToken
+import com.konkuk.ma.domain.auth.application.LoginService
+import com.konkuk.ma.domain.auth.domain.LoginInfo
+import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.auth.api.request.LoginRequest
 import com.konkuk.ma.extension.STRING
@@ -15,6 +15,7 @@ import com.konkuk.ma.extension.responseType
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
+import java.time.LocalDateTime
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -33,7 +34,7 @@ class LoginApiTest(
             email = request.email,
             nickname = "tester",
             accessToken = "access-token",
-            refreshToken = RefreshToken("user@example.com", java.time.LocalDateTime.now().plusDays(7), "refresh-token")
+            refreshToken = RefreshToken("user@example.com", LocalDateTime.now().plusDays(7), "refresh-token")
         )
         every { loginService.login(match { it.email == request.email && it.password == request.password }) } returns loginInfo
 

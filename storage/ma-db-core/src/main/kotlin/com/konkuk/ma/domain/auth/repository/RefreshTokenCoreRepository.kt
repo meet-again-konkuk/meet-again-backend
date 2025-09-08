@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.auth.repository
 
-import com.konkuk.ma.auth.domain.RefreshToken
-import com.konkuk.ma.auth.domain.port.RefreshTokenRepository
+import com.konkuk.ma.domain.auth.domain.RefreshToken
+import com.konkuk.ma.domain.auth.domain.port.RefreshTokenRepository
 import com.konkuk.ma.domain.auth.dao.RefreshTokenDao
 import org.springframework.stereotype.Repository
 

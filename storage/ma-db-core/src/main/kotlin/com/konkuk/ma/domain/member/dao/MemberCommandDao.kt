@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.domain.member.entity.table.MemberTable
-import com.konkuk.ma.member.domain.NewMember
+import com.konkuk.ma.domain.member.domain.NewMember
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.springframework.stereotype.Component
 
