@@ -25,7 +25,10 @@ subprojects {
 	}
 
 	dependencies {
-		implementation(project(":config:ma-config-logging"))
+//		implementation(project(":config:ma-config-logging"))
+		if (project.path != ":config:ma-config-logging") {
+			implementation(project(":config:ma-config-logging"))
+		}
 
 		// KoTest
 		testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.5")
