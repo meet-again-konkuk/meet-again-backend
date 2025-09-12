@@ -7,6 +7,9 @@ import com.konkuk.ma.domain.member.api.response.CheckDuplicatedNicknameResponse
 import com.konkuk.ma.domain.member.application.MemberQueryService
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -15,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 class MemberQueryApi(
     private val memberQueryService: MemberQueryService
 ) {
-    @GetMapping("/duplicated-nickname")
-    fun checkDuplicatedNickname(@Validated request: DuplicatedNicknameRequest): CheckDuplicatedNicknameResponse {
+    @PostMapping("/duplicated-nickname")
+    fun checkDuplicatedNickname(@Validated @RequestBody request: DuplicatedNicknameRequest): CheckDuplicatedNicknameResponse {
         val duplicated = memberQueryService.checkDuplicatedNickname(request.nickname)
         return CheckDuplicatedNicknameResponse(
             nickname = request.nickname,
@@ -24,12 +27,17 @@ class MemberQueryApi(
         )
     }
 
-    @GetMapping("/duplicated-email")
-    fun checkDuplicatedEmail(@Validated request: DuplicatedEmailRequest): CheckDuplicatedEmailResponse {
+    @PostMapping("/duplicated-email")
+    fun checkDuplicatedEmail(@Validated @RequestBody request: DuplicatedEmailRequest): CheckDuplicatedEmailResponse {
         val duplicated = memberQueryService.checkDuplicatedEmail(request.email)
         return CheckDuplicatedEmailResponse(
             email = request.email,
             duplicated = duplicated
         )
+    }
+
+    @GetMapping("/{memberId}")
+    fun getMember(@PathVariable("memberId") id: Long) {
+        println(id)
     }
 }

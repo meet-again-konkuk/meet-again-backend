@@ -24,6 +24,7 @@ dependencies {
 	runtimeOnly(project(":support:ma-jwt-core"))
 	runtimeOnly(project(":storage:ma-db-core"))
 	runtimeOnly(project(":storage:ma-redis-core"))
+	testImplementation(project(":support:ma-jwt-core"))
 
 	// AsciiDocs
 	val asciidoctorExt: Configuration by configurations.creating

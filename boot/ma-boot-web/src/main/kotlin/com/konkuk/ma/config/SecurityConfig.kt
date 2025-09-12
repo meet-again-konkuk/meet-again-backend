@@ -3,6 +3,7 @@ package com.konkuk.ma.config
 import com.konkuk.ma.support.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -23,7 +24,11 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/auth/refresh-token").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/sms/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/members/sign-up").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/members/duplicated-**").permitAll()
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()

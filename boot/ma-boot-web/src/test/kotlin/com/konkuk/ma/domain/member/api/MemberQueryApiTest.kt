@@ -1,14 +1,14 @@
 package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
-import com.konkuk.ma.extension.getJson
-import com.konkuk.ma.extension.requestParam
+import com.konkuk.ma.extension.postJson
+import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.extension.responseType
-import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 @BaseApiTest
 class MemberQueryApiTest(
     private val mockMvc: MockMvc,
-
     @MockkBean private val memberQueryService: MemberQueryService
 ) : FunSpec({
 
@@ -31,16 +30,16 @@ class MemberQueryApiTest(
         // When & Then
         every { memberQueryService.checkDuplicatedNickname(nickname) } returns false
 
-        mockMvc.getJson("/api/members/duplicated-nickname")
-        { param("nickname", nickname) }
+        mockMvc.postJson("/api/members/duplicated-nickname")
+        { content = """{"nickname":"$nickname"}""" }
             .andExpect {
                 status { { isOk() } }
                 jsonPath("$.nickname").value(nickname)
                 jsonPath("$.duplicated").value(false) }
             .andDocument(
                 "check-duplicated-nickname",
-                requestParam(
-                    "nickname" requestParam "회원 닉네임" example "holeman79"
+                requestBody(
+                    "nickname" responseType STRING means "회원 닉네임"
                 ),
                 responseBody(
                     "nickname" responseType STRING means "회원 닉네임",
@@ -54,13 +53,13 @@ class MemberQueryApiTest(
         val invalidNickname = "a"
 
         // When & Then
-        mockMvc.getJson("/api/members/duplicated-nickname")
-        { param("nickname", invalidNickname) }
+        mockMvc.postJson("/api/members/duplicated-nickname")
+        { content = """{"nickname":"$invalidNickname"}""" }
             .andExpect { status { isBadRequest() } }
             .andDocument(
                 "check-duplicated-nickname-invalid-format",
-                requestParam(
-                    "nickname" requestParam "유효하지 않은 형식의 닉네임" example "a"
+                requestBody(
+                    "nickname" responseType STRING means "유효하지 않은 형식의 닉네임"
                 )
             )
     }
@@ -72,16 +71,16 @@ class MemberQueryApiTest(
         // When & Then
         every { memberQueryService.checkDuplicatedEmail(email) } returns false
 
-        mockMvc.getJson("/api/members/duplicated-email")
-        { param("email", email) }
+        mockMvc.postJson("/api/members/duplicated-email")
+        { content = """{"email":"$email"}""" }
             .andExpect {
                 status { { isOk() } }
                 jsonPath("$.email").value(email)
                 jsonPath("$.duplicated").value(false) }
             .andDocument(
                 "check-duplicated-email",
-                requestParam(
-                    "email" requestParam "회원 이메일" example "test@example.com"
+                requestBody(
+                    "email" responseType STRING means "회원 이메일"
                 ),
                 responseBody(
                     "email" responseType STRING means "회원 이메일",
@@ -95,13 +94,13 @@ class MemberQueryApiTest(
         val invalidEmail = "invalid-email"
 
         // When & Then
-        mockMvc.getJson("/api/members/duplicated-email")
-        { param("email", invalidEmail) }
+        mockMvc.postJson("/api/members/duplicated-email")
+        { content = """{"email":"$invalidEmail"}""" }
             .andExpect { status { isBadRequest() } }
             .andDocument(
                 "check-duplicated-email-invalid-format",
-                requestParam(
-                    "email" requestParam "유효하지 않은 형식의 이메일" example "invalid-email"
+                requestBody(
+                    "email" responseType STRING means "유효하지 않은 형식의 이메일"
                 )
             )
     }

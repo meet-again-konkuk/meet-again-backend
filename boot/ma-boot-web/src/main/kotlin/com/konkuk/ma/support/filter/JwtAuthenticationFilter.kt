@@ -17,7 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+
+    private val mapper: ObjectMapper
 ) : OncePerRequestFilter() {
     companion object {
         const val AUTHORIZATION_HEADER = "Authorization"
@@ -57,10 +59,6 @@ class JwtAuthenticationFilter(
         }
     }
 
-    private fun extractEmail(jwt: String): String {
-        return tokenManager.getEmailFromToken(jwt)
-    }
-
     private fun writeApiError(
         response: HttpServletResponse,
         errorCode: ErrorCode,
@@ -68,7 +66,6 @@ class JwtAuthenticationFilter(
         httpStatus: Int,
     ) {
         val apiError = ApiError(errorCode, exception)
-        val mapper = ObjectMapper()
         response.status = httpStatus
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
