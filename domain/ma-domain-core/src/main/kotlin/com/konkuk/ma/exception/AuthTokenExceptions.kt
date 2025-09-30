@@ -11,9 +11,10 @@ class AuthTokenException(
 
     logLevel: LogLevel = LogLevel.INFO,
 
-    callerFunction: KFunction<*>
+    callerFunction: KFunction<*>? = null
 ) : BusinessException(
-    message = "${jwtExceptionType.message} token : $token",
+    message = jwtExceptionType.message,
+    dataMessage = "token : $token",
     callerFunction = callerFunction,
     cause = throwable,
     logLevel = logLevel

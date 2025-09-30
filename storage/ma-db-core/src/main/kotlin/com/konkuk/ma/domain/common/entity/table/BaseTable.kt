@@ -9,5 +9,5 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
     val createdBy = varchar("CREATED_BY", 255).clientDefault { "MEET_AGAIN" }
     val lastModifiedDate = datetime("LAST_MODIFIED_DATE").clientDefault { LocalDateTime.now() }
     val lastModifiedBy = varchar("LAST_MODIFIED_BY", 255).clientDefault { "MEET_AGAIN" }
-    val deleted = bool("DELETED").default(false).clientDefault { false }
+    val deleted = bool("DELETED").clientDefault { false }
 }

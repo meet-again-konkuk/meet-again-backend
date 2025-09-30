@@ -5,7 +5,8 @@ import kotlin.reflect.KFunction
 
 abstract class BusinessException(
     message: String,
-    callerFunction: KFunction<*>,
+    dataMessage: String,
+    callerFunction: KFunction<*>? = null,
     cause: Throwable? = null,
     logLevel: LogLevel = LogLevel.ERROR
 ) : RuntimeException(message, cause) {
@@ -15,7 +16,7 @@ abstract class BusinessException(
     }
 
     init {
-        val logMessage = "$message, caller info : [$callerFunction]"
+        val logMessage = "$message $dataMessage, caller info : [$callerFunction]"
 
         when (logLevel) {
             LogLevel.ERROR -> logger.error(this) { logMessage }

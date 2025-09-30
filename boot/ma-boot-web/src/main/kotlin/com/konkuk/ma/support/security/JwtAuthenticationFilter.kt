@@ -1,4 +1,4 @@
-package com.konkuk.ma.support.filter
+package com.konkuk.ma.support.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
@@ -35,7 +35,7 @@ class JwtAuthenticationFilter(
         val jwt = authHeader.substring(BEARER_PREFIX.length)
         try {
             val email = tokenManager.getEmailFromToken(jwt)
-            val authentication = UsernamePasswordAuthenticationToken(email, null, emptyList<SimpleGrantedAuthority>() )
+            val authentication = UsernamePasswordAuthenticationToken(email, null, emptyList<SimpleGrantedAuthority>())
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication
             filterChain.doFilter(request, response)
