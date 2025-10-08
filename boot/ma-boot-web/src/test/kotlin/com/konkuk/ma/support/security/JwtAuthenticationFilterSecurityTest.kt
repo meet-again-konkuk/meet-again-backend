@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @WebMvcTest(TestProtectedController::class)
-@Import(SecurityConfig::class, JwtAuthenticationFilter::class)
+@Import(SecurityConfig::class, JwtAuthenticationFilter::class, RoutingAwareEntryPoint::class)
 class JwtAuthenticationFilterSecurityTest(
     private val mockMvc: MockMvc,
 

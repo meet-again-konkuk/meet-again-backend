@@ -9,6 +9,7 @@ class NewMember(
     val phoneNumber: String,
     val name: String,
     val birthDate: LocalDate,
+    val region: Region,
     val highSchool: String?,
     val university: String?
 )

@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.api.request
 
 import com.konkuk.ma.domain.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.member.domain.Region
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -36,6 +37,9 @@ class SignUpRequest(
     @field:NotNull(message = "생년월일은 필수입니다.")
     val birthDate: LocalDate,
 
+    @field:NotNull(message = "지역은 필수입니다.")
+    val region: Region,
+
     val highSchool: String?,
 
     val university: String?,
@@ -48,6 +52,7 @@ class SignUpRequest(
             phoneNumber = this.phoneNumber,
             name = this.name,
             birthDate = this.birthDate,
+            region = this.region,
             highSchool = this.highSchool,
             university = this.university
         )

@@ -2,6 +2,9 @@ package com.konkuk.ma.domain.member.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.member.application.MemberCommandService
+import com.konkuk.ma.domain.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
@@ -9,8 +12,6 @@ import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.extension.responseType
-import com.konkuk.ma.domain.member.application.MemberCommandService
-import com.konkuk.ma.domain.member.application.command.NewMemberCommand
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -37,6 +38,7 @@ class MemberCommandApiTest(
             "nickname" to "testuser",
             "name" to "김테스트",
             "birthDate" to "1990-01-01",
+            "region" to "SEOUL",
             "highSchool" to "테스트고등학교",
             "university" to "테스트대학교"
         )
@@ -50,6 +52,7 @@ class MemberCommandApiTest(
                     phoneNumber = "01012345678",
                     name = "김테스트",
                     birthDate = LocalDate.of(1990, 1, 1),
+                    region = Region.SEOUL,
                     highSchool = "테스트고등학교",
                     university = "테스트대학교"
                 )
@@ -75,6 +78,7 @@ class MemberCommandApiTest(
                     "nickname" responseType STRING means "닉네임",
                     "name" responseType STRING means "이름",
                     "birthDate" responseType STRING means "생년월일",
+                    "region" responseType STRING means "거주 지역",
                     "highSchool" responseType STRING means "고등학교",
                     "university" responseType STRING means "대학교"
                 ),

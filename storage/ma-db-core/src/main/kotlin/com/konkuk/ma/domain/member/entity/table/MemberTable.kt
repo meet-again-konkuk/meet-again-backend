@@ -10,6 +10,7 @@ object MemberTable : BaseTable("MEMBERS", "MEMBER_ID") {
     val phoneNumber = varchar("PHONE_NUMBER", 255)
     val name = varchar("NAME", 255)
     val birthDate = date("BIRTH_DATE")
+    val region = varchar("REGION", 255)
     val highSchool = varchar("HIGH_SCHOOL", 255).nullable()
     val university = varchar("UNIVERSITY", 255).nullable()
 

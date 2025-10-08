@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.application.command
 
 import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
 import java.time.LocalDate
 
@@ -11,6 +12,7 @@ data class NewMemberCommand(
     val phoneNumber: String,
     val name: String,
     val birthDate: LocalDate,
+    val region: Region,
     val highSchool: String?,
     val university: String?
 ) {
@@ -22,6 +24,7 @@ data class NewMemberCommand(
             phoneNumber = phoneNumber,
             name = name,
             birthDate = birthDate,
+            region = region,
             highSchool = highSchool,
             university = university
         )
