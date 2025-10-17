@@ -1,6 +1,8 @@
 package com.konkuk.ma.domain.member.domain
 
-enum class Region(val displayName: String) {
+import com.konkuk.ma.domain.common.domain.EnumWithDisplayName
+
+enum class Region(override val displayName: String) : EnumWithDisplayName {
     SEOUL("서울"),
     BUSAN("부산"),
     DAEGU("대구"),

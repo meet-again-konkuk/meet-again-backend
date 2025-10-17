@@ -1,0 +1,21 @@
+= 회원 Enum API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 지역 Enum 목록 API
+
+=== 요청
+
+include::{snippets}/get-region-enums/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/get-region-enums/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/get-region-enums/response-fields.adoc[]
