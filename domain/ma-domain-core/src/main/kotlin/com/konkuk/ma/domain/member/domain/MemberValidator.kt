@@ -12,7 +12,7 @@ class MemberValidator(
     fun validateNewMember(newMember: NewMember) {
         checkDuplicatedNickname(newMember.nickname)
         checkDuplicatedEmail(newMember.email)
-        checkSmsVerification(newMember.phoneNumber)
+        checkSmsVerification(newMember.phoneNumber.fullNumber)
     }
 
     private fun checkDuplicatedNickname(nickname: String) {

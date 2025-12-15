@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.dao
 
-import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.entity.table.MemberTable
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.springframework.stereotype.Component
 
@@ -13,8 +13,9 @@ class MemberCommandDao {
             row[email] = newMember.email
             row[password] = newMember.password
             row[nickname] = newMember.nickname
-            row[phoneNumber] = newMember.phoneNumber
+            row[phoneNumber] = newMember.phoneNumber.fullNumber
             row[name] = newMember.name
+            row[region] = newMember.region.name
             row[birthDate] = newMember.birthDate
             row[highSchool] = newMember.highSchool
             row[university] = newMember.university

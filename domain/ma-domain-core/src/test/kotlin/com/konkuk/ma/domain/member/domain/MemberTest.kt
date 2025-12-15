@@ -1,6 +1,5 @@
-package com.konkuk.ma.member.domain
+package com.konkuk.ma.domain.member.domain
 
-import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -19,6 +18,7 @@ class MemberTest : FunSpec({
                 password = "stored-password",
                 nickname = "tester",
                 phoneNumber = "01012345678",
+                region = Region.SEOUL,
                 name = "홍길동",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = null,
@@ -37,6 +37,7 @@ class MemberTest : FunSpec({
                 password = "stored-password",
                 nickname = "tester",
                 phoneNumber = "01012345678",
+                region = Region.SEOUL,
                 name = "홍길동",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = null,

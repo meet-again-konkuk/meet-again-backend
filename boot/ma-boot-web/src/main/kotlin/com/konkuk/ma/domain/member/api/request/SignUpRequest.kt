@@ -22,7 +22,7 @@ class SignUpRequest(
 
     @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
     @field:Pattern(
-        regexp = "^01[016789]\\d{7,8}$",
+        regexp = "^010\\d{7,8}$",
         message = "유효하지 않은 휴대폰 번호 형식입니다. (예: 01012345678)"
     )
     val phoneNumber: String,

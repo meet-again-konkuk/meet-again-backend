@@ -1,9 +1,12 @@
 package com.konkuk.ma.domain.member.entity
 
 import com.konkuk.ma.domain.member.domain.Member
+import com.konkuk.ma.domain.member.domain.Region
 import java.time.LocalDate
 
 class MemberEntity(
+    val id: Long,
+
     val email: String,
 
     val password: String,
@@ -13,6 +16,8 @@ class MemberEntity(
     val phoneNumber: String,
 
     val name: String,
+
+    val region: Region,
 
     val birthDate: LocalDate,
 
@@ -27,6 +32,7 @@ class MemberEntity(
             nickname = nickname,
             phoneNumber = phoneNumber,
             name = name,
+            region = region,
             birthDate = birthDate,
             highSchool = highSchool,
             university = university

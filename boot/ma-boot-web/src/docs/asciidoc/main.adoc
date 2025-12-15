@@ -53,3 +53,13 @@ Meet Again 서비스 Backend API 문서
 
 * link:auth/refresh-token.html[리프레시 토큰 재발급 API,window=_blank]
 
+[[matching]]
+== 매칭
+
+매칭 도메인과 관련된 API 입니다.
+
+[[matching-register]]
+=== 찾는 사람 정보 등록
+
+* link:matching/register-target-info.html[찾는 사람 정보 등록 API,window=_blank]
+

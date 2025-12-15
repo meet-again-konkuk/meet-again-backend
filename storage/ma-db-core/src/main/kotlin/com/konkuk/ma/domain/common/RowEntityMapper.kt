@@ -8,11 +8,13 @@ import org.jetbrains.exposed.sql.ResultRow
 
 object RowEntityMapper {
     fun toMemberEntity(row: ResultRow) = MemberEntity(
+        id = row[MemberTable.id].value,
         email = row[MemberTable.email],
         password = row[MemberTable.password],
         nickname = row[MemberTable.nickname],
         phoneNumber = row[MemberTable.phoneNumber],
         name = row[MemberTable.name],
+        region = enumValueOf(row[MemberTable.region]),
         birthDate = row[MemberTable.birthDate],
         highSchool = row[MemberTable.highSchool],
         university = row[MemberTable.university]

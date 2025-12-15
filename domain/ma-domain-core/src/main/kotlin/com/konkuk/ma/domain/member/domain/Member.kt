@@ -7,8 +7,9 @@ class Member(
     val email: String,
     val password: String,
     val nickname: String,
-    val phoneNumber: String,
+    val phoneNumber: PhoneNumber,
     val name: String,
+    val region: Region,
     val birthDate: LocalDate,
     val highSchool: String?,
     val university: String?
@@ -20,6 +21,7 @@ class Member(
             nickname: String,
             phoneNumber: String,
             name: String,
+            region: Region,
             birthDate: LocalDate,
             highSchool: String?,
             university: String?
@@ -28,8 +30,9 @@ class Member(
                 email = email,
                 password = password,
                 nickname = nickname,
-                phoneNumber = phoneNumber,
+                phoneNumber = PhoneNumber(phoneNumber),
                 name = name,
+                region = region,
                 birthDate = birthDate,
                 highSchool = highSchool,
                 university = university

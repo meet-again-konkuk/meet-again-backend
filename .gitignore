@@ -34,3 +34,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### HTTP Client ###
+http/
+*.http
+http-client.env.json

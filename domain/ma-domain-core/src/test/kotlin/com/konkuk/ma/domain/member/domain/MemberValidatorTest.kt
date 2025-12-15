@@ -1,8 +1,6 @@
-package com.konkuk.ma.member.domain
+package com.konkuk.ma.domain.member.domain
 
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
-import com.konkuk.ma.domain.member.domain.MemberValidator
-import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -24,11 +22,12 @@ class MemberValidatorTest : FunSpec({
                 email = "test@example.com",
                 password = "password123",
                 nickname = "testuser",
-                phoneNumber = "01012345678",
+                phoneNumber = PhoneNumber("01012345678"),
                 name = "김테스트",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = "테스트고등학교",
-                university = "테스트대학교"
+                university = "테스트대학교",
+                region = Region.SEOUL
             )
             
             every { memberQueryRepository.existsByNickname("testuser") } returns false
@@ -45,11 +44,12 @@ class MemberValidatorTest : FunSpec({
                 email = "test@example.com",
                 password = "password123",
                 nickname = "duplicated",
-                phoneNumber = "01012345678",
+                phoneNumber = PhoneNumber("01012345678"),
                 name = "김테스트",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = null,
-                university = null
+                university = null,
+                region = Region.SEOUL
             )
             
             every { memberQueryRepository.existsByNickname("duplicated") } returns true
@@ -67,11 +67,12 @@ class MemberValidatorTest : FunSpec({
                 email = "duplicated@example.com",
                 password = "password123",
                 nickname = "testuser",
-                phoneNumber = "01012345678",
+                phoneNumber = PhoneNumber("01012345678"),
                 name = "김테스트",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = null,
-                university = null
+                university = null,
+                region = Region.SEOUL
             )
             
             every { memberQueryRepository.existsByNickname("testuser") } returns false
@@ -90,11 +91,12 @@ class MemberValidatorTest : FunSpec({
                 email = "test@example.com",
                 password = "password123",
                 nickname = "testuser",
-                phoneNumber = "01012345678",
+                phoneNumber = PhoneNumber("01012345678"),
                 name = "김테스트",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = null,
-                university = null
+                university = null,
+                region = Region.SEOUL
             )
             
             every { memberQueryRepository.existsByNickname("testuser") } returns false
@@ -114,11 +116,12 @@ class MemberValidatorTest : FunSpec({
                 email = "duplicated@example.com",
                 password = "password123",
                 nickname = "duplicated",
-                phoneNumber = "01012345678",
+                phoneNumber = PhoneNumber("01012345678"),
                 name = "김테스트",
                 birthDate = LocalDate.of(1990, 1, 1),
                 highSchool = null,
-                university = null
+                university = null,
+                region = Region.SEOUL
             )
             
             every { memberQueryRepository.existsByNickname("duplicated") } returns true

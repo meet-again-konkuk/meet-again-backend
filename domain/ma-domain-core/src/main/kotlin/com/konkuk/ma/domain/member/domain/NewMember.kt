@@ -6,7 +6,7 @@ class NewMember(
     val email: String,
     val password: String,
     val nickname: String,
-    val phoneNumber: String,
+    val phoneNumber: PhoneNumber,
     val name: String,
     val birthDate: LocalDate,
     val region: Region,

@@ -1,0 +1,25 @@
+package com.konkuk.ma.domain.member.domain
+
+class PhoneNumber(
+    phoneNumber: String,
+) {
+    val firstNumber: String
+    val middleNumber: String
+    val lastNumber: String
+    val formatted: String get() = "$firstNumber-$middleNumber-$lastNumber"
+    val fullNumber: String get() = "$firstNumber$middleNumber$lastNumber"
+
+    init {
+        val normalized = phoneNumber.filterNot { it == '-' || it.isWhitespace() }
+        require(normalized.length >= 10) { "전화번호는 최소 10자리(3-중간-4)여야 합니다." }
+        require(normalized.startsWith(ALLOWED_PREFIX)) { "앞자리는 010만 허용됩니다." }
+
+        firstNumber = normalized.take(3)
+        lastNumber = normalized.takeLast(4)
+        middleNumber = normalized.substring(3, normalized.length - 4)
+    }
+
+    companion object {
+        private const val ALLOWED_PREFIX = "010"
+    }
+}
