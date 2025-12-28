@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.api.request
 
 import com.konkuk.ma.domain.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -34,6 +35,8 @@ class SignUpRequest(
     @field:Pattern(regexp = "^[가-힣]{2,10}$", message = "이름은 한글 2자 이상 10자 이하여야 합니다.")
     val name: String,
 
+    val gender: Gender,
+
     @field:NotNull(message = "생년월일은 필수입니다.")
     val birthDate: LocalDate,
 
@@ -49,6 +52,7 @@ class SignUpRequest(
             email = this.email,
             password = this.password,
             nickname = this.nickname,
+            gender = this.gender,
             phoneNumber = this.phoneNumber,
             name = this.name,
             birthDate = this.birthDate,

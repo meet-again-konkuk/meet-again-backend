@@ -45,7 +45,7 @@ class TargetInfoCommandApiTest(
             targetInfoCommandService.register(
                 match {
                     it.registerEmail == "test@example.com" &&
-                    it.name == "김만남" &&
+                    it.targetName == "김만남" &&
                     it.middleNumber == "1234" &&
                     it.lastNumber == "5678" &&
                     it.year?.value == 1995 &&
@@ -100,7 +100,7 @@ class TargetInfoCommandApiTest(
             targetInfoCommandService.register(
                 match {
                     it.registerEmail == "test@example.com" &&
-                    it.name == "이재회" &&
+                    it.targetName == "이재회" &&
                     it.middleNumber == null &&
                     it.lastNumber == null &&
                     it.year == null &&

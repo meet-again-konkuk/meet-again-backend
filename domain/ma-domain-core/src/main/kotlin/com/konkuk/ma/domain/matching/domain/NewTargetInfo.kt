@@ -7,7 +7,7 @@ import com.konkuk.ma.domain.member.domain.Region
 
 class NewTargetInfo(
     val registerEmail: String,
-    val name: String,
+    val targetName: String,
     val middleNumber: String?,
     val lastNumber: String?,
 

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.application.command
 
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.Region
@@ -10,6 +11,7 @@ data class NewMemberCommand(
     val email: String,
     val password: String,
     val nickname: String,
+    val gender: Gender,
     val phoneNumber: String,
     val name: String,
     val birthDate: LocalDate,
@@ -22,6 +24,7 @@ data class NewMemberCommand(
             email = email,
             password = passwordEncryptor.encode(password),
             nickname = nickname,
+            gender = gender,
             phoneNumber = PhoneNumber(phoneNumber),
             name = name,
             birthDate = birthDate,

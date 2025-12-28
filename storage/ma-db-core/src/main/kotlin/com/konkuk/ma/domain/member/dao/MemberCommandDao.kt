@@ -14,6 +14,7 @@ class MemberCommandDao {
             row[password] = newMember.password
             row[nickname] = newMember.nickname
             row[phoneNumber] = newMember.phoneNumber.fullNumber
+            row[gender] = newMember.gender.name
             row[name] = newMember.name
             row[region] = newMember.region.name
             row[birthDate] = newMember.birthDate

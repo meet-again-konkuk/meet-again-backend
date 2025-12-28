@@ -10,7 +10,7 @@ class TargetInfoCommandDao {
     fun save(newTargetInfo: NewTargetInfo): Long {
         return TargetInfoTable.insertAndGetId {
             it[registerEmail] = newTargetInfo.registerEmail
-            it[name] = newTargetInfo.name
+            it[name] = newTargetInfo.targetName
             it[middleNumber] = newTargetInfo.middleNumber
             it[lastNumber] = newTargetInfo.lastNumber
             it[year] = newTargetInfo.year?.value

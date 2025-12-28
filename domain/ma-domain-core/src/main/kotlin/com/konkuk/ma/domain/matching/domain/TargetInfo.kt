@@ -1,14 +1,22 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Day
+import com.konkuk.ma.domain.common.domain.Month
+import com.konkuk.ma.domain.common.domain.Year
 import com.konkuk.ma.domain.member.domain.Region
-import java.time.LocalDate
 
 class TargetInfo(
     val targetInfoId: Long,
-    val memberId: Long,
-    val name: String,
-    val phoneNumber: String?,
-    val birthDate: LocalDate?,
+    val registerEmail: String,
+
+    val targetName: String,
+
+    val middleNumber: String?,
+    val lastNumber: String?,
+
+    val year: Year?,
+    val month: Month?,
+    val day: Day?,
+
     val region: Region?
-) {
-}
+)

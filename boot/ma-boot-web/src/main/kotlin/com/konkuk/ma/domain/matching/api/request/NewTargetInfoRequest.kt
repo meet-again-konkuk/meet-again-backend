@@ -26,7 +26,7 @@ class NewTargetInfoRequest(
     fun toNewTargetInfo(registerEmail: String): NewTargetInfo {
         return NewTargetInfo(
             registerEmail = registerEmail,
-            name = name,
+            targetName = name,
             middleNumber = middleNumber,
             lastNumber = lastNumber,
             year = year?.let { Year(it) },
