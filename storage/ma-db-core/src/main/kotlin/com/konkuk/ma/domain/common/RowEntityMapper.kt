@@ -12,6 +12,7 @@ object RowEntityMapper {
         email = row[MemberTable.email],
         password = row[MemberTable.password],
         nickname = row[MemberTable.nickname],
+        gender = enumValueOf(row[MemberTable.gender]),
         phoneNumber = row[MemberTable.phoneNumber],
         name = row[MemberTable.name],
         region = enumValueOf(row[MemberTable.region]),
