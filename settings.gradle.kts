@@ -1,6 +1,7 @@
 rootProject.name = "meet-again"
 
 include("boot:ma-boot-web")
+include("boot:ma-boot-batch")
 include("domain:ma-domain-core")
 include("infrastructure:storage:ma-db-core")
 include("infrastructure:storage:ma-redis-core")

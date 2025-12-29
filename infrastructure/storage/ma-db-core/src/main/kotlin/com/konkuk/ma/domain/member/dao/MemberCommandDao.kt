@@ -9,19 +9,19 @@ import org.springframework.stereotype.Component
 class MemberCommandDao {
     
     fun save(newMember: NewMember): Long {
-        return MemberTable.insertAndGetId { row ->
-            row[email] = newMember.email
-            row[password] = newMember.password
-            row[nickname] = newMember.nickname
-            row[phoneNumber] = newMember.phoneNumber.fullNumber
-            row[gender] = newMember.gender.name
-            row[name] = newMember.name
-            row[region] = newMember.region.name
-            row[birthDate] = newMember.birthDate
-            row[highSchool] = newMember.highSchool
-            row[university] = newMember.university
-            row[createdBy] = newMember.email
-            row[lastModifiedBy] = newMember.email
+        return MemberTable.insertAndGetId {
+            it[email] = newMember.email
+            it[password] = newMember.password
+            it[nickname] = newMember.nickname
+            it[phoneNumber] = newMember.phoneNumber.fullNumber
+            it[gender] = newMember.gender.name
+            it[name] = newMember.name
+            it[region] = newMember.region.name
+            it[birthDate] = newMember.birthDate
+            it[highSchool] = newMember.highSchool
+            it[university] = newMember.university
+            it[createdBy] = newMember.email
+            it[lastModifiedBy] = newMember.email
         }.value
     }
 } 
