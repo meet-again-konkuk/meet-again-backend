@@ -1,0 +1,64 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 찾는 사람 정보 등록 API
+
+== 찾는 사람 정보 등록
+
+로그인한 사용자가 찾고자 하는 사람의 정보를 등록합니다.
+
+=== 요청 (모든 정보 입력)
+
+include::{snippets}/matching/register-target-info/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/matching/register-target-info/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/register-target-info/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/matching/register-target-info/response-fields.adoc[]
+
+== 찾는 사람 정보 등록 (필수 정보만)
+
+이름만 입력하고 나머지는 선택 항목입니다.
+
+=== 요청
+
+include::{snippets}/matching/register-target-info-minimal/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/matching/register-target-info-minimal/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/register-target-info-minimal/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/matching/register-target-info-minimal/response-fields.adoc[]
+
+== 실패 케이스
+
+=== 유효하지 않은 이름 형식
+
+include::{snippets}/matching/register-target-info-invalid-name/http-request.adoc[]
+
+include::{snippets}/matching/register-target-info-invalid-name/http-response.adoc[]
+
+=== 유효하지 않은 생년월일
+
+include::{snippets}/matching/register-target-info-invalid-date/http-request.adoc[]
+
+include::{snippets}/matching/register-target-info-invalid-date/http-response.adoc[]
+
+

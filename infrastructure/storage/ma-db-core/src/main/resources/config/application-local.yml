@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mariadb://localhost:3317/appdb?rewriteBatchedStatements=true
+    username: appuser
+    password: AppUserPass
+    driver-class-name: org.mariadb.jdbc.Driver
