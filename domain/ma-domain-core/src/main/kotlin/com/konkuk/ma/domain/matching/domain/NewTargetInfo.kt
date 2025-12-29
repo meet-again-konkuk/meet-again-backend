@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.matching.domain
 import com.konkuk.ma.domain.common.domain.Day
 import com.konkuk.ma.domain.common.domain.Month
 import com.konkuk.ma.domain.common.domain.Year
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 
 class NewTargetInfo(
@@ -16,4 +17,10 @@ class NewTargetInfo(
     val day: Day?,
 
     val region: Region?
-)
+) {
+    lateinit var targetGender: Gender
+
+    fun registerTargetGender(gender: Gender) {
+        this.targetGender = gender
+    }
+}

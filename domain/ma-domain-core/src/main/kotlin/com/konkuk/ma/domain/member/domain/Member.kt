@@ -49,4 +49,8 @@ class Member(
         }
         return true
     }
+
+    fun getOtherGender(): Gender {
+        return gender.getOtherGender();
+    }
 } 

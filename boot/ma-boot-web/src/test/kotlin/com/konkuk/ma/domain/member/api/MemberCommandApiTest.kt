@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.member.application.MemberCommandService
 import com.konkuk.ma.domain.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
@@ -36,6 +37,7 @@ class MemberCommandApiTest(
             "password" to "password123",
             "phoneNumber" to "01012345678",
             "nickname" to "testuser",
+            "gender" to Gender.MALE.name,
             "name" to "김테스트",
             "birthDate" to "1990-01-01",
             "region" to "SEOUL",
@@ -49,6 +51,7 @@ class MemberCommandApiTest(
                     email = "test@example.com",
                     password = "password123",
                     nickname = "testuser",
+                    gender = Gender.MALE,
                     phoneNumber = "01012345678",
                     name = "김테스트",
                     birthDate = LocalDate.of(1990, 1, 1),
@@ -76,6 +79,7 @@ class MemberCommandApiTest(
                     "password" responseType STRING means "비밀번호",
                     "phoneNumber" responseType STRING means "휴대폰 번호",
                     "nickname" responseType STRING means "닉네임",
+                    "gender" responseType STRING means "성별",
                     "name" responseType STRING means "이름",
                     "birthDate" responseType STRING means "생년월일",
                     "region" responseType STRING means "거주 지역",

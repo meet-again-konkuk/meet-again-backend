@@ -78,7 +78,7 @@ class TargetInfoCommandApiTest(
                 ),
                 responseBody(
                     "targetInfoId" responseType NUMBER means "등록된 찾는 사람 정보 ID",
-                    "email" responseType STRING means "등록자 email"
+                    "registerEmail" responseType STRING means "등록자 email"
                 )
             )
     }
@@ -133,7 +133,7 @@ class TargetInfoCommandApiTest(
                 ),
                 responseBody(
                     "targetInfoId" responseType NUMBER means "등록된 찾는 사람 정보 ID",
-                    "email" responseType STRING means "등록자 email"
+                    "registerEmail" responseType STRING means "등록자 email"
                 )
             )
     }
