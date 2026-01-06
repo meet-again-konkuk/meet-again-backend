@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.HasCursorId
 import com.konkuk.ma.domain.common.domain.Day
 import com.konkuk.ma.domain.common.domain.Month
 import com.konkuk.ma.domain.common.domain.Year
@@ -20,4 +21,7 @@ class TargetInfo(
     val day: Day?,
 
     val region: Region?
-)
+) : HasCursorId<Long> {
+    override val cursorId: Long
+        get() = targetInfoId
+}
