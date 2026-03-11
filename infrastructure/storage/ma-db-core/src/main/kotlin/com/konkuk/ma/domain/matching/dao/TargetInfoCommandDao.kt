@@ -12,8 +12,8 @@ class TargetInfoCommandDao {
             it[registerEmail] = newTargetInfo.registerEmail
             it[name] = newTargetInfo.targetName
             it[targetGender] = newTargetInfo.targetGender.name
-            it[middleNumber] = newTargetInfo.middleNumber
-            it[lastNumber] = newTargetInfo.lastNumber
+            it[middleNumber] = newTargetInfo.middleNumber?.value
+            it[lastNumber] = newTargetInfo.lastNumber?.value
             it[year] = newTargetInfo.year?.value
             it[month] = newTargetInfo.month?.value
             it[day] = newTargetInfo.day?.value

@@ -2,7 +2,7 @@ package com.konkuk.ma.domain.common.domain
 
 import java.time.LocalDate
 
-class Year(
+data class Year(
     val value: Int
 ) {
     init {

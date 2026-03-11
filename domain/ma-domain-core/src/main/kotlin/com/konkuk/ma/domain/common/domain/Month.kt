@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.common.domain
 
-class Month(
+data class Month(
     val value: Int,
 ) {
     init {

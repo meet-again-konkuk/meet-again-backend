@@ -4,8 +4,8 @@ class PhoneNumber(
     phoneNumber: String,
 ) {
     val firstNumber: String
-    val middleNumber: String
-    val lastNumber: String
+    val middleNumber: FourDigit
+    val lastNumber: FourDigit
     val formatted: String get() = "$firstNumber-$middleNumber-$lastNumber"
     val fullNumber: String get() = "$firstNumber$middleNumber$lastNumber"
 
@@ -15,8 +15,8 @@ class PhoneNumber(
         require(normalized.startsWith(ALLOWED_PREFIX)) { "앞자리는 010만 허용됩니다." }
 
         firstNumber = normalized.take(3)
-        lastNumber = normalized.takeLast(4)
-        middleNumber = normalized.substring(3, normalized.length - 4)
+        lastNumber = FourDigit(normalized.takeLast(4))
+        middleNumber = FourDigit(normalized.substring(3, normalized.length - 4))
     }
 
     companion object {

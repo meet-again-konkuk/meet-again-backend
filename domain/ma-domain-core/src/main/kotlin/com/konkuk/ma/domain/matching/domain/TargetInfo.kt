@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.HasCursorId
 import com.konkuk.ma.domain.common.domain.Day
 import com.konkuk.ma.domain.common.domain.Month
 import com.konkuk.ma.domain.common.domain.Year
+import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 
@@ -13,8 +14,8 @@ class TargetInfo(
     val targetName: String,
     val targetGender: Gender,
 
-    val middleNumber: String?,
-    val lastNumber: String?,
+    val middleNumber: FourDigit?,
+    val lastNumber: FourDigit?,
 
     val year: Year?,
     val month: Month?,
@@ -24,4 +25,31 @@ class TargetInfo(
 ) : HasCursorId<Long> {
     override val cursorId: Long
         get() = targetInfoId
+
+    fun makeMatchingResults(targets: List<Target>): List<MatchingResult> {
+        return targets.map { makeMatchingResult(it) }
+    }
+
+    fun makeMatchingResult(target: Target): MatchingResult {
+        val middleNumberMatched = middleNumber == target.middleNumber
+        val lastNumberMatched = lastNumber == target.lastNumber
+
+        val yearMatched = year == target.year
+        val monthMatched = month == target.month
+        val dayMatched = day == target.day
+
+        val regionMatched = region == target.region
+
+        return MatchingResult(
+            registerEmail,
+            targetInfoId,
+            target.email,
+            middleNumberMatched,
+            lastNumberMatched,
+            yearMatched,
+            monthMatched,
+            dayMatched,
+            regionMatched
+        )
+    }
 }

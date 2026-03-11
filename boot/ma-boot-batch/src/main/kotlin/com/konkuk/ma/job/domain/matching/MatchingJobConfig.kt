@@ -1,6 +1,7 @@
 package com.konkuk.ma.job.domain.matching
 
 import com.konkuk.ma.domain.matching.domain.MatchingResult
+import com.konkuk.ma.domain.matching.domain.Target
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
@@ -48,36 +49,33 @@ class MatchingJobConfig(
             readFunction = { cursorId, limit ->
                 targetInfoQueryRepository.findNoOffset(cursorId, limit)
             }
-        )
+        ) {}
     }
 
     @Bean
+    @StepScope
     fun matchingProcessor(): ItemProcessor<TargetInfo, List<MatchingResult>> {
         return ItemProcessor { targetInfo ->
             val members = memberQueryRepository.findByNameAndGender(targetInfo.targetName, targetInfo.targetGender)
-
-            members.filter { member ->
-                // 상세 조건 매칭
-                val yearMatch = targetInfo.year?.value?.let { it == member.birthDate.year } ?: true
-                val monthMatch = targetInfo.month?.value?.let { it == member.birthDate.monthValue } ?: true
-                val dayMatch = targetInfo.day?.value?.let { it == member.birthDate.dayOfMonth } ?: true
-                val regionMatch = targetInfo.region?.let { it == member.region } ?: true
-
-                // TODO: 전화번호 등 추가 매칭 로직
-                yearMatch && monthMatch && dayMatch && regionMatch
-            }.map { member ->
-                MatchingResult(targetInfo.targetInfoId, member.email)
-            }
+            val targets = members.map(Target::create)
+            targetInfo.makeMatchingResults(targets)
         }
     }
 
     @Bean
+    @StepScope
     fun matchingWriter(): ItemWriter<List<MatchingResult>> {
         return ItemWriter { chunk ->
-            // Chunk<List<MatchingResult>> -> Flatten -> List<MatchingResult>
             val flattenedResults = chunk.items.flatten()
-            if (flattenedResults.isNotEmpty()) {
-                matchingResultRepository.saveAll(flattenedResults)
+            val targetInfoIds = flattenedResults.map { it.targetInfoId }.distinct()
+            val existingKeys = matchingResultRepository.findExistingKeys(targetInfoIds)
+
+            val newResults = flattenedResults.filter { result ->
+                Triple(result.registerEmail, result.targetInfoId, result.targetEmail) !in existingKeys
+            }
+
+            if (newResults.isNotEmpty()) {
+                matchingResultRepository.saveAll(newResults)
             }
         }
     }

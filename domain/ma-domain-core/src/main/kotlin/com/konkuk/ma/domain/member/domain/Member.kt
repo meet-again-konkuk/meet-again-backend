@@ -1,5 +1,8 @@
 package com.konkuk.ma.domain.member.domain
 
+import com.konkuk.ma.domain.common.domain.Day
+import com.konkuk.ma.domain.common.domain.Month
+import com.konkuk.ma.domain.common.domain.Year
 import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
 import java.time.LocalDate
 
@@ -52,5 +55,17 @@ class Member(
 
     fun getOtherGender(): Gender {
         return gender.getOtherGender();
+    }
+
+    fun getYear(): Year {
+        return Year(birthDate.year)
+    }
+
+    fun getMonth(): Month {
+        return Month(birthDate.monthValue)
+    }
+
+    fun getDay(): Day {
+        return Day(birthDate.dayOfMonth)
     }
 } 

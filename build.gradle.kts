@@ -24,8 +24,13 @@ subprojects {
 		annotation("jakarta.persistence.Embeddable")
 	}
 
+	if (project.name != "ma-config-logging") {
+		dependencies {
+			implementation(project(":config:ma-config-logging"))
+		}
+	}
+
 	dependencies {
-		implementation(project(":config:ma-config-logging"))
 
 		// KoTest
 		testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.5")

@@ -46,8 +46,8 @@ class TargetInfoCommandApiTest(
                 match {
                     it.registerEmail == "test@example.com" &&
                     it.targetName == "김만남" &&
-                    it.middleNumber == "1234" &&
-                    it.lastNumber == "5678" &&
+                    it.middleNumber?.value == "1234" &&
+                    it.lastNumber?.value == "5678" &&
                     it.year?.value == 1995 &&
                     it.month?.value == 5 &&
                     it.day?.value == 15 &&
