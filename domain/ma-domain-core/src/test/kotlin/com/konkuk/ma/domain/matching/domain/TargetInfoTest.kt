@@ -8,11 +8,12 @@ import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Region
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 
 class TargetInfoTest : FunSpec({
 
-    context("TargetInfo.makeMatchingResult") {
+    context("TargetInfo.makeMatchingResults") {
 
         test("모든 비교 필드가 일치하면 모든 matched 플래그가 true") {
             val middle = FourDigit("1234")
@@ -41,11 +42,12 @@ class TargetInfoTest : FunSpec({
                 region = region
             )
 
-            val result = targetInfo.makeMatchingResult(target)
+            val results = targetInfo.makeMatchingResults(listOf(target))
+            results.data shouldHaveSize 1
 
+            val result = results.data.first()
             result.registerEmail shouldBe "register@example.com"
             result.targetEmail shouldBe "target@example.com"
-
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe true
             result.yearMatched shouldBe true
@@ -73,7 +75,7 @@ class TargetInfoTest : FunSpec({
                 region = Region.BUSAN
             )
 
-            val result = targetInfo.makeMatchingResult(target)
+            val result = targetInfo.makeMatchingResults(listOf(target)).data.first()
 
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe false
@@ -102,7 +104,7 @@ class TargetInfoTest : FunSpec({
                 region = Region.SEOUL
             )
 
-            val result = targetInfo.makeMatchingResult(target)
+            val result = targetInfo.makeMatchingResults(listOf(target)).data.first()
 
             result.middleNumberMatched shouldBe false
             result.lastNumberMatched shouldBe false
@@ -110,6 +112,20 @@ class TargetInfoTest : FunSpec({
             result.monthMatched shouldBe false
             result.dayMatched shouldBe false
             result.regionMatched shouldBe false
+        }
+
+        test("자기 자신과는 매칭되지 않는다") {
+            val targetInfo = TargetInfoFixture.create(
+                registerEmail = "same@example.com"
+            )
+
+            val selfTarget = TargetFixture.create(email = "same@example.com")
+            val otherTarget = TargetFixture.create(email = "other@example.com")
+
+            val results = targetInfo.makeMatchingResults(listOf(selfTarget, otherTarget))
+
+            results.data shouldHaveSize 1
+            results.data.first().targetEmail shouldBe "other@example.com"
         }
     }
 })

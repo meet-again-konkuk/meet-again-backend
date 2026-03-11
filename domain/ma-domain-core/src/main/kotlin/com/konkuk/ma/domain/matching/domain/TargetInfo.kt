@@ -26,11 +26,14 @@ class TargetInfo(
     override val cursorId: Long
         get() = targetInfoId
 
-    fun makeMatchingResults(targets: List<Target>): List<MatchingResult> {
-        return targets.map { makeMatchingResult(it) }
+    fun makeMatchingResults(targets: List<Target>): MatchingResults {
+        val results = targets
+            .filter { it.email != registerEmail }
+            .map { makeMatchingResult(it) }
+        return MatchingResults(results)
     }
 
-    fun makeMatchingResult(target: Target): MatchingResult {
+    private fun makeMatchingResult(target: Target): MatchingResult {
         val middleNumberMatched = middleNumber == target.middleNumber
         val lastNumberMatched = lastNumber == target.lastNumber
 

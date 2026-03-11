@@ -20,6 +20,10 @@ class MatchingResult(
     val matchingExpiryDate: LocalDateTime = LocalDateTime.now()
         .plusDays(210),
 ) {
+    fun uniqueKey(): Triple<String, Long, String> {
+        return Triple(registerEmail, targetInfoId, targetEmail)
+    }
+
     fun getRemainingDays(): Long {
         val now = LocalDate.now()
         return ChronoUnit.DAYS.between(now, showingExpiryDate)

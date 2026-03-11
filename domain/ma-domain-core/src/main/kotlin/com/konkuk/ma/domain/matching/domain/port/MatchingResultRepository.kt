@@ -1,8 +1,8 @@
 package com.konkuk.ma.domain.matching.domain.port
 
-import com.konkuk.ma.domain.matching.domain.MatchingResult
+import com.konkuk.ma.domain.matching.domain.MatchingResults
 
 interface MatchingResultRepository {
-    fun saveAll(matchingResults: List<MatchingResult>)
-    fun findExistingKeys(targetInfoIds: List<Long>): Set<Triple<String, Long, String>>
+    fun saveAll(matchingResults: MatchingResults)
+    fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults
 }

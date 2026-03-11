@@ -72,3 +72,14 @@ object TargetInfoTable : LongIdTable("target_info") {
 - Source: `boot/ma-boot-web/src/docs/asciidoc/`
 - Generated from test snippets to `src/main/resources/static/docs/`
 - Manual testing: HTTP files in `/http/web-api/`
+
+## OOP Principles
+
+코드 작성 시 다음 객체지향 원칙을 반드시 따른다:
+
+- **도메인 객체에 행위를 부여**: 외부에서 getter로 꺼내서 판단하지 말고, 객체 스스로 판단/행동하게 한다
+- **원시값 포장**: 도메인에서 의미 있는 값은 Value Object로 감싼다 (예: `FourDigit`, `Year`, `Month`)
+- **일급 컬렉션**: 컬렉션을 감싸는 도메인 객체를 활용하여 관련 로직을 응집시킨다. 멤버 변수명은 `val data`로 통일한다
+- **디미터 법칙**: `a.b.c.doSomething()` 같은 체이닝을 피하고, 직접 협력하는 객체에게만 메시지를 보낸다
+- **상태 검증은 객체 내부에서**: validation, 비교, 판단 로직은 해당 도메인 객체 안에 둔다
+- **팩토리 메서드 활용**: 복잡한 객체 생성은 `companion object`의 팩토리 메서드로 의도를 드러낸다
