@@ -4,11 +4,14 @@ import com.konkuk.ma.domain.common.domain.Day
 import com.konkuk.ma.domain.common.domain.Month
 import com.konkuk.ma.domain.common.domain.Year
 import com.konkuk.ma.domain.member.domain.FourDigit
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.Region
 
 class Target(
     val email: String,
+    val name: String,
+    val gender: Gender,
     val middleNumber: FourDigit,
     val lastNumber: FourDigit,
 
@@ -18,10 +21,16 @@ class Target(
 
     val region: Region
 ) {
+    fun matchesNameAndGender(name: String, gender: Gender): Boolean {
+        return this.name == name && this.gender == gender
+    }
+
     companion object {
         fun create(member: Member): Target {
             return Target(
                 email = member.email,
+                name = member.name,
+                gender = member.gender,
                 middleNumber = member.phoneNumber.middleNumber,
                 lastNumber = member.phoneNumber.lastNumber,
                 year = member.getYear(),

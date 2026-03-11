@@ -8,4 +8,5 @@ interface MemberQueryRepository {
     fun existsByEmail(email: String): Boolean
     fun findByEmail(email: String): Member
     fun findByNameAndGender(name: String, gender: Gender): List<Member>
+    fun findByNames(names: Set<String>): List<Member>
 }

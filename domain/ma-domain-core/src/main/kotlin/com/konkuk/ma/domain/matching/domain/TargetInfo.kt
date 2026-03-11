@@ -26,9 +26,9 @@ class TargetInfo(
     override val cursorId: Long
         get() = targetInfoId
 
-    fun makeMatchingResults(targets: List<Target>): MatchingResults {
+    fun makeMatchingResults(targets: Targets): MatchingResults {
         val results = targets
-            .filter { it.email != registerEmail }
+            .filterCandidates(targetName, targetGender)
             .map { makeMatchingResult(it) }
         return MatchingResults(results)
     }

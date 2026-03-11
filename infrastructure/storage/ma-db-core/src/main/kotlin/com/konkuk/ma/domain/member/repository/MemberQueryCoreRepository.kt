@@ -26,4 +26,9 @@ class MemberQueryCoreRepository(
     override fun findByNameAndGender(name: String, gender: Gender): List<Member> {
         TODO("Not yet implemented")
     }
+
+    override fun findByNames(names: Set<String>): List<Member> {
+        return memberQueryDao.findByNames(names)
+            .map { it.toDomain() }
+    }
 }

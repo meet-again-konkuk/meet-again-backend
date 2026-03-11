@@ -25,6 +25,13 @@ class MemberQueryDao {
             .firstOrNull() != null
     }
 
+    fun findByNames(names: Set<String>): List<MemberEntity> {
+        if (names.isEmpty()) return emptyList()
+        return MemberTable.selectAll()
+            .where { MemberTable.name inList names }
+            .map { RowEntityMapper.toMemberEntity(it) }
+    }
+
     fun findByEmail(email: String): MemberEntity {
         return MemberTable.selectAll()
             .where { (MemberTable.email eq email) }

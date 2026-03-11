@@ -1,48 +1,53 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Day
-import com.konkuk.ma.domain.common.domain.Month
-import com.konkuk.ma.domain.common.domain.Year
-import com.konkuk.ma.domain.matching.fixture.TargetFixture
+import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.member.domain.FourDigit
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import java.time.LocalDate
 
 class TargetInfoTest : FunSpec({
 
     context("TargetInfo.makeMatchingResults") {
 
-        test("모든 비교 필드가 일치하면 모든 matched 플래그가 true") {
-            val middle = FourDigit("1234")
-            val last = FourDigit("5678")
-            val year = Year(1999)
-            val month = Month(12)
-            val day = Day(31)
-            val region = Region.SEOUL
-
+        test("이름과 성별이 일치하는 Target만 매칭된다") {
             val targetInfo = TargetInfoFixture.create(
-                middleNumber = middle,
-                lastNumber = last,
-                year = year,
-                month = month,
-                day = day,
-                region = region
+                targetName = "홍길동",
+                targetGender = Gender.MALE
             )
 
-            val target = TargetFixture.create(
-                email = "target@example.com",
-                middleNumber = middle,
-                lastNumber = last,
-                year = year,
-                month = month,
-                day = day,
-                region = region
+            val targets = Targets.from(listOf(
+                MemberFixture.create(name = "김철수", gender = Gender.MALE),
+                MemberFixture.create(name = "홍길동", gender = Gender.FEMALE),
+                MemberFixture.create(name = "홍길동", gender = Gender.MALE)
+            ))
+
+            val results = targetInfo.makeMatchingResults(targets)
+
+            results.data shouldHaveSize 1
+        }
+
+        test("모든 비교 필드가 일치하면 모든 matched 플래그가 true") {
+            val targetInfo = TargetInfoFixture.create(
+                middleNumber = FourDigit("1234"),
+                lastNumber = FourDigit("5678"),
+                region = Region.SEOUL
             )
 
-            val results = targetInfo.makeMatchingResults(listOf(target))
+            val targets = Targets.from(listOf(
+                MemberFixture.create(
+                    email = "target@example.com",
+                    phoneNumber = "01012345678",
+                    birthDate = LocalDate.of(1999, 12, 31),
+                    region = Region.SEOUL
+                )
+            ))
+
+            val results = targetInfo.makeMatchingResults(targets)
             results.data shouldHaveSize 1
 
             val result = results.data.first()
@@ -50,9 +55,6 @@ class TargetInfoTest : FunSpec({
             result.targetEmail shouldBe "target@example.com"
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe true
-            result.yearMatched shouldBe true
-            result.monthMatched shouldBe true
-            result.dayMatched shouldBe true
             result.regionMatched shouldBe true
         }
 
@@ -60,28 +62,21 @@ class TargetInfoTest : FunSpec({
             val targetInfo = TargetInfoFixture.create(
                 middleNumber = FourDigit("1234"),
                 lastNumber = FourDigit("5678"),
-                year = Year(1999),
-                month = Month(12),
-                day = Day(31),
                 region = Region.SEOUL
             )
 
-            val target = TargetFixture.create(
-                middleNumber = FourDigit("1234"),
-                lastNumber = FourDigit("9999"),
-                year = Year(1999),
-                month = Month(1),
-                day = Day(31),
-                region = Region.BUSAN
-            )
+            val targets = Targets.from(listOf(
+                MemberFixture.create(
+                    phoneNumber = "01012349999",
+                    birthDate = LocalDate.of(1999, 1, 31),
+                    region = Region.BUSAN
+                )
+            ))
 
-            val result = targetInfo.makeMatchingResults(listOf(target)).data.first()
+            val result = targetInfo.makeMatchingResults(targets).data.first()
 
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe false
-            result.yearMatched shouldBe true
-            result.monthMatched shouldBe false
-            result.dayMatched shouldBe true
             result.regionMatched shouldBe false
         }
 
@@ -95,16 +90,9 @@ class TargetInfoTest : FunSpec({
                 region = null
             )
 
-            val target = TargetFixture.create(
-                middleNumber = FourDigit("1234"),
-                lastNumber = FourDigit("5678"),
-                year = Year(1999),
-                month = Month(12),
-                day = Day(31),
-                region = Region.SEOUL
-            )
+            val targets = Targets.from(listOf(MemberFixture.create()))
 
-            val result = targetInfo.makeMatchingResults(listOf(target)).data.first()
+            val result = targetInfo.makeMatchingResults(targets).data.first()
 
             result.middleNumberMatched shouldBe false
             result.lastNumberMatched shouldBe false
@@ -112,20 +100,6 @@ class TargetInfoTest : FunSpec({
             result.monthMatched shouldBe false
             result.dayMatched shouldBe false
             result.regionMatched shouldBe false
-        }
-
-        test("자기 자신과는 매칭되지 않는다") {
-            val targetInfo = TargetInfoFixture.create(
-                registerEmail = "same@example.com"
-            )
-
-            val selfTarget = TargetFixture.create(email = "same@example.com")
-            val otherTarget = TargetFixture.create(email = "other@example.com")
-
-            val results = targetInfo.makeMatchingResults(listOf(selfTarget, otherTarget))
-
-            results.data shouldHaveSize 1
-            results.data.first().targetEmail shouldBe "other@example.com"
         }
     }
 })
