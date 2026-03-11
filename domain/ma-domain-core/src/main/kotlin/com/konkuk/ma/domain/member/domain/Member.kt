@@ -54,7 +54,7 @@ class Member(
     }
 
     fun getOtherGender(): Gender {
-        return gender.getOtherGender();
+        return gender.getOtherGender()
     }
 
     fun getYear(): Year {
