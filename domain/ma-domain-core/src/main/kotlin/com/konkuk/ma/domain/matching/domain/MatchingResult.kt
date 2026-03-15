@@ -20,6 +20,7 @@ class MatchingResult(
     val matchingExpiryDate: LocalDateTime = LocalDateTime.now()
         .plusDays(MATCHING_EXPIRY_DAYS),
 ) {
+    var status: MatchingResultStatus = MatchingResultStatus.SHOWING
 
     companion object {
         private const val SHOWING_EXPIRY_DAYS = 30L
