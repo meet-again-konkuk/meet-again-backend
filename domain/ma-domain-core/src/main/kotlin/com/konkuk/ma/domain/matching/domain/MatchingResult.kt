@@ -15,11 +15,17 @@ class MatchingResult(
     val dayMatched: Boolean,
     val regionMatched: Boolean,
     val showingExpiryDate: LocalDateTime = LocalDate.now()
-        .atTime(11, 0)
-        .plusDays(30),
+        .atTime(SHOWING_START_HOUR, 0)
+        .plusDays(SHOWING_EXPIRY_DAYS),
     val matchingExpiryDate: LocalDateTime = LocalDateTime.now()
-        .plusDays(210),
+        .plusDays(MATCHING_EXPIRY_DAYS),
 ) {
+
+    companion object {
+        private const val SHOWING_EXPIRY_DAYS = 30L
+        private const val MATCHING_EXPIRY_DAYS = 210L
+        private const val SHOWING_START_HOUR = 11
+    }
     fun uniqueKey(): Triple<String, Long, String> {
         return Triple(registerEmail, targetInfoId, targetEmail)
     }

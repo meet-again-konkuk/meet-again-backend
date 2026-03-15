@@ -37,14 +37,19 @@ class EmbeddedRedisConfig(
         return isRunning(executeGrepProcessCommand(redisPort))
     }
 
+    companion object {
+        private const val MIN_PORT = 10000
+        private const val MAX_PORT = 65535
+    }
+
     fun findAvailablePort(): Int {
-        for (port in 10000..65535) {
+        for (port in MIN_PORT..MAX_PORT) {
             val process = executeGrepProcessCommand(port)
             if (!isRunning(process)) {
                 return port
             }
         }
-        throw IllegalArgumentException("Not Found Available port: 10000 ~ 65535")
+        throw IllegalArgumentException("Not Found Available port: $MIN_PORT ~ $MAX_PORT")
     }
 
     @Throws(IOException::class)

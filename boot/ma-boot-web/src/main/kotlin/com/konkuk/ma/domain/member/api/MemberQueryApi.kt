@@ -38,6 +38,6 @@ class MemberQueryApi(
 
     @GetMapping("/{memberId}")
     fun getMember(@PathVariable("memberId") id: Long) {
-        println(id)
+        // TODO: 회원 조회 로직 구현
     }
 }
