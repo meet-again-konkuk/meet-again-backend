@@ -73,6 +73,13 @@ object TargetInfoTable : LongIdTable("target_info") {
 - Generated from test snippets to `src/main/resources/static/docs/`
 - Manual testing: HTTP files in `/http/web-api/`
 
+## Required Skills
+
+코드를 작성하거나 수정하는 모든 에이전트는 다음 스킬을 반드시 참조한다:
+
+- `clean-code` — Robert C. Martin의 Clean Code 원칙 (네이밍, 함수, 주석, 포매팅, 에러 핸들링)
+- `code-implementation-rules` — 이 프로젝트의 OOP 원칙과 구현 패턴 (도메인 행위 부여, 원시값 포장, 일급 컬렉션, 포트 규칙)
+
 ## OOP Principles
 
 코드 작성 시 다음 객체지향 원칙을 반드시 따른다:

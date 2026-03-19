@@ -23,7 +23,7 @@ class MatchingResultTest : FunSpec({
                 dayMatched = true,
                 regionMatched = true,
                 showingExpiryDate = expiryDate,
-                matchingExpiryDate = LocalDateTime.now().plusDays(210)
+                matchingExpiryDate = LocalDate.now().plusDays(210)
             )
 
             val remainingDays = result.getRemainingDays()
@@ -43,7 +43,7 @@ class MatchingResultTest : FunSpec({
                 dayMatched = true,
                 regionMatched = true,
                 showingExpiryDate = LocalDateTime.now().minusDays(1),
-                matchingExpiryDate = LocalDateTime.now().plusDays(210)
+                matchingExpiryDate = LocalDate.now().plusDays(210)
             )
 
             val remainingDays = result.getRemainingDays()
@@ -63,7 +63,7 @@ class MatchingResultTest : FunSpec({
                 dayMatched = true,
                 regionMatched = true,
                 showingExpiryDate = LocalDateTime.now(),
-                matchingExpiryDate = LocalDateTime.now().plusDays(210)
+                matchingExpiryDate = LocalDate.now().plusDays(210)
             )
 
             val remainingDays = result.getRemainingDays()

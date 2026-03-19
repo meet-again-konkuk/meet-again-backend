@@ -7,8 +7,12 @@ class MatchingResults(
         return data.map { it.targetInfoId }.distinct()
     }
 
+    private fun uniqueKeys(): Set<Pair<Long, String>> {
+        return data.map { it.uniqueKey() }.toSet()
+    }
+
     fun filterNew(existing: MatchingResults): MatchingResults {
-        val existingKeys = existing.data.map { it.uniqueKey() }.toSet()
+        val existingKeys = existing.uniqueKeys()
         return MatchingResults(data.filter { it.uniqueKey() !in existingKeys })
     }
 

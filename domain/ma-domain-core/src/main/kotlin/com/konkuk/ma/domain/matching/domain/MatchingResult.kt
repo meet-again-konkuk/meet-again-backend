@@ -17,7 +17,7 @@ class MatchingResult(
     val showingExpiryDate: LocalDateTime = LocalDate.now()
         .atTime(SHOWING_START_HOUR, 0)
         .plusDays(SHOWING_EXPIRY_DAYS),
-    val matchingExpiryDate: LocalDateTime = LocalDateTime.now()
+    val matchingExpiryDate: LocalDate = LocalDate.now()
         .plusDays(MATCHING_EXPIRY_DAYS),
 ) {
     var status: MatchingResultStatus = MatchingResultStatus.SHOWING
@@ -27,8 +27,8 @@ class MatchingResult(
         private const val MATCHING_EXPIRY_DAYS = 210L
         private const val SHOWING_START_HOUR = 11
     }
-    fun uniqueKey(): Triple<String, Long, String> {
-        return Triple(registerEmail, targetInfoId, targetEmail)
+    fun uniqueKey(): Pair<Long, String> {
+        return Pair(targetInfoId, targetEmail)
     }
 
     fun getRemainingDays(): Long {
