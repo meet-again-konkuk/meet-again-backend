@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.domain
 
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
-import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import com.konkuk.ma.domain.member.exception.PasswordMismatchException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec

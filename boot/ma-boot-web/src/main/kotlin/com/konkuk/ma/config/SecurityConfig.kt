@@ -31,7 +31,7 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/auth/refresh-token").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/sms/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/members/sign-up").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/members/duplicated-**").permitAll()
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/actuator/**").permitAll()

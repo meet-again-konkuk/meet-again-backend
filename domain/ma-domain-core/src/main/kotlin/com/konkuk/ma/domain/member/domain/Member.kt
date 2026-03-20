@@ -3,7 +3,7 @@ package com.konkuk.ma.domain.member.domain
 import com.konkuk.ma.domain.common.domain.Day
 import com.konkuk.ma.domain.common.domain.Month
 import com.konkuk.ma.domain.common.domain.Year
-import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import com.konkuk.ma.domain.member.exception.PasswordMismatchException
 import java.time.LocalDate
 

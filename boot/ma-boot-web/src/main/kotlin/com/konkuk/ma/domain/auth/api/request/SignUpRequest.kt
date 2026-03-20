@@ -1,6 +1,6 @@
-package com.konkuk.ma.domain.member.api.request
+package com.konkuk.ma.domain.auth.api.request
 
-import com.konkuk.ma.domain.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.auth.application.command.SignUpCommand
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import jakarta.validation.constraints.Email
@@ -47,8 +47,8 @@ class SignUpRequest(
 
     val university: String?,
 ) {
-    fun toCommand(): NewMemberCommand {
-        return NewMemberCommand(
+    fun toCommand(): SignUpCommand {
+        return SignUpCommand(
             email = this.email,
             password = this.password,
             nickname = this.nickname,

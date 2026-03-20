@@ -3,7 +3,7 @@ package com.konkuk.ma.job.common
 import org.springframework.beans.factory.annotation.Value
 import java.time.LocalDate
 
-class DateJobParameter {
+open class DateJobParameter {
     lateinit var inputDate: LocalDate
         private set
 

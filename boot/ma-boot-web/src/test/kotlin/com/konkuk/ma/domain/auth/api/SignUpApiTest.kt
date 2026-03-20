@@ -1,9 +1,9 @@
-package com.konkuk.ma.domain.member.api
+package com.konkuk.ma.domain.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.member.application.MemberCommandService
-import com.konkuk.ma.domain.member.application.command.NewMemberCommand
+import com.konkuk.ma.domain.auth.application.SignUpService
+import com.konkuk.ma.domain.auth.application.command.SignUpCommand
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.extension.NUMBER
@@ -21,12 +21,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
-@WebMvcTest(MemberCommandApi::class)
+@WebMvcTest(SignUpApi::class)
 @BaseApiTest
-class MemberCommandApiTest(
+class SignUpApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    @MockkBean private val memberCommandService: MemberCommandService
+    @MockkBean private val signUpService: SignUpService
 ) : FunSpec({
 
     test("signUp - 유효한 회원가입 요청시 성공한다") {
@@ -46,8 +46,8 @@ class MemberCommandApiTest(
         )
 
         every {
-            memberCommandService.signUp(
-                NewMemberCommand(
+            signUpService.signUp(
+                SignUpCommand(
                     email = "test@example.com",
                     password = "password123",
                     nickname = "testuser",
@@ -63,7 +63,7 @@ class MemberCommandApiTest(
         } returns memberId
 
         // When & Then
-        mockMvc.postJson("/api/members/sign-up")
+        mockMvc.postJson("/api/auth/sign-up")
         { content = mapper.writeValueAsString(request) }
             .andExpect {
                 status { isCreated() }
@@ -107,7 +107,7 @@ class MemberCommandApiTest(
         )
 
         // When & Then
-        mockMvc.postJson("/api/members/sign-up")
+        mockMvc.postJson("/api/auth/sign-up")
         { content = mapper.writeValueAsString(request) }
             .andExpect { status { isBadRequest() } }
             .andDocument(
@@ -135,7 +135,7 @@ class MemberCommandApiTest(
         )
 
         // When & Then
-        mockMvc.postJson("/api/members/sign-up")
+        mockMvc.postJson("/api/auth/sign-up")
         { content = mapper.writeValueAsString(request) }
             .andExpect { status { isBadRequest() } }
             .andDocument(
@@ -150,4 +150,4 @@ class MemberCommandApiTest(
                 )
             )
     }
-}) 
+})

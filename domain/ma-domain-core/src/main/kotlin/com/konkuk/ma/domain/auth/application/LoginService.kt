@@ -5,7 +5,7 @@ import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.RefreshTokenGenerator
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
-import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

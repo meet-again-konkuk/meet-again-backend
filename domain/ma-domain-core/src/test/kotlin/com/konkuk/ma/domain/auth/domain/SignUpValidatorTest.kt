@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.member.domain
+package com.konkuk.ma.domain.auth.domain
 
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
@@ -12,13 +12,13 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 
-class MemberValidatorTest : FunSpec({
+class SignUpValidatorTest : FunSpec({
 
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val smsRepository = mockk<SmsRepository>()
-    val memberValidator = MemberValidator(memberQueryRepository, smsRepository)
+    val signUpValidator = SignUpValidator(memberQueryRepository, smsRepository)
 
-    context("validateNewMember") {
+    context("validate") {
         test("모든 검증이 통과하면 예외가 발생하지 않는다") {
             // Given
             val newMember = NewMemberFixture.create()
@@ -28,7 +28,7 @@ class MemberValidatorTest : FunSpec({
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns true
 
             // When & Then
-            memberValidator.validateNewMember(newMember)
+            signUpValidator.validate(newMember)
         }
 
         test("중복된 닉네임이 있으면 예외가 발생한다") {
@@ -39,7 +39,7 @@ class MemberValidatorTest : FunSpec({
 
             // When & Then
             shouldThrow<DuplicateNicknameException> {
-                memberValidator.validateNewMember(newMember)
+                signUpValidator.validate(newMember)
             }.message shouldBe DuplicateNicknameException.MESSAGE
         }
 
@@ -52,7 +52,7 @@ class MemberValidatorTest : FunSpec({
 
             // When & Then
             shouldThrow<DuplicateEmailException> {
-                memberValidator.validateNewMember(newMember)
+                signUpValidator.validate(newMember)
             }.message shouldBe DuplicateEmailException.MESSAGE
         }
 
@@ -66,7 +66,7 @@ class MemberValidatorTest : FunSpec({
 
             // When & Then
             shouldThrow<SmsNotVerifiedException> {
-                memberValidator.validateNewMember(newMember)
+                signUpValidator.validate(newMember)
             }.message shouldBe SmsNotVerifiedException.MESSAGE
         }
 
@@ -80,7 +80,7 @@ class MemberValidatorTest : FunSpec({
 
             // When & Then
             shouldThrow<DuplicateNicknameException> {
-                memberValidator.validateNewMember(newMember)
+                signUpValidator.validate(newMember)
             }.message shouldBe DuplicateNicknameException.MESSAGE
         }
     }

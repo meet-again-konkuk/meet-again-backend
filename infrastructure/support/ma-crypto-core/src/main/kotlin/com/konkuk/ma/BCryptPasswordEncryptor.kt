@@ -1,6 +1,6 @@
 package com.konkuk.ma
 
-import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 

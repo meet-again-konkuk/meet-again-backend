@@ -1,13 +1,13 @@
-package com.konkuk.ma.domain.member.application.command
+package com.konkuk.ma.domain.auth.application.command
 
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.Region
-import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import java.time.LocalDate
 
-data class NewMemberCommand(
+data class SignUpCommand(
     val email: String,
     val password: String,
     val nickname: String,
