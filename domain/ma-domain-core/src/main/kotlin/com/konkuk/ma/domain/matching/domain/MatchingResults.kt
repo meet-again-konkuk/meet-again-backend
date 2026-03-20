@@ -7,13 +7,13 @@ class MatchingResults(
         return data.map { it.targetInfoId }.distinct()
     }
 
-    private fun uniqueKeys(): Set<Pair<Long, String>> {
-        return data.map { it.uniqueKey() }.toSet()
+    private fun createUniqueKeys(): Set<Pair<Long, String>> {
+        return data.map { it.createUniqueKey() }.toSet()
     }
 
     fun filterNew(existing: MatchingResults): MatchingResults {
-        val existingKeys = existing.uniqueKeys()
-        return MatchingResults(data.filter { it.uniqueKey() !in existingKeys })
+        val existingKeys = existing.createUniqueKeys()
+        return MatchingResults(data.filter { it.createUniqueKey() !in existingKeys })
     }
 
     companion object {

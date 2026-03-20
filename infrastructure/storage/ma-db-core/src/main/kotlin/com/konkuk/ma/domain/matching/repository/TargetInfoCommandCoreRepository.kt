@@ -3,13 +3,14 @@ package com.konkuk.ma.domain.matching.repository
 import com.konkuk.ma.domain.matching.dao.TargetInfoCommandDao
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoCommandRepository
+import com.konkuk.ma.domain.member.domain.Gender
 import org.springframework.stereotype.Repository
 
 @Repository
 class TargetInfoCommandCoreRepository(
     private val targetInfoCommandDao: TargetInfoCommandDao
 ) : TargetInfoCommandRepository {
-    override fun save(newTargetInfo: NewTargetInfo): Long {
-        return targetInfoCommandDao.save(newTargetInfo)
+    override fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long {
+        return targetInfoCommandDao.save(newTargetInfo, targetGender)
     }
 }

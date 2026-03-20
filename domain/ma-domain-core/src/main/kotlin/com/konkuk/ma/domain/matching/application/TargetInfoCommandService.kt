@@ -10,12 +10,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class TargetInfoCommandService(
     private val targetInfoCommandRepository: TargetInfoCommandRepository,
-
     private val memberQueryRepository: MemberQueryRepository
 ) {
     fun register(newTargetInfo: NewTargetInfo): Long {
         val member = memberQueryRepository.findByEmail(newTargetInfo.registerEmail)
-        newTargetInfo.registerTargetGender(member.getOtherGender())
-        return targetInfoCommandRepository.save(newTargetInfo)
+        return targetInfoCommandRepository.save(newTargetInfo, member.getOtherGender())
     }
 }

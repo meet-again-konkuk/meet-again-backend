@@ -2,7 +2,7 @@ package com.konkuk.ma.support.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
-import com.konkuk.ma.exception.AuthTokenException
+import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import com.konkuk.ma.support.payload.response.ApiError
 import com.konkuk.ma.support.payload.response.ErrorCode
 import jakarta.servlet.FilterChain

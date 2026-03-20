@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.member.dao
 import com.konkuk.ma.domain.common.RowEntityMapper
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import com.konkuk.ma.exception.EntityNotFoundException
 import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
@@ -38,6 +39,6 @@ class MemberQueryDao {
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
-            ?: throw IllegalArgumentException("해당 이메일로 등록된 사용자가 없습니다. email = $email")
+            ?: throw EntityNotFoundException("Member", "email", email)
     }
 }

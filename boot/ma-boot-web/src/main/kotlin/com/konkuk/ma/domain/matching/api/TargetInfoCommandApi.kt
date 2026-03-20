@@ -25,7 +25,7 @@ class TargetInfoCommandApi(
     ): NewTargetInfoResponse {
         val newTargetInfo = request.toNewTargetInfo(email)
         val targetInfoId = targetInfoCommandService.register(newTargetInfo)
-        
+
         return NewTargetInfoResponse(
             targetInfoId = targetInfoId,
             registerEmail = email

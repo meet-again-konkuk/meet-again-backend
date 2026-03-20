@@ -2,9 +2,9 @@ package com.konkuk.ma.auth
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
-import com.konkuk.ma.exception.AuthTokenException
+import com.konkuk.ma.domain.auth.exception.AuthTokenException
+import com.konkuk.ma.domain.auth.exception.JwtExceptionType
 import com.konkuk.ma.exception.BusinessException.LogLevel
-import com.konkuk.ma.exception.JwtExceptionType
 import com.konkuk.ma.logger
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException

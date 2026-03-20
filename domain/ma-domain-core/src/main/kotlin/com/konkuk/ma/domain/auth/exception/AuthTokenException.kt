@@ -1,5 +1,6 @@
-package com.konkuk.ma.exception
+package com.konkuk.ma.domain.auth.exception
 
+import com.konkuk.ma.exception.BusinessException
 import kotlin.reflect.KFunction
 
 class AuthTokenException(

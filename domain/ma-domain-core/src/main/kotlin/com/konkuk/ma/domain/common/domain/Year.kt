@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.common.domain
 
+import com.konkuk.ma.domain.common.exception.InvalidValueException
 import java.time.LocalDate
 
 data class Year(
@@ -8,7 +9,7 @@ data class Year(
     init {
         val currentYear = LocalDate.now().year
         if (value !in 1900..currentYear) {
-            throw IllegalArgumentException("Invalid Year. value must be between 1900 and $currentYear. value=$value")
+            throw InvalidValueException(Year::class, value, "1900~$currentYear 범위여야 합니다")
         }
     }
 }

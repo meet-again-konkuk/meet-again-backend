@@ -1,4 +1,4 @@
-package com.konkuk.ma.exception
+package com.konkuk.ma.domain.auth.exception
 
 enum class JwtExceptionType(val message: String) {
     EXPIRED("만료된 토큰입니다."),
@@ -25,5 +25,3 @@ enum class JwtExceptionType(val message: String) {
         return this == UNSUPPORTED || this == SIGNATURE || this == ILLEGAL_ARGUMENT || this == ETC
     }
 }
-
-

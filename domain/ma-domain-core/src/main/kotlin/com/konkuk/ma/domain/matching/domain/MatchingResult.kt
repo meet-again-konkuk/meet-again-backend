@@ -20,14 +20,12 @@ class MatchingResult(
     val matchingExpiryDate: LocalDate = LocalDate.now()
         .plusDays(MATCHING_EXPIRY_DAYS),
 ) {
-    var status: MatchingResultStatus = MatchingResultStatus.SHOWING
-
     companion object {
         private const val SHOWING_EXPIRY_DAYS = 30L
         private const val MATCHING_EXPIRY_DAYS = 210L
         private const val SHOWING_START_HOUR = 11
     }
-    fun uniqueKey(): Pair<Long, String> {
+    fun createUniqueKey(): Pair<Long, String> {
         return Pair(targetInfoId, targetEmail)
     }
 

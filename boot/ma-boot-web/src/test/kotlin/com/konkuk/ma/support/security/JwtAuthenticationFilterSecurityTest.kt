@@ -2,9 +2,9 @@ package com.konkuk.ma.support.security
 
 import com.konkuk.ma.config.SecurityConfig
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
-import com.konkuk.ma.exception.AuthTokenException
+import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import com.konkuk.ma.exception.BusinessException
-import com.konkuk.ma.exception.JwtExceptionType
+import com.konkuk.ma.domain.auth.exception.JwtExceptionType
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every

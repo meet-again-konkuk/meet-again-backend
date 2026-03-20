@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.domain.Day
 import com.konkuk.ma.domain.common.domain.Month
 import com.konkuk.ma.domain.common.domain.Year
 import com.konkuk.ma.domain.member.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.member.exception.PasswordMismatchException
 import java.time.LocalDate
 
 class Member(
@@ -48,7 +49,7 @@ class Member(
 
     fun matches(inputPassword: String, passwordEncryptor: PasswordEncryptor): Boolean {
         if (!passwordEncryptor.matches(inputPassword, password)) {
-            throw IllegalArgumentException("비밀번호가 올바르지 않습니다.")
+            throw PasswordMismatchException(email)
         }
         return true
     }
