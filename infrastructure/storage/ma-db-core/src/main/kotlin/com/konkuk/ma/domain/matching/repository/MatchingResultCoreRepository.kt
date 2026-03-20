@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.matching.dao.MatchingResultQueryDao
 import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 class MatchingResultCoreRepository(
@@ -17,5 +18,9 @@ class MatchingResultCoreRepository(
 
     override fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults {
         return MatchingResults(matchingResultQueryDao.findByTargetInfoIds(targetInfoIds))
+    }
+
+    override fun deleteExpiredMatchingResults(baseDate: LocalDate): Int {
+        return matchingResultCommandDao.deleteExpired(baseDate)
     }
 }
