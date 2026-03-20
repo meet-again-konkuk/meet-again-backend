@@ -4,7 +4,7 @@ import com.konkuk.ma.domain.common.HasCursorId
 import org.springframework.batch.item.ItemReader
 
 abstract class NoOffsetReader<T : HasCursorId<C>, C>(
-    private val chunkSize: Int = 1000,
+    private val readSize: Int = 1000,
     private val readFunction: (cursorId: C?, limit: Int) -> List<T>
 ) : ItemReader<T> {
 
@@ -17,7 +17,7 @@ abstract class NoOffsetReader<T : HasCursorId<C>, C>(
         if (finished) return null
 
         if (currentIndex >= currentList.size) {
-            currentList = readFunction(lastCursorId, chunkSize)
+            currentList = readFunction(lastCursorId, readSize)
 
             if (currentList.isEmpty()) {
                 finished = true

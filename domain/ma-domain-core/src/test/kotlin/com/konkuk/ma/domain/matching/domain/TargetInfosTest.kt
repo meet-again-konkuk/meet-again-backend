@@ -10,7 +10,7 @@ import io.kotest.matchers.shouldBe
 
 class TargetInfosTest : FunSpec({
 
-    context("targetNames") {
+    context("extractTargetNames") {
 
         test("중복 없이 targetName 목록을 반환한다") {
             val targetInfos = TargetInfos(
@@ -21,13 +21,13 @@ class TargetInfosTest : FunSpec({
                 )
             )
 
-            targetInfos.targetNames() shouldContainExactlyInAnyOrder setOf("홍길동", "김철수")
+            targetInfos.extractTargetNames() shouldContainExactlyInAnyOrder setOf("홍길동", "김철수")
         }
 
         test("빈 리스트이면 빈 Set을 반환한다") {
             val targetInfos = TargetInfos(emptyList())
 
-            targetInfos.targetNames() shouldHaveSize 0
+            targetInfos.extractTargetNames() shouldHaveSize 0
         }
 
         test("모든 targetName이 동일하면 하나만 반환한다") {
@@ -38,8 +38,8 @@ class TargetInfosTest : FunSpec({
                 )
             )
 
-            targetInfos.targetNames() shouldHaveSize 1
-            targetInfos.targetNames().first() shouldBe "홍길동"
+            targetInfos.extractTargetNames() shouldHaveSize 1
+            targetInfos.extractTargetNames().first() shouldBe "홍길동"
         }
     }
 

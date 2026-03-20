@@ -1,5 +1,6 @@
 package com.konkuk.ma.job.domain.matching
 
+import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.TargetInfos
 import com.konkuk.ma.domain.matching.domain.Targets
@@ -7,12 +8,13 @@ import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.job.common.AbstractJobConfig
-import com.konkuk.ma.job.common.NoOffsetReader
+import com.konkuk.ma.job.common.NoOffsetListReader
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.step.builder.StepBuilder
+import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -33,17 +35,18 @@ class MatchingJobConfig(
     @Bean
     fun matchingStep(): Step {
         return StepBuilder("matchingStep", jobRepository)
-            .chunk<TargetInfo, TargetInfo>(CHUNK_SIZE_100, transactionManager)
+            .chunk<List<TargetInfo>, MatchingResults>(CHUNK_SIZE_1, transactionManager)
             .reader(matchingReader())
+            .processor(matchingProcessor())
             .writer(matchingWriter())
             .build()
     }
 
     @Bean
     @StepScope
-    fun matchingReader(): NoOffsetReader<TargetInfo, Long> {
-        return object : NoOffsetReader<TargetInfo, Long>(
-            chunkSize = CHUNK_SIZE_100,
+    fun matchingReader(): NoOffsetListReader<TargetInfo, Long> {
+        return object : NoOffsetListReader<TargetInfo, Long>(
+            readSize = CHUNK_SIZE_100,
             readFunction = { cursorId, limit ->
                 targetInfoQueryRepository.findNoOffset(cursorId, limit)
             }
@@ -52,15 +55,23 @@ class MatchingJobConfig(
 
     @Bean
     @StepScope
-    fun matchingWriter(): ItemWriter<TargetInfo> {
-        return ItemWriter { chunk ->
-            val targetInfos = TargetInfos(chunk.items)
-            val targets = Targets.from(memberQueryRepository.findByNames(targetInfos.targetNames()))
+    fun matchingProcessor(): ItemProcessor<List<TargetInfo>, MatchingResults> {
+        return ItemProcessor { targetInfoList ->
+            val targetInfos = TargetInfos(targetInfoList)
+            val targets = Targets.from(memberQueryRepository.findByNames(targetInfos.extractTargetNames()))
             val matchingResults = targetInfos.makeMatchingResults(targets)
-
             val existing = matchingResultRepository.findExistingMatchingResults(matchingResults.targetInfoIds())
-            val newResults = matchingResults.filterNew(existing)
-            matchingResultRepository.saveAll(newResults)
+            matchingResults.filterNew(existing)
+        }
+    }
+
+    @Bean
+    @StepScope
+    fun matchingWriter(): ItemWriter<MatchingResults> {
+        return ItemWriter { chunk ->
+            chunk.items.forEach { matchingResults ->
+                matchingResultRepository.saveAll(matchingResults)
+            }
         }
     }
 }
