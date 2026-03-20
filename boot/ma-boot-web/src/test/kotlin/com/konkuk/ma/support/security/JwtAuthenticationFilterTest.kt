@@ -14,46 +14,49 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 class JwtAuthenticationFilterTest : FunSpec({
 
-    lateinit var tokenManager: TokenManager
-    lateinit var filter: JwtAuthenticationFilter
-    lateinit var mapper: ObjectMapper
+    val tokenManager = mockk<TokenManager>()
+    val mapper = mockk<ObjectMapper>()
+    val filter = JwtAuthenticationFilter(tokenManager, mapper)
 
     beforeTest {
-        tokenManager = mockk()
-        mapper = mockk()
-        filter = JwtAuthenticationFilter(tokenManager, mapper)
         SecurityContextHolder.clearContext()
     }
 
-    test("Authorization 헤더가 없으면 체인을 그대로 통과한다") {
-        val request = MockHttpServletRequest()
-        val response = MockHttpServletResponse()
-        var chainCalled = false
-        val chain = FilterChain { request, response -> chainCalled = true }
+    context("doFilter") {
 
-        filter.doFilter(request, response, chain)
+        test("Authorization 헤더가 없으면 체인을 그대로 통과한다") {
+            // Given
+            val request = MockHttpServletRequest()
+            val response = MockHttpServletResponse()
+            var chainCalled = false
+            val chain = FilterChain { _, _ -> chainCalled = true }
 
-        chainCalled.shouldBeTrue()
-    }
+            // When
+            filter.doFilter(request, response, chain)
 
-    test("유효한 토큰이면 이메일을 추출하고 체인을 통과한다") {
-        val jwt = "valid-jwt-token"
-        val email = "user@example.com"
-        every { tokenManager.getEmailFromToken(jwt) } returns email
-
-        val request = MockHttpServletRequest().apply {
-            addHeader("Authorization", "Bearer $jwt")
+            // Then
+            chainCalled.shouldBeTrue()
         }
-        val response = MockHttpServletResponse()
-        var chainCalled = false
-        val chain = FilterChain { request, response -> chainCalled = true }
 
-        filter.doFilter(request, response, chain)
+        test("유효한 토큰이면 이메일을 추출하고 체인을 통과한다") {
+            // Given
+            val jwt = "valid-jwt-token"
+            val email = "user@example.com"
+            every { tokenManager.getEmailFromToken(jwt) } returns email
 
-        chainCalled.shouldBeTrue()
-        // 구현에 따라 Authentication 설정 검증 (현재 구현은 이메일을 그대로 설정)
-        SecurityContextHolder.getContext().authentication.principal shouldBe email
+            val request = MockHttpServletRequest().apply {
+                addHeader("Authorization", "Bearer $jwt")
+            }
+            val response = MockHttpServletResponse()
+            var chainCalled = false
+            val chain = FilterChain { _, _ -> chainCalled = true }
+
+            // When
+            filter.doFilter(request, response, chain)
+
+            // Then
+            chainCalled.shouldBeTrue()
+            SecurityContextHolder.getContext().authentication.principal shouldBe email
+        }
     }
 })
-
-

@@ -5,7 +5,11 @@ import com.konkuk.ma.exception.BusinessException
 class DuplicateNicknameException(
     nickname: String
 ) : BusinessException(
-    message = "이미 사용중인 닉네임입니다.",
+    message = MESSAGE,
     dataMessage = "nickname: $nickname",
     logLevel = LogLevel.WARN
-)
+) {
+    companion object {
+        const val MESSAGE = "이미 사용중인 닉네임입니다."
+    }
+}

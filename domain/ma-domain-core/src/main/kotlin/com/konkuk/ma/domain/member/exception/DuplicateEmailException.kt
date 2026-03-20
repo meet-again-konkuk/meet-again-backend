@@ -5,7 +5,11 @@ import com.konkuk.ma.exception.BusinessException
 class DuplicateEmailException(
     email: String
 ) : BusinessException(
-    message = "이미 사용중인 이메일입니다.",
+    message = MESSAGE,
     dataMessage = "email: $email",
     logLevel = LogLevel.WARN
-)
+) {
+    companion object {
+        const val MESSAGE = "이미 사용중인 이메일입니다."
+    }
+}

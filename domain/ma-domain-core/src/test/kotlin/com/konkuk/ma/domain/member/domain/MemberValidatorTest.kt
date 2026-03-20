@@ -2,143 +2,86 @@ package com.konkuk.ma.domain.member.domain
 
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.domain.member.exception.DuplicateEmailException
+import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
+import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.domain.member.fixture.NewMemberFixture
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
 
 class MemberValidatorTest : FunSpec({
-    
+
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val smsRepository = mockk<SmsRepository>()
     val memberValidator = MemberValidator(memberQueryRepository, smsRepository)
-    
+
     context("validateNewMember") {
         test("모든 검증이 통과하면 예외가 발생하지 않는다") {
             // Given
-            val newMember = NewMember(
-                email = "test@example.com",
-                password = "password123",
-                nickname = "testuser",
-                gender = Gender.MALE,
-                phoneNumber = PhoneNumber("01012345678"),
-                name = "김테스트",
-                birthDate = LocalDate.of(1990, 1, 1),
-                highSchool = "테스트고등학교",
-                university = "테스트대학교",
-                region = Region.SEOUL
-            )
-            
-            every { memberQueryRepository.existsByNickname("testuser") } returns false
-            every { memberQueryRepository.existsByEmail("test@example.com") } returns false
-            every { smsRepository.getConfirmed("01012345678") } returns true
-            
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsByEmail(newMember.email) } returns false
+            every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns true
+
             // When & Then
             memberValidator.validateNewMember(newMember)
         }
-        
+
         test("중복된 닉네임이 있으면 예외가 발생한다") {
             // Given
-            val newMember = NewMember(
-                email = "test@example.com",
-                password = "password123",
-                nickname = "duplicated",
-                gender = Gender.MALE,
-                phoneNumber = PhoneNumber("01012345678"),
-                name = "김테스트",
-                birthDate = LocalDate.of(1990, 1, 1),
-                highSchool = null,
-                university = null,
-                region = Region.SEOUL
-            )
-            
-            every { memberQueryRepository.existsByNickname("duplicated") } returns true
-            
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns true
+
             // When & Then
-            val exception = shouldThrow<IllegalArgumentException> {
+            shouldThrow<DuplicateNicknameException> {
                 memberValidator.validateNewMember(newMember)
-            }
-            exception.message shouldBe "이미 사용중인 닉네임입니다."
+            }.message shouldBe DuplicateNicknameException.MESSAGE
         }
-        
+
         test("중복된 이메일이 있으면 예외가 발생한다") {
             // Given
-            val newMember = NewMember(
-                email = "duplicated@example.com",
-                password = "password123",
-                nickname = "testuser",
-                gender = Gender.MALE,
-                phoneNumber = PhoneNumber("01012345678"),
-                name = "김테스트",
-                birthDate = LocalDate.of(1990, 1, 1),
-                highSchool = null,
-                university = null,
-                region = Region.SEOUL
-            )
-            
-            every { memberQueryRepository.existsByNickname("testuser") } returns false
-            every { memberQueryRepository.existsByEmail("duplicated@example.com") } returns true
-            
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsByEmail(newMember.email) } returns true
+
             // When & Then
-            val exception = shouldThrow<IllegalArgumentException> {
+            shouldThrow<DuplicateEmailException> {
                 memberValidator.validateNewMember(newMember)
-            }
-            exception.message shouldBe "이미 사용중인 이메일입니다."
+            }.message shouldBe DuplicateEmailException.MESSAGE
         }
-        
+
         test("SMS 인증이 완료되지 않으면 예외가 발생한다") {
             // Given
-            val newMember = NewMember(
-                email = "test@example.com",
-                password = "password123",
-                nickname = "testuser",
-                gender = Gender.MALE,
-                phoneNumber = PhoneNumber("01012345678"),
-                name = "김테스트",
-                birthDate = LocalDate.of(1990, 1, 1),
-                highSchool = null,
-                university = null,
-                region = Region.SEOUL
-            )
-            
-            every { memberQueryRepository.existsByNickname("testuser") } returns false
-            every { memberQueryRepository.existsByEmail("test@example.com") } returns false
-            every { smsRepository.getConfirmed("01012345678") } returns false
-            
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsByEmail(newMember.email) } returns false
+            every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
+
             // When & Then
-            val exception = shouldThrow<IllegalArgumentException> {
+            shouldThrow<SmsNotVerifiedException> {
                 memberValidator.validateNewMember(newMember)
-            }
-            exception.message shouldBe "휴대폰 번호 인증이 완료되지 않았습니다."
+            }.message shouldBe SmsNotVerifiedException.MESSAGE
         }
-        
+
         test("여러 검증 실패 시 첫 번째 실패한 검증의 예외가 발생한다") {
             // Given
-            val newMember = NewMember(
-                email = "duplicated@example.com",
-                password = "password123",
-                nickname = "duplicated",
-                gender = Gender.MALE,
-                phoneNumber = PhoneNumber("01012345678"),
-                name = "김테스트",
-                birthDate = LocalDate.of(1990, 1, 1),
-                highSchool = null,
-                university = null,
-                region = Region.SEOUL
-            )
-            
-            every { memberQueryRepository.existsByNickname("duplicated") } returns true
-            every { memberQueryRepository.existsByEmail("duplicated@example.com") } returns true
-            every { smsRepository.getConfirmed("01012345678") } returns false
-            
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns true
+            every { memberQueryRepository.existsByEmail(newMember.email) } returns true
+            every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
+
             // When & Then
-            val exception = shouldThrow<IllegalArgumentException> {
+            shouldThrow<DuplicateNicknameException> {
                 memberValidator.validateNewMember(newMember)
-            }
-            // 닉네임 검증이 먼저 실행되므로 닉네임 관련 예외가 발생
-            exception.message shouldBe "이미 사용중인 닉네임입니다."
+            }.message shouldBe DuplicateNicknameException.MESSAGE
         }
     }
-}) 
+})
