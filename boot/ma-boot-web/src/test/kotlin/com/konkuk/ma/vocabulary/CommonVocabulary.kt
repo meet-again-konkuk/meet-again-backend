@@ -1,7 +1,6 @@
 package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.extension.BOOLEAN
-import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 
