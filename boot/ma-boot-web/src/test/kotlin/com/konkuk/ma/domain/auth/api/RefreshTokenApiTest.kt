@@ -6,12 +6,14 @@ import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.auth.api.request.RefreshTokenRequest
-import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.extension.responseType
+import com.konkuk.ma.vocabulary.accessToken
+import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.vocabulary.refreshToken
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -45,13 +47,13 @@ class RefreshTokenApiTest(
             .andDocument(
                 "auth-refresh-token",
                 requestBody(
-                    "refreshToken" responseType STRING means "기존 리프레시 토큰"
+                    refreshToken() means "기존 리프레시 토큰",
                 ),
                 responseBody(
-                    "email" responseType STRING means "이메일",
-                    "nickname" responseType STRING means "닉네임",
-                    "accessToken" responseType STRING means "새 액세스 토큰",
-                    "refreshToken" responseType STRING means "새 리프레시 토큰",
+                    email(),
+                    nickname(),
+                    accessToken() means "새 액세스 토큰",
+                    refreshToken() means "새 리프레시 토큰",
                 )
             )
     }
@@ -66,7 +68,7 @@ class RefreshTokenApiTest(
             .andDocument(
                 "auth-refresh-token-invalid",
                 requestBody(
-                    "refreshToken" responseType STRING means "빈 값 허용 안 함"
+                    refreshToken() means "빈 값 허용 안 함",
                 )
             )
     }

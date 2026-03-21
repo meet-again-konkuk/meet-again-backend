@@ -3,14 +3,13 @@ package com.konkuk.ma.domain.auth.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.application.SmsVerificationService
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.extension.BOOLEAN
-import com.konkuk.ma.extension.NUMBER
-import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.extension.responseType
+import com.konkuk.ma.vocabulary.phoneNumber
+import com.konkuk.ma.vocabulary.verificationCode
+import com.konkuk.ma.vocabulary.verified
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -45,7 +44,7 @@ class SmsVerificationApiTest(
             .andDocument(
                 "sms-send-verification-code",
                 requestBody(
-                    "phoneNumber" responseType STRING means "휴대폰 번호"
+                    phoneNumber(),
                 )
             )
     }
@@ -63,7 +62,7 @@ class SmsVerificationApiTest(
             .andDocument(
                 "sms-send-verification-code-invalid-phone",
                 requestBody(
-                    "phoneNumber" responseType STRING means "유효하지 않은 휴대폰 번호 형식"
+                    phoneNumber() means "유효하지 않은 휴대폰 번호 형식",
                 )
             )
     }
@@ -89,13 +88,13 @@ class SmsVerificationApiTest(
             .andDocument(
                 "sms-confirm-verification-code-success",
                 requestBody(
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "verificationCode" responseType NUMBER means "인증 코드"
+                    phoneNumber(),
+                    verificationCode(),
                 ),
                 responseBody(
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "verificationCode" responseType NUMBER means "인증 코드",
-                    "verified" responseType BOOLEAN means "인증 성공 여부"
+                    phoneNumber(),
+                    verificationCode(),
+                    verified(),
                 )
             )
     }
@@ -121,13 +120,13 @@ class SmsVerificationApiTest(
             .andDocument(
                 "sms-confirm-verification-code-failure",
                 requestBody(
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "verificationCode" responseType NUMBER means "잘못된 인증 코드"
+                    phoneNumber(),
+                    verificationCode() means "잘못된 인증 코드",
                 ),
                 responseBody(
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "verificationCode" responseType NUMBER means "인증 코드",
-                    "verified" responseType BOOLEAN means "인증 실패 여부"
+                    phoneNumber(),
+                    verificationCode(),
+                    verified() means "인증 실패 여부",
                 )
             )
     }
@@ -146,9 +145,9 @@ class SmsVerificationApiTest(
             .andDocument(
                 "sms-confirm-verification-code-invalid-phone",
                 requestBody(
-                    "phoneNumber" responseType STRING means "유효하지 않은 휴대폰 번호 형식",
-                    "verificationCode" responseType NUMBER means "인증 코드"
+                    phoneNumber() means "유효하지 않은 휴대폰 번호 형식",
+                    verificationCode(),
                 )
             )
     }
-}) 
+})

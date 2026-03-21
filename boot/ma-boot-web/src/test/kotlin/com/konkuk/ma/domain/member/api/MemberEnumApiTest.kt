@@ -1,11 +1,11 @@
 package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.extension.responseType
+import com.konkuk.ma.vocabulary.category
+import com.konkuk.ma.vocabulary.displayName
 import io.kotest.core.spec.style.FunSpec
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
@@ -28,8 +28,8 @@ class MemberEnumApiTest(
             .andDocument(
                 "get-region-enums",
                 responseBody(
-                    "[].category" responseType STRING means "지역 코드 (enum 이름)",
-                    "[].displayName" responseType STRING means "지역 한글명"
+                    category("[].category") means "지역 코드 (enum 이름)",
+                    displayName("[].displayName") means "지역 한글명",
                 )
             )
     }

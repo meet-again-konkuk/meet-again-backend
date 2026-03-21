@@ -6,12 +6,15 @@ import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.auth.api.request.LoginRequest
-import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.extension.responseType
+import com.konkuk.ma.vocabulary.accessToken
+import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.vocabulary.password
+import com.konkuk.ma.vocabulary.refreshToken
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -45,14 +48,14 @@ class LoginApiTest(
             .andDocument(
                 "auth-login",
                 requestBody(
-                    "email" responseType STRING means "이메일",
-                    "password" responseType STRING means "비밀번호"
+                    email(),
+                    password(),
                 ),
                 responseBody(
-                    "email" responseType STRING means "이메일",
-                    "nickname" responseType STRING means "닉네임",
-                    "accessToken" responseType STRING means "액세스 토큰",
-                    "refreshToken" responseType STRING means "새 리프레시 토큰",
+                    email(),
+                    nickname(),
+                    accessToken(),
+                    refreshToken(),
                 )
             )
     }
@@ -68,8 +71,8 @@ class LoginApiTest(
             .andDocument(
                 "auth-login-invalid-email",
                 requestBody(
-                    "email" responseType STRING means "잘못된 이메일 형식",
-                    "password" responseType STRING means "비밀번호"
+                    email() means "잘못된 이메일 형식",
+                    password(),
                 )
             )
     }

@@ -6,13 +6,22 @@ import com.konkuk.ma.domain.auth.application.SignUpService
 import com.konkuk.ma.domain.auth.application.command.SignUpCommand
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
-import com.konkuk.ma.extension.NUMBER
-import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.extension.responseType
+import com.konkuk.ma.vocabulary.birthDate
+import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.gender
+import com.konkuk.ma.vocabulary.highSchool
+import com.konkuk.ma.vocabulary.memberId
+import com.konkuk.ma.vocabulary.message
+import com.konkuk.ma.vocabulary.name
+import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.vocabulary.password
+import com.konkuk.ma.vocabulary.phoneNumber
+import com.konkuk.ma.vocabulary.region
+import com.konkuk.ma.vocabulary.university
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -75,22 +84,22 @@ class SignUpApiTest(
             .andDocument(
                 "sign-up",
                 requestBody(
-                    "email" responseType STRING means "이메일",
-                    "password" responseType STRING means "비밀번호",
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "nickname" responseType STRING means "닉네임",
-                    "gender" responseType STRING means "성별",
-                    "name" responseType STRING means "이름",
-                    "birthDate" responseType STRING means "생년월일",
-                    "region" responseType STRING means "거주 지역",
-                    "highSchool" responseType STRING means "고등학교",
-                    "university" responseType STRING means "대학교"
+                    email(),
+                    password(),
+                    phoneNumber(),
+                    nickname(),
+                    gender(),
+                    name(),
+                    birthDate(),
+                    region(),
+                    highSchool(),
+                    university(),
                 ),
                 responseBody(
-                    "memberId" responseType NUMBER means "회원 ID",
-                    "email" responseType STRING means "이메일",
-                    "nickname" responseType STRING means "닉네임",
-                    "message" responseType STRING means "응답 메시지"
+                    memberId(),
+                    email(),
+                    nickname(),
+                    message(),
                 )
             )
     }
@@ -113,12 +122,12 @@ class SignUpApiTest(
             .andDocument(
                 "sign-up-invalid-email",
                 requestBody(
-                    "email" responseType STRING means "잘못된 이메일 형식",
-                    "password" responseType STRING means "비밀번호",
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "nickname" responseType STRING means "닉네임",
-                    "name" responseType STRING means "이름",
-                    "birthDate" responseType STRING means "생년월일"
+                    email() means "잘못된 이메일 형식",
+                    password(),
+                    phoneNumber(),
+                    nickname(),
+                    name(),
+                    birthDate(),
                 )
             )
     }
@@ -141,12 +150,12 @@ class SignUpApiTest(
             .andDocument(
                 "sign-up-invalid-password",
                 requestBody(
-                    "email" responseType STRING means "이메일",
-                    "password" responseType STRING means "잘못된 비밀번호 형식",
-                    "phoneNumber" responseType STRING means "휴대폰 번호",
-                    "nickname" responseType STRING means "닉네임",
-                    "name" responseType STRING means "이름",
-                    "birthDate" responseType STRING means "생년월일"
+                    email(),
+                    password() means "잘못된 비밀번호 형식",
+                    phoneNumber(),
+                    nickname(),
+                    name(),
+                    birthDate(),
                 )
             )
     }

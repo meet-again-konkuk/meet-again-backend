@@ -2,13 +2,13 @@ package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.member.application.MemberQueryService
-import com.konkuk.ma.extension.BOOLEAN
-import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.extension.responseType
+import com.konkuk.ma.vocabulary.duplicated
+import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.nickname
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -39,11 +39,11 @@ class MemberQueryApiTest(
             .andDocument(
                 "check-duplicated-nickname",
                 requestBody(
-                    "nickname" responseType STRING means "회원 닉네임"
+                    nickname(),
                 ),
                 responseBody(
-                    "nickname" responseType STRING means "회원 닉네임",
-                    "duplicated" responseType BOOLEAN means "중복 여부"
+                    nickname(),
+                    duplicated(),
                 )
             )
     }
@@ -59,7 +59,7 @@ class MemberQueryApiTest(
             .andDocument(
                 "check-duplicated-nickname-invalid-format",
                 requestBody(
-                    "nickname" responseType STRING means "유효하지 않은 형식의 닉네임"
+                    nickname() means "유효하지 않은 형식의 닉네임",
                 )
             )
     }
@@ -80,11 +80,11 @@ class MemberQueryApiTest(
             .andDocument(
                 "check-duplicated-email",
                 requestBody(
-                    "email" responseType STRING means "회원 이메일"
+                    email(),
                 ),
                 responseBody(
-                    "email" responseType STRING means "회원 이메일",
-                    "duplicated" responseType BOOLEAN means "중복 여부"
+                    email(),
+                    duplicated(),
                 )
             )
     }
@@ -100,7 +100,7 @@ class MemberQueryApiTest(
             .andDocument(
                 "check-duplicated-email-invalid-format",
                 requestBody(
-                    "email" responseType STRING means "유효하지 않은 형식의 이메일"
+                    email() means "유효하지 않은 형식의 이메일",
                 )
             )
     }
