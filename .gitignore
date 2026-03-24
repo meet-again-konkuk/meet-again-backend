@@ -35,6 +35,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### Logs ###
+**/logs/
+
 ### HTTP Client ###
 http/
 *.http

@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.common.domain
+package com.konkuk.ma.domain.common.domain.date
 
 import com.konkuk.ma.domain.common.exception.InvalidValueException
 import java.time.LocalDate

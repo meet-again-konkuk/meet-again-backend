@@ -1,0 +1,34 @@
+package com.konkuk.ma.storage
+
+import com.konkuk.ma.domain.common.domain.file.PhotoFile
+import com.konkuk.ma.domain.common.domain.file.port.FileStorage
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.UUID
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
+
+@Component
+class LocalFileStorage(
+    @Value("\${file.upload.base-path:uploads}")
+    private val basePath: String
+) : FileStorage {
+
+    override fun store(directory: String, photoFile: PhotoFile): String {
+        val dir = Paths.get(basePath, directory)
+        Files.createDirectories(dir)
+
+        val storedFileName = "${UUID.randomUUID()}.${photoFile.extension.normalized}"
+        val targetPath = dir.resolve(storedFileName)
+        Files.write(targetPath, photoFile.content)
+
+        return targetPath.toString()
+    }
+
+    override fun delete(filePath: String) {
+        val path = Paths.get(filePath)
+        if (Files.exists(path)) {
+            Files.delete(path)
+        }
+    }
+}

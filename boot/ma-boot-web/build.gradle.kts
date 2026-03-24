@@ -25,6 +25,7 @@ dependencies {
 	runtimeOnly(project(":infrastructure:support:ma-jwt-core"))
 	runtimeOnly(project(":infrastructure:storage:ma-db-core"))
 	runtimeOnly(project(":infrastructure:storage:ma-redis-core"))
+	runtimeOnly(project(":infrastructure:support:ma-file-storage"))
 	testImplementation(project(":infrastructure:support:ma-jwt-core"))
 
 	// AsciiDocs

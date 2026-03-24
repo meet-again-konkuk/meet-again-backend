@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -41,6 +42,17 @@ class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<String> {
         val message = e.bindingResult.allErrors.firstOrNull()?.defaultMessage ?: "Invalid Request"
+        return ResponseEntity.badRequest().body(message)
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun handleMaxUploadSizeExceededException(e: MaxUploadSizeExceededException): ResponseEntity<String> {
+        val maxSize = e.maxUploadSize
+        val message = if (maxSize > 0) {
+            "파일 크기가 허용 한도(${maxSize / 1024 / 1024}MB)를 초과했습니다."
+        } else {
+            "파일 크기가 허용 한도를 초과했습니다."
+        }
         return ResponseEntity.badRequest().body(message)
     }
 
