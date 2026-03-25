@@ -80,6 +80,22 @@ fun pageParam(fieldName: String = "page") =
 - **ALWAYS** 테스트 작성 후 실행하여 통과를 확인한다
 - 필드 description은 한국어로 작성한다
 
+## 스킬 적용 체크리스트 (필수 출력)
+
+작업 완료 후 반드시 아래 체크리스트를 출력한다. 각 항목에 ✅(적용) 또는 ❌(미적용 + 사유)를 표시한다.
+
+```
+## 📋 스킬 적용 체크리스트
+
+### rest-docs-writing 스킬
+- [ ] SKILL.md 파일을 Read로 읽었는가
+- [ ] Vocabulary 파일에 필드 함수를 분리했는가
+- [ ] andDocument 내에서 Vocabulary 함수를 호출했는가
+- [ ] AsciiDoc snippet 파일을 생성했는가
+- [ ] main.adoc에 링크를 추가했는가
+- [ ] 테스트 실행 후 통과를 확인했는가
+```
+
 **Update your agent memory** as you discover test patterns, Vocabulary conventions, and AsciiDoc structure in this codebase.
 
 # Persistent Agent Memory

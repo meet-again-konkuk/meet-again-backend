@@ -1,5 +1,7 @@
 package com.konkuk.ma.domain.matching.api.request
 
+import com.konkuk.ma.support.validation.ValidationMessages
+import com.konkuk.ma.support.validation.ValidationPatterns
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -11,13 +13,13 @@ import jakarta.validation.constraints.Pattern
 
 class NewTargetInfoRequest(
     @field:NotBlank(message = "이름은 필수입니다.")
-    @field:Pattern(regexp = "^[가-힣]{2,10}$", message = "이름은 한글 2자 이상 10자 이하여야 합니다.")
+    @field:Pattern(regexp = ValidationPatterns.NAME, message = ValidationMessages.NAME_INVALID)
     val name: String,
 
-    @field:Pattern(regexp = "^\\d{4}$", message = "전화번호 중간자리는 4자리 숫자여야 합니다.")
+    @field:Pattern(regexp = ValidationPatterns.FOUR_DIGIT, message = ValidationMessages.FOUR_DIGIT_MIDDLE_INVALID)
     val middleNumber: String?,
 
-    @field:Pattern(regexp = "^\\d{4}$", message = "전화번호 뒷자리는 4자리 숫자여야 합니다.")
+    @field:Pattern(regexp = ValidationPatterns.FOUR_DIGIT, message = ValidationMessages.FOUR_DIGIT_LAST_INVALID)
     val lastNumber: String?,
 
     val year: Int?,

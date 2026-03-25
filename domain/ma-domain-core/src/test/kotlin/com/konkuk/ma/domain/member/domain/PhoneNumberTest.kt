@@ -11,26 +11,23 @@ class PhoneNumberTest : FunSpec({
             val phoneNumber = PhoneNumber("01012345678")
 
             phoneNumber.firstNumber shouldBe "010"
-            phoneNumber.middleNumber shouldBe "1234"
-            phoneNumber.lastNumber shouldBe "5678"
+            phoneNumber.middleNumber shouldBe FourDigit("1234")
+            phoneNumber.lastNumber shouldBe FourDigit("5678")
             phoneNumber.formatted shouldBe "010-1234-5678"
         }
 
-        test("유효한 10자리 휴대폰 번호(010)로 객체 생성 성공") {
-            val phoneNumber = PhoneNumber("0101234567")
-
-            phoneNumber.firstNumber shouldBe "010"
-            phoneNumber.middleNumber shouldBe "123"
-            phoneNumber.lastNumber shouldBe "4567"
-            phoneNumber.formatted shouldBe "010-123-4567"
+        test("10자리 휴대폰 번호는 중간번호가 3자리이므로 FourDigit 생성 실패") {
+            shouldThrow<IllegalArgumentException> {
+                PhoneNumber("0101234567")
+            }.message shouldBe "FourDigit는 4자리여야 합니다. value=123"
         }
 
         test("하이픈이 포함된 휴대폰 번호로 객체 생성 성공") {
             val phoneNumber = PhoneNumber("010-1234-5678")
 
             phoneNumber.firstNumber shouldBe "010"
-            phoneNumber.middleNumber shouldBe "1234"
-            phoneNumber.lastNumber shouldBe "5678"
+            phoneNumber.middleNumber shouldBe FourDigit("1234")
+            phoneNumber.lastNumber shouldBe FourDigit("5678")
             phoneNumber.formatted shouldBe "010-1234-5678"
         }
 
@@ -38,8 +35,8 @@ class PhoneNumberTest : FunSpec({
             val phoneNumber = PhoneNumber("010 1234 5678")
 
             phoneNumber.firstNumber shouldBe "010"
-            phoneNumber.middleNumber shouldBe "1234"
-            phoneNumber.lastNumber shouldBe "5678"
+            phoneNumber.middleNumber shouldBe FourDigit("1234")
+            phoneNumber.lastNumber shouldBe FourDigit("5678")
             phoneNumber.formatted shouldBe "010-1234-5678"
         }
 
@@ -47,8 +44,8 @@ class PhoneNumberTest : FunSpec({
             val phoneNumber = PhoneNumber("010- 1234 -5678")
 
             phoneNumber.firstNumber shouldBe "010"
-            phoneNumber.middleNumber shouldBe "1234"
-            phoneNumber.lastNumber shouldBe "5678"
+            phoneNumber.middleNumber shouldBe FourDigit("1234")
+            phoneNumber.lastNumber shouldBe FourDigit("5678")
             phoneNumber.formatted shouldBe "010-1234-5678"
         }
 

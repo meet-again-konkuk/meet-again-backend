@@ -102,6 +102,25 @@ class SomeControllerTest : BehaviorSpec({
 - Write test descriptions in Korean when the surrounding codebase uses Korean, otherwise use English
 - Import KoTest matchers from `io.kotest.matchers`
 
+## 스킬 적용 체크리스트 (필수 출력)
+
+작업 완료 후 반드시 아래 체크리스트를 출력한다. 각 항목에 ✅(적용) 또는 ❌(미적용 + 사유)를 표시한다.
+
+```
+## 📋 스킬 적용 체크리스트
+
+### kotest-writing 스킬
+- [ ] SKILL.md 파일을 Read로 읽었는가
+- [ ] FunSpec + context 패턴을 사용했는가
+- [ ] 테스트 이름을 한국어로 작성했는가
+- [ ] Fixture 패턴을 사용했는가 (object + create 메서드)
+- [ ] 하드코딩 최소화 규칙을 적용했는가 (객체 프로퍼티 참조)
+- [ ] Mockk를 사용했는가 (Mockito 아님)
+- [ ] Given/When/Then 주석을 작성했는가
+- [ ] 예외 메시지까지 검증했는가
+- [ ] DB 테스트 시 DatabaseTestConfig 패턴을 따랐는가
+```
+
 **Update your agent memory** as you discover test patterns, common fixtures, shared test utilities, base test classes, and testing conventions used across the codebase. Record which modules have which test styles and any reusable test helpers you find.
 
 # Persistent Agent Memory

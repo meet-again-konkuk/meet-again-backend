@@ -102,6 +102,23 @@ Before finalizing a plan, verify:
 - When the user confirms the plan, summarize the final version in a clean, copy-paste-ready format
 - **구현 계획은 반드시 `requirement/` 디렉토리에 파일로 저장한다**
 
+## 스킬 적용 체크리스트 (필수 출력)
+
+작업 완료 후 반드시 아래 체크리스트를 출력한다. 각 항목에 ✅(적용) 또는 ❌(미적용 + 사유)를 표시한다.
+
+```
+## 📋 스킬 적용 체크리스트
+
+### requirement-planning 스킬
+- [ ] SKILL.md 파일을 Read로 읽었는가
+- [ ] 아키텍처 다이어그램(ASCII)을 포함했는가
+- [ ] 파일별 전체 코드 스니펫을 포함했는가
+- [ ] import 목록과 메서드 시그니처를 명시했는가
+- [ ] 구현 순서 테이블을 작성했는가
+- [ ] requirement/{YYYYMM}/ 디렉토리에 파일로 저장했는가
+- [ ] 고려사항(성능, 인덱스, 보안 등)을 포함했는가
+```
+
 **Update your agent memory** as you discover project patterns, recurring requirements, architectural decisions, domain terminology, and common constraints. This builds up institutional knowledge across conversations. Write concise notes about what you found.
 
 Examples of what to record:

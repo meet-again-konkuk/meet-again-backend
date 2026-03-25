@@ -117,7 +117,7 @@ class SignUpApiTest(
             "email" to "test2@example.com",
             "password" to "password123",
             "phoneNumber" to "01098765432",
-            "nickname" to "testuser2",
+            "nickname" to "테스터2",
             "gender" to Gender.FEMALE.name,
             "name" to "이테스트",
             "birthDate" to "1995-06-15",
@@ -136,7 +136,7 @@ class SignUpApiTest(
                 SignUpCommand(
                     email = "test2@example.com",
                     password = "password123",
-                    nickname = "testuser2",
+                    nickname = "테스터2",
                     gender = Gender.FEMALE,
                     phoneNumber = "01098765432",
                     name = "이테스트",
@@ -158,7 +158,7 @@ class SignUpApiTest(
                 status { isCreated() }
                 jsonPath("$.memberId").value(memberId)
                 jsonPath("$.email").value("test2@example.com")
-                jsonPath("$.nickname").value("testuser2")
+                jsonPath("$.nickname").value("테스터2")
             }
             .andDocument(
                 "sign-up-without-photo",

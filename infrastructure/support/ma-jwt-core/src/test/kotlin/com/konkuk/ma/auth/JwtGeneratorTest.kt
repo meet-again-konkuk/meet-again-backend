@@ -1,9 +1,8 @@
 package com.konkuk.ma.auth
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
-import io.jsonwebtoken.ExpiredJwtException
+import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.security.Keys
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -96,7 +95,7 @@ class JwtGeneratorTest : FunSpec({
             Thread.sleep(500)
 
             // Then
-            shouldThrow<ExpiredJwtException> { generator.validateToken(refresh.token) }
+            shouldThrow<AuthTokenException> { generator.validateToken(refresh.token) }
             refresh.isExpired() shouldBe true
         }
     }
@@ -113,8 +112,8 @@ class JwtGeneratorTest : FunSpec({
             val invalidToken = "not-a-jwt"
 
             // When & Then
-            shouldThrow<MalformedJwtException> { generator.validateToken(invalidToken) }
-            shouldThrow<MalformedJwtException> { generator.getEmailFromToken(invalidToken) }
+            shouldThrow<AuthTokenException> { generator.validateToken(invalidToken) }
+            shouldThrow<AuthTokenException> { generator.getEmailFromToken(invalidToken) }
         }
 
         test("만료된 토큰은 검증에 실패하고, 이메일 추출 시 예외가 발생한다") {
@@ -132,8 +131,8 @@ class JwtGeneratorTest : FunSpec({
             Thread.sleep(200)
 
             // Then
-            shouldThrow<ExpiredJwtException> { generator.validateToken(token) }
-            shouldThrow<ExpiredJwtException> { generator.getEmailFromToken(token) }
+            shouldThrow<AuthTokenException> { generator.validateToken(token) }
+            shouldThrow<AuthTokenException> { generator.getEmailFromToken(token) }
         }
     }
 })

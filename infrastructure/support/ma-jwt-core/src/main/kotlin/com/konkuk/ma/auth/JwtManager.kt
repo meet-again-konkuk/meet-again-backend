@@ -79,10 +79,7 @@ class JwtManager(
     }
 
     override fun validateToken(token: String): Boolean {
-        Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
+        getClaimsFromToken(token)
         return true
     }
 
