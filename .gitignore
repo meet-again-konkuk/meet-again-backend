@@ -38,6 +38,16 @@ out/
 ### Logs ###
 **/logs/
 
+### Generated REST Docs ###
+**/src/main/resources/static/docs/
+
+### Claude Code ###
+.claude/agent-memory/
+.claude/settings.local.json
+
+### bkit ###
+.bkit/
+
 ### HTTP Client ###
 http/
 *.http
