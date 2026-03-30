@@ -1,0 +1,48 @@
+= 회원 Command API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 회원가입 API (사진 포함)
+
+회원가입 시 프로필 사진을 함께 업로드할 수 있습니다.
+요청은 `multipart/form-data` 형식이며, JSON 파트(`request`)와 파일 파트(`photo`)로 구성됩니다.
+
+=== 요청
+
+include::{snippets}/sign-up-with-photo/http-request.adoc[]
+
+=== 요청 파트
+
+include::{snippets}/sign-up-with-photo/request-parts.adoc[]
+
+=== 응답
+
+include::{snippets}/sign-up-with-photo/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/sign-up-with-photo/response-fields.adoc[]
+
+== 회원가입 API (사진 미포함)
+
+프로필 사진 없이 회원가입하는 경우입니다.
+
+=== 요청
+
+include::{snippets}/sign-up-without-photo/http-request.adoc[]
+
+=== 요청 파트
+
+include::{snippets}/sign-up-without-photo/request-parts.adoc[]
+
+=== 응답
+
+include::{snippets}/sign-up-without-photo/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/sign-up-without-photo/response-fields.adoc[]

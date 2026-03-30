@@ -18,10 +18,10 @@ Meet Again 서비스 Backend API 문서
 
 회원 도메인과 관련된 API 입니다.
 
-[[member-command]]
+[[sign-up]]
 === 회원가입
 
-* link:member/member-command.html[회원 Command API,window=_blank]
+* link:auth/sign-up.html[회원가입 API,window=_blank]
 
 [[member-query]]
 === 회원 조회

@@ -14,7 +14,6 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
-
 	// RestDocs 의존성 추가
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 
@@ -27,6 +26,7 @@ dependencies {
 	runtimeOnly(project(":infrastructure:storage:ma-redis-core"))
 	runtimeOnly(project(":infrastructure:support:ma-file-storage"))
 	testImplementation(project(":infrastructure:support:ma-jwt-core"))
+	testImplementation(testFixtures(project(":infrastructure:storage:ma-db-core")))
 
 	// AsciiDocs
 	val asciidoctorExt: Configuration by configurations.creating

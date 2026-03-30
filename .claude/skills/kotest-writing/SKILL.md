@@ -261,10 +261,113 @@ class SomeDaoTest(
 - 테스트 데이터는 `Table.insert { }` DSL로 직접 삽입 (Repository 사용 금지)
 - `init { }` 블록 안에 테스트 작성 (DatabaseTestConfig이 FunSpec 기반이므로)
 
+### Insert 헬퍼 함수 패턴
+DB 통합 테스트에서는 도메인 Fixture를 사용할 수 없다 (Exposed DSL로 직접 삽입해야 하므로). 대신 테스트 클래스 안에 `insertXxx()` 헬퍼 함수를 만들어 하드코딩 중복을 줄인다.
+
+```kotlin
+@DatabaseTest
+class MemberQueryDaoTest(
+    private val memberQueryDao: MemberQueryDao
+) : DatabaseTestConfig() {
+
+    // 관심 있는 필드만 파라미터로, 나머지는 기본값
+    private fun insertMember(
+        email: String = "test@example.com",
+        nickname: String = "testNickname"
+    ) {
+        MemberTable.insert {
+            it[MemberTable.email] = email
+            it[password] = "password123"
+            it[MemberTable.nickname] = nickname
+            it[gender] = "MALE"
+            it[phoneNumber] = "01012345678"
+            it[name] = "김테스트"
+            it[birthDate] = LocalDate.of(1990, 1, 1)
+            it[region] = "SEOUL"
+        }
+    }
+
+    init {
+        test("닉네임이 존재하는 경우 true를 반환한다") {
+            val nickname = "testNickname"
+            insertMember(nickname = nickname)  // 관심 필드만 전달
+
+            memberQueryDao.existsByNickname(nickname) shouldBe true
+        }
+    }
+}
+```
+
+핵심 원칙:
+- 도메인 Fixture의 `create()` 패턴과 동일한 아이디어 — 기본값 + 오버라이드
+- 테스트마다 `MemberTable.insert { ... }` 전체를 반복하지 않는다
+- 여러 테이블 insert가 필요하면 각 테이블별 헬퍼 함수를 만든다
+
 ### 주의사항
 - JPA의 `@Entity`, `@Repository` 어노테이션 사용 금지
 - `EntityManager`, `TestEntityManager` 사용 금지
 - Exposed의 `Table` 객체와 DSL 문법 사용
+
+## E2E 통합 테스트 (API → Service → Domain → Infrastructure)
+
+API부터 DB까지 전체 레이어를 관통하는 통합 테스트가 필요한 경우, `@SpringBootTest`와 실제 DB(인메모리 H2)를 사용한다.
+
+### 언제 작성하는가
+- 여러 레이어가 조합되어 동작하는 핵심 시나리오 검증 (예: 회원가입, 매칭 결과 조회)
+- Mock으로는 검증이 어려운 트랜잭션, 데이터 정합성 문제
+- 단위 테스트만으로는 확신이 부족한 복잡한 흐름
+
+### 설정 구조
+```kotlin
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@Transactional
+class SignUpIntegrationTest(
+    private val mockMvc: MockMvc,
+    private val mapper: ObjectMapper
+) : FunSpec() {
+
+    init {
+        test("회원가입 전체 흐름 - 요청부터 DB 저장까지") {
+            // Given
+            val request = mapOf(
+                "email" to "newuser@example.com",
+                "password" to "password123",
+                // ...
+            )
+
+            // When - 실제 API 호출
+            mockMvc.post("/api/auth/sign-up") {
+                contentType = MediaType.APPLICATION_JSON
+                content = mapper.writeValueAsString(request)
+            }
+
+            // Then - DB에서 실제 데이터 확인
+            val saved = MemberTable.select(MemberTable.email)
+                .where { MemberTable.email eq "newuser@example.com" }
+                .singleOrNull()
+
+            saved shouldNotBe null
+        }
+    }
+}
+```
+
+### 단위 테스트 vs E2E 통합 테스트 구분
+
+| 구분 | 단위 테스트 | E2E 통합 테스트 |
+|------|-----------|----------------|
+| 범위 | 클래스/메서드 1개 | API → Service → Domain → DB |
+| DB | Mock | 실제 인메모리 DB (H2) |
+| 속도 | 빠름 | 느림 |
+| 목적 | 로직 정확성 | 레이어 간 연결, 데이터 흐름 |
+| 파일 위치 | 각 모듈의 test/ | boot 모듈의 test/ |
+
+### 핵심 원칙
+- 단위 테스트가 기본이다. E2E는 핵심 시나리오에만 작성한다
+- `@Transactional`로 테스트 간 데이터 격리
+- 외부 서비스(SMS, 파일 스토리지 등)는 Mock 또는 테스트용 구현체 사용
+- E2E 테스트 파일명에 `IntegrationTest` 접미사 사용
 
 ## KoTest Matchers
 

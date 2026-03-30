@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile
 import redis.embedded.RedisServer
 
 @Configuration
-@Profile("local", "test")
+@Profile("local", "test", "integration-test")
 class EmbeddedRedisConfig(
     @Value("\${spring.data.redis.port}")
     private var redisPort: Int
