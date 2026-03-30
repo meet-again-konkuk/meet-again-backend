@@ -57,4 +57,137 @@ class MatchingResultTest : FunSpec({
             result.getRemainingDays() shouldBeGreaterThanOrEqual 0
         }
     }
+
+    context("MatchingResult.calculateMatchRate") {
+
+        test("전화번호 완전 + 생년월일 완전 + 지역 일치 시 99% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = true,
+                lastNumberMatched = true,
+                yearMatched = true,
+                monthMatched = true,
+                dayMatched = true,
+                regionMatched = true,
+            )
+
+            result.matchRate shouldBe 99
+        }
+
+        test("전화번호 완전 + 생년월일 완전 일치 시 97% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = true,
+                lastNumberMatched = true,
+                yearMatched = true,
+                monthMatched = true,
+                dayMatched = true,
+                regionMatched = false,
+            )
+
+            result.matchRate shouldBe 97
+        }
+
+        test("전화번호 완전 + 지역 일치 시 90% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = true,
+                lastNumberMatched = true,
+                yearMatched = false,
+                monthMatched = false,
+                dayMatched = false,
+                regionMatched = true,
+            )
+
+            result.matchRate shouldBe 90
+        }
+
+        test("전화번호 완전 일치만 있으면 85% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = true,
+                lastNumberMatched = true,
+                yearMatched = false,
+                monthMatched = false,
+                dayMatched = false,
+                regionMatched = false,
+            )
+
+            result.matchRate shouldBe 85
+        }
+
+        test("생년월일 완전 + 지역 일치 시 83% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = false,
+                lastNumberMatched = false,
+                yearMatched = true,
+                monthMatched = true,
+                dayMatched = true,
+                regionMatched = true,
+            )
+
+            result.matchRate shouldBe 83
+        }
+
+        test("생년월일 완전 일치만 있으면 80% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = false,
+                lastNumberMatched = false,
+                yearMatched = true,
+                monthMatched = true,
+                dayMatched = true,
+                regionMatched = false,
+            )
+
+            result.matchRate shouldBe 80
+        }
+
+        test("전화번호 부분(중간번호만) + 지역 일치 시 40% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = true,
+                lastNumberMatched = false,
+                yearMatched = false,
+                monthMatched = false,
+                dayMatched = false,
+                regionMatched = true,
+            )
+
+            result.matchRate shouldBe 40
+        }
+
+        test("생년월일 부분(연도+월만) 일치 시 20% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = false,
+                lastNumberMatched = false,
+                yearMatched = true,
+                monthMatched = true,
+                dayMatched = false,
+                regionMatched = false,
+            )
+
+            result.matchRate shouldBe 20
+        }
+
+        test("아무것도 일치하지 않으면 0% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = false,
+                lastNumberMatched = false,
+                yearMatched = false,
+                monthMatched = false,
+                dayMatched = false,
+                regionMatched = false,
+            )
+
+            result.matchRate shouldBe 0
+        }
+
+        test("전화번호 부분 + 생년월일 부분(연도만) + 지역 일치 시 50% 반환") {
+            val result = MatchingResultFixture.create(
+                middleNumberMatched = true,
+                lastNumberMatched = false,
+                yearMatched = true,
+                monthMatched = false,
+                dayMatched = false,
+                regionMatched = true,
+            )
+
+            result.matchRate shouldBe 50
+        }
+    }
 })
