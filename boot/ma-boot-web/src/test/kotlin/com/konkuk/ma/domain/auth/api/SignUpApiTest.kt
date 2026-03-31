@@ -15,6 +15,7 @@ import com.konkuk.ma.vocabulary.email
 import com.konkuk.ma.vocabulary.memberId
 import com.konkuk.ma.vocabulary.message
 import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.support.id.EncryptIdHolder
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -37,6 +38,7 @@ class SignUpApiTest(
     test("signUp - 유효한 회원가입 요청시 성공한다 (사진 포함)") {
         // Given
         val memberId = 1L
+        val encodedMemberId = EncryptIdHolder.idObfuscator.encode(memberId)
         val request = mapOf(
             "email" to "test@example.com",
             "password" to "password123",
@@ -90,7 +92,7 @@ class SignUpApiTest(
         }
             .andExpect {
                 status { isCreated() }
-                jsonPath("$.memberId").value(memberId)
+                jsonPath("$.memberId").value(encodedMemberId)
                 jsonPath("$.email").value("test@example.com")
                 jsonPath("$.nickname").value("testuser")
                 jsonPath("$.message").value("회원가입이 완료되었습니다.")
@@ -113,6 +115,7 @@ class SignUpApiTest(
     test("signUp - 사진 없이 회원가입 요청시 성공한다") {
         // Given
         val memberId = 2L
+        val encodedMemberId = EncryptIdHolder.idObfuscator.encode(memberId)
         val request = mapOf(
             "email" to "test2@example.com",
             "password" to "password123",
@@ -156,7 +159,7 @@ class SignUpApiTest(
         }
             .andExpect {
                 status { isCreated() }
-                jsonPath("$.memberId").value(memberId)
+                jsonPath("$.memberId").value(encodedMemberId)
                 jsonPath("$.email").value("test2@example.com")
                 jsonPath("$.nickname").value("테스터2")
             }

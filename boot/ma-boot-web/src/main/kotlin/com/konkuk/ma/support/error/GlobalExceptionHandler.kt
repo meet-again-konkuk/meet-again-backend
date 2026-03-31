@@ -1,6 +1,7 @@
 package com.konkuk.ma.support.error
 
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
+import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.domain.common.exception.InvalidValueException
 import com.konkuk.ma.domain.member.exception.DuplicateEmailException
 import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
@@ -36,6 +37,11 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidValueException::class, SmsNotVerifiedException::class)
     fun handleBadRequestException(e: BusinessException): ResponseEntity<String> {
+        return ResponseEntity.badRequest().body(e.message)
+    }
+
+    @ExceptionHandler(InvalidObfuscatedIdException::class)
+    fun handleInvalidObfuscatedId(e: InvalidObfuscatedIdException): ResponseEntity<String> {
         return ResponseEntity.badRequest().body(e.message)
     }
 

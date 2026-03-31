@@ -7,7 +7,7 @@ import com.konkuk.ma.extension.responseType
 // --- 매칭 관련 필드 ---
 
 fun targetInfoId(fieldName: String = "targetInfoId") =
-    fieldName responseType NUMBER means "찾는 사람 정보 ID" example "1"
+    fieldName responseType STRING means "찾는 사람 정보 ID (인코딩)" example "abc123"
 
 fun registerEmail(fieldName: String = "registerEmail") =
     fieldName responseType STRING means "등록자 email" example "test@example.com"

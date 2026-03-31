@@ -17,6 +17,7 @@ import com.konkuk.ma.vocabulary.targetInfoId
 import com.konkuk.ma.vocabulary.targetName
 import com.konkuk.ma.vocabulary.targetRegion
 import com.konkuk.ma.vocabulary.year
+import com.konkuk.ma.support.id.EncryptIdHolder
 import com.konkuk.ma.support.security.WithAuthMember
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
@@ -37,6 +38,7 @@ class TargetInfoCommandApiTest(
     test("찾는 사람 정보 등록 API 문서화") {
         // Given
         val targetInfoId = 1L
+        val encodedTargetInfoId = EncryptIdHolder.idObfuscator.encode(targetInfoId)
         val request = mapOf(
             "name" to "김만남",
             "middleNumber" to "1234",
@@ -68,7 +70,7 @@ class TargetInfoCommandApiTest(
         }
             .andExpect {
                 status { isCreated() }
-                jsonPath("$.targetInfoId").value(targetInfoId)
+                jsonPath("$.targetInfoId").value(encodedTargetInfoId)
                 jsonPath("$.name").value("김만남")
             }
             .andDocument(
@@ -92,6 +94,7 @@ class TargetInfoCommandApiTest(
     test("찾는 사람 정보 등록 - 필수 정보만 입력") {
         // Given
         val targetInfoId = 2L
+        val encodedTargetInfoId = EncryptIdHolder.idObfuscator.encode(targetInfoId)
         val request = mapOf(
             "name" to "이재회",
             "middleNumber" to null,
@@ -123,7 +126,7 @@ class TargetInfoCommandApiTest(
         }
             .andExpect {
                 status { isCreated() }
-                jsonPath("$.targetInfoId").value(targetInfoId)
+                jsonPath("$.targetInfoId").value(encodedTargetInfoId)
                 jsonPath("$.name").value("이재회")
             }
             .andDocument(

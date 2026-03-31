@@ -1,6 +1,9 @@
 package com.konkuk.ma.domain.auth.api.response
 
+import com.konkuk.ma.support.id.EncryptId
+
 class SignUpResponse(
+    @EncryptId
     val memberId: Long,
     val email: String,
     val nickname: String,

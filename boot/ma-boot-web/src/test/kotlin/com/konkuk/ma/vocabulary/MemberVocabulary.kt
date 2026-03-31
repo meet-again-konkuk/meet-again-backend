@@ -1,13 +1,12 @@
 package com.konkuk.ma.vocabulary
 
-import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 
 // --- 회원 관련 필드 ---
 
 fun memberId(fieldName: String = "memberId") =
-    fieldName responseType NUMBER means "회원 ID" example "1"
+    fieldName responseType STRING means "회원 ID (인코딩)" example "abc123"
 
 fun category(fieldName: String = "category") =
     fieldName responseType STRING means "enum 코드" example "SEOUL"

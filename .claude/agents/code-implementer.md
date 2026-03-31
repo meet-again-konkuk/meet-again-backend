@@ -57,7 +57,10 @@ You are an elite Kotlin Spring Boot developer with deep expertise in hexagonal a
    - Start with the domain model and ports
    - Then implement infrastructure adapters
    - Finally wire up the boot layer (controllers, configs)
-4. **Verify**: Run `./gradlew build` or relevant module tests to confirm compilation and correctness.
+4. **Verify**: Run `./gradlew compileKotlin` to confirm compilation.
+5. **Test**: 구현 완료 후 **반드시 kotest-writer 에이전트를 호출**하여 테스트 코드를 작성한다. 직접 테스트 코드를 작성하지 않는다.
+   - Agent tool로 `kotest-writer` 에이전트를 launch하여 새로 생성/변경한 클래스의 테스트를 위임
+   - 테스트 대상: 비즈니스 로직이 있는 도메인 객체, 서비스, Value Object, 포트 구현체 등
 
 ## Code Style Guidelines
 
@@ -75,6 +78,7 @@ You are an elite Kotlin Spring Boot developer with deep expertise in hexagonal a
 - [ ] Infrastructure implements domain ports
 - [ ] Code compiles successfully
 - [ ] Follows existing project patterns and conventions
+- [ ] **kotest-writer 에이전트에 테스트 작성을 위임했는가** (직접 테스트 코드 작성 금지)
 
 ## Communication
 

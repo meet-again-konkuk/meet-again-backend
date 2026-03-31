@@ -1,6 +1,7 @@
 package com.konkuk.ma.support.security
 
 import com.konkuk.ma.config.SecurityConfig
+import com.konkuk.ma.support.id.TestIdObfuscatorConfig
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import com.konkuk.ma.exception.BusinessException
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @WebMvcTest(TestProtectedController::class)
-@Import(SecurityConfig::class, JwtAuthenticationFilter::class, RoutingAwareEntryPoint::class)
+@Import(SecurityConfig::class, JwtAuthenticationFilter::class, RoutingAwareEntryPoint::class, TestIdObfuscatorConfig::class)
 class JwtAuthenticationFilterSecurityTest(
     private val mockMvc: MockMvc,
 
