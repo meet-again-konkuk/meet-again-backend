@@ -15,7 +15,8 @@ import com.konkuk.ma.vocabulary.email
 import com.konkuk.ma.vocabulary.memberId
 import com.konkuk.ma.vocabulary.message
 import com.konkuk.ma.vocabulary.nickname
-import com.konkuk.ma.support.id.EncryptIdHolder
+import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
+import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -32,13 +33,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 class SignUpApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
+    private val idObfuscator: IdObfuscator,
     @MockkBean private val signUpService: SignUpService
 ) : FunSpec({
 
     test("signUp - 유효한 회원가입 요청시 성공한다 (사진 포함)") {
         // Given
         val memberId = 1L
-        val encodedMemberId = EncryptIdHolder.idObfuscator.encode(memberId)
+        val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, memberId)
         val request = mapOf(
             "email" to "test@example.com",
             "password" to "password123",
@@ -115,7 +117,7 @@ class SignUpApiTest(
     test("signUp - 사진 없이 회원가입 요청시 성공한다") {
         // Given
         val memberId = 2L
-        val encodedMemberId = EncryptIdHolder.idObfuscator.encode(memberId)
+        val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, memberId)
         val request = mapOf(
             "email" to "test2@example.com",
             "password" to "password123",

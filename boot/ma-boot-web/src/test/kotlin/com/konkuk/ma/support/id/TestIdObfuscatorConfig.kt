@@ -1,19 +1,34 @@
 package com.konkuk.ma.support.id
 
-import com.konkuk.ma.domain.common.port.IdObfuscator
+import com.fasterxml.jackson.databind.AnnotationIntrospector
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 
-@Configuration
+@TestConfiguration
 class TestIdObfuscatorConfig {
 
     @Bean
-    fun idObfuscator(): IdObfuscator {
-        val obfuscator = HashidsIdObfuscator(
-            salt = "test-salt",
-            minLength = 8
+    @Primary
+    fun testIdObfuscator(): IdObfuscator {
+        return HashidsIdObfuscator(
+            baseSalt = "test-salt",
+            minLength = 12
         )
-        EncryptIdHolder.idObfuscator = obfuscator
-        return obfuscator
+    }
+
+    @Bean
+    fun testEncryptIdIntrospectorInit(
+        objectMapper: ObjectMapper,
+        idObfuscator: IdObfuscator
+    ): EncryptIdAnnotationIntrospector {
+        val introspector = EncryptIdAnnotationIntrospector(idObfuscator)
+        val existing = objectMapper.serializationConfig.annotationIntrospector
+        objectMapper.setAnnotationIntrospector(
+            AnnotationIntrospector.pair(introspector, existing)
+        )
+        return introspector
     }
 }

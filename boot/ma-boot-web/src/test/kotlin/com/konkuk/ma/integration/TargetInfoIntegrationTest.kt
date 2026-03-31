@@ -5,8 +5,8 @@ import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import java.time.LocalDate
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
-import java.time.LocalDate
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -109,7 +108,7 @@ class TargetInfoIntegrationTest(
                 .andReturn()
 
             val response = mapper.readTree(result.response.contentAsString)
-            response.get("targetInfoId").asLong() shouldBeGreaterThan 0L
+            response.get("targetInfoId").asText().isNotBlank() shouldBe true
             response.get("registerEmail").asText() shouldBe email
         }
 

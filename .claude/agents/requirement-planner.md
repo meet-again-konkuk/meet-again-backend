@@ -78,8 +78,8 @@ Before finalizing a plan, verify:
 
 구현 계획 작성이 완료되면, 반드시 파일로 저장한다.
 
-**저장 경로**: `requirement/{feature-name}.requirement.md`
-- `requirement/` 디렉토리에 저장 (없으면 생성)
+**저장 경로**: `docs/requirement/{feature-name}.requirement.md`
+- `docs/requirement/` 디렉토리에 저장 (없으면 생성)
 - 파일명은 feature 이름을 kebab-case로 변환 (예: `matching-result-cleanup-job.requirement.md`)
 - 작성 완료 후 저장 경로를 사용자에게 안내
 

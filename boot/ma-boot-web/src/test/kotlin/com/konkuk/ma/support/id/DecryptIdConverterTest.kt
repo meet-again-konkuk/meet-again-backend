@@ -1,7 +1,8 @@
 package com.konkuk.ma.support.id
 
+import com.konkuk.ma.domain.common.domain.id.ObfuscationType
+import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
-import com.konkuk.ma.domain.common.port.IdObfuscator
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -43,12 +44,15 @@ class DecryptIdConverterTest : BehaviorSpec({
     }
 
     Given("유효한 인코딩된 ID가 주어졌을 때") {
-        val encoded = "kRnB9P3L"
+        val encoded = "kRnB9P3LxYz1"
         val decoded = 42L
-        every { idObfuscator.decode(encoded) } returns decoded
+        val annotation = mockk<DecryptId>()
+        every { annotation.value } returns ObfuscationType.MEMBER
+        every { idObfuscator.decode(ObfuscationType.MEMBER, encoded) } returns decoded
 
         val sourceType = mockk<TypeDescriptor>()
         val targetType = mockk<TypeDescriptor>()
+        every { targetType.getAnnotation(DecryptId::class.java) } returns annotation
 
         When("convert를 호출하면") {
             val result = converter.convert(encoded, sourceType, targetType)
@@ -74,10 +78,13 @@ class DecryptIdConverterTest : BehaviorSpec({
 
     Given("잘못된 인코딩된 ID가 주어졌을 때") {
         val invalidEncoded = "!@#invalid"
-        every { idObfuscator.decode(invalidEncoded) } throws InvalidObfuscatedIdException(invalidEncoded)
+        val annotation = mockk<DecryptId>()
+        every { annotation.value } returns ObfuscationType.MEMBER
+        every { idObfuscator.decode(ObfuscationType.MEMBER, invalidEncoded) } throws InvalidObfuscatedIdException(invalidEncoded)
 
         val sourceType = mockk<TypeDescriptor>()
         val targetType = mockk<TypeDescriptor>()
+        every { targetType.getAnnotation(DecryptId::class.java) } returns annotation
 
         When("convert를 호출하면") {
             Then("InvalidObfuscatedIdException이 발생한다") {

@@ -17,7 +17,8 @@ import com.konkuk.ma.vocabulary.targetInfoId
 import com.konkuk.ma.vocabulary.targetName
 import com.konkuk.ma.vocabulary.targetRegion
 import com.konkuk.ma.vocabulary.year
-import com.konkuk.ma.support.id.EncryptIdHolder
+import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
+import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.support.security.WithAuthMember
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
@@ -32,13 +33,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 class TargetInfoCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
+    private val idObfuscator: IdObfuscator,
     @MockkBean private val targetInfoCommandService: TargetInfoCommandService
 ) : FunSpec({
 
     test("찾는 사람 정보 등록 API 문서화") {
         // Given
         val targetInfoId = 1L
-        val encodedTargetInfoId = EncryptIdHolder.idObfuscator.encode(targetInfoId)
+        val encodedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId)
         val request = mapOf(
             "name" to "김만남",
             "middleNumber" to "1234",
@@ -94,7 +96,7 @@ class TargetInfoCommandApiTest(
     test("찾는 사람 정보 등록 - 필수 정보만 입력") {
         // Given
         val targetInfoId = 2L
-        val encodedTargetInfoId = EncryptIdHolder.idObfuscator.encode(targetInfoId)
+        val encodedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId)
         val request = mapOf(
             "name" to "이재회",
             "middleNumber" to null,

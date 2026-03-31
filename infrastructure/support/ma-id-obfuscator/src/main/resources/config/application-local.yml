@@ -5,4 +5,4 @@ spring:
 
 id-obfuscator:
   salt: "meet-again-dev-salt-do-not-use-in-prod"
-  min-length: 8
+  min-length: 12
