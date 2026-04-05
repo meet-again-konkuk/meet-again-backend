@@ -41,4 +41,28 @@ class MemberPhotoTest : FunSpec({
             result.shouldBeFalse()
         }
     }
+
+    context("hasThumbnail") {
+        test("thumbnailPath가 존재하면 true를 반환한다") {
+            // Given
+            val photo = MemberPhotoFixture.create(thumbnailPath = "member/thumbnail/thumb_photo.jpg")
+
+            // When
+            val result = photo.hasThumbnail()
+
+            // Then
+            result.shouldBeTrue()
+        }
+
+        test("thumbnailPath가 null이면 false를 반환한다") {
+            // Given
+            val photo = MemberPhotoFixture.create(thumbnailPath = null)
+
+            // When
+            val result = photo.hasThumbnail()
+
+            // Then
+            result.shouldBeFalse()
+        }
+    }
 })
