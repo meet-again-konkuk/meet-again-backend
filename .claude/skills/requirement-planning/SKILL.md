@@ -221,12 +221,12 @@ interface MatchingResultRepository {
 
 구현 계획 작성이 완료되면 **반드시 파일로 저장**한다. 대화 내 반환만으로는 부족하다.
 
-**저장 경로**: `requirement/{YYYYMM}/{feature-name}.requirement.md`
+**저장 경로**: `docs/requirement/{YYYYMM}/{feature-name}.requirement.md`
 
 년월(`YYYYMM`) 디렉토리로 구분하여 저장한다. 현재 날짜 기준으로 년월을 결정한다.
 
 ```
-requirement/
+docs/requirement/
   └── 202603/
   │   └── matching-result-cleanup-job.requirement.md
   │   └── matching-result-query-api.requirement.md
@@ -235,7 +235,7 @@ requirement/
 ```
 
 **규칙**:
-- `requirement/{YYYYMM}/` 디렉토리가 없으면 생성
+- `docs/requirement/{YYYYMM}/` 디렉토리가 없으면 생성
 - 파일명은 feature 이름을 kebab-case로 변환
 - 작성 완료 후 저장 경로를 사용자에게 반드시 안내
 - 파일 최상단에 작성일과 상태를 기록
