@@ -28,6 +28,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:member/member-query.html[회원 Query API,window=_blank]
 
+[[member-photo]]
+=== 회원 사진
+
+* link:member/member-photo.html[회원 사진 API,window=_blank]
+
 [[member-enum]]
 === 회원 enum 정보 조회
 

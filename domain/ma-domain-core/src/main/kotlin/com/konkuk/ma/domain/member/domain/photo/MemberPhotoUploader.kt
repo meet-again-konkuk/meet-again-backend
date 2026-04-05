@@ -23,6 +23,10 @@ class MemberPhotoUploader(
         memberPhotoRepository.save(newPhoto)
     }
 
+    fun delete(email: String) {
+        deleteExisting(email)
+    }
+
     private fun deleteExisting(email: String) {
         val existing = memberPhotoRepository.findByMemberEmail(email) ?: return
         fileStorage.delete(existing.filePath)

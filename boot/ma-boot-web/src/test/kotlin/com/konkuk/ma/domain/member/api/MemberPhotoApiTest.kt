@@ -1,0 +1,72 @@
+package com.konkuk.ma.domain.member.api
+
+import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotoUploader
+import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.requestPart
+import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.message
+import com.ninjasquad.springmockk.MockkBean
+import io.kotest.core.spec.style.FunSpec
+import io.mockk.every
+import io.mockk.just
+import io.mockk.runs
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.mock.web.MockMultipartFile
+import org.springframework.restdocs.request.RequestDocumentation.partWithName
+import org.springframework.restdocs.request.RequestDocumentation.requestParts
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+
+@WebMvcTest(MemberPhotoApi::class)
+@BaseApiTest
+class MemberPhotoApiTest(
+    private val mockMvc: MockMvc,
+    @MockkBean private val memberPhotoUploader: MemberPhotoUploader
+) : FunSpec({
+
+    test("사진 업로드 - multipart 파일 전송시 성공한다") {
+        // Given
+        val photoFile = MockMultipartFile(
+            "photo",
+            "profile.jpg",
+            "image/jpeg",
+            "fake-image-content".toByteArray()
+        )
+
+        every { memberPhotoUploader.upload(any(), any()) } just runs
+
+        // When & Then
+        mockMvc.perform(
+            multipart("/api/members/photos")
+                .file(photoFile)
+        )
+            .andExpect(status().isCreated)
+            .andDocument(
+                "member-photo-upload",
+                requestParts(
+                    partWithName("photo").description("프로필 사진 파일")
+                ),
+                responseBody(
+                    message() means "업로드 결과 메시지",
+                )
+            )
+    }
+
+    test("사진 삭제 - DELETE 요청시 성공한다") {
+        // Given
+        every { memberPhotoUploader.delete(any()) } just runs
+
+        // When & Then
+        mockMvc.delete("/api/members/photos")
+            .andExpect { status { isOk() } }
+            .andDocument(
+                "member-photo-delete",
+                responseBody(
+                    message() means "삭제 결과 메시지",
+                )
+            )
+    }
+})

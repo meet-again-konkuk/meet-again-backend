@@ -6,26 +6,30 @@ import com.konkuk.ma.domain.auth.application.SignUpService
 import com.konkuk.ma.domain.auth.application.command.SignUpCommand
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
-import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.extension.andDocument
-import com.konkuk.ma.extension.requestPart
-import com.konkuk.ma.extension.requestParts
+import com.konkuk.ma.extension.postJson
+import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.birthDate
 import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.gender
+import com.konkuk.ma.vocabulary.highSchool
 import com.konkuk.ma.vocabulary.memberId
 import com.konkuk.ma.vocabulary.message
+import com.konkuk.ma.vocabulary.name
 import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.vocabulary.password
+import com.konkuk.ma.vocabulary.phoneNumber
+import com.konkuk.ma.vocabulary.region
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
+import com.konkuk.ma.vocabulary.university
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import java.time.LocalDate
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.MediaType
-import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
 @WebMvcTest(SignUpApi::class)
@@ -37,7 +41,7 @@ class SignUpApiTest(
     @MockkBean private val signUpService: SignUpService
 ) : FunSpec({
 
-    test("signUp - 유효한 회원가입 요청시 성공한다 (사진 포함)") {
+    test("signUp - 유효한 회원가입 요청시 성공한다") {
         // Given
         val memberId = 1L
         val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, memberId)
@@ -54,20 +58,6 @@ class SignUpApiTest(
             "university" to "테스트대학교"
         )
 
-        val requestPart = MockMultipartFile(
-            "request",
-            "",
-            MediaType.APPLICATION_JSON_VALUE,
-            mapper.writeValueAsBytes(request)
-        )
-
-        val photoPart = MockMultipartFile(
-            "photo",
-            "profile.jpg",
-            MediaType.IMAGE_JPEG_VALUE,
-            "fake-image-content".toByteArray()
-        )
-
         every {
             signUpService.signUp(
                 SignUpCommand(
@@ -81,16 +71,13 @@ class SignUpApiTest(
                     region = Region.SEOUL,
                     highSchool = "테스트고등학교",
                     university = "테스트대학교"
-                ),
-                any<PhotoFile>()
+                )
             )
         } returns memberId
 
         // When & Then
-        mockMvc.multipart("/api/auth/sign-up") {
-            file(requestPart)
-            file(photoPart)
-            accept = MediaType.APPLICATION_JSON
+        mockMvc.postJson("/api/auth/sign-up") {
+            content = mapper.writeValueAsString(request)
         }
             .andExpect {
                 status { isCreated() }
@@ -100,10 +87,18 @@ class SignUpApiTest(
                 jsonPath("$.message").value("회원가입이 완료되었습니다.")
             }
             .andDocument(
-                "sign-up-with-photo",
-                requestParts(
-                    "request" requestPart "회원가입 정보 (JSON)",
-                    "photo" requestPart "프로필 사진 파일 (선택, 10MB 이하, jpeg/jpg/png/svg/webp)" isOptional true,
+                "sign-up",
+                requestBody(
+                    email(),
+                    password(),
+                    phoneNumber(),
+                    nickname(),
+                    gender(),
+                    name(),
+                    birthDate(),
+                    region(),
+                    highSchool() means "고등학교 (선택)",
+                    university() means "대학교 (선택)",
                 ),
                 responseBody(
                     memberId(),
@@ -114,7 +109,7 @@ class SignUpApiTest(
             )
     }
 
-    test("signUp - 사진 없이 회원가입 요청시 성공한다") {
+    test("signUp - 선택 필드 없이 회원가입 요청시 성공한다") {
         // Given
         val memberId = 2L
         val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, memberId)
@@ -127,13 +122,6 @@ class SignUpApiTest(
             "name" to "이테스트",
             "birthDate" to "1995-06-15",
             "region" to "BUSAN"
-        )
-
-        val requestPart = MockMultipartFile(
-            "request",
-            "",
-            MediaType.APPLICATION_JSON_VALUE,
-            mapper.writeValueAsBytes(request)
         )
 
         every {
@@ -149,15 +137,13 @@ class SignUpApiTest(
                     region = Region.BUSAN,
                     highSchool = null,
                     university = null
-                ),
-                null
+                )
             )
         } returns memberId
 
         // When & Then
-        mockMvc.multipart("/api/auth/sign-up") {
-            file(requestPart)
-            accept = MediaType.APPLICATION_JSON
+        mockMvc.postJson("/api/auth/sign-up") {
+            content = mapper.writeValueAsString(request)
         }
             .andExpect {
                 status { isCreated() }
@@ -166,9 +152,16 @@ class SignUpApiTest(
                 jsonPath("$.nickname").value("테스터2")
             }
             .andDocument(
-                "sign-up-without-photo",
-                requestParts(
-                    "request" requestPart "회원가입 정보 (JSON)",
+                "sign-up-minimal",
+                requestBody(
+                    email(),
+                    password(),
+                    phoneNumber(),
+                    nickname(),
+                    gender(),
+                    name(),
+                    birthDate(),
+                    region(),
                 ),
                 responseBody(
                     memberId(),

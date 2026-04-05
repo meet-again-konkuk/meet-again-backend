@@ -1,0 +1,45 @@
+= 회원 사진 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 사진 업로드 API
+
+프로필 사진을 업로드합니다. 기존 사진이 있으면 교체됩니다 (1장 제한).
+인증이 필요합니다.
+
+=== 요청
+
+include::{snippets}/member-photo-upload/http-request.adoc[]
+
+=== 요청 파트
+
+include::{snippets}/member-photo-upload/request-parts.adoc[]
+
+=== 응답
+
+include::{snippets}/member-photo-upload/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/member-photo-upload/response-fields.adoc[]
+
+== 사진 삭제 API
+
+프로필 사진을 삭제합니다.
+인증이 필요합니다.
+
+=== 요청
+
+include::{snippets}/member-photo-delete/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/member-photo-delete/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/member-photo-delete/response-fields.adoc[]
