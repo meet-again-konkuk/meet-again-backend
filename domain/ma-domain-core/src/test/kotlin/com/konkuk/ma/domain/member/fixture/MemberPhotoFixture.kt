@@ -9,14 +9,16 @@ object MemberPhotoFixture {
         memberEmail: String = "test@example.com",
         filePath: String = "member/profile/test@example.com/photo.jpg",
         originalFileName: String = "photo.jpg",
-        approvalStatus: ApprovalStatus = ApprovalStatus.PENDING
+        approvalStatus: ApprovalStatus = ApprovalStatus.PENDING,
+        thumbnailPath: String? = null
     ): MemberPhoto {
         return MemberPhoto(
             id = id,
             memberEmail = memberEmail,
             filePath = filePath,
             originalFileName = originalFileName,
-            approvalStatus = approvalStatus
+            approvalStatus = approvalStatus,
+            thumbnailPath = thumbnailPath
         )
     }
 }

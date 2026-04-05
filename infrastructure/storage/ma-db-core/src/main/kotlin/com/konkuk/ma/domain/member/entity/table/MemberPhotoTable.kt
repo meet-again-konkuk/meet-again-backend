@@ -8,4 +8,5 @@ object MemberPhotoTable : BaseTable("MEMBER_PHOTOS", "MEMBER_PHOTO_ID") {
     val filePath = varchar("FILE_PATH", 512)
     val originalFileName = varchar("ORIGINAL_FILE_NAME", 255)
     val approvalStatus = varchar("APPROVAL_STATUS", 32).clientDefault { ApprovalStatus.PENDING.name }
+    val thumbnailPath = varchar("THUMBNAIL_PATH", 512).nullable()
 }

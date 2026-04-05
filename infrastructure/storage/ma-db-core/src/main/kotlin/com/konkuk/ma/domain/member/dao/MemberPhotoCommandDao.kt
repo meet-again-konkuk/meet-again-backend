@@ -15,6 +15,7 @@ class MemberPhotoCommandDao {
             it[memberEmail] = newPhoto.memberEmail
             it[filePath] = newPhoto.filePath
             it[originalFileName] = newPhoto.originalFileName
+            it[thumbnailPath] = newPhoto.thumbnailPath
             it[createdBy] = newPhoto.memberEmail
             it[lastModifiedBy] = newPhoto.memberEmail
         }.value

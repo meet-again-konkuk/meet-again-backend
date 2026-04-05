@@ -10,7 +10,8 @@ class MemberPhotoEntity(
     val memberEmail: String,
     val filePath: String,
     val originalFileName: String,
-    val approvalStatus: String
+    val approvalStatus: String,
+    val thumbnailPath: String?
 ) {
     fun toDomain(): MemberPhoto {
         return MemberPhoto(
@@ -18,7 +19,8 @@ class MemberPhotoEntity(
             memberEmail = memberEmail,
             filePath = filePath,
             originalFileName = originalFileName,
-            approvalStatus = ApprovalStatus.valueOf(approvalStatus)
+            approvalStatus = ApprovalStatus.valueOf(approvalStatus),
+            thumbnailPath = thumbnailPath
         )
     }
 
@@ -29,7 +31,8 @@ class MemberPhotoEntity(
                 memberEmail = row[MemberPhotoTable.memberEmail],
                 filePath = row[MemberPhotoTable.filePath],
                 originalFileName = row[MemberPhotoTable.originalFileName],
-                approvalStatus = row[MemberPhotoTable.approvalStatus]
+                approvalStatus = row[MemberPhotoTable.approvalStatus],
+                thumbnailPath = row[MemberPhotoTable.thumbnailPath]
             )
         }
     }

@@ -25,6 +25,16 @@ class LocalFileStorage(
         return targetPath.toString()
     }
 
+    override fun storeBytes(directory: String, fileName: String, bytes: ByteArray): String {
+        val dir = Paths.get(basePath, directory)
+        Files.createDirectories(dir)
+
+        val targetPath = dir.resolve(fileName)
+        Files.write(targetPath, bytes)
+
+        return targetPath.toString()
+    }
+
     override fun delete(filePath: String) {
         val path = Paths.get(filePath)
         if (Files.exists(path)) {
