@@ -26,23 +26,3 @@ include::{snippets}/sign-up/http-response.adoc[]
 === 응답 필드
 
 include::{snippets}/sign-up/response-fields.adoc[]
-
-== 회원가입 API (선택 필드 미포함)
-
-선택 필드 없이 회원가입하는 경우입니다.
-
-=== 요청
-
-include::{snippets}/sign-up-minimal/http-request.adoc[]
-
-=== 요청 필드
-
-include::{snippets}/sign-up-minimal/request-fields.adoc[]
-
-=== 응답
-
-include::{snippets}/sign-up-minimal/http-response.adoc[]
-
-=== 응답 필드
-
-include::{snippets}/sign-up-minimal/response-fields.adoc[]

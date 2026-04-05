@@ -152,7 +152,7 @@ class SignUpApiTest(
                 jsonPath("$.nickname").value("테스터2")
             }
             .andDocument(
-                "sign-up-minimal",
+                "sign-up",
                 requestBody(
                     email(),
                     password(),
