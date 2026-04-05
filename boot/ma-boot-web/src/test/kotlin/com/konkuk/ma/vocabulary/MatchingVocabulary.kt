@@ -37,7 +37,7 @@ fun targetRegion(fieldName: String = "region") =
 // --- 매칭 결과 관련 필드 ---
 
 fun matchingResultId(fieldName: String = "matchingResults[].matchingResultId") =
-    fieldName responseType NUMBER means "매칭 결과 ID" example "1"
+    fieldName responseType STRING means "매칭 결과 ID (인코딩)" example "abc123"
 
 fun matchingTargetName(fieldName: String = "matchingResults[].targetName") =
     fieldName responseType STRING means "매칭된 상대의 이름" example "김만남"

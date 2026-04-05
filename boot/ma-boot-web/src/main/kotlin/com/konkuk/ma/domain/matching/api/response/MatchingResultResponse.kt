@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.matching.domain.MatchingResultWithProfile
 import com.konkuk.ma.support.id.EncryptId
 
 class MatchingResultResponse(
+    @EncryptId(ObfuscationType.MATCHING_RESULT)
     val matchingResultId: Long,
     @EncryptId(ObfuscationType.MEMBER)
     val targetMemberId: Long?,
