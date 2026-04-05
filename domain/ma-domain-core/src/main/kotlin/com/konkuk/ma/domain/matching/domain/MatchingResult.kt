@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -47,5 +48,11 @@ class MatchingResult(
         val now = LocalDate.now()
         return ChronoUnit.DAYS.between(now, showingExpiryDate)
             .coerceAtLeast(0)
+    }
+
+    fun validateOwnership(email: String) {
+        if (registerEmail != email) {
+            throw MatchingResultAccessDeniedException(id, email)
+        }
     }
 }

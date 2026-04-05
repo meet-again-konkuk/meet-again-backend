@@ -1,6 +1,8 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
@@ -55,6 +57,23 @@ class MatchingResultTest : FunSpec({
 
             // When & Then
             result.getRemainingDays() shouldBeGreaterThanOrEqual 0
+        }
+    }
+
+    context("validateOwnership") {
+
+        test("본인 이메일이면 예외 없이 통과한다") {
+            val matchingResult = MatchingResultFixture.create(registerEmail = "owner@example.com")
+
+            matchingResult.validateOwnership("owner@example.com")
+        }
+
+        test("다른 이메일이면 MatchingResultAccessDeniedException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(registerEmail = "owner@example.com")
+
+            shouldThrow<MatchingResultAccessDeniedException> {
+                matchingResult.validateOwnership("other@example.com")
+            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
         }
     }
 

@@ -1,9 +1,13 @@
 package com.konkuk.ma.domain.matching.api
 
+import com.konkuk.ma.domain.common.domain.id.ObfuscationType
+import com.konkuk.ma.domain.matching.api.response.MatchingResultDetailResponse
 import com.konkuk.ma.domain.matching.api.response.MatchingResultsResponse
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
+import com.konkuk.ma.support.id.DecryptId
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -18,5 +22,14 @@ class MatchingResultQueryApi(
     ): MatchingResultsResponse {
         val results = matchingResultQueryService.findByRegisterEmail(email)
         return MatchingResultsResponse.from(results)
+    }
+
+    @GetMapping("/{matchingResultId}")
+    fun findMatchingResultDetail(
+        @AuthenticationPrincipal email: String,
+        @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
+    ): MatchingResultDetailResponse {
+        val result = matchingResultQueryService.findDetailById(matchingResultId, email)
+        return MatchingResultDetailResponse.from(result)
     }
 }

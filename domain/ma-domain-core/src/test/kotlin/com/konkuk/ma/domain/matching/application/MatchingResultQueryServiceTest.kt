@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.matching.application
 
 import com.konkuk.ma.domain.matching.domain.MatchingResults
+import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
@@ -9,6 +10,8 @@ import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
+import com.konkuk.ma.exception.EntityNotFoundException
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -74,6 +77,66 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             // Then
             result.data shouldHaveSize 0
+        }
+    }
+
+    context("findDetailById") {
+
+        test("정상 조회 시 MatchingResultWithProfile을 반환한다") {
+            // Given
+            val matchingResultId = 1L
+            val email = "register@example.com"
+            val matchingResult = MatchingResultFixture.create(
+                registerEmail = email,
+                targetEmail = "target@example.com"
+            )
+
+            val member = MemberFixture.create(email = matchingResult.targetEmail)
+            val photo = MemberPhotoFixture.create(
+                memberEmail = matchingResult.targetEmail,
+                thumbnailPath = "thumb/photo.jpg"
+            )
+
+            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { memberQueryRepository.findByEmails(setOf(matchingResult.targetEmail)) } returns Members(listOf(member))
+            every { memberPhotoRepository.findByEmails(setOf(matchingResult.targetEmail)) } returns MemberPhotos(listOf(photo))
+
+            // When
+            val result = service.findDetailById(matchingResultId, email)
+
+            // Then
+            result.targetName shouldBe member.name
+            result.targetNickname shouldBe member.nickname
+            result.profileImageUrl shouldBe photo.thumbnailPath
+            result.matchingResult shouldBe matchingResult
+        }
+
+        test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
+            // Given
+            val nonExistentId = 999L
+            val email = "register@example.com"
+
+            every { matchingResultRepository.findById(nonExistentId) } returns null
+
+            // When & Then
+            shouldThrow<EntityNotFoundException> {
+                service.findDetailById(nonExistentId, email)
+            }.message shouldBe "MatchingResult을(를) 찾을 수 없습니다."
+        }
+
+        test("소유권이 없는 경우 MatchingResultAccessDeniedException이 발생한다") {
+            // Given
+            val matchingResultId = 1L
+            val ownerEmail = "owner@example.com"
+            val otherEmail = "other@example.com"
+            val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail)
+
+            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+
+            // When & Then
+            shouldThrow<MatchingResultAccessDeniedException> {
+                service.findDetailById(matchingResultId, otherEmail)
+            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
         }
     }
 })

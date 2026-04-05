@@ -3,6 +3,7 @@ package com.konkuk.ma.support.error
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
 import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.member.exception.DuplicateEmailException
 import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
@@ -33,6 +34,13 @@ class GlobalExceptionHandler {
     @ExceptionHandler(PasswordMismatchException::class, RefreshTokenExpiredException::class)
     fun handleUnauthorizedException(e: BusinessException): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
+    }
+
+    @ExceptionHandler(MatchingResultAccessDeniedException::class)
+    fun handleMatchingResultAccessDeniedException(
+        e: MatchingResultAccessDeniedException
+    ): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
     }
 
     @ExceptionHandler(InvalidValueException::class, SmsNotVerifiedException::class)

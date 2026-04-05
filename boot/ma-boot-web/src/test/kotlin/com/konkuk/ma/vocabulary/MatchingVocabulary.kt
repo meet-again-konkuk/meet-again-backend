@@ -3,6 +3,7 @@ package com.konkuk.ma.vocabulary
 import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
+import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseType
 
 // --- 매칭 관련 필드 ---
@@ -59,3 +60,50 @@ fun targetMemberId(fieldName: String = "matchingResults[].targetMemberId") =
 
 fun isWithdrawn(fieldName: String = "matchingResults[].isWithdrawn") =
     fieldName responseType BOOLEAN means "탈퇴 회원 여부" example "false"
+
+// --- 매칭 결과 상세 필드 ---
+
+fun detailMatchingResultId(fieldName: String = "matchingResultId") =
+    fieldName responseType STRING means "매칭 결과 ID (인코딩)" example "abc123"
+
+fun detailTargetMemberId(fieldName: String = "targetMemberId") =
+    fieldName responseType STRING means "매칭된 상대의 회원 ID (인코딩, 탈퇴 시 null)" example "abc123"
+
+fun detailTargetName(fieldName: String = "targetName") =
+    fieldName responseType STRING means "매칭된 상대의 이름" example "김만남"
+
+fun detailTargetNickname(fieldName: String = "targetNickname") =
+    fieldName responseType STRING means "매칭된 상대의 닉네임" example "테스트닉네임"
+
+fun detailProfileImageUrl(fieldName: String = "profileImageUrl") =
+    fieldName responseType STRING means "매칭된 상대의 프로필 이미지 URL" example "https://example.com/image.jpg"
+
+fun detailRemainingDays(fieldName: String = "remainingDays") =
+    fieldName responseType NUMBER means "매칭 결과 노출 잔여일" example "25"
+
+fun detailMatchRate(fieldName: String = "matchRate") =
+    fieldName responseType NUMBER means "매칭률 (%)" example "75"
+
+fun detailIsWithdrawn(fieldName: String = "isWithdrawn") =
+    fieldName responseType BOOLEAN means "탈퇴 회원 여부" example "false"
+
+fun middleNumberMatched(fieldName: String = "middleNumberMatched") =
+    fieldName responseType BOOLEAN means "전화번호 중간자리 일치 여부" example "true"
+
+fun lastNumberMatched(fieldName: String = "lastNumberMatched") =
+    fieldName responseType BOOLEAN means "전화번호 뒷자리 일치 여부" example "true"
+
+fun yearMatched(fieldName: String = "yearMatched") =
+    fieldName responseType BOOLEAN means "생년 일치 여부" example "true"
+
+fun monthMatched(fieldName: String = "monthMatched") =
+    fieldName responseType BOOLEAN means "생월 일치 여부" example "false"
+
+fun dayMatched(fieldName: String = "dayMatched") =
+    fieldName responseType BOOLEAN means "생일 일치 여부" example "false"
+
+fun regionMatched(fieldName: String = "regionMatched") =
+    fieldName responseType BOOLEAN means "지역 일치 여부" example "true"
+
+fun matchingResultIdPath(fieldName: String = "matchingResultId") =
+    fieldName requestParam "매칭 결과 ID (인코딩)"

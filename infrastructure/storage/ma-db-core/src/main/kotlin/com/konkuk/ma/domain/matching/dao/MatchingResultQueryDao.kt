@@ -25,4 +25,15 @@ class MatchingResultQueryDao {
             }
             .map { row -> MatchingResultEntity.from(row) }
     }
+
+    fun findById(id: Long): MatchingResultEntity? {
+        return MatchingResultTable
+            .selectAll()
+            .where {
+                (MatchingResultTable.id eq id) and
+                    (MatchingResultTable.deleted eq false)
+            }
+            .map { row -> MatchingResultEntity.from(row) }
+            .singleOrNull()
+    }
 }

@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.matching.repository
 
 import com.konkuk.ma.domain.matching.dao.MatchingResultCommandDao
 import com.konkuk.ma.domain.matching.dao.MatchingResultQueryDao
+import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import org.springframework.stereotype.Repository
@@ -32,5 +33,10 @@ class MatchingResultCoreRepository(
             matchingResultQueryDao.findByRegisterEmail(email)
                 .map { it.toDomain() }
         )
+    }
+
+    override fun findById(matchingResultId: Long): MatchingResult? {
+        return matchingResultQueryDao.findById(matchingResultId)
+            ?.toDomain()
     }
 }
