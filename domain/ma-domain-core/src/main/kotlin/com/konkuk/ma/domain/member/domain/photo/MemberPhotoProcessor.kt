@@ -6,7 +6,7 @@ import com.konkuk.ma.domain.common.domain.file.StoragePath
 import com.konkuk.ma.domain.common.domain.file.StorageUsageType
 import com.konkuk.ma.domain.common.domain.file.port.FileStorage
 import com.konkuk.ma.domain.common.domain.file.port.ThumbnailGenerator
-import org.slf4j.LoggerFactory
+import com.konkuk.ma.logger
 import org.springframework.stereotype.Component
 
 @Component
@@ -14,7 +14,6 @@ class MemberPhotoProcessor(
     private val fileStorage: FileStorage,
     private val thumbnailGenerator: ThumbnailGenerator
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
 
     fun process(email: String, photoFile: PhotoFile): ProcessedPhoto {
         val filePath = storeOriginal(email, photoFile)
@@ -40,7 +39,7 @@ class MemberPhotoProcessor(
             val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.THUMBNAIL, email)
             fileStorage.storeBytes(directory.value, "thumb_${photoFile.originalFileName}", thumbnailBytes)
         } catch (e: Exception) {
-            log.warn("썸네일 생성 실패 (email={}): {}", email, e.message)
+            logger.warn { "썸네일 생성 실패 (email=$email): ${e.message}" }
             null
         }
     }

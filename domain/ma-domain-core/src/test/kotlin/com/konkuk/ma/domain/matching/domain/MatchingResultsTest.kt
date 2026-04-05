@@ -1,8 +1,11 @@
 package com.konkuk.ma.domain.matching.domain
 
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
+import com.konkuk.ma.domain.matching.fixture.MemberFixture
+import com.konkuk.ma.domain.member.domain.Members
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
+import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -139,6 +142,92 @@ class MatchingResultsTest : FunSpec({
             val newResults = candidates.filterNew(existing)
 
             newResults.data shouldHaveSize 1
+        }
+    }
+
+    context("combineWithProfiles") {
+
+        test("매칭결과와 회원정보와 사진정보를 조합하여 프로필을 생성한다") {
+            val matchingResult = MatchingResultFixture.create(targetEmail = "target@example.com")
+            val matchingResults = MatchingResults(listOf(matchingResult))
+
+            val member = MemberFixture.create(email = matchingResult.targetEmail, name = "홍길동", nickname = "닉네임")
+            val photo = MemberPhotoFixture.create(
+                memberEmail = matchingResult.targetEmail,
+                thumbnailPath = "thumb/photo.jpg"
+            )
+
+            val result = matchingResults.combineWithProfiles(
+                Members(listOf(member)), MemberPhotos(listOf(photo))
+            )
+
+            result.data shouldHaveSize 1
+            result.data[0].targetName shouldBe member.name
+            result.data[0].targetNickname shouldBe member.nickname
+            result.data[0].profileImageUrl shouldBe photo.thumbnailPath
+        }
+
+        test("탈퇴한 회원도 결과에 포함되며 isWithdrawn이 true이다") {
+            val activeResult = MatchingResultFixture.create(targetEmail = "active@example.com")
+            val withdrawnResult = MatchingResultFixture.create(targetEmail = "withdrawn@example.com")
+            val matchingResults = MatchingResults(listOf(activeResult, withdrawnResult))
+
+            val activeMember = MemberFixture.create(email = activeResult.targetEmail)
+
+            val result = matchingResults.combineWithProfiles(
+                Members(listOf(activeMember)), MemberPhotos(emptyList())
+            )
+
+            result.data shouldHaveSize 2
+            result.data[0].isWithdrawn shouldBe false
+            result.data[0].matchingResult shouldBe activeResult
+            result.data[1].isWithdrawn shouldBe true
+            result.data[1].targetName shouldBe null
+            result.data[1].matchingResult shouldBe withdrawnResult
+        }
+
+        test("사진이 없는 회원은 profileImageUrl이 null이다") {
+            val matchingResult = MatchingResultFixture.create(targetEmail = "target@example.com")
+            val matchingResults = MatchingResults(listOf(matchingResult))
+
+            val member = MemberFixture.create(email = matchingResult.targetEmail)
+
+            val result = matchingResults.combineWithProfiles(
+                Members(listOf(member)), MemberPhotos(emptyList())
+            )
+
+            result.data shouldHaveSize 1
+            result.data[0].profileImageUrl shouldBe null
+        }
+
+        test("빈 매칭결과이면 빈 프로필 목록을 반환한다") {
+            val matchingResults = MatchingResults(emptyList())
+
+            val result = matchingResults.combineWithProfiles(
+                Members(emptyList()), MemberPhotos(emptyList())
+            )
+
+            result.data shouldHaveSize 0
+        }
+
+        test("여러 매칭결과를 한번에 조합한다") {
+            val result1 = MatchingResultFixture.create(targetEmail = "a@example.com", targetInfoId = 1L)
+            val result2 = MatchingResultFixture.create(targetEmail = "b@example.com", targetInfoId = 2L)
+            val matchingResults = MatchingResults(listOf(result1, result2))
+
+            val memberA = MemberFixture.create(email = result1.targetEmail, name = "김철수", nickname = "철수")
+            val memberB = MemberFixture.create(email = result2.targetEmail, name = "이영희", nickname = "영희")
+            val photoA = MemberPhotoFixture.create(memberEmail = result1.targetEmail, thumbnailPath = "thumb/a.jpg")
+
+            val result = matchingResults.combineWithProfiles(
+                Members(listOf(memberA, memberB)), MemberPhotos(listOf(photoA))
+            )
+
+            result.data shouldHaveSize 2
+            result.data[0].targetName shouldBe memberA.name
+            result.data[0].profileImageUrl shouldBe photoA.thumbnailPath
+            result.data[1].targetName shouldBe memberB.name
+            result.data[1].profileImageUrl shouldBe null
         }
     }
 

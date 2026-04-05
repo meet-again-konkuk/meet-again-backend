@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.member.repository
 
 import com.konkuk.ma.domain.member.dao.MemberQueryDao
 import com.konkuk.ma.domain.member.domain.Member
+import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import org.springframework.stereotype.Repository
 
@@ -27,8 +28,7 @@ class MemberQueryCoreRepository(
             .map { it.toDomain() }
     }
 
-    override fun findByEmails(emails: Set<String>): List<Member> {
-        return memberQueryDao.findByEmails(emails)
-            .map { it.toDomain() }
+    override fun findByEmails(emails: Set<String>): Members {
+        return Members(memberQueryDao.findByEmails(emails).map { it.toDomain() })
     }
 }

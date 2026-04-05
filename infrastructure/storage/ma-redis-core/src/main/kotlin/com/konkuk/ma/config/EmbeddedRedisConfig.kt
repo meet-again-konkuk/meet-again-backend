@@ -5,7 +5,7 @@ import jakarta.annotation.PreDestroy
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import org.slf4j.LoggerFactory
+import com.konkuk.ma.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -19,7 +19,7 @@ class EmbeddedRedisConfig(
 ) {
     private var redisServer: RedisServer? = null
 
-    private val log = LoggerFactory.getLogger(EmbeddedRedisConfig::class.java)
+
 
     @PostConstruct
     private fun start() {
@@ -70,7 +70,7 @@ class EmbeddedRedisConfig(
                 }
             }
         } catch (e: Exception) {
-            log.error(e.message)
+            logger.error { e.message ?: "Unknown error" }
         }
         return pidInfo.isNotEmpty()
     }

@@ -1,5 +1,6 @@
 package com.konkuk.ma.vocabulary
 
+import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
@@ -52,3 +53,9 @@ fun remainingDays(fieldName: String = "matchingResults[].remainingDays") =
 
 fun matchRate(fieldName: String = "matchingResults[].matchRate") =
     fieldName responseType NUMBER means "매칭률 (%)" example "75"
+
+fun targetMemberId(fieldName: String = "matchingResults[].targetMemberId") =
+    fieldName responseType STRING means "매칭된 상대의 회원 ID (인코딩, 탈퇴 시 null)" example "abc123"
+
+fun isWithdrawn(fieldName: String = "matchingResults[].isWithdrawn") =
+    fieldName responseType BOOLEAN means "탈퇴 회원 여부" example "false"

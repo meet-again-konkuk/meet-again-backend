@@ -3,11 +3,10 @@ package com.konkuk.ma.domain.member.domain
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
-import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
-import com.konkuk.ma.domain.member.exception.PasswordMismatchException
 import java.time.LocalDate
 
 class Member(
+    val id: Long = 0L,
     val email: String,
     val password: String,
     val nickname: String,
@@ -21,6 +20,7 @@ class Member(
 ) {
     companion object {
         fun create(
+            id: Long = 0L,
             email: String,
             password: String,
             nickname: String,
@@ -33,6 +33,7 @@ class Member(
             university: String?
         ): Member {
             return Member(
+                id = id,
                 email = email,
                 password = password,
                 nickname = nickname,
@@ -45,13 +46,6 @@ class Member(
                 university = university
             )
         }
-    }
-
-    fun matches(inputPassword: String, passwordEncryptor: PasswordEncryptor): Boolean {
-        if (!passwordEncryptor.matches(inputPassword, password)) {
-            throw PasswordMismatchException(email)
-        }
-        return true
     }
 
     fun getOtherGender(): Gender {

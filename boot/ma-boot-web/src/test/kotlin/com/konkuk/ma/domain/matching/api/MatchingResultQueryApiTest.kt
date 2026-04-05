@@ -9,8 +9,10 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.support.security.WithAuthMember
+import com.konkuk.ma.vocabulary.isWithdrawn
 import com.konkuk.ma.vocabulary.matchRate
 import com.konkuk.ma.vocabulary.matchingResultId
+import com.konkuk.ma.vocabulary.targetMemberId
 import com.konkuk.ma.vocabulary.matchingTargetName
 import com.konkuk.ma.vocabulary.matchingTargetNickname
 import com.konkuk.ma.vocabulary.profileImageUrl
@@ -51,6 +53,7 @@ class MatchingResultQueryApiTest(
             data = listOf(
                 MatchingResultWithProfile(
                     matchingResult = matchingResult,
+                    targetMemberId = 1L,
                     targetName = "김만남",
                     targetNickname = "테스트닉네임",
                     profileImageUrl = "https://example.com/image.jpg",
@@ -67,11 +70,13 @@ class MatchingResultQueryApiTest(
                 "matching/find-matching-results",
                 responseBody(
                     matchingResultId(),
+                    targetMemberId(),
                     matchingTargetName(),
                     matchingTargetNickname(),
                     profileImageUrl(),
                     remainingDays(),
                     matchRate(),
+                    isWithdrawn(),
                 )
             )
     }

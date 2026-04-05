@@ -4,6 +4,8 @@ import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
+import com.konkuk.ma.domain.member.domain.Members
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
@@ -44,8 +46,8 @@ class MatchingResultQueryServiceTest : FunSpec({
             )
 
             every { matchingResultRepository.findByRegisterEmail(email) } returns matchingResults
-            every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns listOf(member)
-            every { memberPhotoRepository.findByEmails(matchingResults.extractTargetEmails()) } returns mapOf(member.email to photo)
+            every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns Members(listOf(member))
+            every { memberPhotoRepository.findByEmails(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
 
             // When
             val result = service.findByRegisterEmail(email)
@@ -57,20 +59,21 @@ class MatchingResultQueryServiceTest : FunSpec({
             result.data[0].profileImageUrl shouldBe photo.thumbnailPath
         }
 
-        test("매칭결과가 없으면 빈 결과를 즉시 반환한다") {
+        test("매칭결과가 없으면 빈 결과를 반환한다") {
             // Given
             val email = "register@example.com"
             val emptyResults = MatchingResults(emptyList())
+            val emptyEmails = emptyResults.extractTargetEmails()
 
             every { matchingResultRepository.findByRegisterEmail(email) } returns emptyResults
+            every { memberQueryRepository.findByEmails(emptyEmails) } returns Members(emptyList())
+            every { memberPhotoRepository.findByEmails(emptyEmails) } returns MemberPhotos(emptyList())
 
             // When
             val result = service.findByRegisterEmail(email)
 
             // Then
             result.data shouldHaveSize 0
-            verify(exactly = 0) { memberQueryRepository.findByEmails(any()) }
-            verify(exactly = 0) { memberPhotoRepository.findByEmails(any()) }
         }
     }
 })

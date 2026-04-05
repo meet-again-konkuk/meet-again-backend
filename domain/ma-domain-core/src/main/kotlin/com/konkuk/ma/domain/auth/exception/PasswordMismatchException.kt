@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.member.exception
+package com.konkuk.ma.domain.auth.exception
 
 import com.konkuk.ma.exception.BusinessException
 

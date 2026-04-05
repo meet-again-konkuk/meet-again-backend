@@ -30,6 +30,7 @@ class MemberEntity(
 ) {
     fun toDomain(): Member {
         return Member.create(
+            id = id,
             email = email,
             password = password,
             nickname = nickname,

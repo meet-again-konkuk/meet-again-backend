@@ -329,7 +329,25 @@ infrastructure/support/ma-file-storage/src/main/resources/config/application-loc
 - boot 모듈의 `application.yml`에는 `spring.profiles.active`와 Spring 공통 설정(multipart 등)만 둔다
 - 테스트 설정도 해당 모듈에 둔다 (예: `ma-file-storage`의 테스트 경로는 `ma-file-storage`에)
 
-## 13. 성능 고려사항
+## 13. 로깅은 반드시 AppLogger 사용
+
+`org.slf4j.LoggerFactory`를 직접 사용하지 않는다. `config/ma-config-logging`의 `AppLogger`(`com.konkuk.ma.logger`)를 사용한다.
+
+```kotlin
+// BAD - SLF4J 직접 사용
+import org.slf4j.LoggerFactory
+private val log = LoggerFactory.getLogger(javaClass)
+log.warn("실패 (email={}): {}", email, e.message)
+
+// GOOD - AppLogger 사용
+import com.konkuk.ma.logger
+logger.warn { "실패 (email=$email): ${e.message}" }
+```
+
+- `logger`는 top-level val로 선언된 싱글톤이므로 별도 선언 없이 import만 하면 됨
+- 람다 기반 API (`logger.info { }`, `logger.warn { }`, `logger.error { }`)로 메시지를 지연 평가
+
+## 14. 성능 고려사항
 
 - **N+1 쿼리 방지**: 반복문 안에서 DB 조회하지 않는다. 벌크 조회 후 메모리에서 처리한다
 - **불필요한 조건 제거**: enum 값이 2개뿐인 경우(예: Gender) DB 조건으로 넣지 말고 메모리에서 필터링

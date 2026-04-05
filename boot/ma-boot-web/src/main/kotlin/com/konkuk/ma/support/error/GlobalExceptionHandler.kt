@@ -5,7 +5,7 @@ import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.domain.common.exception.InvalidValueException
 import com.konkuk.ma.domain.member.exception.DuplicateEmailException
 import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
-import com.konkuk.ma.domain.member.exception.PasswordMismatchException
+import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.exception.BusinessException
 import com.konkuk.ma.exception.EntityNotFoundException

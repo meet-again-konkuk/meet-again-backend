@@ -17,12 +17,10 @@ class MatchingResultQueryService(
     fun findByRegisterEmail(email: String): MatchingResultsWithProfiles {
         val matchingResults = matchingResultRepository.findByRegisterEmail(email)
         val targetEmails = matchingResults.extractTargetEmails()
-        if (targetEmails.isEmpty()) return MatchingResultsWithProfiles(emptyList())
 
         val members = memberQueryRepository.findByEmails(targetEmails)
-        val membersByEmail = members.associateBy { it.email }
-        val photosByEmail = memberPhotoRepository.findByEmails(targetEmails)
+        val photos = memberPhotoRepository.findByEmails(targetEmails)
 
-        return MatchingResultsWithProfiles.combine(matchingResults, membersByEmail, photosByEmail)
+        return matchingResults.combineWithProfiles(members, photos)
     }
 }
