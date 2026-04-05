@@ -1,0 +1,8 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+file:
+  upload:
+    base-path: ${java.io.tmpdir}/meet-again-test/uploads

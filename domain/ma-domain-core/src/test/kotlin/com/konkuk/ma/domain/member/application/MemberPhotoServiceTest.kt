@@ -59,8 +59,7 @@ class MemberPhotoServiceTest : FunSpec({
             val processed = ProcessedPhoto("new/path.jpg", "new/thumb.jpg")
 
             every { memberPhotoRepository.findByMemberEmail(email) } returns existingPhoto
-            every { memberPhotoProcessor.deleteFile(existingPhoto.filePath) } just runs
-            every { memberPhotoProcessor.deleteFile(existingPhoto.thumbnailPath!!) } just runs
+            every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
             every { memberPhotoRepository.deleteByMemberEmail(email) } just runs
             every { memberPhotoProcessor.process(email, photoFile) } returns processed
             every { memberPhotoRepository.save(any()) } returns 2L
@@ -69,8 +68,7 @@ class MemberPhotoServiceTest : FunSpec({
             service.upload(email, photoFile)
 
             // Then
-            verify { memberPhotoProcessor.deleteFile(existingPhoto.filePath) }
-            verify { memberPhotoProcessor.deleteFile(existingPhoto.thumbnailPath!!) }
+            verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
             verify { memberPhotoRepository.deleteByMemberEmail(email) }
             verify { memberPhotoProcessor.process(email, photoFile) }
             verify { memberPhotoRepository.save(any()) }
@@ -85,54 +83,15 @@ class MemberPhotoServiceTest : FunSpec({
             val existingPhoto = MemberPhotoFixture.create(memberEmail = email)
 
             every { memberPhotoRepository.findByMemberEmail(email) } returns existingPhoto
-            every { memberPhotoProcessor.deleteFile(existingPhoto.filePath) } just runs
+            every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
             every { memberPhotoRepository.deleteByMemberEmail(email) } just runs
 
             // When
             service.delete(email)
 
             // Then
-            verify { memberPhotoProcessor.deleteFile(existingPhoto.filePath) }
+            verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
             verify { memberPhotoRepository.deleteByMemberEmail(email) }
-        }
-
-        test("썸네일이 있는 사진을 삭제하면 썸네일도 삭제한다") {
-            // Given
-            val email = "user@example.com"
-            val existingPhoto = MemberPhotoFixture.create(
-                memberEmail = email,
-                thumbnailPath = "member/thumbnail/thumb.jpg"
-            )
-
-            every { memberPhotoRepository.findByMemberEmail(email) } returns existingPhoto
-            every { memberPhotoProcessor.deleteFile(existingPhoto.filePath) } just runs
-            every { memberPhotoProcessor.deleteFile(existingPhoto.thumbnailPath!!) } just runs
-            every { memberPhotoRepository.deleteByMemberEmail(email) } just runs
-
-            // When
-            service.delete(email)
-
-            // Then
-            verify { memberPhotoProcessor.deleteFile(existingPhoto.thumbnailPath!!) }
-        }
-
-        test("썸네일이 없는 사진을 삭제하면 원본만 삭제한다") {
-            // Given
-            val email = "user@example.com"
-            val existingPhoto = MemberPhotoFixture.create(
-                memberEmail = email,
-                thumbnailPath = null
-            )
-
-            every { memberPhotoRepository.findByMemberEmail(email) } returns existingPhoto
-            every { memberPhotoProcessor.deleteFile(existingPhoto.filePath) } just runs
-            every { memberPhotoRepository.deleteByMemberEmail(email) } just runs
-
-            // When
-            service.delete(email)
-
-            // Then
-            verify(exactly = 1) { memberPhotoProcessor.deleteFile(existingPhoto.filePath) }
         }
 
         test("기존 사진이 없으면 아무 동작도 하지 않는다") {
@@ -145,7 +104,7 @@ class MemberPhotoServiceTest : FunSpec({
             service.delete(email)
 
             // Then
-            verify(exactly = 0) { memberPhotoProcessor.deleteFile(any()) }
+            verify(exactly = 0) { memberPhotoProcessor.deleteFiles(any()) }
             verify(exactly = 0) { memberPhotoRepository.deleteByMemberEmail(any()) }
         }
     }

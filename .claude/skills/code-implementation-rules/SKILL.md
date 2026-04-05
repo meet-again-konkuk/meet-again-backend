@@ -308,7 +308,28 @@ class MemberPhotoService(
 - 도메인 컴포넌트는 포트를 의존하고, 결과를 Value Object로 반환
 - Service 메서드를 읽었을 때 "무엇을 하는지"가 한눈에 보여야 한다 ("어떻게 하는지"는 도메인 컴포넌트 내부)
 
-## 12. 성능 고려사항
+## 12. 설정 파일은 해당 인프라 모듈에 배치
+
+각 인프라 모듈의 설정(application-{profile}.yml)은 **해당 모듈의 `src/main/resources/config/`** 에 둔다. boot 모듈에 모든 설정을 몰아넣지 않는다.
+
+```
+# BAD - boot 모듈에 모든 인프라 설정을 몰아넣음
+boot/ma-boot-web/src/main/resources/application.yml
+  → datasource, redis, jwt, file upload 설정이 모두 여기에
+
+# GOOD - 각 인프라 모듈이 자신의 설정을 관리
+infrastructure/storage/ma-db-core/src/main/resources/config/application-local.yml      → datasource 설정
+infrastructure/storage/ma-redis-core/src/main/resources/config/application-local.yml   → redis 설정
+infrastructure/support/ma-jwt-core/src/main/resources/config/application-local.yml     → jwt 설정
+infrastructure/support/ma-file-storage/src/main/resources/config/application-local.yml → file upload 설정
+```
+
+규칙:
+- 프로필별(`local`, `test`, `prod`) 설정은 각 모듈의 `config/application-{profile}.yml`에 배치
+- boot 모듈의 `application.yml`에는 `spring.profiles.active`와 Spring 공통 설정(multipart 등)만 둔다
+- 테스트 설정도 해당 모듈에 둔다 (예: `ma-file-storage`의 테스트 경로는 `ma-file-storage`에)
+
+## 13. 성능 고려사항
 
 - **N+1 쿼리 방지**: 반복문 안에서 DB 조회하지 않는다. 벌크 조회 후 메모리에서 처리한다
 - **불필요한 조건 제거**: enum 값이 2개뿐인 경우(예: Gender) DB 조건으로 넣지 말고 메모리에서 필터링

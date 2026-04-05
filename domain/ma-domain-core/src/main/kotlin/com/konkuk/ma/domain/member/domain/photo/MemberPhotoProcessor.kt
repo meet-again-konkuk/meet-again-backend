@@ -22,8 +22,11 @@ class MemberPhotoProcessor(
         return ProcessedPhoto(filePath, thumbnailPath)
     }
 
-    fun deleteFile(filePath: String) {
-        fileStorage.delete(filePath)
+    fun deleteFiles(photo: MemberPhoto) {
+        fileStorage.delete(photo.filePath)
+        if (photo.hasThumbnail()) {
+            fileStorage.delete(photo.thumbnailPath!!)
+        }
     }
 
     private fun storeOriginal(email: String, photoFile: PhotoFile): String {

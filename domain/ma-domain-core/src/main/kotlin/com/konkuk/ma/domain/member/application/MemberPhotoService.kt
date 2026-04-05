@@ -22,10 +22,7 @@ class MemberPhotoService(
 
     fun delete(email: String) {
         val existing = memberPhotoRepository.findByMemberEmail(email) ?: return
-        memberPhotoProcessor.deleteFile(existing.filePath)
-        if (existing.hasThumbnail()) {
-            memberPhotoProcessor.deleteFile(existing.thumbnailPath!!)
-        }
+        memberPhotoProcessor.deleteFiles(existing)
         memberPhotoRepository.deleteByMemberEmail(email)
     }
 }
