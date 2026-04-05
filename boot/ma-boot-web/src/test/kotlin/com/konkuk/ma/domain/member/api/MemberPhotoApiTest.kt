@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotoUploader
+import com.konkuk.ma.domain.member.application.MemberPhotoService
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.requestPart
 import com.konkuk.ma.extension.responseBody
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @BaseApiTest
 class MemberPhotoApiTest(
     private val mockMvc: MockMvc,
-    @MockkBean private val memberPhotoUploader: MemberPhotoUploader
+    @MockkBean private val memberPhotoService: MemberPhotoService
 ) : FunSpec({
 
     test("사진 업로드 - multipart 파일 전송시 성공한다") {
@@ -36,7 +36,7 @@ class MemberPhotoApiTest(
             "fake-image-content".toByteArray()
         )
 
-        every { memberPhotoUploader.upload(any(), any()) } just runs
+        every { memberPhotoService.upload(any(), any()) } just runs
 
         // When & Then
         mockMvc.perform(
@@ -57,7 +57,7 @@ class MemberPhotoApiTest(
 
     test("사진 삭제 - DELETE 요청시 성공한다") {
         // Given
-        every { memberPhotoUploader.delete(any()) } just runs
+        every { memberPhotoService.delete(any()) } just runs
 
         // When & Then
         mockMvc.delete("/api/members/photos")
