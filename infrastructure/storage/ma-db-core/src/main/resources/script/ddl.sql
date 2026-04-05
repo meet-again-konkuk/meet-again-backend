@@ -101,7 +101,8 @@ CREATE TABLE MATCHING_RESULTS
     DELETED               BOOLEAN      DEFAULT FALSE,
 
     -- 인덱스
-    INDEX idx_matching_expiry_date (MATCHING_EXPIRY_DATE)
+    INDEX idx_matching_expiry_date (MATCHING_EXPIRY_DATE),
+    INDEX idx_matching_register_email (REGISTER_EMAIL)
 );
 
 -- MEMBER PHOTOS

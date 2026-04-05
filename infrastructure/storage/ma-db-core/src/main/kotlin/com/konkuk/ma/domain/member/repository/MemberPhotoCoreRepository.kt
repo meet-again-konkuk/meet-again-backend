@@ -24,4 +24,10 @@ class MemberPhotoCoreRepository(
     override fun deleteByMemberEmail(email: String) {
         memberPhotoCommandDao.deleteByMemberEmail(email)
     }
+
+    override fun findByEmails(emails: Set<String>): Map<String, MemberPhoto> {
+        return memberPhotoQueryDao.findByEmails(emails)
+            .map { it.toDomain() }
+            .associateBy { it.memberEmail }
+    }
 }

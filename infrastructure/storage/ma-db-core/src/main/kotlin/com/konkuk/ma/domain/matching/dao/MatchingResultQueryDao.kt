@@ -1,42 +1,28 @@
 package com.konkuk.ma.domain.matching.dao
 
-import com.konkuk.ma.domain.matching.domain.MatchingResult
+import com.konkuk.ma.domain.matching.entity.MatchingResultEntity
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
 @Component
 class MatchingResultQueryDao {
-    fun findByTargetInfoIds(targetInfoIds: List<Long>): List<MatchingResult> {
+    fun findByTargetInfoIds(targetInfoIds: List<Long>): List<MatchingResultEntity> {
         if (targetInfoIds.isEmpty()) return emptyList()
         return MatchingResultTable
-            .select(
-                MatchingResultTable.registerEmail,
-                MatchingResultTable.targetInfoId,
-                MatchingResultTable.targetEmail,
-                MatchingResultTable.middleNumberMatched,
-                MatchingResultTable.lastNumberMatched,
-                MatchingResultTable.yearMatched,
-                MatchingResultTable.monthMatched,
-                MatchingResultTable.dayMatched,
-                MatchingResultTable.regionMatched,
-                MatchingResultTable.showingExpiryDate,
-                MatchingResultTable.matchingExpiryDate
-            )
+            .selectAll()
             .where { MatchingResultTable.targetInfoId inList targetInfoIds }
-            .map { row ->
-                MatchingResult(
-                    registerEmail = row[MatchingResultTable.registerEmail],
-                    targetInfoId = row[MatchingResultTable.targetInfoId],
-                    targetEmail = row[MatchingResultTable.targetEmail],
-                    middleNumberMatched = row[MatchingResultTable.middleNumberMatched],
-                    lastNumberMatched = row[MatchingResultTable.lastNumberMatched],
-                    yearMatched = row[MatchingResultTable.yearMatched],
-                    monthMatched = row[MatchingResultTable.monthMatched],
-                    dayMatched = row[MatchingResultTable.dayMatched],
-                    regionMatched = row[MatchingResultTable.regionMatched],
-                    showingExpiryDate = row[MatchingResultTable.showingExpiryDate],
-                    matchingExpiryDate = row[MatchingResultTable.matchingExpiryDate]
-                )
+            .map { row -> MatchingResultEntity.from(row) }
+    }
+
+    fun findByRegisterEmail(email: String): List<MatchingResultEntity> {
+        return MatchingResultTable
+            .selectAll()
+            .where {
+                (MatchingResultTable.registerEmail eq email) and
+                    (MatchingResultTable.deleted eq false)
             }
+            .map { row -> MatchingResultEntity.from(row) }
     }
 }

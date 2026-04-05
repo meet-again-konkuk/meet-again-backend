@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.RowEntityMapper
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.exception.EntityNotFoundException
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
@@ -40,5 +41,12 @@ class MemberQueryDao {
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
             ?: throw EntityNotFoundException("Member", "email", email)
+    }
+
+    fun findByEmails(emails: Set<String>): List<MemberEntity> {
+        if (emails.isEmpty()) return emptyList()
+        return MemberTable.selectAll()
+            .where { (MemberTable.email inList emails) and (MemberTable.deleted eq false) }
+            .map { RowEntityMapper.toMemberEntity(it) }
     }
 }

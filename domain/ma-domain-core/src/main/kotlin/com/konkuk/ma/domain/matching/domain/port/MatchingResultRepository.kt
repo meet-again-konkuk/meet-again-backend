@@ -7,4 +7,5 @@ interface MatchingResultRepository {
     fun saveAll(matchingResults: MatchingResults)
     fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults
     fun deleteExpiredMatchingResults(baseDate: LocalDate): Int
+    fun findByRegisterEmail(email: String): MatchingResults
 }

@@ -7,4 +7,5 @@ interface MemberPhotoRepository {
     fun save(newPhoto: NewPhoto): Long
     fun findByMemberEmail(email: String): MemberPhoto?
     fun deleteByMemberEmail(email: String)
+    fun findByEmails(emails: Set<String>): Map<String, MemberPhoto>
 }

@@ -44,15 +44,15 @@ class TargetInfo(
         val regionMatched = region == target.region
 
         return MatchingResult(
-            registerEmail,
-            targetInfoId,
-            target.email,
-            middleNumberMatched,
-            lastNumberMatched,
-            yearMatched,
-            monthMatched,
-            dayMatched,
-            regionMatched
+            registerEmail = registerEmail,
+            targetInfoId = targetInfoId,
+            targetEmail = target.email,
+            middleNumberMatched = middleNumberMatched,
+            lastNumberMatched = lastNumberMatched,
+            yearMatched = yearMatched,
+            monthMatched = monthMatched,
+            dayMatched = dayMatched,
+            regionMatched = regionMatched,
         )
     }
 }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class MatchingResult(
+    val id: Long = 0L,
     val registerEmail: String,
     val targetInfoId: Long,
     val targetEmail: String,

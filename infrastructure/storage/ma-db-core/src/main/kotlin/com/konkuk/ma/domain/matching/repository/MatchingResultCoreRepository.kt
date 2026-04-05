@@ -17,10 +17,20 @@ class MatchingResultCoreRepository(
     }
 
     override fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults {
-        return MatchingResults(matchingResultQueryDao.findByTargetInfoIds(targetInfoIds))
+        return MatchingResults(
+            matchingResultQueryDao.findByTargetInfoIds(targetInfoIds)
+                .map { it.toDomain() }
+        )
     }
 
     override fun deleteExpiredMatchingResults(baseDate: LocalDate): Int {
         return matchingResultCommandDao.deleteExpired(baseDate)
+    }
+
+    override fun findByRegisterEmail(email: String): MatchingResults {
+        return MatchingResults(
+            matchingResultQueryDao.findByRegisterEmail(email)
+                .map { it.toDomain() }
+        )
     }
 }

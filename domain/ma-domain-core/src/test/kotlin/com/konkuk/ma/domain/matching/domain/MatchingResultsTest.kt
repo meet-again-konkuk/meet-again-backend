@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.matching.domain
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 
@@ -26,6 +27,42 @@ class MatchingResultsTest : FunSpec({
             val results = MatchingResults(emptyList())
 
             results.targetInfoIds() shouldHaveSize 0
+        }
+    }
+
+    context("extractTargetEmails") {
+
+        test("중복 없이 타겟 이메일을 추출한다") {
+            val results = MatchingResults(
+                listOf(
+                    MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
+                    MatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com"),
+                    MatchingResultFixture.create(targetInfoId = 3L, targetEmail = "a@a.com")
+                )
+            )
+
+            val emails = results.extractTargetEmails()
+
+            emails shouldHaveSize 2
+            emails shouldContainExactlyInAnyOrder listOf("a@a.com", "b@b.com")
+        }
+
+        test("빈 리스트이면 빈 Set을 반환한다") {
+            val results = MatchingResults(emptyList())
+
+            results.extractTargetEmails() shouldHaveSize 0
+        }
+
+        test("모든 이메일이 다르면 전부 포함된다") {
+            val results = MatchingResults(
+                listOf(
+                    MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
+                    MatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com"),
+                    MatchingResultFixture.create(targetInfoId = 3L, targetEmail = "c@c.com")
+                )
+            )
+
+            results.extractTargetEmails() shouldHaveSize 3
         }
     }
 

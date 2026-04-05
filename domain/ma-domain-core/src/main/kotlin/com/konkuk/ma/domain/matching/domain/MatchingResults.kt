@@ -7,6 +7,10 @@ class MatchingResults(
         return data.map { it.targetInfoId }.distinct()
     }
 
+    fun extractTargetEmails(): Set<String> {
+        return data.map { it.targetEmail }.toSet()
+    }
+
     private fun createUniqueKeys(): Set<Pair<Long, String>> {
         return data.map { it.createUniqueKey() }.toSet()
     }

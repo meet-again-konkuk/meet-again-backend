@@ -16,4 +16,14 @@ class MemberPhotoQueryDao {
             .firstOrNull()
             ?.let { MemberPhotoEntity.from(it) }
     }
+
+    fun findByEmails(emails: Set<String>): List<MemberPhotoEntity> {
+        if (emails.isEmpty()) return emptyList()
+        return MemberPhotoTable.selectAll()
+            .where {
+                (MemberPhotoTable.memberEmail inList emails) and
+                    (MemberPhotoTable.deleted eq false)
+            }
+            .map { MemberPhotoEntity.from(it) }
+    }
 }

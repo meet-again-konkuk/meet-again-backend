@@ -26,4 +26,9 @@ class MemberQueryCoreRepository(
         return memberQueryDao.findByNames(names)
             .map { it.toDomain() }
     }
+
+    override fun findByEmails(emails: Set<String>): List<Member> {
+        return memberQueryDao.findByEmails(emails)
+            .map { it.toDomain() }
+    }
 }
