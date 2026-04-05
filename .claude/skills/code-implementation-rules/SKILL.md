@@ -264,7 +264,51 @@ class SignUpService(
 
 로직 재사용이 필요하면 도메인 객체에 행위를 부여하거나, 공통 로직을 도메인 서비스(순수 함수)로 분리한다.
 
-## 11. 성능 고려사항
+## 11. Service는 비즈니스 로직을 포함하지 않는다 — 조합만 담당
+
+Service 클래스는 비즈니스 로직을 직접 구현하지 않는다. 비즈니스 로직을 담당하는 도메인 객체/컴포넌트들을 **조합(orchestrate)**하는 역할만 한다.
+
+```kotlin
+// BAD - Service에 비즈니스 로직이 직접 존재
+@Service
+class MemberPhotoService(
+    private val fileStorage: FileStorage,
+    private val thumbnailGenerator: ThumbnailGenerator,
+    private val memberPhotoRepository: MemberPhotoRepository
+) {
+    fun upload(email: String, photoFile: PhotoFile) {
+        // 디렉토리 생성, 파일 저장, 썸네일 생성, 파일명 생성... 비즈니스 로직이 서비스에 가득
+        val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.PROFILE, email)
+        val filePath = fileStorage.store(directory.value, photoFile)
+        val thumbnailBytes = thumbnailGenerator.generate(photoFile.content, 400)
+        val thumbnailDir = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.THUMBNAIL, email)
+        val thumbnailPath = fileStorage.storeBytes(thumbnailDir.value, "thumb_${photoFile.originalFileName}", thumbnailBytes)
+        memberPhotoRepository.save(NewPhoto.create(email, filePath, photoFile.originalFileName, thumbnailPath))
+    }
+}
+
+// GOOD - Service는 도메인 컴포넌트를 조합만 한다
+@Service
+class MemberPhotoService(
+    private val memberPhotoProcessor: MemberPhotoProcessor,  // 파일 처리 담당 도메인 컴포넌트
+    private val memberPhotoRepository: MemberPhotoRepository  // 포트
+) {
+    fun upload(email: String, photoFile: PhotoFile) {
+        delete(email)
+        val processed = memberPhotoProcessor.process(email, photoFile)  // 위임
+        val newPhoto = NewPhoto.create(email, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
+        memberPhotoRepository.save(newPhoto)
+    }
+}
+```
+
+핵심 원칙:
+- Service는 **흐름 제어(조합)만** 담당: "이것 처리하고 → 저것 저장하고 → 결과 반환"
+- 비즈니스 로직(파일 처리, 변환, 계산, 검증)은 **도메인 컴포넌트(@Component)**에 캡슐화
+- 도메인 컴포넌트는 포트를 의존하고, 결과를 Value Object로 반환
+- Service 메서드를 읽었을 때 "무엇을 하는지"가 한눈에 보여야 한다 ("어떻게 하는지"는 도메인 컴포넌트 내부)
+
+## 12. 성능 고려사항
 
 - **N+1 쿼리 방지**: 반복문 안에서 DB 조회하지 않는다. 벌크 조회 후 메모리에서 처리한다
 - **불필요한 조건 제거**: enum 값이 2개뿐인 경우(예: Gender) DB 조건으로 넣지 말고 메모리에서 필터링
