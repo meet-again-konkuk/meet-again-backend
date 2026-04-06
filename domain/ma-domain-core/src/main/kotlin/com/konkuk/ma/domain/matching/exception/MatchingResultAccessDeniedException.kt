@@ -4,9 +4,10 @@ import com.konkuk.ma.exception.BusinessException
 
 class MatchingResultAccessDeniedException(
     matchingResultId: Long,
-    email: String,
+    ownerEmail: String,
+    requestEmail: String,
 ) : BusinessException(
     message = "매칭 결과에 대한 접근 권한이 없습니다.",
-    dataMessage = "matchingResultId: $matchingResultId, requestEmail: $email",
+    dataMessage = "matchingResultId: $matchingResultId, ownerEmail: $ownerEmail, requestEmail: $requestEmail",
     logLevel = LogLevel.WARN,
 )

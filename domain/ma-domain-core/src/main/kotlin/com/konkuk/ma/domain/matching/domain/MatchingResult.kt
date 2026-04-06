@@ -55,7 +55,7 @@ class MatchingResult(
 
     fun validateOwnership(email: String) {
         if (registerEmail != email) {
-            throw MatchingResultAccessDeniedException(id, email)
+            throw MatchingResultAccessDeniedException(id, registerEmail, email)
         }
     }
 

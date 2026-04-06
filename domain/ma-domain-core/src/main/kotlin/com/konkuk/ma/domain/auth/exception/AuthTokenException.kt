@@ -15,7 +15,7 @@ class AuthTokenException(
     callerFunction: KFunction<*>? = null
 ) : BusinessException(
     message = jwtExceptionType.message,
-    dataMessage = "token : $token",
+    dataMessage = "jwtExceptionType: ${jwtExceptionType.name}, token: $token",
     callerFunction = callerFunction,
     cause = throwable,
     logLevel = logLevel
