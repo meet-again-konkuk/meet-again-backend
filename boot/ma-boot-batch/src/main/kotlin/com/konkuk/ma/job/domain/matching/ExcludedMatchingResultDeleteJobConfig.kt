@@ -10,41 +10,46 @@ import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.step.builder.StepBuilder
 import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.repeat.RepeatStatus
-import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ExpiredMatchingResultDeleteJobConfig(
+class ExcludedMatchingResultDeleteJobConfig(
     private val matchingResultRepository: MatchingResultRepository,
-    @Qualifier("expiredDateJobParameter") private val dateJobParameter: DateJobParameter
+    @Qualifier("excludedDateJobParameter") private val dateJobParameter: DateJobParameter
 ) : AbstractJobConfig() {
 
     @Bean
     @JobScope
-    fun expiredDateJobParameter(): DateJobParameter {
+    fun excludedDateJobParameter(): DateJobParameter {
         return DateJobParameter()
     }
 
     @Bean
-    fun expiredMatchingResultDeleteJob(): Job {
-        return JobBuilder("expiredMatchingResultDeleteJob", jobRepository)
-            .start(expiredMatchingResultDeleteStep())
+    fun excludedMatchingResultDeleteJob(): Job {
+        return JobBuilder("excludedMatchingResultDeleteJob", jobRepository)
+            .start(excludedMatchingResultDeleteStep())
             .build()
     }
 
     @Bean
-    fun expiredMatchingResultDeleteStep(): Step {
-        return StepBuilder("expiredMatchingResultDeleteStep", jobRepository)
-            .tasklet(expiredMatchingResultDeleteTasklet(), transactionManager)
+    fun excludedMatchingResultDeleteStep(): Step {
+        return StepBuilder("excludedMatchingResultDeleteStep", jobRepository)
+            .tasklet(excludedMatchingResultDeleteTasklet(), transactionManager)
             .build()
     }
 
     @Bean
-    fun expiredMatchingResultDeleteTasklet(): Tasklet {
+    fun excludedMatchingResultDeleteTasklet(): Tasklet {
         return Tasklet { _, _ ->
-            matchingResultRepository.deleteExpiredMatchingResults(dateJobParameter.inputDate)
+            val cutoffDate = dateJobParameter.inputDate.minusYears(EXCLUDED_RETENTION_YEARS)
+            matchingResultRepository.deleteExcludedExpiredMatchingResults(cutoffDate)
             RepeatStatus.FINISHED
         }
+    }
+
+    companion object {
+        private const val EXCLUDED_RETENTION_YEARS = 1L
     }
 }

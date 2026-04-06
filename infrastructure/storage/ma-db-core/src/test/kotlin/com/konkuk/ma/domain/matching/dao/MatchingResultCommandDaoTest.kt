@@ -101,6 +101,87 @@ class MatchingResultCommandDaoTest(
                 // Then
                 deletedCount shouldBe 0
             }
+
+            test("excluded=true인 만료된 데이터는 삭제하지 않는다") {
+                // Given
+                val baseDate = LocalDate.of(2025, 6, 1)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = true)
+
+                // When
+                val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
+
+                // Then
+                deletedCount shouldBe 0
+                MatchingResultTable.selectAll().count() shouldBe 1
+            }
+
+            test("excluded=false인 만료된 데이터만 삭제한다") {
+                // Given
+                val baseDate = LocalDate.of(2025, 6, 1)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = false)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 30), excluded = true)
+
+                // When
+                val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
+
+                // Then
+                deletedCount shouldBe 1
+                MatchingResultTable.selectAll().count() shouldBe 1
+            }
+        }
+
+        context("deleteExcludedExpired") {
+
+            test("excluded=true이고 만료일이 기준일보다 이전인 데이터를 삭제한다") {
+                // Given
+                val baseDate = LocalDate.of(2025, 6, 1)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = true)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 30), excluded = true)
+
+                // When
+                val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
+
+                // Then
+                deletedCount shouldBe 2
+                MatchingResultTable.selectAll().count() shouldBe 0
+            }
+
+            test("excluded=false인 만료된 데이터는 삭제하지 않는다") {
+                // Given
+                val baseDate = LocalDate.of(2025, 6, 1)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = false)
+
+                // When
+                val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
+
+                // Then
+                deletedCount shouldBe 0
+                MatchingResultTable.selectAll().count() shouldBe 1
+            }
+
+            test("excluded=true이지만 만료일이 기준일 이후인 데이터는 삭제하지 않는다") {
+                // Given
+                val baseDate = LocalDate.of(2025, 6, 1)
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 6, 2), excluded = true)
+
+                // When
+                val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
+
+                // Then
+                deletedCount shouldBe 0
+                MatchingResultTable.selectAll().count() shouldBe 1
+            }
+
+            test("삭제할 데이터가 없으면 0을 반환한다") {
+                // Given
+                val baseDate = LocalDate.of(2025, 6, 1)
+
+                // When
+                val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
+
+                // Then
+                deletedCount shouldBe 0
+            }
         }
     }
 
@@ -126,7 +207,8 @@ class MatchingResultCommandDaoTest(
     }
 
     private fun insertMatchingResult(
-        matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210)
+        matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
+        excluded: Boolean = false
     ) {
         val targetInfoId = TargetInfoTable.selectAll().first()[TargetInfoTable.id].value
         MatchingResultTable.insert {
@@ -141,6 +223,7 @@ class MatchingResultCommandDaoTest(
             it[regionMatched] = true
             it[showingExpiryDate] = LocalDateTime.now().plusDays(30)
             it[MatchingResultTable.matchingExpiryDate] = matchingExpiryDate
+            it[MatchingResultTable.excluded] = excluded
         }
     }
 }

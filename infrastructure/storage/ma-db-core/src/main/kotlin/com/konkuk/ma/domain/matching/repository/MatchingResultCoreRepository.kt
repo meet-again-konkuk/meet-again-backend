@@ -30,6 +30,10 @@ class MatchingResultCoreRepository(
         return matchingResultCommandDao.deleteExpired(baseDate)
     }
 
+    override fun deleteExcludedExpiredMatchingResults(baseDate: LocalDate): Int {
+        return matchingResultCommandDao.deleteExcludedExpired(baseDate)
+    }
+
     override fun findByRegisterEmail(email: String): MatchingResults {
         return MatchingResults(
             matchingResultQueryDao.findByRegisterEmail(email)

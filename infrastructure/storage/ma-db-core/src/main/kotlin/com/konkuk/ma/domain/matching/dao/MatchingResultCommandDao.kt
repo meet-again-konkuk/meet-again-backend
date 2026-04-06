@@ -2,7 +2,9 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
@@ -13,7 +15,13 @@ import java.time.LocalDate
 class MatchingResultCommandDao {
     fun deleteExpired(baseDate: LocalDate): Int {
         return MatchingResultTable.deleteWhere {
-            matchingExpiryDate less baseDate
+            (matchingExpiryDate less baseDate) and (excluded eq false)
+        }
+    }
+
+    fun deleteExcludedExpired(baseDate: LocalDate): Int {
+        return MatchingResultTable.deleteWhere {
+            (excluded eq true) and (matchingExpiryDate less baseDate)
         }
     }
 
