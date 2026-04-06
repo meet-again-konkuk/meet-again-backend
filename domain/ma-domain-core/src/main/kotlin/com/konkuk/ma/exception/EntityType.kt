@@ -1,7 +1,7 @@
 package com.konkuk.ma.exception
 
-enum class EntityType(val entityName: String) {
-    MEMBER("Member"),
-    MATCHING_RESULT("MatchingResult"),
-    REFRESH_TOKEN("RefreshToken"),
+enum class EntityType(val entityName: String, val keyName: String) {
+    MEMBER("Member", "email"),
+    MATCHING_RESULT("MatchingResult", "id"),
+    REFRESH_TOKEN("RefreshToken", "email"),
 }

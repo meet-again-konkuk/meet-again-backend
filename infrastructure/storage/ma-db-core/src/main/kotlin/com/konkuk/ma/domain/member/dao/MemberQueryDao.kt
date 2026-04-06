@@ -41,7 +41,7 @@ class MemberQueryDao {
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
-            ?: throw EntityNotFoundException(EntityType.MEMBER, "email", email)
+            ?: throw EntityNotFoundException(EntityType.MEMBER, email)
     }
 
     fun findByEmails(emails: Set<String>): List<MemberEntity> {

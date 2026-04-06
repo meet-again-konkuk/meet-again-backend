@@ -36,6 +36,6 @@ class RefreshTokenDao {
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toRefreshTokenEntity(it) }
-            ?: throw EntityNotFoundException(EntityType.REFRESH_TOKEN, "email", email)
+            ?: throw EntityNotFoundException(EntityType.REFRESH_TOKEN, email)
     }
 }

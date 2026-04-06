@@ -105,7 +105,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val nonExistentId = 999L
             val email = "register@example.com"
 
-            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, "id", nonExistentId.toString())
+            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {

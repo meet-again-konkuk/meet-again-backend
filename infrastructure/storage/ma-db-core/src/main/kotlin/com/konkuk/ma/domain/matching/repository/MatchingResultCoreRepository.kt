@@ -40,7 +40,7 @@ class MatchingResultCoreRepository(
     override fun findById(matchingResultId: Long): MatchingResult {
         return matchingResultQueryDao.findById(matchingResultId)
             ?.toDomain()
-            ?: throw EntityNotFoundException(EntityType.MATCHING_RESULT, "id", matchingResultId.toString())
+            ?: throw EntityNotFoundException(EntityType.MATCHING_RESULT, matchingResultId.toString())
     }
 
     override fun updateExcluded(matchingResult: MatchingResult) {
