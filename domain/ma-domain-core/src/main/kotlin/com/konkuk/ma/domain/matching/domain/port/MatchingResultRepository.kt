@@ -10,4 +10,5 @@ interface MatchingResultRepository {
     fun deleteExpiredMatchingResults(baseDate: LocalDate): Int
     fun findByRegisterEmail(email: String): MatchingResults
     fun findById(matchingResultId: Long): MatchingResult
+    fun updateExcluded(matchingResult: MatchingResult)
 }

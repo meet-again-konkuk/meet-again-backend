@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 매칭 결과 제외/해제 API
+
+== 매칭 결과 제외
+
+매칭 결과 목록에서 특정 상대를 제외합니다.
+
+=== 요청
+
+include::{snippets}/matching/exclude-matching-result/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/exclude-matching-result/http-response.adoc[]
+
+== 매칭 결과 제외 해제
+
+제외된 매칭 결과를 다시 목록에 포함시킵니다.
+
+=== 요청
+
+include::{snippets}/matching/include-matching-result/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/include-matching-result/http-response.adoc[]

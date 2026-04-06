@@ -77,6 +77,25 @@ class MatchingResultTest : FunSpec({
         }
     }
 
+    context("exclude / include") {
+
+        test("exclude 호출 시 excluded가 true가 된다") {
+            val matchingResult = MatchingResultFixture.create()
+
+            matchingResult.exclude()
+
+            matchingResult.excluded shouldBe true
+        }
+
+        test("include 호출 시 excluded가 false가 된다") {
+            val matchingResult = MatchingResultFixture.create(excluded = true)
+
+            matchingResult.include()
+
+            matchingResult.excluded shouldBe false
+        }
+    }
+
     context("MatchingResult.calculateMatchRate") {
 
         test("전화번호 완전 + 생년월일 완전 + 지역 일치 시 99% 반환") {

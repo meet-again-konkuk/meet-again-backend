@@ -23,7 +23,10 @@ class MatchingResult(
         .plusDays(SHOWING_EXPIRY_DAYS),
     val matchingExpiryDate: LocalDate = LocalDate.now()
         .plusDays(MATCHING_EXPIRY_DAYS),
+    excluded: Boolean = false,
 ) {
+    var excluded: Boolean = excluded
+        private set
     val matchRate: Int by lazy {
         MatchRateCalculator(
             groups = listOf(
@@ -54,5 +57,13 @@ class MatchingResult(
         if (registerEmail != email) {
             throw MatchingResultAccessDeniedException(id, email)
         }
+    }
+
+    fun exclude() {
+        excluded = true
+    }
+
+    fun include() {
+        excluded = false
     }
 }

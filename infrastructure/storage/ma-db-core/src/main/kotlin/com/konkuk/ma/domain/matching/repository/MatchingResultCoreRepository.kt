@@ -41,4 +41,8 @@ class MatchingResultCoreRepository(
             ?.toDomain()
             ?: throw EntityNotFoundException("MatchingResult", "id", matchingResultId.toString())
     }
+
+    override fun updateExcluded(matchingResult: MatchingResult) {
+        matchingResultCommandDao.updateExcluded(matchingResult)
+    }
 }

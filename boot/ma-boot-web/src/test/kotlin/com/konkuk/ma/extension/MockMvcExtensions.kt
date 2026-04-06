@@ -4,6 +4,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActionsDsl
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
 
 fun MockMvc.postJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultActionsDsl {
@@ -27,6 +28,18 @@ fun MockMvc.getJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultAc
     }
 }
 
+
+fun MockMvc.patchJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultActionsDsl {
+    val builder = JsonRequestBuilder().apply(setup)
+    return this.patch(uri) {
+        contentType = MediaType.APPLICATION_JSON
+        accept = MediaType.APPLICATION_JSON
+        builder.headers.forEach { (name, value) -> header(name, value) }
+        if (builder.content != null) {
+            content = builder.content
+        }
+    }
+}
 
 class JsonRequestBuilder {
     var content: String? = null

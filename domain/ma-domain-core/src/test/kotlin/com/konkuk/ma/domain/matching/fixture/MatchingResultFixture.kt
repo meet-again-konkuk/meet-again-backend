@@ -16,7 +16,8 @@ object MatchingResultFixture {
         dayMatched: Boolean = true,
         regionMatched: Boolean = true,
         showingExpiryDate: LocalDateTime = LocalDate.now().atTime(11, 0).plusDays(30),
-        matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210)
+        matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
+        excluded: Boolean = false,
     ): MatchingResult {
         return MatchingResult(
             registerEmail = registerEmail,
@@ -29,7 +30,8 @@ object MatchingResultFixture {
             dayMatched = dayMatched,
             regionMatched = regionMatched,
             showingExpiryDate = showingExpiryDate,
-            matchingExpiryDate = matchingExpiryDate
+            matchingExpiryDate = matchingExpiryDate,
+            excluded = excluded,
         )
     }
 }

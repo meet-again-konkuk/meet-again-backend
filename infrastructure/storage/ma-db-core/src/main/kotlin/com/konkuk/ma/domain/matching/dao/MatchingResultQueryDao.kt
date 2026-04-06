@@ -21,7 +21,8 @@ class MatchingResultQueryDao {
             .selectAll()
             .where {
                 (MatchingResultTable.registerEmail eq email) and
-                    (MatchingResultTable.deleted eq false)
+                    (MatchingResultTable.deleted eq false) and
+                    (MatchingResultTable.excluded eq false)
             }
             .map { row -> MatchingResultEntity.from(row) }
     }

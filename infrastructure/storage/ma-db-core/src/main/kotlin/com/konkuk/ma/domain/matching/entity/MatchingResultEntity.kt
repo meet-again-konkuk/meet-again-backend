@@ -19,6 +19,7 @@ class MatchingResultEntity(
     val regionMatched: Boolean,
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
+    val excluded: Boolean,
 ) {
     fun toDomain(): MatchingResult {
         return MatchingResult(
@@ -34,6 +35,7 @@ class MatchingResultEntity(
             regionMatched = regionMatched,
             showingExpiryDate = showingExpiryDate,
             matchingExpiryDate = matchingExpiryDate,
+            excluded = excluded,
         )
     }
 
@@ -52,6 +54,7 @@ class MatchingResultEntity(
                 regionMatched = row[MatchingResultTable.regionMatched],
                 showingExpiryDate = row[MatchingResultTable.showingExpiryDate],
                 matchingExpiryDate = row[MatchingResultTable.matchingExpiryDate],
+                excluded = row[MatchingResultTable.excluded],
             )
         }
     }

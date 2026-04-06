@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -31,6 +32,13 @@ class MatchingResultCommandDao {
             this[MatchingResultTable.matchingExpiryDate] = it.matchingExpiryDate
             this[MatchingResultTable.createdBy] = it.registerEmail
             this[MatchingResultTable.lastModifiedBy] = it.registerEmail
+            this[MatchingResultTable.excluded] = it.excluded
+        }
+    }
+
+    fun updateExcluded(matchingResult: MatchingResult) {
+        MatchingResultTable.update({ MatchingResultTable.id eq matchingResult.id }) {
+            it[excluded] = matchingResult.excluded
         }
     }
 }
