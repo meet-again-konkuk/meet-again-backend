@@ -12,14 +12,9 @@ import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.dayMatched
-import com.konkuk.ma.vocabulary.detailIsWithdrawn
 import com.konkuk.ma.vocabulary.detailMatchRate
 import com.konkuk.ma.vocabulary.detailMatchingResultId
-import com.konkuk.ma.vocabulary.detailProfileImageUrl
 import com.konkuk.ma.vocabulary.detailRemainingDays
-import com.konkuk.ma.vocabulary.detailTargetMemberId
-import com.konkuk.ma.vocabulary.detailTargetName
-import com.konkuk.ma.vocabulary.detailTargetNickname
 import com.konkuk.ma.vocabulary.isWithdrawn
 import com.konkuk.ma.vocabulary.lastNumberMatched
 import com.konkuk.ma.vocabulary.matchRate
@@ -130,15 +125,8 @@ class MatchingResultQueryApiTest(
             showingExpiryDate = LocalDateTime.now().plusDays(25),
             matchingExpiryDate = LocalDate.now().plusDays(200),
         )
-        val resultWithProfile = MatchingResultWithProfile(
-            matchingResult = matchingResult,
-            targetMemberId = 1L,
-            targetName = "김만남",
-            targetNickname = "테스트닉네임",
-            profileImageUrl = "https://example.com/image.jpg",
-        )
 
-        every { matchingResultQueryService.findDetailById(matchingResultId, "test@example.com") } returns resultWithProfile
+        every { matchingResultQueryService.findDetailById(matchingResultId, "test@example.com") } returns matchingResult
 
         // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}
@@ -147,13 +135,8 @@ class MatchingResultQueryApiTest(
                 "matching/find-matching-result-detail",
                 responseBody(
                     detailMatchingResultId(),
-                    detailTargetMemberId(),
-                    detailTargetName(),
-                    detailTargetNickname(),
-                    detailProfileImageUrl(),
                     detailRemainingDays(),
                     detailMatchRate(),
-                    detailIsWithdrawn(),
                     middleNumberMatched(),
                     lastNumberMatched(),
                     yearMatched(),

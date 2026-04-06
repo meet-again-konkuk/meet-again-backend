@@ -18,7 +18,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 
 class MatchingResultQueryServiceTest : FunSpec({
 
@@ -82,7 +81,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
     context("findDetailById") {
 
-        test("정상 조회 시 MatchingResultWithProfile을 반환한다") {
+        test("정상 조회 시 MatchingResult를 반환한다") {
             // Given
             val matchingResultId = 1L
             val email = "register@example.com"
@@ -91,24 +90,13 @@ class MatchingResultQueryServiceTest : FunSpec({
                 targetEmail = "target@example.com"
             )
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail)
-            val photo = MemberPhotoFixture.create(
-                memberEmail = matchingResult.targetEmail,
-                thumbnailPath = "thumb/photo.jpg"
-            )
-
             every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
-            every { memberQueryRepository.findByEmails(setOf(matchingResult.targetEmail)) } returns Members(listOf(member))
-            every { memberPhotoRepository.findByEmails(setOf(matchingResult.targetEmail)) } returns MemberPhotos(listOf(photo))
 
             // When
             val result = service.findDetailById(matchingResultId, email)
 
             // Then
-            result.targetName shouldBe member.name
-            result.targetNickname shouldBe member.nickname
-            result.profileImageUrl shouldBe photo.thumbnailPath
-            result.matchingResult shouldBe matchingResult
+            result shouldBe matchingResult
         }
 
         test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
@@ -116,7 +104,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val nonExistentId = 999L
             val email = "register@example.com"
 
-            every { matchingResultRepository.findById(nonExistentId) } returns null
+            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException("MatchingResult", "id", nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {

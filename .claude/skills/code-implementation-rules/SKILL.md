@@ -109,6 +109,38 @@ interface MatchingResultRepository {
 }
 ```
 
+단건 조회 포트 메서드(`findById`, `findByEmail` 등)는 **non-null을 반환**한다. 엔티티가 없으면 **Repository 구현체에서 예외를 던진다**. Service에서 null 체크를 하지 않는다.
+
+nullable 반환이 필요한 경우 메서드명에 `OrNull` 접미사를 붙인다: `findByIdOrNull`, `findByEmailOrNull`.
+
+```kotlin
+// BAD - Service에서 null 체크 + 예외 처리
+fun findDetailById(id: Long): MatchingResult {
+    val result = matchingResultRepository.findById(id)
+        ?: throw EntityNotFoundException("MatchingResult", "id", id.toString())  // 서비스에 비즈니스 로직
+    return result
+}
+
+// GOOD - 포트는 non-null 반환, 예외는 Repository 구현체에서
+// 포트
+interface MatchingResultRepository {
+    fun findById(id: Long): MatchingResult  // non-null
+}
+
+// Repository 구현체
+override fun findById(id: Long): MatchingResult {
+    return dao.findById(id)?.toDomain()
+        ?: throw EntityNotFoundException("MatchingResult", "id", id.toString())
+}
+
+// Service - null 체크 없이 깔끔
+fun findDetailById(id: Long): MatchingResult {
+    val result = matchingResultRepository.findById(id)
+    result.validateOwnership(email)
+    return result
+}
+```
+
 ## 6. 비즈니스 로직은 도메인 객체 안에
 
 Writer/Controller 같은 인프라 계층에 비즈니스 로직을 두지 않는다. 도메인 객체에게 위임한다.

@@ -9,5 +9,5 @@ interface MatchingResultRepository {
     fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults
     fun deleteExpiredMatchingResults(baseDate: LocalDate): Int
     fun findByRegisterEmail(email: String): MatchingResults
-    fun findById(matchingResultId: Long): MatchingResult?
+    fun findById(matchingResultId: Long): MatchingResult
 }
