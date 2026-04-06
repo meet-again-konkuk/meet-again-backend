@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.RowEntityMapper
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.selectAll
@@ -40,7 +41,7 @@ class MemberQueryDao {
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
-            ?: throw EntityNotFoundException("Member", "email", email)
+            ?: throw EntityNotFoundException(EntityType.MEMBER, "email", email)
     }
 
     fun findByEmails(emails: Set<String>): List<MemberEntity> {

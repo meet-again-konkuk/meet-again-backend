@@ -6,6 +6,7 @@ import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 
@@ -39,7 +40,7 @@ class MatchingResultCoreRepository(
     override fun findById(matchingResultId: Long): MatchingResult {
         return matchingResultQueryDao.findById(matchingResultId)
             ?.toDomain()
-            ?: throw EntityNotFoundException("MatchingResult", "id", matchingResultId.toString())
+            ?: throw EntityNotFoundException(EntityType.MATCHING_RESULT, "id", matchingResultId.toString())
     }
 
     override fun updateExcluded(matchingResult: MatchingResult) {

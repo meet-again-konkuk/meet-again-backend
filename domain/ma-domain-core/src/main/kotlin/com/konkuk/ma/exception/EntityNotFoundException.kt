@@ -1,11 +1,11 @@
 package com.konkuk.ma.exception
 
 class EntityNotFoundException(
-    entityName: String,
+    entityType: EntityType,
     key: String,
-    value: String
+    value: String,
 ) : BusinessException(
-    message = "${entityName}을(를) 찾을 수 없습니다.",
+    message = "${entityType.entityName}을(를) 찾을 수 없습니다.",
     dataMessage = "$key: $value",
-    logLevel = LogLevel.WARN
+    logLevel = LogLevel.WARN,
 )

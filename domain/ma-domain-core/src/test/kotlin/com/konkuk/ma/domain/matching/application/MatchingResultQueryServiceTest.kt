@@ -11,6 +11,7 @@ import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
 import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
@@ -104,7 +105,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val nonExistentId = 999L
             val email = "register@example.com"
 
-            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException("MatchingResult", "id", nonExistentId.toString())
+            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, "id", nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {

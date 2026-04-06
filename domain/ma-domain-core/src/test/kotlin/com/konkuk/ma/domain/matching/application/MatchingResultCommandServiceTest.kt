@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -59,7 +60,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             val nonExistentId = 999L
             val email = "owner@example.com"
 
-            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException("MatchingResult", "id", nonExistentId.toString())
+            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, "id", nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
