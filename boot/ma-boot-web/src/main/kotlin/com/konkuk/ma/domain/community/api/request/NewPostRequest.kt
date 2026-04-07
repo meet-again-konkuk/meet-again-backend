@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api.request
 
+import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.support.validation.ValidationMessages
 import jakarta.validation.constraints.NotBlank
@@ -15,6 +16,15 @@ class NewPostRequest(
     @field:NotBlank(message = ValidationMessages.POST_CONTENT_REQUIRED)
     val content: String,
 ) {
+    fun toNewPost(authorEmail: String): NewPost {
+        return NewPost(
+            authorEmail = authorEmail,
+            category = category,
+            title = title,
+            content = content,
+        )
+    }
+
     companion object {
         private const val MAX_TITLE_LENGTH = 40
     }

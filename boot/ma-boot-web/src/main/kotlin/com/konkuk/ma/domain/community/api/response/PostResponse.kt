@@ -14,10 +14,10 @@ class PostResponse(
     val timeAgo: String,
 ) {
     companion object {
-        fun from(post: Post): PostResponse {
+        fun from(post: Post, nickname: String): PostResponse {
             return PostResponse(
                 id = post.id,
-                nickname = post.authorNickname,
+                nickname = nickname,
                 category = post.category.name,
                 title = post.title,
                 content = post.content,

@@ -23,12 +23,7 @@ class CommunityPostCommandApi(
         @AuthenticationPrincipal email: String,
         @Valid @RequestBody request: NewPostRequest,
     ): NewPostResponse {
-        val postId = postCommandService.create(
-            email = email,
-            category = request.category,
-            title = request.title,
-            content = request.content,
-        )
+        val postId = postCommandService.create(request.toNewPost(email))
         return NewPostResponse(postId = postId)
     }
 }

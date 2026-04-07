@@ -136,7 +136,6 @@ CREATE TABLE COMMUNITY_POSTS
 
     -- PostTable 특화 컬럼들
     AUTHOR_EMAIL       VARCHAR(255)  NOT NULL,
-    AUTHOR_NICKNAME    VARCHAR(255)  NOT NULL,
     CATEGORY           VARCHAR(32)   NOT NULL,
     TITLE              VARCHAR(100)  NOT NULL,
     CONTENT            TEXT          NOT NULL,

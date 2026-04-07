@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 class PostEntity(
     val id: Long,
     val authorEmail: String,
-    val authorNickname: String,
     val category: PostCategory,
     val title: String,
     val content: String,
@@ -21,7 +20,6 @@ class PostEntity(
         return Post(
             id = id,
             authorEmail = authorEmail,
-            authorNickname = authorNickname,
             category = category,
             title = title,
             content = content,
@@ -36,7 +34,6 @@ class PostEntity(
             return PostEntity(
                 id = row[PostTable.id].value,
                 authorEmail = row[PostTable.authorEmail],
-                authorNickname = row[PostTable.authorNickname],
                 category = PostCategory.valueOf(row[PostTable.category]),
                 title = row[PostTable.title],
                 content = row[PostTable.content],

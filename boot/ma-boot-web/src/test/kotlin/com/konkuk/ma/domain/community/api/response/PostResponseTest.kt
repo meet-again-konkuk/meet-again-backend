@@ -11,12 +11,11 @@ class PostResponseTest : FunSpec({
 
     context("from") {
 
-        test("Post 도메인 객체를 PostResponse로 변환한다") {
+        test("Post 도메인 객체와 닉네임을 PostResponse로 변환한다") {
             val now = LocalDateTime.of(2026, 4, 6, 12, 0, 0)
             val post = Post(
                 id = 1L,
                 authorEmail = "author@example.com",
-                authorNickname = "작성자",
                 category = PostCategory.SUCCESS_STORY,
                 title = "제목",
                 content = "내용",
@@ -24,11 +23,12 @@ class PostResponseTest : FunSpec({
                 comments = 3,
                 createdDate = now.minusHours(2),
             )
+            val nickname = "작성자"
 
-            val response = PostResponse.from(post)
+            val response = PostResponse.from(post, nickname)
 
             response.id shouldBe post.id
-            response.nickname shouldBe post.authorNickname
+            response.nickname shouldBe nickname
             response.category shouldBe post.category.name
             response.title shouldBe post.title
             response.content shouldBe post.content
@@ -41,14 +41,13 @@ class PostResponseTest : FunSpec({
             val post = Post(
                 id = 1L,
                 authorEmail = "author@example.com",
-                authorNickname = "작성자",
                 category = PostCategory.CHEER,
                 title = "제목",
                 content = "내용",
                 createdDate = now.minusMinutes(30),
             )
 
-            val response = PostResponse.from(post)
+            val response = PostResponse.from(post, "작성자")
 
             response.timeAgo shouldBe TimeAgoCalculator.calculate(post.createdDate)
         }

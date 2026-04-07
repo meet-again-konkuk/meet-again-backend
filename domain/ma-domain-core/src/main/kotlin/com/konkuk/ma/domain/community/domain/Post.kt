@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 class Post(
     val id: Long = 0L,
     val authorEmail: String,
-    val authorNickname: String,
     val category: PostCategory,
     val title: String,
     val content: String,

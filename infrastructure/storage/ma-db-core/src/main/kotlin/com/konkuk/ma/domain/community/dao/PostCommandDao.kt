@@ -10,7 +10,6 @@ class PostCommandDao {
     fun save(newPost: NewPost): Long {
         return PostTable.insertAndGetId {
             it[authorEmail] = newPost.authorEmail
-            it[authorNickname] = newPost.authorNickname
             it[category] = newPost.category.name
             it[title] = newPost.title
             it[content] = newPost.content

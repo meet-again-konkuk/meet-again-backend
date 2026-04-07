@@ -8,7 +8,6 @@ object PostFixture {
     fun create(
         id: Long = 1L,
         authorEmail: String = "author@example.com",
-        authorNickname: String = "작성자",
         category: PostCategory = PostCategory.SUCCESS_STORY,
         title: String = "테스트 게시글",
         content: String = "테스트 내용입니다.",
@@ -19,7 +18,6 @@ object PostFixture {
         return Post(
             id = id,
             authorEmail = authorEmail,
-            authorNickname = authorNickname,
             category = category,
             title = title,
             content = content,

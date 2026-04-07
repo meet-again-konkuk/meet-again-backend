@@ -37,12 +37,12 @@ class CommunityPostCommandApiTest(
         )
 
         every {
-            postCommandService.create(
-                email = "test@example.com",
-                category = PostCategory.CHEER,
-                title = "안녕하세요",
-                content = "반갑습니다",
-            )
+            postCommandService.create(match {
+                it.authorEmail == "test@example.com" &&
+                    it.category == PostCategory.CHEER &&
+                    it.title == "안녕하세요" &&
+                    it.content == "반갑습니다"
+            })
         } returns 1L
 
         // When & Then

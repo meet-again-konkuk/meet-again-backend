@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.community.domain
 
 class NewPost(
     val authorEmail: String,
-    val authorNickname: String,
     val category: PostCategory,
     val title: String,
     val content: String,
