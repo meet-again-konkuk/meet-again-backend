@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.page.CursorRequest
+import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
@@ -27,7 +27,7 @@ class PostQueryServiceTest : FunSpec({
         test("카테고리와 커서로 게시글 목록을 조회한다") {
             // Given
             val category = PostCategory.SUCCESS_STORY
-            val cursorRequest = CursorRequest(cursorId = null, size = 20)
+            val cursorCondition = CursorIdCondition(cursorId = null, size = 20)
             val post = PostFixture.create(category = category)
             val cursorResult = CursorResult(
                 data = listOf(post),
@@ -35,10 +35,10 @@ class PostQueryServiceTest : FunSpec({
                 nextCursorId = null,
             )
 
-            every { postQueryRepository.find(category, cursorRequest) } returns cursorResult
+            every { postQueryRepository.find(category, cursorCondition) } returns cursorResult
 
             // When
-            val result = service.find(category, cursorRequest)
+            val result = service.find(category, cursorCondition)
 
             // Then
             result.data shouldHaveSize 1
@@ -50,17 +50,17 @@ class PostQueryServiceTest : FunSpec({
         test("게시글이 없으면 빈 목록을 반환한다") {
             // Given
             val category = PostCategory.CHEER
-            val cursorRequest = CursorRequest(cursorId = null, size = 20)
+            val cursorCondition = CursorIdCondition(cursorId = null, size = 20)
             val cursorResult: CursorResult<List<Post>> = CursorResult(
                 data = emptyList(),
                 hasNext = false,
                 nextCursorId = null,
             )
 
-            every { postQueryRepository.find(category, cursorRequest) } returns cursorResult
+            every { postQueryRepository.find(category, cursorCondition) } returns cursorResult
 
             // When
-            val result = service.find(category, cursorRequest)
+            val result = service.find(category, cursorCondition)
 
             // Then
             result.data shouldHaveSize 0
@@ -70,7 +70,7 @@ class PostQueryServiceTest : FunSpec({
         test("다음 페이지가 있으면 hasNext가 true이고 nextCursorId를 반환한다") {
             // Given
             val category = PostCategory.SUCCESS_STORY
-            val cursorRequest = CursorRequest(cursorId = null, size = 20)
+            val cursorCondition = CursorIdCondition(cursorId = null, size = 20)
             val posts = List(20) { PostFixture.create(id = (20 - it).toLong(), category = category) }
             val cursorResult = CursorResult(
                 data = posts,
@@ -78,10 +78,10 @@ class PostQueryServiceTest : FunSpec({
                 nextCursorId = 1L,
             )
 
-            every { postQueryRepository.find(category, cursorRequest) } returns cursorResult
+            every { postQueryRepository.find(category, cursorCondition) } returns cursorResult
 
             // When
-            val result = service.find(category, cursorRequest)
+            val result = service.find(category, cursorCondition)
 
             // Then
             result.data shouldHaveSize 20

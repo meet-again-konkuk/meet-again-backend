@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.page.CursorRequest
+import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostQueryService(
     private val postQueryRepository: PostQueryRepository,
 ) {
-    fun find(category: PostCategory?, cursorRequest: CursorRequest): CursorResult<List<Post>> {
-        return postQueryRepository.find(category, cursorRequest)
+    fun find(category: PostCategory?, cursorCondition: CursorIdCondition): CursorResult<List<Post>> {
+        return postQueryRepository.find(category, cursorCondition)
     }
 }

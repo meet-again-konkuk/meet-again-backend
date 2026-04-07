@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.common.domain.page.CursorRequest
+import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.Post
@@ -58,7 +58,7 @@ class CommunityPostQueryApiTest(
             nextCursorId = 1L,
         )
 
-        every { postQueryService.find(PostCategory.CHEER, CursorRequest(null, 20)) } returns cursorResult
+        every { postQueryService.find(PostCategory.CHEER, CursorIdCondition(null, 20)) } returns cursorResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {
@@ -96,7 +96,7 @@ class CommunityPostQueryApiTest(
             nextCursorId = null,
         )
 
-        every { postQueryService.find(PostCategory.SUCCESS_STORY, CursorRequest(null, 20)) } returns cursorResult
+        every { postQueryService.find(PostCategory.SUCCESS_STORY, CursorIdCondition(null, 20)) } returns cursorResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {

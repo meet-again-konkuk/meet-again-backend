@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.community.api
 
-import com.konkuk.ma.domain.common.domain.page.CursorRequest
+import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.community.api.response.PostResponse
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostCategory
@@ -21,7 +21,7 @@ class CommunityPostQueryApi(
         @RequestParam(required = false) cursorId: Long?,
         @RequestParam(required = false) size: Int?,
     ): CursorResponse<List<PostResponse>> {
-        val cursorResult = postQueryService.find(category, CursorRequest.of(cursorId, size))
+        val cursorResult = postQueryService.find(category, CursorIdCondition.of(cursorId, size))
         return CursorResponse(
             data = cursorResult.data.map { PostResponse.from(it) },
             hasNext = cursorResult.hasNext,
