@@ -50,7 +50,8 @@ class MatchingJobConfig(
             readSize = CHUNK_SIZE_100,
             readFunction = { cursorId, limit ->
                 targetInfoQueryRepository.findNoOffset(cursorId, limit)
-            }
+            },
+            cursorIdExtractor = { it.targetInfoId }
         ) {}
     }
 

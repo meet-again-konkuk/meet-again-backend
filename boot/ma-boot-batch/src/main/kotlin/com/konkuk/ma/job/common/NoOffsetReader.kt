@@ -1,11 +1,11 @@
 package com.konkuk.ma.job.common
 
-import com.konkuk.ma.domain.common.HasCursorId
 import org.springframework.batch.item.ItemReader
 
-abstract class NoOffsetReader<T : HasCursorId<C>, C>(
+abstract class NoOffsetReader<T, C>(
     private val readSize: Int = 1000,
-    private val readFunction: (cursorId: C?, limit: Int) -> List<T>
+    private val readFunction: (cursorId: C?, limit: Int) -> List<T>,
+    private val cursorIdExtractor: (T) -> C,
 ) : ItemReader<T> {
 
     private var currentList: List<T> = emptyList()
@@ -25,7 +25,7 @@ abstract class NoOffsetReader<T : HasCursorId<C>, C>(
             }
 
             currentIndex = 0
-            lastCursorId = currentList.last().cursorId
+            lastCursorId = cursorIdExtractor(currentList.last())
         }
 
         val item = currentList[currentIndex]

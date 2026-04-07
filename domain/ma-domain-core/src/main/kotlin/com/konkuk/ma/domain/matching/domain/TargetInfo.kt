@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.HasCursorId
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -22,10 +21,7 @@ class TargetInfo(
     val day: Day?,
 
     val region: Region?
-) : HasCursorId<Long> {
-    override val cursorId: Long
-        get() = targetInfoId
-
+) {
     fun makeMatchingResults(targets: Targets): MatchingResults {
         val results = targets
             .filterCandidates(targetName, targetGender)
