@@ -1,9 +1,10 @@
 package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.domain.common.domain.page.CursorRequest
-import com.konkuk.ma.domain.community.api.response.PostsResponse
+import com.konkuk.ma.domain.community.api.response.PostResponse
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostCategory
+import com.konkuk.ma.support.payload.response.CursorResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -19,8 +20,10 @@ class CommunityPostQueryApi(
         @RequestParam(required = false) category: PostCategory?,
         @RequestParam(required = false) cursorId: Long?,
         @RequestParam(required = false) size: Int?,
-    ): PostsResponse {
+    ): CursorResponse<List<PostResponse>> {
         val cursorResult = postQueryService.find(category, CursorRequest.of(cursorId, size))
-        return PostsResponse.from(cursorResult)
+        return CursorResponse.from(cursorResult) { posts ->
+            posts.data.map { PostResponse.from(it) }
+        }
     }
 }

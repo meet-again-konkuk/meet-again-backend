@@ -8,28 +8,28 @@ import com.konkuk.ma.extension.responseType
 
 // --- 게시글 목록 응답 필드 ---
 
-fun postId(fieldName: String = "posts[].id") =
+fun postId(fieldName: String = "data[].id") =
     fieldName responseType NUMBER means "게시글 ID" example "1"
 
-fun postNickname(fieldName: String = "posts[].nickname") =
+fun postNickname(fieldName: String = "data[].nickname") =
     fieldName responseType STRING means "작성자 닉네임" example "테스트닉네임"
 
-fun postCategory(fieldName: String = "posts[].category") =
+fun postCategory(fieldName: String = "data[].category") =
     fieldName responseType STRING means "게시글 카테고리" example "CHEER"
 
-fun postTitle(fieldName: String = "posts[].title") =
+fun postTitle(fieldName: String = "data[].title") =
     fieldName responseType STRING means "게시글 제목" example "안녕하세요"
 
-fun postContent(fieldName: String = "posts[].content") =
+fun postContent(fieldName: String = "data[].content") =
     fieldName responseType STRING means "게시글 내용" example "반갑습니다"
 
-fun postLikes(fieldName: String = "posts[].likes") =
+fun postLikes(fieldName: String = "data[].likes") =
     fieldName responseType NUMBER means "좋아요 수" example "5"
 
-fun postComments(fieldName: String = "posts[].comments") =
+fun postComments(fieldName: String = "data[].comments") =
     fieldName responseType NUMBER means "댓글 수" example "3"
 
-fun postTimeAgo(fieldName: String = "posts[].timeAgo") =
+fun postTimeAgo(fieldName: String = "data[].timeAgo") =
     fieldName responseType STRING means "작성 경과 시간" example "5분 전"
 
 fun postsHasNext(fieldName: String = "hasNext") =
