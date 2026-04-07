@@ -6,7 +6,6 @@ import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
-import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
@@ -54,7 +53,7 @@ class CommunityPostQueryApiTest(
             createdDate = LocalDateTime.now().minusMinutes(5),
         )
         val cursorResult = CursorResult(
-            data = Posts(listOf(post)),
+            data = listOf(post),
             hasNext = true,
             nextCursorId = 1L,
         )
@@ -91,8 +90,8 @@ class CommunityPostQueryApiTest(
 
     test("게시글이 없는 경우 빈 목록 반환") {
         // Given
-        val cursorResult = CursorResult(
-            data = Posts(emptyList()),
+        val cursorResult: CursorResult<List<Post>> = CursorResult(
+            data = emptyList(),
             hasNext = false,
             nextCursorId = null,
         )

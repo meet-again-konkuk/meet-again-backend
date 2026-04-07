@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.common.domain.page.CursorRequest
 import com.konkuk.ma.domain.common.domain.page.CursorResult
+import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
-import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostQueryService(
     private val postQueryRepository: PostQueryRepository,
 ) {
-    fun find(category: PostCategory?, cursorRequest: CursorRequest): CursorResult<Posts> {
+    fun find(category: PostCategory?, cursorRequest: CursorRequest): CursorResult<List<Post>> {
         return postQueryRepository.find(category, cursorRequest)
     }
 }

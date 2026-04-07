@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.common.domain.page.CursorRequest
 import com.konkuk.ma.domain.common.domain.page.CursorResult
+import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
-import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
 import com.konkuk.ma.domain.community.fixture.PostFixture
 import io.kotest.core.spec.style.FunSpec
@@ -30,7 +30,7 @@ class PostQueryServiceTest : FunSpec({
             val cursorRequest = CursorRequest(cursorId = null, size = 20)
             val post = PostFixture.create(category = category)
             val cursorResult = CursorResult(
-                data = Posts(listOf(post)),
+                data = listOf(post),
                 hasNext = false,
                 nextCursorId = null,
             )
@@ -41,8 +41,8 @@ class PostQueryServiceTest : FunSpec({
             val result = service.find(category, cursorRequest)
 
             // Then
-            result.data.data shouldHaveSize 1
-            result.data.data[0].category shouldBe category
+            result.data shouldHaveSize 1
+            result.data[0].category shouldBe category
             result.hasNext shouldBe false
             result.nextCursorId shouldBe null
         }
@@ -51,8 +51,8 @@ class PostQueryServiceTest : FunSpec({
             // Given
             val category = PostCategory.CHEER
             val cursorRequest = CursorRequest(cursorId = null, size = 20)
-            val cursorResult = CursorResult(
-                data = Posts(emptyList()),
+            val cursorResult: CursorResult<List<Post>> = CursorResult(
+                data = emptyList(),
                 hasNext = false,
                 nextCursorId = null,
             )
@@ -63,7 +63,7 @@ class PostQueryServiceTest : FunSpec({
             val result = service.find(category, cursorRequest)
 
             // Then
-            result.data.data shouldHaveSize 0
+            result.data shouldHaveSize 0
             result.hasNext shouldBe false
         }
 
@@ -73,7 +73,7 @@ class PostQueryServiceTest : FunSpec({
             val cursorRequest = CursorRequest(cursorId = null, size = 20)
             val posts = List(20) { PostFixture.create(id = (20 - it).toLong(), category = category) }
             val cursorResult = CursorResult(
-                data = Posts(posts),
+                data = posts,
                 hasNext = true,
                 nextCursorId = 1L,
             )
@@ -84,7 +84,7 @@ class PostQueryServiceTest : FunSpec({
             val result = service.find(category, cursorRequest)
 
             // Then
-            result.data.data shouldHaveSize 20
+            result.data shouldHaveSize 20
             result.hasNext shouldBe true
             result.nextCursorId shouldBe 1L
         }

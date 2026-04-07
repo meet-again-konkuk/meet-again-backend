@@ -1,6 +1,5 @@
-package com.konkuk.ma.domain.community.domain
+package com.konkuk.ma.domain.common.domain.page
 
-import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.fixture.PostFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
@@ -9,7 +8,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
-class PostsTest : FunSpec({
+class CursorResultTest : FunSpec({
 
     context("CursorResult.of") {
 
@@ -34,7 +33,7 @@ class PostsTest : FunSpec({
         }
 
         test("빈 목록이면 hasNext가 false이고 nextCursorId가 null이다") {
-            val result = CursorResult.of(emptyList<Post>(), 20) { it.id }
+            val result = CursorResult.of(emptyList<Long>(), 20) { it }
 
             result.hasNext.shouldBeFalse()
             result.data shouldHaveSize 0

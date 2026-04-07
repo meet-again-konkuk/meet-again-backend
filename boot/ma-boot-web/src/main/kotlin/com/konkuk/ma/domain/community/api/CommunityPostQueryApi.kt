@@ -23,7 +23,7 @@ class CommunityPostQueryApi(
     ): CursorResponse<List<PostResponse>> {
         val cursorResult = postQueryService.find(category, CursorRequest.of(cursorId, size))
         return CursorResponse(
-            data = cursorResult.data.data.map { PostResponse.from(it) },
+            data = cursorResult.data.map { PostResponse.from(it) },
             hasNext = cursorResult.hasNext,
             nextCursorId = cursorResult.nextCursorId,
         )
