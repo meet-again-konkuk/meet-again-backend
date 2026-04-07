@@ -27,7 +27,7 @@ class SignUpRequest(
     @field:Pattern(regexp = ValidationPatterns.NICKNAME, message = ValidationMessages.NICKNAME_INVALID)
     val nickname: String,
 
-    @field:NotBlank(message = "이름은 필수입니다.")
+    @field:NotBlank(message = ValidationMessages.NAME_REQUIRED)
     @field:Pattern(regexp = ValidationPatterns.NAME, message = ValidationMessages.NAME_INVALID)
     val name: String,
 

@@ -293,7 +293,26 @@ class MatchingConfig(
 - **상수**: 비즈니스 규칙상 거의 바뀌지 않는 값 (예: 전화번호 자릿수, 비밀번호 최소 길이)
 - **파라미터**: 운영 중 변경될 수 있는 값 (예: 만료일, 페이지 크기, 재시도 횟수)
 
-## 10. Service는 Service를 참조하지 않는다
+## 10. Validation 메시지와 패턴은 상수로 관리
+
+Request DTO의 `@NotBlank`, `@Pattern`, `@Email` 등 Bean Validation 어노테이션의 `message`와 `regexp`는 하드코딩하지 않는다. `ValidationMessages`와 `ValidationPatterns`에 정의된 상수를 사용한다.
+
+```kotlin
+// BAD - 하드코딩
+@field:NotBlank(message = "이메일은 필수입니다.")
+@field:Email(message = "유효하지 않은 이메일 형식입니다.")
+
+// GOOD - 상수 참조
+@field:NotBlank(message = ValidationMessages.EMAIL_REQUIRED)
+@field:Email(message = ValidationMessages.EMAIL_INVALID)
+@field:Pattern(regexp = ValidationPatterns.PASSWORD, message = ValidationMessages.PASSWORD_INVALID)
+```
+
+- `ValidationPatterns` — 정규표현식 패턴 (`NICKNAME`, `PASSWORD`, `PHONE_NUMBER` 등)
+- `ValidationMessages` — 검증 실패 메시지 (`EMAIL_REQUIRED`, `PASSWORD_INVALID` 등)
+- 새로운 검증이 필요하면 해당 object에 상수를 먼저 추가한 후 사용
+
+## 11. Service는 Service를 참조하지 않는다
 
 Service가 다른 Service를 의존하면 테스트 시 Mock 체인이 깊어지고, 순환 참조 위험이 생긴다. Service는 **포트(인터페이스)**만 의존한다.
 

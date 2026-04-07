@@ -22,4 +22,6 @@ object ValidationMessages {
     const val PHONE_NUMBER_REQUIRED = "휴대폰 번호는 필수입니다."
     const val BIRTH_DATE_REQUIRED = "생년월일은 필수입니다."
     const val REGION_REQUIRED = "지역은 필수입니다."
+    const val NAME_REQUIRED = "이름은 필수입니다."
+    const val REFRESH_TOKEN_REQUIRED = "리프레시 토큰은 필수입니다."
 }
