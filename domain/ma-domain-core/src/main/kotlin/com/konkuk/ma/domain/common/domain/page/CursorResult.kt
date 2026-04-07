@@ -6,13 +6,12 @@ class CursorResult<T>(
     val nextCursorId: Long?,
 ) {
     companion object {
-        fun <T> of(allData: List<T>, size: Int, cursorIdExtractor: (T) -> Long): CursorResult<List<T>> {
-            val hasNext = allData.size > size
-            val sliced = if (hasNext) allData.subList(0, size) else allData
-            val nextCursorId = if (hasNext) cursorIdExtractor(sliced.last()) else null
+        fun <T> of(data: List<T>, size: Int, cursorIdExtractor: (T) -> Long): CursorResult<List<T>> {
+            val hasNext = data.size >= size
+            val nextCursorId = if (hasNext && data.isNotEmpty()) cursorIdExtractor(data.last()) else null
 
             return CursorResult(
-                data = sliced,
+                data = data,
                 hasNext = hasNext,
                 nextCursorId = nextCursorId,
             )

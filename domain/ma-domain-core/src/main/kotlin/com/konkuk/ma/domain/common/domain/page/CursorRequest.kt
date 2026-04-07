@@ -4,8 +4,6 @@ data class CursorRequest(
     val cursorId: Long?,
     val size: Int,
 ) {
-    val fetchSize: Int get() = size + 1
-
     companion object {
         private const val DEFAULT_SIZE = 20
 

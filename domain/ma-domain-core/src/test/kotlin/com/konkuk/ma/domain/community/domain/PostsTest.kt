@@ -13,23 +13,23 @@ class PostsTest : FunSpec({
 
     context("CursorResult.of") {
 
-        test("데이터가 size보다 많으면 hasNext가 true이고 nextCursorId를 반환한다") {
-            val posts = List(21) { PostFixture.create(id = (21 - it).toLong()) }
+        test("데이터 개수가 size와 같으면 hasNext가 true이고 nextCursorId를 반환한다") {
+            val posts = List(20) { PostFixture.create(id = (20 - it).toLong()) }
 
             val result = CursorResult.of(posts, 20) { it.id }
 
             result.hasNext.shouldBeTrue()
             result.data shouldHaveSize 20
-            result.nextCursorId shouldBe 2L
+            result.nextCursorId shouldBe 1L
         }
 
-        test("데이터가 size 이하이면 hasNext가 false이고 nextCursorId가 null이다") {
-            val posts = List(20) { PostFixture.create(id = (20 - it).toLong()) }
+        test("데이터 개수가 size보다 적으면 hasNext가 false이고 nextCursorId가 null이다") {
+            val posts = List(10) { PostFixture.create(id = (10 - it).toLong()) }
 
             val result = CursorResult.of(posts, 20) { it.id }
 
             result.hasNext.shouldBeFalse()
-            result.data shouldHaveSize 20
+            result.data shouldHaveSize 10
             result.nextCursorId.shouldBeNull()
         }
 

@@ -14,7 +14,7 @@ class PostQueryCoreRepository(
     private val postQueryDao: PostQueryDao,
 ) : PostQueryRepository {
     override fun find(category: PostCategory?, cursorRequest: CursorRequest): CursorResult<Posts> {
-        val entities = postQueryDao.find(category?.name, cursorRequest.cursorId, cursorRequest.fetchSize)
+        val entities = postQueryDao.find(category?.name, cursorRequest.cursorId, cursorRequest.size)
         val posts = entities.map { it.toDomain() }
 
         val cursorResult = CursorResult.of(posts, cursorRequest.size) { it.id }

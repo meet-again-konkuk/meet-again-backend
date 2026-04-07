@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PostQueryDao {
-    fun find(category: String?, cursorId: Long?, fetchSize: Int): List<PostEntity> {
+    fun find(category: String?, cursorId: Long?, size: Int): List<PostEntity> {
         return PostTable
             .selectAll()
             .where {
@@ -24,7 +24,7 @@ class PostQueryDao {
                 condition
             }
             .orderBy(PostTable.id to SortOrder.DESC)
-            .limit(fetchSize)
+            .limit(size)
             .map { row -> PostEntity.from(row) }
     }
 }
