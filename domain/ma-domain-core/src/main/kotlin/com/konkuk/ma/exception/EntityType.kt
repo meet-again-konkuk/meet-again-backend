@@ -4,4 +4,5 @@ enum class EntityType(val entityName: String, val keyName: String) {
     MEMBER("Member", "email"),
     MATCHING_RESULT("MatchingResult", "id"),
     REFRESH_TOKEN("RefreshToken", "email"),
+    COMMUNITY_POST("CommunityPost", "id"),
 }

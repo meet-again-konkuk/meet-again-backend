@@ -78,3 +78,13 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/exclude-matching-result.html[매칭 결과 제외/해제 API,window=_blank]
 
+[[community]]
+== 커뮤니티
+
+커뮤니티 도메인과 관련된 API 입니다.
+
+[[community-find-posts]]
+=== 게시글 목록 조회
+
+* link:community/find-posts.html[게시글 목록 조회 API,window=_blank]
+

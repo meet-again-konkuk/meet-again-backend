@@ -128,3 +128,29 @@ CREATE TABLE MEMBER_PHOTOS
     -- 인덱스
     INDEX idx_member_photo_email (MEMBER_EMAIL)
 );
+
+-- COMMUNITY POSTS
+CREATE TABLE COMMUNITY_POSTS
+(
+    COMMUNITY_POST_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    -- PostTable 특화 컬럼들
+    AUTHOR_EMAIL       VARCHAR(255)  NOT NULL,
+    AUTHOR_NICKNAME    VARCHAR(255)  NOT NULL,
+    CATEGORY           VARCHAR(32)   NOT NULL,
+    TITLE              VARCHAR(100)  NOT NULL,
+    CONTENT            TEXT          NOT NULL,
+    LIKES              INT           DEFAULT 0,
+    COMMENTS           INT           DEFAULT 0,
+
+    -- BaseTable 공통 컬럼들
+    CREATED_DATE       DATETIME      DEFAULT CURRENT_TIMESTAMP,
+    CREATED_BY         VARCHAR(255)  DEFAULT 'MEET_AGAIN',
+    LAST_MODIFIED_DATE DATETIME      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LAST_MODIFIED_BY   VARCHAR(255)  DEFAULT 'MEET_AGAIN',
+    DELETED            BOOLEAN       DEFAULT FALSE,
+
+    -- 인덱스
+    INDEX idx_community_post_category (CATEGORY),
+    INDEX idx_community_post_author_email (AUTHOR_EMAIL)
+);

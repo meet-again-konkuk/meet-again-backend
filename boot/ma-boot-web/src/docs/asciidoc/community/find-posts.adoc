@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 게시글 목록 조회 API
+
+== 게시글 목록 조회
+
+카테고리별로 커뮤니티 게시글 목록을 페이징 조회합니다.
+
+=== 요청
+
+include::{snippets}/community/find-posts/http-request.adoc[]
+
+=== 요청 파라미터
+
+include::{snippets}/community/find-posts/query-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/find-posts/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/find-posts/response-fields.adoc[]
