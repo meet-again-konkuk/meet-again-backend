@@ -58,7 +58,7 @@ class Year(val value: Int) {
 - `private` 접근 제한자 사용 금지 (외부에서 `data`에 접근 가능해야 함)
 - 컬렉션 관련 행위(필터링, 변환, 집계)를 일급 컬렉션 내부에 정의
 - `companion object` 팩토리 메서드로 생성 의도를 드러냄
-- **DAO는 항상 `List<Entity>`를 반환**하고, 일급 컬렉션으로의 변환은 Repository(포트 구현체)에서 수행
+- **DAO는 항상 `List<Entity>`를 반환**, Repository(포트 구현체)는 `List<DomainObject>`를 반환, Service에서 비즈니스 로직이 필요한 시점에 일급 컬렉션으로 감쌈
 
 ```kotlin
 class Targets(val data: List<Target>) {
@@ -105,19 +105,24 @@ val target = Target.create(member)
 
 ## 5. 포트(Port) 인터페이스는 도메인 타입 사용
 
-포트 인터페이스의 파라미터와 반환 타입은 도메인 객체(일급 컬렉션 포함)를 사용한다.
+포트 인터페이스의 파라미터와 반환 타입은 도메인 객체를 사용한다. 단, **일급 컬렉션은 포트 반환 타입으로 사용하지 않는다.** 포트는 `List<DomainObject>`를 반환하고, 비즈니스 로직이 필요한 시점에 Service에서 일급 컬렉션으로 감싸서 사용한다.
 
 ```kotlin
-// BAD - 원시 타입 사용
-interface MatchingResultRepository {
-    fun saveAll(results: List<MatchingResult>)
-}
-
-// GOOD - 일급 컬렉션 사용
+// BAD - 포트가 일급 컬렉션 반환
 interface MatchingResultRepository {
     fun saveAll(matchingResults: MatchingResults)
     fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults
 }
+
+// GOOD - 포트는 List 반환, Service에서 일급 컬렉션으로 감싸서 사용
+interface MatchingResultRepository {
+    fun saveAll(matchingResults: List<MatchingResult>)
+    fun findExistingMatchingResults(targetInfoIds: List<Long>): List<MatchingResult>
+}
+
+// Service에서 비즈니스 로직이 필요한 시점에 일급 컬렉션으로 감쌈
+val matchingResults = MatchingResults(matchingResultRepository.find(email))
+val filtered = matchingResults.filterNew(existing)
 ```
 
 단건 조회 포트 메서드(`findById`, `findByEmail` 등)는 **non-null을 반환**한다. 엔티티가 없으면 **Repository 구현체에서 예외를 던진다**. Service에서 null 체크를 하지 않는다.
@@ -175,9 +180,9 @@ fun matchingWriter(): ItemWriter<TargetInfo> {
         val targets = Targets.from(memberQueryRepository.findByNames(targetInfos.targetNames()))
         val matchingResults = targetInfos.makeMatchingResults(targets)
 
-        val existing = matchingResultRepository.findExistingMatchingResults(matchingResults.targetInfoIds())
+        val existing = MatchingResults(matchingResultRepository.findExistingMatchingResults(matchingResults.targetInfoIds()))
         val newResults = matchingResults.filterNew(existing)
-        matchingResultRepository.saveAll(newResults)
+        matchingResultRepository.saveAll(newResults.data)
     }
 }
 ```

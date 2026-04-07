@@ -1,5 +1,6 @@
 package com.konkuk.ma.job.domain.matching
 
+import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.TargetInfos
@@ -35,7 +36,7 @@ class MatchingJobConfig(
     @Bean
     fun matchingStep(): Step {
         return StepBuilder("matchingStep", jobRepository)
-            .chunk<List<TargetInfo>, MatchingResults>(CHUNK_SIZE_1, transactionManager)
+            .chunk<List<TargetInfo>, List<MatchingResult>>(CHUNK_SIZE_1, transactionManager)
             .reader(matchingReader())
             .processor(matchingProcessor())
             .writer(matchingWriter())
@@ -55,19 +56,19 @@ class MatchingJobConfig(
 
     @Bean
     @StepScope
-    fun matchingProcessor(): ItemProcessor<List<TargetInfo>, MatchingResults> {
+    fun matchingProcessor(): ItemProcessor<List<TargetInfo>, List<MatchingResult>> {
         return ItemProcessor { targetInfoList ->
             val targetInfos = TargetInfos(targetInfoList)
             val targets = Targets.from(memberQueryRepository.findByNames(targetInfos.extractTargetNames()))
             val matchingResults = targetInfos.makeMatchingResults(targets)
-            val existing = matchingResultRepository.findExistingMatchingResults(matchingResults.targetInfoIds())
-            matchingResults.filterNew(existing)
+            val existing = MatchingResults(matchingResultRepository.findExistingMatchingResults(matchingResults.targetInfoIds()))
+            matchingResults.filterNew(existing).data
         }
     }
 
     @Bean
     @StepScope
-    fun matchingWriter(): ItemWriter<MatchingResults> {
+    fun matchingWriter(): ItemWriter<List<MatchingResult>> {
         return ItemWriter { chunk ->
             chunk.items.forEach { matchingResults ->
                 matchingResultRepository.saveAll(matchingResults)

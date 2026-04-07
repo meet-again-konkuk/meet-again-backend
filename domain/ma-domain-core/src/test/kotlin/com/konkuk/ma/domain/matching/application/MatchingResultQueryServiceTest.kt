@@ -1,12 +1,9 @@
 package com.konkuk.ma.domain.matching.application
 
-import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
-import com.konkuk.ma.domain.member.domain.Members
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
@@ -40,7 +37,6 @@ class MatchingResultQueryServiceTest : FunSpec({
                 registerEmail = email,
                 targetEmail = "target@example.com"
             )
-            val matchingResults = MatchingResults(listOf(matchingResult))
 
             val member = MemberFixture.create(email = matchingResult.targetEmail)
             val photo = MemberPhotoFixture.create(
@@ -48,9 +44,9 @@ class MatchingResultQueryServiceTest : FunSpec({
                 thumbnailPath = "thumb/photo.jpg"
             )
 
-            every { matchingResultRepository.find(email, false) } returns matchingResults
-            every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns Members(listOf(member))
-            every { memberPhotoRepository.find(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
+            every { matchingResultRepository.find(email, false) } returns listOf(matchingResult)
+            every { memberQueryRepository.findByEmails(setOf(matchingResult.targetEmail)) } returns listOf(member)
+            every { memberPhotoRepository.find(setOf(matchingResult.targetEmail)) } returns listOf(photo)
 
             // When
             val result = service.find(email)
@@ -69,7 +65,6 @@ class MatchingResultQueryServiceTest : FunSpec({
                 registerEmail = email,
                 targetEmail = "target@example.com"
             )
-            val matchingResults = MatchingResults(listOf(matchingResult))
 
             val member = MemberFixture.create(email = matchingResult.targetEmail)
             val photo = MemberPhotoFixture.create(
@@ -77,9 +72,9 @@ class MatchingResultQueryServiceTest : FunSpec({
                 thumbnailPath = "thumb/photo.jpg"
             )
 
-            every { matchingResultRepository.find(email, true) } returns matchingResults
-            every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns Members(listOf(member))
-            every { memberPhotoRepository.find(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
+            every { matchingResultRepository.find(email, true) } returns listOf(matchingResult)
+            every { memberQueryRepository.findByEmails(setOf(matchingResult.targetEmail)) } returns listOf(member)
+            every { memberPhotoRepository.find(setOf(matchingResult.targetEmail)) } returns listOf(photo)
 
             // When
             val result = service.find(email, excluded = true)
@@ -94,12 +89,10 @@ class MatchingResultQueryServiceTest : FunSpec({
         test("매칭결과가 없으면 빈 결과를 반환한다") {
             // Given
             val email = "register@example.com"
-            val emptyResults = MatchingResults(emptyList())
-            val emptyEmails = emptyResults.extractTargetEmails()
 
-            every { matchingResultRepository.find(email, false) } returns emptyResults
-            every { memberQueryRepository.findByEmails(emptyEmails) } returns Members(emptyList())
-            every { memberPhotoRepository.find(emptyEmails) } returns MemberPhotos(emptyList())
+            every { matchingResultRepository.find(email, false) } returns emptyList()
+            every { memberQueryRepository.findByEmails(emptySet()) } returns emptyList()
+            every { memberPhotoRepository.find(emptySet()) } returns emptyList()
 
             // When
             val result = service.find(email)

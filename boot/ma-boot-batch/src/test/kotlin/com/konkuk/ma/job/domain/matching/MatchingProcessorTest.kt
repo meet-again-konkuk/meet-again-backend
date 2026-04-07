@@ -1,6 +1,5 @@
 package com.konkuk.ma.job.domain.matching
 
-import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.TargetInfos
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
@@ -33,15 +32,15 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 1
-            result.data[0].targetInfoId shouldBe targetInfo.targetInfoId
-            result.data[0].targetEmail shouldBe member.email
+            result!! shouldHaveSize 1
+            result[0].targetInfoId shouldBe targetInfo.targetInfoId
+            result[0].targetEmail shouldBe member.email
         }
 
         test("매칭되는 Member가 없으면 빈 결과를 반환한다") {
@@ -50,13 +49,13 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns emptyList()
-            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 0
+            result!! shouldHaveSize 0
         }
 
         test("이름은 같지만 target 성별이 다르면 매칭되지 않는다") {
@@ -66,13 +65,13 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
-            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 0
+            result!! shouldHaveSize 0
         }
 
         test("이름이 다르면 매칭되지 않는다") {
@@ -82,13 +81,13 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
-            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 0
+            result!! shouldHaveSize 0
         }
 
         test("이미 존재하는 매칭 결과는 필터링된다") {
@@ -102,13 +101,13 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns MatchingResults(listOf(existingResult))
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns listOf(existingResult)
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 0
+            result!! shouldHaveSize 0
         }
 
         test("여러 매칭 결과 중 일부만 기존에 존재하면 새로운 결과만 반환한다") {
@@ -123,15 +122,15 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns MatchingResults(listOf(existingResult))
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns listOf(existingResult)
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 1
-            result.data[0].targetInfoId shouldBe targetInfo.targetInfoId
-            result.data[0].targetEmail shouldBe member2.email
+            result!! shouldHaveSize 1
+            result[0].targetInfoId shouldBe targetInfo.targetInfoId
+            result[0].targetEmail shouldBe member2.email
         }
 
         test("여러 TargetInfo에 대해 각각 매칭 결과를 생성한다") {
@@ -143,17 +142,17 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo1, targetInfo2))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo1.targetInfoId, targetInfo2.targetInfoId)) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo1.targetInfoId, targetInfo2.targetInfoId)) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 2
-            result.data[0].targetInfoId shouldBe targetInfo1.targetInfoId
-            result.data[0].targetEmail shouldBe member1.email
-            result.data[1].targetInfoId shouldBe targetInfo2.targetInfoId
-            result.data[1].targetEmail shouldBe member2.email
+            result!! shouldHaveSize 2
+            result[0].targetInfoId shouldBe targetInfo1.targetInfoId
+            result[0].targetEmail shouldBe member1.email
+            result[1].targetInfoId shouldBe targetInfo2.targetInfoId
+            result[1].targetEmail shouldBe member2.email
         }
 
         test("여러 TargetInfo 중 일부만 매칭되는 Member가 있으면 매칭된 것만 결과에 포함된다") {
@@ -164,15 +163,15 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo1, targetInfo2))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo1.targetInfoId)) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo1.targetInfoId)) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 1
-            result.data[0].targetInfoId shouldBe targetInfo1.targetInfoId
-            result.data[0].targetEmail shouldBe member1.email
+            result!! shouldHaveSize 1
+            result[0].targetInfoId shouldBe targetInfo1.targetInfoId
+            result[0].targetEmail shouldBe member1.email
         }
 
         test("하나의 TargetInfo에 여러 Member가 매칭되면 모두 포함한다") {
@@ -184,17 +183,17 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2, member3)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 3
-            result.data[0].targetEmail shouldBe member1.email
-            result.data[1].targetEmail shouldBe member2.email
-            result.data[2].targetEmail shouldBe member3.email
-            result.data.forEach { it.targetInfoId shouldBe targetInfo.targetInfoId }
+            result!! shouldHaveSize 3
+            result[0].targetEmail shouldBe member1.email
+            result[1].targetEmail shouldBe member2.email
+            result[2].targetEmail shouldBe member3.email
+            result.forEach { it.targetInfoId shouldBe targetInfo.targetInfoId }
         }
 
         test("같은 이름의 TargetInfo가 여러 개 있으면 각각 독립적으로 매칭된다") {
@@ -205,17 +204,17 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo1, targetInfo2))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo1.targetInfoId, targetInfo2.targetInfoId)) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo1.targetInfoId, targetInfo2.targetInfoId)) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 2
-            result.data[0].targetInfoId shouldBe targetInfo1.targetInfoId
-            result.data[0].targetEmail shouldBe member.email
-            result.data[1].targetInfoId shouldBe targetInfo2.targetInfoId
-            result.data[1].targetEmail shouldBe member.email
+            result!! shouldHaveSize 2
+            result[0].targetInfoId shouldBe targetInfo1.targetInfoId
+            result[0].targetEmail shouldBe member.email
+            result[1].targetInfoId shouldBe targetInfo2.targetInfoId
+            result[1].targetEmail shouldBe member.email
         }
 
         test("빈 TargetInfo 목록이 입력되면 빈 결과를 반환한다") {
@@ -223,13 +222,13 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(emptyList())
 
             every { memberQueryRepository.findByNames(emptySet()) } returns emptyList()
-            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns MatchingResults(emptyList())
+            every { matchingResultRepository.findExistingMatchingResults(emptyList()) } returns emptyList()
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 0
+            result!! shouldHaveSize 0
         }
 
         test("모든 매칭 결과가 기존에 존재하면 빈 결과를 반환한다") {
@@ -242,13 +241,13 @@ class MatchingProcessorTest : FunSpec({
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2)
-            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns MatchingResults(listOf(existingResult1, existingResult2))
+            every { matchingResultRepository.findExistingMatchingResults(listOf(targetInfo.targetInfoId)) } returns listOf(existingResult1, existingResult2)
 
             // When
             val result = processor.process(targetInfos.data)
 
             // Then
-            result!!.data shouldHaveSize 0
+            result!! shouldHaveSize 0
         }
     }
 })

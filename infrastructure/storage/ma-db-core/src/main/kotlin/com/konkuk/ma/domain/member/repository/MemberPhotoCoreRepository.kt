@@ -3,7 +3,6 @@ package com.konkuk.ma.domain.member.repository
 import com.konkuk.ma.domain.member.dao.MemberPhotoCommandDao
 import com.konkuk.ma.domain.member.dao.MemberPhotoQueryDao
 import com.konkuk.ma.domain.member.domain.photo.MemberPhoto
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import org.springframework.stereotype.Repository
@@ -26,7 +25,7 @@ class MemberPhotoCoreRepository(
         memberPhotoCommandDao.delete(email)
     }
 
-    override fun find(emails: Set<String>): MemberPhotos {
-        return MemberPhotos(memberPhotoQueryDao.find(emails).map { it.toDomain() })
+    override fun find(emails: Set<String>): List<MemberPhoto> {
+        return memberPhotoQueryDao.find(emails).map { it.toDomain() }
     }
 }
