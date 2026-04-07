@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api.response
 
+import com.konkuk.ma.domain.common.domain.TimeAgoCalculator
 import com.konkuk.ma.domain.community.domain.Post
 
 class PostResponse(
@@ -22,7 +23,7 @@ class PostResponse(
                 content = post.content,
                 likes = post.likes,
                 comments = post.comments,
-                timeAgo = post.calculateTimeAgo(),
+                timeAgo = TimeAgoCalculator.calculate(post.createdDate),
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.TimeAgoCalculator
 import java.time.LocalDateTime
 
 class Post(
@@ -13,6 +12,4 @@ class Post(
     val likes: Int = 0,
     val comments: Int = 0,
     val createdDate: LocalDateTime = LocalDateTime.now(),
-) {
-    fun calculateTimeAgo(): String = TimeAgoCalculator.calculate(createdDate)
-}
+)

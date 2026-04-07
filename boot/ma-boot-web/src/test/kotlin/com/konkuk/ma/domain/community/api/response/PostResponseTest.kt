@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api.response
 
+import com.konkuk.ma.domain.common.domain.TimeAgoCalculator
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import io.kotest.core.spec.style.FunSpec
@@ -49,7 +50,7 @@ class PostResponseTest : FunSpec({
 
             val response = PostResponse.from(post)
 
-            response.timeAgo shouldBe post.calculateTimeAgo()
+            response.timeAgo shouldBe TimeAgoCalculator.calculate(post.createdDate)
         }
     }
 })
