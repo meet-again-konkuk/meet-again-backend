@@ -29,7 +29,7 @@ class PostsResponseTest : FunSpec({
                 data = Posts(listOf(post)),
                 totalCount = 1L,
                 currentPage = 0,
-                pageSize = Posts.PAGE_SIZE,
+                pageSize = 20,
             )
 
             val response = PostsResponse.from(pageResult)
@@ -43,7 +43,7 @@ class PostsResponseTest : FunSpec({
                 data = Posts(emptyList()),
                 totalCount = 0L,
                 currentPage = 0,
-                pageSize = Posts.PAGE_SIZE,
+                pageSize = 20,
             )
 
             val response = PostsResponse.from(pageResult)
@@ -53,7 +53,7 @@ class PostsResponseTest : FunSpec({
         }
 
         test("hasNext가 true인 경우 응답에 반영된다") {
-            val postList = List(Posts.PAGE_SIZE) { index ->
+            val postList = List(20) { index ->
                 Post(
                     id = index.toLong(),
                     authorEmail = "author@example.com",
@@ -66,9 +66,9 @@ class PostsResponseTest : FunSpec({
             }
             val pageResult = PageResult(
                 data = Posts(postList),
-                totalCount = Posts.PAGE_SIZE.toLong() + 1,
+                totalCount = 20.toLong() + 1,
                 currentPage = 0,
-                pageSize = Posts.PAGE_SIZE,
+                pageSize = 20,
             )
 
             val response = PostsResponse.from(pageResult)

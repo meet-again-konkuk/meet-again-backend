@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.page.PageRequest
 import com.konkuk.ma.domain.common.domain.page.PageResult
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.Post
@@ -21,6 +22,7 @@ import com.konkuk.ma.vocabulary.postLikes
 import com.konkuk.ma.vocabulary.postNickname
 import com.konkuk.ma.vocabulary.postTimeAgo
 import com.konkuk.ma.vocabulary.postTitle
+import com.konkuk.ma.vocabulary.sizeParam
 import com.konkuk.ma.vocabulary.postsHasNext
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
@@ -54,15 +56,16 @@ class CommunityPostQueryApiTest(
             data = Posts(listOf(post)),
             totalCount = 100L,
             currentPage = 0,
-            pageSize = Posts.PAGE_SIZE,
+            pageSize = 20,
         )
 
-        every { postQueryService.find(PostCategory.CHEER, 0) } returns pageResult
+        every { postQueryService.find(PostCategory.CHEER, PageRequest(0, 20)) } returns pageResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {
             param("category", "CHEER")
             param("page", "0")
+            param("size", "20")
         }
             .andExpect { status { isOk() } }
             .andDocument(
@@ -70,6 +73,7 @@ class CommunityPostQueryApiTest(
                 requestParam(
                     categoryParam(),
                     pageParam(),
+                    sizeParam(),
                 ),
                 responseBody(
                     postId(),
@@ -91,10 +95,10 @@ class CommunityPostQueryApiTest(
             data = Posts(emptyList()),
             totalCount = 0L,
             currentPage = 0,
-            pageSize = Posts.PAGE_SIZE,
+            pageSize = 20,
         )
 
-        every { postQueryService.find(PostCategory.SUCCESS_STORY, 0) } returns pageResult
+        every { postQueryService.find(PostCategory.SUCCESS_STORY, PageRequest(0, 20)) } returns pageResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {

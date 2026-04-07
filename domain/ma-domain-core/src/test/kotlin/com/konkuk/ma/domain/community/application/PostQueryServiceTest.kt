@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.common.domain.page.PageRequest
 import com.konkuk.ma.domain.common.domain.page.PageResult
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.Posts
@@ -26,42 +27,42 @@ class PostQueryServiceTest : FunSpec({
         test("카테고리와 페이지로 게시글 목록을 조회한다") {
             // Given
             val category = PostCategory.SUCCESS_STORY
-            val page = 0
+            val pageRequest = PageRequest(0, 20)
             val post = PostFixture.create(category = category)
             val pageResult = PageResult(
                 data = Posts(listOf(post)),
                 totalCount = 1L,
-                currentPage = page,
-                pageSize = Posts.PAGE_SIZE,
+                currentPage = pageRequest.page,
+                pageSize = pageRequest.size,
             )
 
-            every { postQueryRepository.find(category, page) } returns pageResult
+            every { postQueryRepository.find(category, pageRequest) } returns pageResult
 
             // When
-            val result = service.find(category, page)
+            val result = service.find(category, pageRequest)
 
             // Then
             result.data.data shouldHaveSize 1
             result.data.data[0].category shouldBe category
             result.totalCount shouldBe 1L
-            result.currentPage shouldBe page
+            result.currentPage shouldBe 0
         }
 
         test("게시글이 없으면 빈 목록을 반환한다") {
             // Given
             val category = PostCategory.CHEER
-            val page = 0
+            val pageRequest = PageRequest(0, 20)
             val pageResult = PageResult(
                 data = Posts(emptyList()),
                 totalCount = 0L,
-                currentPage = page,
-                pageSize = Posts.PAGE_SIZE,
+                currentPage = pageRequest.page,
+                pageSize = pageRequest.size,
             )
 
-            every { postQueryRepository.find(category, page) } returns pageResult
+            every { postQueryRepository.find(category, pageRequest) } returns pageResult
 
             // When
-            val result = service.find(category, page)
+            val result = service.find(category, pageRequest)
 
             // Then
             result.data.data shouldHaveSize 0

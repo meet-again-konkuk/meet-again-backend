@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api
 
+import com.konkuk.ma.domain.common.domain.page.PageRequest
 import com.konkuk.ma.domain.community.api.response.PostsResponse
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostCategory
@@ -19,8 +20,9 @@ class CommunityPostQueryApi(
         @AuthenticationPrincipal email: String,
         @RequestParam category: PostCategory,
         @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
     ): PostsResponse {
-        val pageResult = postQueryService.find(category, page)
+        val pageResult = postQueryService.find(category, PageRequest(page, size))
         return PostsResponse.from(pageResult)
     }
 }

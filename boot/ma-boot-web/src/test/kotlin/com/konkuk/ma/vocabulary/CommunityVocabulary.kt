@@ -42,3 +42,6 @@ fun categoryParam(fieldName: String = "category") =
 
 fun pageParam(fieldName: String = "page") =
     fieldName requestParam "페이지 번호 (기본값: 0)" isOptional true
+
+fun sizeParam(fieldName: String = "size") =
+    fieldName requestParam "페이지 크기 (기본값: 20)" isOptional true

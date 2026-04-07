@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.common.domain.page
 
-class PageRequest(
+data class PageRequest(
     val page: Int,
     val size: Int,
 ) {

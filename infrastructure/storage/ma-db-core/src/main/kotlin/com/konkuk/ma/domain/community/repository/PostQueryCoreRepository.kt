@@ -12,8 +12,7 @@ import org.springframework.stereotype.Repository
 class PostQueryCoreRepository(
     private val postQueryDao: PostQueryDao,
 ) : PostQueryRepository {
-    override fun find(category: PostCategory, page: Int): PageResult<Posts> {
-        val pageRequest = PageRequest(page, Posts.PAGE_SIZE)
+    override fun find(category: PostCategory, pageRequest: PageRequest): PageResult<Posts> {
         val entities = postQueryDao.find(category.name, pageRequest.size, pageRequest.offset)
         val totalCount = postQueryDao.count(category.name)
 
