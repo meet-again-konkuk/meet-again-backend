@@ -9,7 +9,7 @@ import com.konkuk.ma.extension.responseType
 // --- 게시글 목록 응답 필드 ---
 
 fun postId(fieldName: String = "posts[].id") =
-    fieldName responseType STRING means "게시글 ID (인코딩)" example "abc123"
+    fieldName responseType NUMBER means "게시글 ID" example "1"
 
 fun postNickname(fieldName: String = "posts[].nickname") =
     fieldName responseType STRING means "작성자 닉네임" example "테스트닉네임"
@@ -36,7 +36,7 @@ fun postsHasNext(fieldName: String = "hasNext") =
     fieldName responseType BOOLEAN means "다음 페이지 존재 여부" example "true"
 
 fun postsNextCursorId(fieldName: String = "nextCursorId") =
-    fieldName responseType STRING means "다음 페이지 커서 ID (인코딩, 마지막 페이지면 null)" example "abc123"
+    fieldName responseType NUMBER means "다음 페이지 커서 ID (마지막 페이지면 null)" example "1"
 
 // --- 게시글 목록 요청 파라미터 ---
 
@@ -44,7 +44,7 @@ fun categoryParam(fieldName: String = "category") =
     fieldName requestParam "게시글 카테고리 (SUCCESS_STORY, CHEER, COUNSELING)"
 
 fun cursorIdParam(fieldName: String = "cursorId") =
-    fieldName requestParam "마지막으로 본 게시글 ID (인코딩, 첫 페이지는 미전송)" isOptional true
+    fieldName requestParam "마지막으로 본 게시글 ID (첫 페이지는 미전송)" isOptional true
 
 fun pageParam(fieldName: String = "page") =
     fieldName requestParam "페이지 번호 (기본값: 0)" isOptional true
