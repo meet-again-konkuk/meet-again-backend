@@ -48,12 +48,41 @@ class MatchingResultQueryServiceTest : FunSpec({
                 thumbnailPath = "thumb/photo.jpg"
             )
 
-            every { matchingResultRepository.find(email) } returns matchingResults
+            every { matchingResultRepository.find(email, false) } returns matchingResults
             every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns Members(listOf(member))
             every { memberPhotoRepository.find(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
 
             // When
             val result = service.find(email)
+
+            // Then
+            result.data shouldHaveSize 1
+            result.data[0].targetName shouldBe member.name
+            result.data[0].targetNickname shouldBe member.nickname
+            result.data[0].profileImageUrl shouldBe photo.thumbnailPath
+        }
+
+        test("excluded=true로 조회하면 제외된 매칭결과를 반환한다") {
+            // Given
+            val email = "register@example.com"
+            val matchingResult = MatchingResultFixture.create(
+                registerEmail = email,
+                targetEmail = "target@example.com"
+            )
+            val matchingResults = MatchingResults(listOf(matchingResult))
+
+            val member = MemberFixture.create(email = matchingResult.targetEmail)
+            val photo = MemberPhotoFixture.create(
+                memberEmail = matchingResult.targetEmail,
+                thumbnailPath = "thumb/photo.jpg"
+            )
+
+            every { matchingResultRepository.find(email, true) } returns matchingResults
+            every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns Members(listOf(member))
+            every { memberPhotoRepository.find(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
+
+            // When
+            val result = service.find(email, excluded = true)
 
             // Then
             result.data shouldHaveSize 1
@@ -68,7 +97,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val emptyResults = MatchingResults(emptyList())
             val emptyEmails = emptyResults.extractTargetEmails()
 
-            every { matchingResultRepository.find(email) } returns emptyResults
+            every { matchingResultRepository.find(email, false) } returns emptyResults
             every { memberQueryRepository.findByEmails(emptyEmails) } returns Members(emptyList())
             every { memberPhotoRepository.find(emptyEmails) } returns MemberPhotos(emptyList())
 

@@ -15,8 +15,8 @@ class MatchingResultQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
 ) {
-    fun find(email: String): MatchingResultsWithProfiles {
-        val matchingResults = matchingResultRepository.find(email)
+    fun find(email: String, excluded: Boolean = false): MatchingResultsWithProfiles {
+        val matchingResults = matchingResultRepository.find(email, excluded)
         val targetEmails = matchingResults.extractTargetEmails()
 
         val members = memberQueryRepository.findByEmails(targetEmails)

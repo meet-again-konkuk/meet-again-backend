@@ -16,13 +16,13 @@ class MatchingResultQueryDao {
             .map { row -> MatchingResultEntity.from(row) }
     }
 
-    fun find(email: String): List<MatchingResultEntity> {
+    fun find(email: String, excluded: Boolean = false): List<MatchingResultEntity> {
         return MatchingResultTable
             .selectAll()
             .where {
                 (MatchingResultTable.registerEmail eq email) and
                     (MatchingResultTable.deleted eq false) and
-                    (MatchingResultTable.excluded eq false)
+                    (MatchingResultTable.excluded eq excluded)
             }
             .map { row -> MatchingResultEntity.from(row) }
     }

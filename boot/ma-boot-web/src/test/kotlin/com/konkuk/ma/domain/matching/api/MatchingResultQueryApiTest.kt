@@ -9,6 +9,7 @@ import com.konkuk.ma.domain.matching.domain.MatchingResultWithProfile
 import com.konkuk.ma.domain.matching.domain.MatchingResultsWithProfiles
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
+import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.dayMatched
@@ -26,6 +27,7 @@ import com.konkuk.ma.vocabulary.monthMatched
 import com.konkuk.ma.vocabulary.profileImageUrl
 import com.konkuk.ma.vocabulary.regionMatched
 import com.konkuk.ma.vocabulary.remainingDays
+import com.konkuk.ma.vocabulary.resultExcludedParam
 import com.konkuk.ma.vocabulary.targetMemberId
 import com.konkuk.ma.vocabulary.yearMatched
 import com.ninjasquad.springmockk.MockkBean
@@ -73,13 +75,69 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("test@example.com") } returns resultsWithProfiles
+        every { matchingResultQueryService.find("test@example.com", false) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
             .andExpect { status { isOk() } }
             .andDocument(
                 "matching/find-matching-results",
+                requestParam(
+                    resultExcludedParam(),
+                ),
+                responseBody(
+                    matchingResultId(),
+                    targetMemberId(),
+                    matchingTargetName(),
+                    matchingTargetNickname(),
+                    profileImageUrl(),
+                    remainingDays(),
+                    matchRate(),
+                    isWithdrawn(),
+                )
+            )
+    }
+
+    test("excluded=true로 제외된 매칭 결과 목록 조회 API 문서화") {
+        // Given
+        val matchingResult = MatchingResult(
+            id = 1L,
+            registerEmail = "test@example.com",
+            targetInfoId = 10L,
+            targetEmail = "target@example.com",
+            middleNumberMatched = true,
+            lastNumberMatched = true,
+            yearMatched = true,
+            monthMatched = false,
+            dayMatched = false,
+            regionMatched = true,
+            showingExpiryDate = LocalDateTime.now().plusDays(25),
+            matchingExpiryDate = LocalDate.now().plusDays(200),
+        )
+        val resultsWithProfiles = MatchingResultsWithProfiles(
+            data = listOf(
+                MatchingResultWithProfile(
+                    matchingResult = matchingResult,
+                    targetMemberId = 1L,
+                    targetName = "김만남",
+                    targetNickname = "테스트닉네임",
+                    profileImageUrl = "https://example.com/image.jpg",
+                )
+            )
+        )
+
+        every { matchingResultQueryService.find("test@example.com", true) } returns resultsWithProfiles
+
+        // When & Then
+        mockMvc.getJson("/api/matching-results") {
+            param("excluded", "true")
+        }
+            .andExpect { status { isOk() } }
+            .andDocument(
+                "matching/find-excluded-matching-results",
+                requestParam(
+                    resultExcludedParam(),
+                ),
                 responseBody(
                     matchingResultId(),
                     targetMemberId(),
@@ -97,7 +155,7 @@ class MatchingResultQueryApiTest(
         // Given
         val emptyResults = MatchingResultsWithProfiles(data = emptyList())
 
-        every { matchingResultQueryService.find("test@example.com") } returns emptyResults
+        every { matchingResultQueryService.find("test@example.com", false) } returns emptyResults
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}

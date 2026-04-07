@@ -105,5 +105,8 @@ fun dayMatched(fieldName: String = "dayMatched") =
 fun regionMatched(fieldName: String = "regionMatched") =
     fieldName responseType BOOLEAN means "지역 일치 여부" example "true"
 
+fun resultExcludedParam(fieldName: String = "excluded") =
+    fieldName requestParam "제외된 매칭 결과 조회 여부 (기본값: false)" isOptional true
+
 fun matchingResultIdPath(fieldName: String = "matchingResultId") =
     fieldName requestParam "매칭 결과 ID (인코딩)"

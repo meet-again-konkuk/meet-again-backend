@@ -34,9 +34,9 @@ class MatchingResultCoreRepository(
         return matchingResultCommandDao.deleteExcludedExpired(baseDate)
     }
 
-    override fun find(email: String): MatchingResults {
+    override fun find(email: String, excluded: Boolean): MatchingResults {
         return MatchingResults(
-            matchingResultQueryDao.find(email)
+            matchingResultQueryDao.find(email, excluded)
                 .map { it.toDomain() }
         )
     }

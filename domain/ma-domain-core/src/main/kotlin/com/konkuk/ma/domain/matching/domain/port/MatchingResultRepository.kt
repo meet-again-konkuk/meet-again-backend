@@ -9,7 +9,7 @@ interface MatchingResultRepository {
     fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults
     fun deleteExpiredMatchingResults(baseDate: LocalDate): Int
     fun deleteExcludedExpiredMatchingResults(baseDate: LocalDate): Int
-    fun find(email: String): MatchingResults
+    fun find(email: String, excluded: Boolean = false): MatchingResults
     fun findOne(matchingResultId: Long): MatchingResult
     fun updateExcluded(matchingResult: MatchingResult)
 }

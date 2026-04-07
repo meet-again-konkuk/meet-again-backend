@@ -19,9 +19,29 @@ include::{snippets}/matching/find-matching-results/http-request.adoc[]
 
 include::{snippets}/matching/find-matching-results/http-response.adoc[]
 
+=== 요청 파라미터
+
+include::{snippets}/matching/find-matching-results/request-parameters.adoc[]
+
 === 응답 필드
 
 include::{snippets}/matching/find-matching-results/response-fields.adoc[]
+
+== 제외된 매칭 결과 목록 조회
+
+제외(excluded)된 매칭 결과 목록을 조회합니다.
+
+=== 요청
+
+include::{snippets}/matching/find-excluded-matching-results/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/find-excluded-matching-results/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/matching/find-excluded-matching-results/response-fields.adoc[]
 
 == 매칭 결과가 없는 경우
 
