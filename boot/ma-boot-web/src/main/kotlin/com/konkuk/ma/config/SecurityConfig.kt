@@ -33,13 +33,11 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST,"/api/sms/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/members/duplicated-**").permitAll()
-                    .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()
             }
             .anonymous { it.disable() }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .headers { it.frameOptions { frameOptions -> frameOptions.disable() } }
         return http.build()
     }
 }
