@@ -35,10 +35,16 @@ fun postTimeAgo(fieldName: String = "posts[].timeAgo") =
 fun postsHasNext(fieldName: String = "hasNext") =
     fieldName responseType BOOLEAN means "다음 페이지 존재 여부" example "true"
 
+fun postsNextCursorId(fieldName: String = "nextCursorId") =
+    fieldName responseType STRING means "다음 페이지 커서 ID (인코딩, 마지막 페이지면 null)" example "abc123"
+
 // --- 게시글 목록 요청 파라미터 ---
 
 fun categoryParam(fieldName: String = "category") =
     fieldName requestParam "게시글 카테고리 (SUCCESS_STORY, CHEER, COUNSELING)"
+
+fun cursorIdParam(fieldName: String = "cursorId") =
+    fieldName requestParam "마지막으로 본 게시글 ID (인코딩, 첫 페이지는 미전송)" isOptional true
 
 fun pageParam(fieldName: String = "page") =
     fieldName requestParam "페이지 번호 (기본값: 0)" isOptional true

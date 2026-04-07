@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class MemberQueryApi(
     private val memberQueryService: MemberQueryService
 ) {
-    @PostMapping("/duplicated-nickname")
+    @PostMapping("/nickname/exists")
     fun checkDuplicatedNickname(@Validated @RequestBody request: DuplicatedNicknameRequest): CheckDuplicatedNicknameResponse {
         val duplicated = memberQueryService.checkDuplicatedNickname(request.nickname)
         return CheckDuplicatedNicknameResponse(
@@ -25,7 +25,7 @@ class MemberQueryApi(
         )
     }
 
-    @PostMapping("/duplicated-email")
+    @PostMapping("/email/exists")
     fun checkDuplicatedEmail(@Validated @RequestBody request: DuplicatedEmailRequest): CheckDuplicatedEmailResponse {
         val duplicated = memberQueryService.checkDuplicatedEmail(request.email)
         return CheckDuplicatedEmailResponse(

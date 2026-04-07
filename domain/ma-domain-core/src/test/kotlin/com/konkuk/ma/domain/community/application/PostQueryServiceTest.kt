@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.page.PageRequest
-import com.konkuk.ma.domain.common.domain.page.PageResult
+import com.konkuk.ma.domain.common.domain.page.CursorRequest
+import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
@@ -24,49 +24,69 @@ class PostQueryServiceTest : FunSpec({
 
     context("find") {
 
-        test("카테고리와 페이지로 게시글 목록을 조회한다") {
+        test("카테고리와 커서로 게시글 목록을 조회한다") {
             // Given
             val category = PostCategory.SUCCESS_STORY
-            val pageRequest = PageRequest(0, 20)
+            val cursorRequest = CursorRequest(cursorId = null, size = 20)
             val post = PostFixture.create(category = category)
-            val pageResult = PageResult(
+            val cursorResult = CursorResult(
                 data = Posts(listOf(post)),
-                totalCount = 1L,
-                currentPage = pageRequest.page,
-                pageSize = pageRequest.size,
+                hasNext = false,
+                nextCursorId = null,
             )
 
-            every { postQueryRepository.find(category, pageRequest) } returns pageResult
+            every { postQueryRepository.find(category, cursorRequest) } returns cursorResult
 
             // When
-            val result = service.find(category, pageRequest)
+            val result = service.find(category, cursorRequest)
 
             // Then
             result.data.data shouldHaveSize 1
             result.data.data[0].category shouldBe category
-            result.totalCount shouldBe 1L
-            result.currentPage shouldBe 0
+            result.hasNext shouldBe false
+            result.nextCursorId shouldBe null
         }
 
         test("게시글이 없으면 빈 목록을 반환한다") {
             // Given
             val category = PostCategory.CHEER
-            val pageRequest = PageRequest(0, 20)
-            val pageResult = PageResult(
+            val cursorRequest = CursorRequest(cursorId = null, size = 20)
+            val cursorResult = CursorResult(
                 data = Posts(emptyList()),
-                totalCount = 0L,
-                currentPage = pageRequest.page,
-                pageSize = pageRequest.size,
+                hasNext = false,
+                nextCursorId = null,
             )
 
-            every { postQueryRepository.find(category, pageRequest) } returns pageResult
+            every { postQueryRepository.find(category, cursorRequest) } returns cursorResult
 
             // When
-            val result = service.find(category, pageRequest)
+            val result = service.find(category, cursorRequest)
 
             // Then
             result.data.data shouldHaveSize 0
-            result.totalCount shouldBe 0L
+            result.hasNext shouldBe false
+        }
+
+        test("다음 페이지가 있으면 hasNext가 true이고 nextCursorId를 반환한다") {
+            // Given
+            val category = PostCategory.SUCCESS_STORY
+            val cursorRequest = CursorRequest(cursorId = null, size = 20)
+            val posts = List(20) { PostFixture.create(id = (20 - it).toLong(), category = category) }
+            val cursorResult = CursorResult(
+                data = Posts(posts),
+                hasNext = true,
+                nextCursorId = 1L,
+            )
+
+            every { postQueryRepository.find(category, cursorRequest) } returns cursorResult
+
+            // When
+            val result = service.find(category, cursorRequest)
+
+            // Then
+            result.data.data shouldHaveSize 20
+            result.hasNext shouldBe true
+            result.nextCursorId shouldBe 1L
         }
     }
 })

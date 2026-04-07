@@ -9,26 +9,19 @@ import org.springframework.stereotype.Component
 
 @Component
 class PostQueryDao {
-    fun find(category: String, pageSize: Int, offset: Long): List<PostEntity> {
+    fun find(category: String, cursorId: Long?, fetchSize: Int): List<PostEntity> {
         return PostTable
             .selectAll()
             .where {
-                (PostTable.category eq category) and
-                    (PostTable.deleted eq false)
+                val baseCondition = (PostTable.category eq category) and (PostTable.deleted eq false)
+                if (cursorId != null) {
+                    baseCondition and (PostTable.id less cursorId)
+                } else {
+                    baseCondition
+                }
             }
             .orderBy(PostTable.id to SortOrder.DESC)
-            .limit(pageSize)
-            .offset(offset)
+            .limit(fetchSize)
             .map { row -> PostEntity.from(row) }
-    }
-
-    fun count(category: String): Long {
-        return PostTable
-            .selectAll()
-            .where {
-                (PostTable.category eq category) and
-                    (PostTable.deleted eq false)
-            }
-            .count()
     }
 }

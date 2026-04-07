@@ -1,9 +1,11 @@
 package com.konkuk.ma.domain.community.api
 
-import com.konkuk.ma.domain.common.domain.page.PageRequest
+import com.konkuk.ma.domain.common.domain.id.ObfuscationType
+import com.konkuk.ma.domain.common.domain.page.CursorRequest
 import com.konkuk.ma.domain.community.api.response.PostsResponse
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostCategory
+import com.konkuk.ma.support.id.DecryptId
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,10 +21,10 @@ class CommunityPostQueryApi(
     fun findPosts(
         @AuthenticationPrincipal email: String,
         @RequestParam category: PostCategory,
-        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(required = false) @DecryptId(ObfuscationType.COMMUNITY_POST) cursorId: Long?,
         @RequestParam(defaultValue = "20") size: Int,
     ): PostsResponse {
-        val pageResult = postQueryService.find(category, PageRequest(page, size))
-        return PostsResponse.from(pageResult)
+        val cursorResult = postQueryService.find(category, CursorRequest(cursorId, size))
+        return PostsResponse.from(cursorResult)
     }
 }

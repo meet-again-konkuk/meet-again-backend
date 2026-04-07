@@ -30,14 +30,14 @@ class MemberQueryApiTest(
         // When & Then
         every { memberQueryService.checkDuplicatedNickname(nickname) } returns false
 
-        mockMvc.postJson("/api/members/duplicated-nickname")
+        mockMvc.postJson("/api/members/nickname/exists")
         { content = """{"nickname":"$nickname"}""" }
             .andExpect {
                 status { { isOk() } }
                 jsonPath("$.nickname").value(nickname)
                 jsonPath("$.duplicated").value(false) }
             .andDocument(
-                "check-duplicated-nickname",
+                "check-nickname-exists",
                 requestBody(
                     nickname(),
                 ),
@@ -53,11 +53,11 @@ class MemberQueryApiTest(
         val invalidNickname = "a"
 
         // When & Then
-        mockMvc.postJson("/api/members/duplicated-nickname")
+        mockMvc.postJson("/api/members/nickname/exists")
         { content = """{"nickname":"$invalidNickname"}""" }
             .andExpect { status { isBadRequest() } }
             .andDocument(
-                "check-duplicated-nickname-invalid-format",
+                "check-nickname-exists-invalid-format",
                 requestBody(
                     nickname() means "유효하지 않은 형식의 닉네임",
                 )
@@ -71,14 +71,14 @@ class MemberQueryApiTest(
         // When & Then
         every { memberQueryService.checkDuplicatedEmail(email) } returns false
 
-        mockMvc.postJson("/api/members/duplicated-email")
+        mockMvc.postJson("/api/members/email/exists")
         { content = """{"email":"$email"}""" }
             .andExpect {
                 status { { isOk() } }
                 jsonPath("$.email").value(email)
                 jsonPath("$.duplicated").value(false) }
             .andDocument(
-                "check-duplicated-email",
+                "check-email-exists",
                 requestBody(
                     email(),
                 ),
@@ -94,11 +94,11 @@ class MemberQueryApiTest(
         val invalidEmail = "invalid-email"
 
         // When & Then
-        mockMvc.postJson("/api/members/duplicated-email")
+        mockMvc.postJson("/api/members/email/exists")
         { content = """{"email":"$invalidEmail"}""" }
             .andExpect { status { isBadRequest() } }
             .andDocument(
-                "check-duplicated-email-invalid-format",
+                "check-email-exists-invalid-format",
                 requestBody(
                     email() means "유효하지 않은 형식의 이메일",
                 )
