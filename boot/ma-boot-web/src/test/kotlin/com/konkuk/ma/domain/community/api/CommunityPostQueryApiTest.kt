@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.page.PageResult
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
@@ -20,9 +21,7 @@ import com.konkuk.ma.vocabulary.postLikes
 import com.konkuk.ma.vocabulary.postNickname
 import com.konkuk.ma.vocabulary.postTimeAgo
 import com.konkuk.ma.vocabulary.postTitle
-import com.konkuk.ma.vocabulary.postsCurrentPage
 import com.konkuk.ma.vocabulary.postsHasNext
-import com.konkuk.ma.vocabulary.postsTotalCount
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -51,13 +50,14 @@ class CommunityPostQueryApiTest(
             comments = 3,
             createdDate = LocalDateTime.now().minusMinutes(5),
         )
-        val posts = Posts(
-            data = listOf(post),
+        val pageResult = PageResult(
+            data = Posts(listOf(post)),
             totalCount = 100L,
             currentPage = 0,
+            pageSize = Posts.PAGE_SIZE,
         )
 
-        every { postQueryService.find(PostCategory.CHEER, 0) } returns posts
+        every { postQueryService.find(PostCategory.CHEER, 0) } returns pageResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {
@@ -80,8 +80,6 @@ class CommunityPostQueryApiTest(
                     postLikes(),
                     postComments(),
                     postTimeAgo(),
-                    postsTotalCount(),
-                    postsCurrentPage(),
                     postsHasNext(),
                 ),
             )
@@ -89,13 +87,14 @@ class CommunityPostQueryApiTest(
 
     test("게시글이 없는 경우 빈 목록 반환") {
         // Given
-        val emptyPosts = Posts(
-            data = emptyList(),
+        val pageResult = PageResult(
+            data = Posts(emptyList()),
             totalCount = 0L,
             currentPage = 0,
+            pageSize = Posts.PAGE_SIZE,
         )
 
-        every { postQueryService.find(PostCategory.SUCCESS_STORY, 0) } returns emptyPosts
+        every { postQueryService.find(PostCategory.SUCCESS_STORY, 0) } returns pageResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {

@@ -32,12 +32,6 @@ fun postComments(fieldName: String = "posts[].comments") =
 fun postTimeAgo(fieldName: String = "posts[].timeAgo") =
     fieldName responseType STRING means "작성 경과 시간" example "5분 전"
 
-fun postsTotalCount(fieldName: String = "totalCount") =
-    fieldName responseType NUMBER means "총 게시글 수" example "100"
-
-fun postsCurrentPage(fieldName: String = "currentPage") =
-    fieldName responseType NUMBER means "현재 페이지 번호" example "0"
-
 fun postsHasNext(fieldName: String = "hasNext") =
     fieldName responseType BOOLEAN means "다음 페이지 존재 여부" example "true"
 

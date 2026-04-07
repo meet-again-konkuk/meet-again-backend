@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.common.domain.page.PageResult
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
@@ -11,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostQueryService(
     private val postQueryRepository: PostQueryRepository,
 ) {
-    fun find(category: PostCategory, page: Int): Posts {
+    fun find(category: PostCategory, page: Int): PageResult<Posts> {
         return postQueryRepository.find(category, page)
     }
 }

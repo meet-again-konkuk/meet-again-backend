@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api.response
 
+import com.konkuk.ma.domain.common.domain.page.PageResult
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.Posts
@@ -12,7 +13,7 @@ class PostsResponseTest : FunSpec({
 
     context("from") {
 
-        test("Posts 일급 컬렉션을 PostsResponse로 변환한다") {
+        test("PageResult를 PostsResponse로 변환한다") {
             val post = Post(
                 id = 1L,
                 authorEmail = "author@example.com",
@@ -24,32 +25,30 @@ class PostsResponseTest : FunSpec({
                 comments = 3,
                 createdDate = LocalDateTime.now().minusHours(1),
             )
-            val posts = Posts(
-                data = listOf(post),
+            val pageResult = PageResult(
+                data = Posts(listOf(post)),
                 totalCount = 1L,
                 currentPage = 0,
+                pageSize = Posts.PAGE_SIZE,
             )
 
-            val response = PostsResponse.from(posts)
+            val response = PostsResponse.from(pageResult)
 
             response.posts shouldHaveSize 1
-            response.totalCount shouldBe posts.totalCount
-            response.currentPage shouldBe posts.currentPage
-            response.hasNext shouldBe posts.hasNext()
+            response.hasNext shouldBe false
         }
 
         test("빈 게시글 목록을 변환하면 빈 응답을 반환한다") {
-            val posts = Posts(
-                data = emptyList(),
+            val pageResult = PageResult(
+                data = Posts(emptyList()),
                 totalCount = 0L,
                 currentPage = 0,
+                pageSize = Posts.PAGE_SIZE,
             )
 
-            val response = PostsResponse.from(posts)
+            val response = PostsResponse.from(pageResult)
 
             response.posts shouldHaveSize 0
-            response.totalCount shouldBe 0L
-            response.currentPage shouldBe 0
             response.hasNext shouldBe false
         }
 
@@ -65,13 +64,14 @@ class PostsResponseTest : FunSpec({
                     createdDate = LocalDateTime.now(),
                 )
             }
-            val posts = Posts(
-                data = postList,
+            val pageResult = PageResult(
+                data = Posts(postList),
                 totalCount = Posts.PAGE_SIZE.toLong() + 1,
                 currentPage = 0,
+                pageSize = Posts.PAGE_SIZE,
             )
 
-            val response = PostsResponse.from(posts)
+            val response = PostsResponse.from(pageResult)
 
             response.hasNext shouldBe true
         }

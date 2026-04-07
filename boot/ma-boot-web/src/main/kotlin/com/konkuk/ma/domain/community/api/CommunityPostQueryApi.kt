@@ -20,7 +20,7 @@ class CommunityPostQueryApi(
         @RequestParam category: PostCategory,
         @RequestParam(defaultValue = "0") page: Int,
     ): PostsResponse {
-        val posts = postQueryService.find(category, page)
-        return PostsResponse.from(posts)
+        val pageResult = postQueryService.find(category, page)
+        return PostsResponse.from(pageResult)
     }
 }

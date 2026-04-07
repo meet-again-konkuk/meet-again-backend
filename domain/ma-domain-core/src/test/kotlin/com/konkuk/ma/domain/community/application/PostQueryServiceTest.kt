@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.common.domain.page.PageResult
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
@@ -27,21 +28,22 @@ class PostQueryServiceTest : FunSpec({
             val category = PostCategory.SUCCESS_STORY
             val page = 0
             val post = PostFixture.create(category = category)
-            val posts = Posts(
-                data = listOf(post),
+            val pageResult = PageResult(
+                data = Posts(listOf(post)),
                 totalCount = 1L,
                 currentPage = page,
+                pageSize = Posts.PAGE_SIZE,
             )
 
-            every { postQueryRepository.find(category, page) } returns posts
+            every { postQueryRepository.find(category, page) } returns pageResult
 
             // When
             val result = service.find(category, page)
 
             // Then
-            result.data shouldHaveSize 1
-            result.data[0].category shouldBe category
-            result.totalCount shouldBe posts.totalCount
+            result.data.data shouldHaveSize 1
+            result.data.data[0].category shouldBe category
+            result.totalCount shouldBe 1L
             result.currentPage shouldBe page
         }
 
@@ -49,19 +51,20 @@ class PostQueryServiceTest : FunSpec({
             // Given
             val category = PostCategory.CHEER
             val page = 0
-            val emptyPosts = Posts(
-                data = emptyList(),
+            val pageResult = PageResult(
+                data = Posts(emptyList()),
                 totalCount = 0L,
                 currentPage = page,
+                pageSize = Posts.PAGE_SIZE,
             )
 
-            every { postQueryRepository.find(category, page) } returns emptyPosts
+            every { postQueryRepository.find(category, page) } returns pageResult
 
             // When
             val result = service.find(category, page)
 
             // Then
-            result.data shouldHaveSize 0
+            result.data.data shouldHaveSize 0
             result.totalCount shouldBe 0L
         }
     }
