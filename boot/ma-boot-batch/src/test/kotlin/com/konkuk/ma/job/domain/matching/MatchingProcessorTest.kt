@@ -6,9 +6,9 @@ import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
-import com.konkuk.ma.job.fixture.MatchingResultFixture
-import com.konkuk.ma.job.fixture.MemberFixture
-import com.konkuk.ma.job.fixture.TargetInfoFixture
+import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
+import com.konkuk.ma.domain.matching.fixture.MemberFixture
+import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
