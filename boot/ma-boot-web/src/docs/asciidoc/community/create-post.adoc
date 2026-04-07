@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 게시글 작성 API
+
+== 게시글 작성
+
+커뮤니티에 새 게시글을 작성합니다.
+
+=== 요청
+
+include::{snippets}/community/create-post/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/create-post/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/create-post/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/create-post/response-fields.adoc[]

@@ -19,6 +19,7 @@
 | PATCH | /api/matching-results/{id}/exclude | 매칭 상대 제외(차단) | Done |
 | PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 | Done |
 | GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 | Done |
+| GET | /api/community/posts | 게시글 목록 조회 | Done |
 
 ---
 
@@ -47,29 +48,6 @@
 **참고사항**:
 - category는 enum으로 관리
 
-### GET /api/community/posts — 게시글 목록 조회
-
-- **인증**: 필요
-- **설명**: 카테고리별 게시글 목록을 페이징 조회한다
-
-**Query Params**: `category={category}&page={page}`
-
-**Response Body**:
-```json
-{
-  "posts": [{
-    "id": "long",
-    "nickname": "string",
-    "category": "SUCCESS_STORY | CHEER | COUNSELING",
-    "title": "string",
-    "content": "string",
-    "likes": "int",
-    "comments": "int",
-    "timeAgo": "string"
-  }]
-}
-```
-
 ### GET /api/community/posts/{id} — 게시글 상세
 
 - **인증**: 필요
@@ -95,6 +73,10 @@
 ### DELETE /api/community/posts/{postId}/comments/{commentId} — 댓글 삭제
 
 - **인증**: 필요
+
+### 댓글 좋아요 토글
+
+### 게시글에 댓글 알림 설정
 
 ---
 

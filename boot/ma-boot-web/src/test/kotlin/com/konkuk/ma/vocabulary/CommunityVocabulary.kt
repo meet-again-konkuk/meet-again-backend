@@ -6,6 +6,22 @@ import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseType
 
+// --- 게시글 작성 요청 필드 ---
+
+fun newPostCategory(fieldName: String = "category") =
+    fieldName responseType STRING means "게시글 카테고리 (SUCCESS_STORY, CHEER, COUNSELING)" example "CHEER"
+
+fun newPostTitle(fieldName: String = "title") =
+    fieldName responseType STRING means "게시글 제목 (최대 40자)" example "안녕하세요"
+
+fun newPostContent(fieldName: String = "content") =
+    fieldName responseType STRING means "게시글 내용" example "반갑습니다"
+
+// --- 게시글 작성 응답 필드 ---
+
+fun newPostId(fieldName: String = "postId") =
+    fieldName responseType NUMBER means "생성된 게시글 ID" example "1"
+
 // --- 게시글 목록 응답 필드 ---
 
 fun postId(fieldName: String = "data[].id") =

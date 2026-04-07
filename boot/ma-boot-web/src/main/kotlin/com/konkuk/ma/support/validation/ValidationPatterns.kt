@@ -24,4 +24,8 @@ object ValidationMessages {
     const val REGION_REQUIRED = "지역은 필수입니다."
     const val NAME_REQUIRED = "이름은 필수입니다."
     const val REFRESH_TOKEN_REQUIRED = "리프레시 토큰은 필수입니다."
+    const val POST_CATEGORY_REQUIRED = "카테고리는 필수입니다."
+    const val POST_TITLE_REQUIRED = "제목은 필수입니다."
+    const val POST_TITLE_SIZE = "제목은 40자 이하여야 합니다."
+    const val POST_CONTENT_REQUIRED = "내용은 필수입니다."
 }
