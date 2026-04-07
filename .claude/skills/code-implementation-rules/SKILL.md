@@ -400,7 +400,90 @@ fun findOne(email: String): Member
 fun findOneByNickname(nickname: String): Member
 ```
 
-## 15. 성능 고려사항
+## 15. RESTful URL 설계 규칙
+
+### 리소스 중심 URL
+URL은 **명사(리소스)**를 나타내고, 행위는 **HTTP 메서드**로 표현한다. URL에 동사를 넣지 않는다.
+
+```
+# BAD - URL에 동사
+POST   /api/members/getMember
+POST   /api/members/createMember
+POST   /api/members/deleteMember
+
+# GOOD - 리소스 + HTTP 메서드
+GET    /api/members/{memberId}
+POST   /api/members
+DELETE /api/members/{memberId}
+```
+
+### 복수형 사용
+리소스명은 항상 복수형을 사용한다.
+
+```
+# BAD
+/api/member
+/api/matching-result
+
+# GOOD
+/api/members
+/api/matching-results
+```
+
+### 계층 관계는 URL 경로로 표현
+리소스 간 포함 관계(소유 관계)는 `/` 경로로 표현한다. 단, 2단계까지만 중첩한다.
+
+```
+# GOOD - 회원의 사진
+POST   /api/members/photos
+DELETE /api/members/photos
+
+# GOOD - 매칭 결과의 상태 변경
+PATCH  /api/matching-results/{matchingResultId}/exclude
+PATCH  /api/matching-results/{matchingResultId}/include
+
+# BAD - 3단계 이상 중첩
+GET    /api/members/{memberId}/target-infos/{targetInfoId}/matching-results
+```
+
+### HTTP 메서드 사용 규칙
+
+| 메서드 | 용도 | 응답 코드 |
+|--------|------|-----------|
+| GET | 리소스 조회 | 200 OK |
+| POST | 리소스 생성 | 201 Created |
+| PUT | 리소스 전체 교체 | 200 OK |
+| PATCH | 리소스 부분 수정 | 200 OK |
+| DELETE | 리소스 삭제 | 200 OK / 204 No Content |
+
+### kebab-case 사용
+URL 경로에는 kebab-case를 사용한다. camelCase, snake_case를 쓰지 않는다.
+
+```
+# BAD
+/api/targetInfos
+/api/target_infos
+/api/matchingResults
+
+# GOOD
+/api/target-infos
+/api/matching-results
+```
+
+### 필터링/정렬/페이징은 쿼리 파라미터로
+리소스 목록의 필터링, 정렬, 페이징 조건은 URL 경로가 아닌 쿼리 파라미터로 전달한다.
+
+```
+# BAD - 필터 조건이 URL 경로에
+GET /api/matching-results/excluded
+
+# GOOD - 쿼리 파라미터로 필터링
+GET /api/matching-results?excluded=true
+GET /api/matching-results?page=0&size=20
+GET /api/matching-results?sort=matchRate,desc
+```
+
+## 16. 성능 고려사항
 
 - **N+1 쿼리 방지**: 반복문 안에서 DB 조회하지 않는다. 벌크 조회 후 메모리에서 처리한다
 - **불필요한 조건 제거**: enum 값이 2개뿐인 경우(예: Gender) DB 조건으로 넣지 말고 메모리에서 필터링
