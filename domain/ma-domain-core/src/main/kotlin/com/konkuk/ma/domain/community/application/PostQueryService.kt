@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostQueryService(
     private val postQueryRepository: PostQueryRepository,
 ) {
-    fun find(category: PostCategory, cursorRequest: CursorRequest): CursorResult<Posts> {
+    fun find(category: PostCategory?, cursorRequest: CursorRequest): CursorResult<Posts> {
         return postQueryRepository.find(category, cursorRequest)
     }
 }
