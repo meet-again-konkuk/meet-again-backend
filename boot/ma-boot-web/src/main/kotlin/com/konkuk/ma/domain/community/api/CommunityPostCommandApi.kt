@@ -25,9 +25,9 @@ class CommunityPostCommandApi(
     ): NewPostResponse {
         val postId = postCommandService.create(
             email = email,
-            category = request.category!!,
-            title = request.title!!,
-            content = request.content!!,
+            category = request.category,
+            title = request.title,
+            content = request.content,
         )
         return NewPostResponse(postId = postId)
     }
