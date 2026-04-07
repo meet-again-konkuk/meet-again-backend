@@ -18,9 +18,9 @@ class CommunityPostQueryApi(
     fun findPosts(
         @RequestParam(required = false) category: PostCategory?,
         @RequestParam(required = false) cursorId: Long?,
-        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(required = false) size: Int?,
     ): PostsResponse {
-        val cursorResult = postQueryService.find(category, CursorRequest(cursorId, size))
+        val cursorResult = postQueryService.find(category, CursorRequest.of(cursorId, size))
         return PostsResponse.from(cursorResult)
     }
 }

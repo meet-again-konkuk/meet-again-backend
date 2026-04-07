@@ -9,8 +9,8 @@ data class CursorRequest(
     companion object {
         private const val DEFAULT_SIZE = 20
 
-        fun of(cursorId: Long?, size: Int = DEFAULT_SIZE): CursorRequest {
-            return CursorRequest(cursorId = cursorId, size = size)
+        fun of(cursorId: Long?, size: Int? = null): CursorRequest {
+            return CursorRequest(cursorId = cursorId, size = size ?: DEFAULT_SIZE)
         }
     }
 }
