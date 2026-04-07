@@ -15,18 +15,18 @@ class MatchingResultQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
 ) {
-    fun findByRegisterEmail(email: String): MatchingResultsWithProfiles {
-        val matchingResults = matchingResultRepository.findByRegisterEmail(email)
+    fun find(email: String): MatchingResultsWithProfiles {
+        val matchingResults = matchingResultRepository.find(email)
         val targetEmails = matchingResults.extractTargetEmails()
 
         val members = memberQueryRepository.findByEmails(targetEmails)
-        val photos = memberPhotoRepository.findByEmails(targetEmails)
+        val photos = memberPhotoRepository.find(targetEmails)
 
         return matchingResults.combineWithProfiles(members, photos)
     }
 
     fun findDetailById(matchingResultId: Long, email: String): MatchingResult {
-        val matchingResult = matchingResultRepository.findById(matchingResultId)
+        val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         return matchingResult
     }

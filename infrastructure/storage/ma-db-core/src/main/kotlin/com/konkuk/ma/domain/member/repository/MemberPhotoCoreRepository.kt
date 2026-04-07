@@ -18,15 +18,15 @@ class MemberPhotoCoreRepository(
         return memberPhotoCommandDao.save(newPhoto)
     }
 
-    override fun findByMemberEmail(email: String): MemberPhoto? {
-        return memberPhotoQueryDao.findByMemberEmail(email)?.toDomain()
+    override fun findOne(email: String): MemberPhoto? {
+        return memberPhotoQueryDao.findOne(email)?.toDomain()
     }
 
-    override fun deleteByMemberEmail(email: String) {
-        memberPhotoCommandDao.deleteByMemberEmail(email)
+    override fun delete(email: String) {
+        memberPhotoCommandDao.delete(email)
     }
 
-    override fun findByEmails(emails: Set<String>): MemberPhotos {
-        return MemberPhotos(memberPhotoQueryDao.findByEmails(emails).map { it.toDomain() })
+    override fun find(emails: Set<String>): MemberPhotos {
+        return MemberPhotos(memberPhotoQueryDao.find(emails).map { it.toDomain() })
     }
 }

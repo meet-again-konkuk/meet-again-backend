@@ -17,8 +17,8 @@ class RefreshTokenCoreRepository(
         refreshTokenDao.delete(email)
     }
 
-    override fun findByEmail(email: String): RefreshToken {
-        return refreshTokenDao.findByEmail(email)
+    override fun findOne(email: String): RefreshToken {
+        return refreshTokenDao.findOne(email)
             .toDomain()
     }
 }

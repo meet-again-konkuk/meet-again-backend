@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 class SmsVerificationFindDao(
     private val redisTemplate: RedisTemplate<String, Any>
 ) {
-    fun find(phoneNumber: String): Int? {
+    fun findOne(phoneNumber: String): Int? {
         return redisTemplate.opsForValue()
             .get(phoneNumber)
             ?.toString()

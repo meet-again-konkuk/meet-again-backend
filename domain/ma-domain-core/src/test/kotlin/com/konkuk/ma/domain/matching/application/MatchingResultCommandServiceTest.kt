@@ -30,7 +30,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             val email = "owner@example.com"
             val matchingResult = MatchingResultFixture.create(registerEmail = email)
 
-            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
             service.exclude(matchingResultId, email)
@@ -47,7 +47,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             val otherEmail = "other@example.com"
             val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail)
 
-            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {
@@ -60,7 +60,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             val nonExistentId = 999L
             val email = "owner@example.com"
 
-            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
+            every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
@@ -77,7 +77,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             val email = "owner@example.com"
             val matchingResult = MatchingResultFixture.create(registerEmail = email, excluded = true)
 
-            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
             service.include(matchingResultId, email)
@@ -94,7 +94,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             val otherEmail = "other@example.com"
             val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail, excluded = true)
 
-            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {

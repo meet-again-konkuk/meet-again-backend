@@ -34,7 +34,7 @@ class MemberPhotoServiceTest : FunSpec({
             val photoFile = PhotoFileFixture.create()
             val processed = ProcessedPhoto("stored/path.jpg", "stored/thumb.jpg")
 
-            every { memberPhotoRepository.findByMemberEmail(email) } returns null
+            every { memberPhotoRepository.findOne(email) } returns null
             every { memberPhotoProcessor.process(email, photoFile) } returns processed
             val capturedNewPhoto = slot<NewPhoto>()
             every { memberPhotoRepository.save(capture(capturedNewPhoto)) } returns 1L
@@ -58,9 +58,9 @@ class MemberPhotoServiceTest : FunSpec({
             )
             val processed = ProcessedPhoto("new/path.jpg", "new/thumb.jpg")
 
-            every { memberPhotoRepository.findByMemberEmail(email) } returns existingPhoto
+            every { memberPhotoRepository.findOne(email) } returns existingPhoto
             every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
-            every { memberPhotoRepository.deleteByMemberEmail(email) } just runs
+            every { memberPhotoRepository.delete(email) } just runs
             every { memberPhotoProcessor.process(email, photoFile) } returns processed
             every { memberPhotoRepository.save(any()) } returns 2L
 
@@ -69,7 +69,7 @@ class MemberPhotoServiceTest : FunSpec({
 
             // Then
             verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
-            verify { memberPhotoRepository.deleteByMemberEmail(email) }
+            verify { memberPhotoRepository.delete(email) }
             verify { memberPhotoProcessor.process(email, photoFile) }
             verify { memberPhotoRepository.save(any()) }
         }
@@ -82,30 +82,30 @@ class MemberPhotoServiceTest : FunSpec({
             val email = "user@example.com"
             val existingPhoto = MemberPhotoFixture.create(memberEmail = email)
 
-            every { memberPhotoRepository.findByMemberEmail(email) } returns existingPhoto
+            every { memberPhotoRepository.findOne(email) } returns existingPhoto
             every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
-            every { memberPhotoRepository.deleteByMemberEmail(email) } just runs
+            every { memberPhotoRepository.delete(email) } just runs
 
             // When
             service.delete(email)
 
             // Then
             verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
-            verify { memberPhotoRepository.deleteByMemberEmail(email) }
+            verify { memberPhotoRepository.delete(email) }
         }
 
         test("기존 사진이 없으면 아무 동작도 하지 않는다") {
             // Given
             val email = "nonexistent@example.com"
 
-            every { memberPhotoRepository.findByMemberEmail(email) } returns null
+            every { memberPhotoRepository.findOne(email) } returns null
 
             // When
             service.delete(email)
 
             // Then
             verify(exactly = 0) { memberPhotoProcessor.deleteFiles(any()) }
-            verify(exactly = 0) { memberPhotoRepository.deleteByMemberEmail(any()) }
+            verify(exactly = 0) { memberPhotoRepository.delete(any()) }
         }
     }
 })

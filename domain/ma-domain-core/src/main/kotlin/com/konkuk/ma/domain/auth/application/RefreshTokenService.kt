@@ -24,11 +24,11 @@ class RefreshTokenService(
 ) {
     fun refreshToken(inputRefreshToken: String): LoginInfo {
         val email = tokenManager.getEmailFromToken(inputRefreshToken)
-        val refreshToken = refreshTokenRepository.findByEmail(email)
+        val refreshToken = refreshTokenRepository.findOne(email)
         refreshTokenValidator.validate(refreshToken)
         val accessToken = tokenManager.generateAccessToken(email)
         val newRefreshToken = refreshTokenGenerator.generate(refreshToken.email)
-        val member = memberQueryRepository.findByEmail(email)
+        val member = memberQueryRepository.findOne(email)
         return LoginInfo(
             email, member.nickname, accessToken, newRefreshToken
         )

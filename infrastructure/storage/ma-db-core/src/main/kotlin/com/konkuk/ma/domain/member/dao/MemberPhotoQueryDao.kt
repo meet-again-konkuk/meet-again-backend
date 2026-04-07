@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class MemberPhotoQueryDao {
 
-    fun findByMemberEmail(email: String): MemberPhotoEntity? {
+    fun findOne(email: String): MemberPhotoEntity? {
         return MemberPhotoTable.selectAll()
             .where { (MemberPhotoTable.memberEmail eq email) and (MemberPhotoTable.deleted eq false) }
             .limit(1)
@@ -17,7 +17,7 @@ class MemberPhotoQueryDao {
             ?.let { MemberPhotoEntity.from(it) }
     }
 
-    fun findByEmails(emails: Set<String>): List<MemberPhotoEntity> {
+    fun find(emails: Set<String>): List<MemberPhotoEntity> {
         if (emails.isEmpty()) return emptyList()
         return MemberPhotoTable.selectAll()
             .where {

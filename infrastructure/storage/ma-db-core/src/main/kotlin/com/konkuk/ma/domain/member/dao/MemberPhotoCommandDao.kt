@@ -21,7 +21,7 @@ class MemberPhotoCommandDao {
         }.value
     }
 
-    fun deleteByMemberEmail(email: String) {
+    fun delete(email: String) {
         MemberPhotoTable.deleteWhere {
             MemberPhotoTable.memberEmail eq email
         }

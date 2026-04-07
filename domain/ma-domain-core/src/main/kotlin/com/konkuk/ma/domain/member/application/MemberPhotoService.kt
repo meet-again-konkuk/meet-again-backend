@@ -21,8 +21,8 @@ class MemberPhotoService(
     }
 
     fun delete(email: String) {
-        val existing = memberPhotoRepository.findByMemberEmail(email) ?: return
+        val existing = memberPhotoRepository.findOne(email) ?: return
         memberPhotoProcessor.deleteFiles(existing)
-        memberPhotoRepository.deleteByMemberEmail(email)
+        memberPhotoRepository.delete(email)
     }
 }

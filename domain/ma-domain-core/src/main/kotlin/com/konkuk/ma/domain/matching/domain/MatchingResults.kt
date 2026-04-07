@@ -16,8 +16,8 @@ class MatchingResults(
 
     fun combineWithProfiles(members: Members, photos: MemberPhotos): MatchingResultsWithProfiles {
         val combined = data.map { result ->
-            val member = members.findByEmail(result.targetEmail)
-            val photo = photos.findByEmail(result.targetEmail)
+            val member = members.findOne(result.targetEmail)
+            val photo = photos.findOne(result.targetEmail)
             MatchingResultWithProfile(
                 matchingResult = result,
                 targetMemberId = member?.id,

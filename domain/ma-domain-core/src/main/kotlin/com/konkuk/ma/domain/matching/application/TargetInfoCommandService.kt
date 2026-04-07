@@ -13,7 +13,7 @@ class TargetInfoCommandService(
     private val memberQueryRepository: MemberQueryRepository
 ) {
     fun register(newTargetInfo: NewTargetInfo): Long {
-        val member = memberQueryRepository.findByEmail(newTargetInfo.registerEmail)
+        val member = memberQueryRepository.findOne(newTargetInfo.registerEmail)
         return targetInfoCommandRepository.save(newTargetInfo, member.getOtherGender())
     }
 }

@@ -7,5 +7,5 @@ interface RefreshTokenRepository {
 
     fun delete(email: String)
 
-    fun findByEmail(email: String): RefreshToken
+    fun findOne(email: String): RefreshToken
 }

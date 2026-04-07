@@ -20,7 +20,7 @@ class MatchingResultQueryApi(
     fun findMyMatchingResults(
         @AuthenticationPrincipal email: String,
     ): MatchingResultsResponse {
-        val results = matchingResultQueryService.findByRegisterEmail(email)
+        val results = matchingResultQueryService.find(email)
         return MatchingResultsResponse.from(results)
     }
 

@@ -16,28 +16,15 @@
 | DELETE | /api/members/photos | 프로필 사진 삭제 | Done |
 | GET | /api/matching-results | 매칭 결과 목록 조회 | Done |
 | GET | /api/matching-results/{id} | 매칭 결과 상세 조회 | Done |
+| PATCH | /api/matching-results/{id}/exclude | 매칭 상대 제외(차단) | Done |
+| PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 | Done |
 
 ---
 
 ## 매칭
 
-### PATCH /api/matching-results/{matchingResultId}/exclude — 매칭 상대 제외(차단)
-- 상태: TODO
-- PathVariable: matchingResultId (@DecryptId)
-- 인증 필요 + 소유권 검증
-- MatchingResult의 `excluded` 컬럼을 `true`로 변경
-- 매칭 목록 조회 시 `excluded = true`인 결과는 제외
-
-### PATCH /api/matching-results/{matchingResultId}/include — 매칭 상대 제외 해제
-- 상태: TODO
-- PathVariable: matchingResultId (@DecryptId)
-- 인증 필요 + 소유권 검증
-- MatchingResult의 `excluded` 컬럼을 `false`로 변경
-
-### 구현 참고
-- MatchingResult 테이블에 `EXCLUDED BOOLEAN DEFAULT FALSE` 컬럼 추가 필요
-- 매칭 목록 조회(GET /api/matching-results) 시 `excluded = false` 조건 추가
-- MatchingResult 도메인 객체에 `exclude()`, `include()` 행위 부여
+- ~~/api/matching-results 매칭 결과 목록에 exclude 된 대상은 필터 되고 조회하도록 수정~~ ✔ 구현 완료
+- 필터 된 매칭 결과 리스트만 조회 하는 기능 필요.
 
 ---
 

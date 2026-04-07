@@ -30,7 +30,7 @@ class RefreshTokenDao {
         }
     }
 
-    fun findByEmail(email: String): RefreshTokenEntity {
+    fun findOne(email: String): RefreshTokenEntity {
         return RefreshTokenTable.selectAll()
             .where { RefreshTokenTable.email eq email }
             .limit(1)

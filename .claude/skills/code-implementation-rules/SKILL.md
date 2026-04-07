@@ -207,7 +207,7 @@ QueryDao는 도메인 객체를 직접 생성하지 않는다. Entity 클래스�
 ```kotlin
 // BAD - DAO에서 도메인 객체를 직접 생성
 class MatchingResultQueryDao {
-    fun findByRegisterEmail(email: String): List<MatchingResult> {
+    fun find(email: String): List<MatchingResult> {
         return MatchingResultTable.select(...)
             .where { MatchingResultTable.registerEmail eq email }
             .map { row ->
@@ -222,7 +222,7 @@ class MatchingResultQueryDao {
 
 // GOOD - DAO는 Entity 반환, Entity가 toDomain() 제공
 class MatchingResultQueryDao {
-    fun findByRegisterEmail(email: String): List<MatchingResultEntity> {
+    fun find(email: String): List<MatchingResultEntity> {
         return MatchingResultTable.select(...)
             .where { MatchingResultTable.registerEmail eq email }
             .map { row -> MatchingResultEntity.from(row) }
@@ -379,7 +379,28 @@ logger.warn { "실패 (email=$email): ${e.message}" }
 - `logger`는 top-level val로 선언된 싱글톤이므로 별도 선언 없이 import만 하면 됨
 - 람다 기반 API (`logger.info { }`, `logger.warn { }`, `logger.error { }`)로 메시지를 지연 평가
 
-## 14. 성능 고려사항
+## 14. 메서드 네이밍 — 파라미터로 유추 가능한 조건은 생략
+
+메서드명에 파라미터 타입/이름으로 유추 가능한 조건을 반복하지 않는다. 같은 시그니처의 메서드가 추가되어 구분이 필요할 때만 `findByXxx` 형태를 사용한다.
+
+단건 조회는 `findOne`, 복수 조회는 `find`로 구분하여 호출부에서 반환 타입을 바로 유추할 수 있게 한다.
+
+```kotlin
+// BAD - 파라미터로 유추 가능한 조건을 메서드명에 반복
+fun findByRegisterEmail(email: String): MatchingResults
+fun findByEmails(emails: Set<String>): Members
+
+// GOOD - 파라미터만으로 충분, 단건/복수 구분
+fun findOne(email: String): MemberPhoto?    // 단건
+fun find(email: String): MatchingResults     // 복수(일급 컬렉션)
+fun find(emails: Set<String>): Members       // 복수
+
+// GOOD - 같은 타입 파라미터로 다른 조건 조회가 필요할 때만 ByXxx 추가
+fun findOne(email: String): Member
+fun findOneByNickname(nickname: String): Member
+```
+
+## 15. 성능 고려사항
 
 - **N+1 쿼리 방지**: 반복문 안에서 DB 조회하지 않는다. 벌크 조회 후 메모리에서 처리한다
 - **불필요한 조건 제거**: enum 값이 2개뿐인 경우(예: Gender) DB 조건으로 넣지 말고 메모리에서 필터링

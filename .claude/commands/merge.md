@@ -19,6 +19,12 @@
 1. merge된 작업 브랜치를 로컬에서 삭제 (git branch -d)
 2. 리모트에서도 삭제 (git push origin --delete), 이미 삭제되었으면 무시
 
+## 4단계: api-todo 업데이트
+1. docs/api-todo.md 파일이 존재하면 수행
+2. merge된 PR에 포함된 API가 api-todo.md에 TODO로 남아있으면 완료된 API 테이블로 이동
+3. 해당 도메인 섹션의 TODO가 모두 완료되면 도메인 헤더는 남기고 `> 작업할 내용 없음`으로 표시
+4. 변경사항이 있으면 커밋
+
 ## 주의사항
 - merge 실패 시 원인을 알려주고 작업 중단
 - 브랜치 삭제 전에 현재 브랜치가 아닌지 확인 (이미 checkout한 후여야 함)

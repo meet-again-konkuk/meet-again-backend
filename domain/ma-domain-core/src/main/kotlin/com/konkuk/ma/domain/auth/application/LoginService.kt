@@ -18,7 +18,7 @@ class LoginService(
     private val refreshTokenGenerator: RefreshTokenGenerator
 ) {
     fun login(loginCommand: LoginCommand): LoginInfo {
-        val member = memberQueryRepository.findByEmail(loginCommand.email)
+        val member = memberQueryRepository.findOne(loginCommand.email)
         passwordVerifier.verify(loginCommand.password, member)
 
         val accessToken = tokenManager.generateAccessToken(member.email)

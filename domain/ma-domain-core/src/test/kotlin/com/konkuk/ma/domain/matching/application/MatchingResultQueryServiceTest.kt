@@ -31,7 +31,7 @@ class MatchingResultQueryServiceTest : FunSpec({
         clearAllMocks()
     }
 
-    context("findByRegisterEmail") {
+    context("find") {
 
         test("매칭결과를 조회하고 회원정보와 사진정보를 조합하여 반환한다") {
             // Given
@@ -48,12 +48,12 @@ class MatchingResultQueryServiceTest : FunSpec({
                 thumbnailPath = "thumb/photo.jpg"
             )
 
-            every { matchingResultRepository.findByRegisterEmail(email) } returns matchingResults
+            every { matchingResultRepository.find(email) } returns matchingResults
             every { memberQueryRepository.findByEmails(matchingResults.extractTargetEmails()) } returns Members(listOf(member))
-            every { memberPhotoRepository.findByEmails(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
+            every { memberPhotoRepository.find(matchingResults.extractTargetEmails()) } returns MemberPhotos(listOf(photo))
 
             // When
-            val result = service.findByRegisterEmail(email)
+            val result = service.find(email)
 
             // Then
             result.data shouldHaveSize 1
@@ -68,12 +68,12 @@ class MatchingResultQueryServiceTest : FunSpec({
             val emptyResults = MatchingResults(emptyList())
             val emptyEmails = emptyResults.extractTargetEmails()
 
-            every { matchingResultRepository.findByRegisterEmail(email) } returns emptyResults
+            every { matchingResultRepository.find(email) } returns emptyResults
             every { memberQueryRepository.findByEmails(emptyEmails) } returns Members(emptyList())
-            every { memberPhotoRepository.findByEmails(emptyEmails) } returns MemberPhotos(emptyList())
+            every { memberPhotoRepository.find(emptyEmails) } returns MemberPhotos(emptyList())
 
             // When
-            val result = service.findByRegisterEmail(email)
+            val result = service.find(email)
 
             // Then
             result.data shouldHaveSize 0
@@ -91,7 +91,7 @@ class MatchingResultQueryServiceTest : FunSpec({
                 targetEmail = "target@example.com"
             )
 
-            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
             val result = service.findDetailById(matchingResultId, email)
@@ -105,7 +105,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val nonExistentId = 999L
             val email = "register@example.com"
 
-            every { matchingResultRepository.findById(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
+            every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
@@ -120,7 +120,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val otherEmail = "other@example.com"
             val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail)
 
-            every { matchingResultRepository.findById(matchingResultId) } returns matchingResult
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {

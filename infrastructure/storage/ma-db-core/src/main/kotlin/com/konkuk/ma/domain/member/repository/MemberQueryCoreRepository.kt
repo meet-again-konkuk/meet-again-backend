@@ -18,8 +18,8 @@ class MemberQueryCoreRepository(
         return memberQueryDao.existsByEmail(email)
     }
 
-    override fun findByEmail(email: String): Member {
-        return memberQueryDao.findByEmail(email)
+    override fun findOne(email: String): Member {
+        return memberQueryDao.findOne(email)
             .toDomain()
     }
 

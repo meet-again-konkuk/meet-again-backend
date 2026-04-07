@@ -28,14 +28,7 @@ class MemberQueryDao {
             .firstOrNull() != null
     }
 
-    fun findByNames(names: Set<String>): List<MemberEntity> {
-        if (names.isEmpty()) return emptyList()
-        return MemberTable.selectAll()
-            .where { MemberTable.name inList names }
-            .map { RowEntityMapper.toMemberEntity(it) }
-    }
-
-    fun findByEmail(email: String): MemberEntity {
+    fun findOne(email: String): MemberEntity {
         return MemberTable.selectAll()
             .where { (MemberTable.email eq email) }
             .limit(1)
@@ -48,6 +41,13 @@ class MemberQueryDao {
         if (emails.isEmpty()) return emptyList()
         return MemberTable.selectAll()
             .where { (MemberTable.email inList emails) and (MemberTable.deleted eq false) }
+            .map { RowEntityMapper.toMemberEntity(it) }
+    }
+
+    fun findByNames(names: Set<String>): List<MemberEntity> {
+        if (names.isEmpty()) return emptyList()
+        return MemberTable.selectAll()
+            .where { MemberTable.name inList names }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 }

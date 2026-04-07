@@ -21,7 +21,7 @@ class MatchingResultCoreRepository(
 
     override fun findExistingMatchingResults(targetInfoIds: List<Long>): MatchingResults {
         return MatchingResults(
-            matchingResultQueryDao.findByTargetInfoIds(targetInfoIds)
+            matchingResultQueryDao.find(targetInfoIds)
                 .map { it.toDomain() }
         )
     }
@@ -34,15 +34,15 @@ class MatchingResultCoreRepository(
         return matchingResultCommandDao.deleteExcludedExpired(baseDate)
     }
 
-    override fun findByRegisterEmail(email: String): MatchingResults {
+    override fun find(email: String): MatchingResults {
         return MatchingResults(
-            matchingResultQueryDao.findByRegisterEmail(email)
+            matchingResultQueryDao.find(email)
                 .map { it.toDomain() }
         )
     }
 
-    override fun findById(matchingResultId: Long): MatchingResult {
-        return matchingResultQueryDao.findById(matchingResultId)
+    override fun findOne(matchingResultId: Long): MatchingResult {
+        return matchingResultQueryDao.findOne(matchingResultId)
             ?.toDomain()
             ?: throw EntityNotFoundException(EntityType.MATCHING_RESULT, matchingResultId.toString())
     }

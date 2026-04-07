@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class MatchingResultQueryDao {
-    fun findByTargetInfoIds(targetInfoIds: List<Long>): List<MatchingResultEntity> {
+    fun find(targetInfoIds: List<Long>): List<MatchingResultEntity> {
         if (targetInfoIds.isEmpty()) return emptyList()
         return MatchingResultTable
             .selectAll()
@@ -16,7 +16,7 @@ class MatchingResultQueryDao {
             .map { row -> MatchingResultEntity.from(row) }
     }
 
-    fun findByRegisterEmail(email: String): List<MatchingResultEntity> {
+    fun find(email: String): List<MatchingResultEntity> {
         return MatchingResultTable
             .selectAll()
             .where {
@@ -27,7 +27,7 @@ class MatchingResultQueryDao {
             .map { row -> MatchingResultEntity.from(row) }
     }
 
-    fun findById(id: Long): MatchingResultEntity? {
+    fun findOne(id: Long): MatchingResultEntity? {
         return MatchingResultTable
             .selectAll()
             .where {

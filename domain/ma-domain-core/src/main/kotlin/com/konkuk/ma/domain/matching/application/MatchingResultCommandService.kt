@@ -10,14 +10,14 @@ class MatchingResultCommandService(
     private val matchingResultRepository: MatchingResultRepository,
 ) {
     fun exclude(matchingResultId: Long, email: String) {
-        val matchingResult = matchingResultRepository.findById(matchingResultId)
+        val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         matchingResult.exclude()
         matchingResultRepository.updateExcluded(matchingResult)
     }
 
     fun include(matchingResultId: Long, email: String) {
-        val matchingResult = matchingResultRepository.findById(matchingResultId)
+        val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         matchingResult.include()
         matchingResultRepository.updateExcluded(matchingResult)

@@ -17,7 +17,7 @@ class SmsRedisRepository(
     }
 
     override fun findOrNull(phoneNumber: String): Int? {
-        return smsVerificationFindDao.find(phoneNumber)
+        return smsVerificationFindDao.findOne(phoneNumber)
     }
 
     override fun confirmVerificationCode(phoneNumber: String) {
