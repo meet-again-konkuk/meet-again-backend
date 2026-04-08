@@ -1,0 +1,56 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 댓글 작성 API
+
+== 일반 댓글 작성
+
+게시글에 댓글을 작성합니다.
+
+=== 요청
+
+include::{snippets}/community/create-comment/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/create-comment/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/create-comment/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/create-comment/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/create-comment/response-fields.adoc[]
+
+== 대댓글 작성
+
+댓글에 대한 대댓글을 작성합니다.
+
+=== 요청
+
+include::{snippets}/community/create-reply-comment/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/create-reply-comment/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/create-reply-comment/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/create-reply-comment/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/create-reply-comment/response-fields.adoc[]

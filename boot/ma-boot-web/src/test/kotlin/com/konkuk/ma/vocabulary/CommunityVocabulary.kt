@@ -67,3 +67,21 @@ fun pageParam(fieldName: String = "page") =
 
 fun sizeParam(fieldName: String = "size") =
     fieldName requestParam "페이지 크기 (기본값: 20)" isOptional true
+
+// --- 댓글 작성 요청 필드 ---
+
+fun commentContent(fieldName: String = "content") =
+    fieldName responseType STRING means "댓글 내용 (최대 500자)" example "좋은 글이네요!"
+
+fun parentCommentId(fieldName: String = "parentCommentId") =
+    fieldName responseType NUMBER means "부모 댓글 ID (대댓글인 경우, 일반 댓글이면 null)" example "1" isOptional true
+
+// --- 댓글 작성 응답 필드 ---
+
+fun commentId(fieldName: String = "commentId") =
+    fieldName responseType NUMBER means "생성된 댓글 ID" example "1"
+
+// --- 댓글 관련 Path Variable ---
+
+fun postIdPath(fieldName: String = "postId") =
+    fieldName requestParam "게시글 ID"

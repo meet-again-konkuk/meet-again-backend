@@ -20,6 +20,7 @@
 | PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 | Done |
 | GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 | Done |
 | GET | /api/community/posts | 게시글 목록 조회 | Done |
+| POST | /api/community/posts | 게시글 작성 | Done |
 
 ---
 
@@ -30,23 +31,6 @@
 ---
 
 ## 커뮤니티
-
-### POST /api/community/posts — 게시글 작성
-
-- **인증**: 필요
-- **설명**: 커뮤니티에 새 게시글을 작성한다
-
-**Request Body**:
-```json
-{
-  "category": "SUCCESS_STORY | CHEER | COUNSELING",
-  "title": "string (max 40자)",
-  "content": "string"
-}
-```
-
-**참고사항**:
-- category는 enum으로 관리
 
 ### GET /api/community/posts/{id} — 게시글 상세
 

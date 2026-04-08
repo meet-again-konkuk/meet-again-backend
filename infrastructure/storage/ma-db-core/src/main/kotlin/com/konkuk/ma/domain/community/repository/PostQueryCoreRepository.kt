@@ -6,6 +6,8 @@ import com.konkuk.ma.domain.community.dao.PostQueryDao
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
+import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -17,5 +19,10 @@ class PostQueryCoreRepository(
             .map { it.toDomain() }
 
         return CursorResult.of(posts, cursorCondition.size) { it.id }
+    }
+
+    override fun findOne(id: Long): Post {
+        return postQueryDao.findOne(id)?.toDomain()
+            ?: throw EntityNotFoundException(EntityType.COMMUNITY_POST, id.toString())
     }
 }

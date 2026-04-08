@@ -1,0 +1,7 @@
+package com.konkuk.ma.domain.community.domain.port
+
+import com.konkuk.ma.domain.community.domain.NewComment
+
+interface CommentCommandRepository {
+    fun save(newComment: NewComment): Long
+}

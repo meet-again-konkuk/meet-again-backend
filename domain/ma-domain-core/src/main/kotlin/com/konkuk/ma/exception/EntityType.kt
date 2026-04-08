@@ -5,4 +5,5 @@ enum class EntityType(val entityName: String, val keyName: String) {
     MATCHING_RESULT("MatchingResult", "id"),
     REFRESH_TOKEN("RefreshToken", "email"),
     COMMUNITY_POST("CommunityPost", "id"),
+    COMMUNITY_COMMENT("CommunityComment", "id"),
 }

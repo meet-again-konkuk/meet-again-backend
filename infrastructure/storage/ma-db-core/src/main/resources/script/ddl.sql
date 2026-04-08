@@ -153,3 +153,26 @@ CREATE TABLE COMMUNITY_POSTS
     INDEX idx_community_post_category (CATEGORY),
     INDEX idx_community_post_author_email (AUTHOR_EMAIL)
 );
+
+-- COMMUNITY COMMENTS
+CREATE TABLE COMMUNITY_COMMENTS
+(
+    COMMUNITY_COMMENT_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    -- CommentTable 특화 컬럼들
+    POST_ID              BIGINT        NOT NULL,
+    AUTHOR_EMAIL         VARCHAR(255)  NOT NULL,
+    CONTENT              TEXT          NOT NULL,
+    PARENT_COMMENT_ID    BIGINT        NULL,
+
+    -- BaseTable 공통 컬럼들
+    CREATED_DATE         DATETIME      DEFAULT CURRENT_TIMESTAMP,
+    CREATED_BY           VARCHAR(255)  DEFAULT 'MEET_AGAIN',
+    LAST_MODIFIED_DATE   DATETIME      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LAST_MODIFIED_BY     VARCHAR(255)  DEFAULT 'MEET_AGAIN',
+    DELETED              BOOLEAN       DEFAULT FALSE,
+
+    -- 인덱스
+    INDEX idx_community_comment_post_id (POST_ID),
+    INDEX idx_community_comment_parent_id (PARENT_COMMENT_ID)
+);

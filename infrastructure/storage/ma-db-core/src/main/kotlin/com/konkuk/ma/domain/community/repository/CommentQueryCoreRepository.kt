@@ -1,0 +1,18 @@
+package com.konkuk.ma.domain.community.repository
+
+import com.konkuk.ma.domain.community.dao.CommentQueryDao
+import com.konkuk.ma.domain.community.domain.Comment
+import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
+import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
+import org.springframework.stereotype.Repository
+
+@Repository
+class CommentQueryCoreRepository(
+    private val commentQueryDao: CommentQueryDao,
+) : CommentQueryRepository {
+    override fun findOne(id: Long): Comment {
+        return commentQueryDao.findOne(id)?.toDomain()
+            ?: throw EntityNotFoundException(EntityType.COMMUNITY_COMMENT, id.toString())
+    }
+}

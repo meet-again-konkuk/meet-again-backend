@@ -12,4 +12,8 @@ class PostCommandCoreRepository(
     override fun save(newPost: NewPost): Long {
         return postCommandDao.save(newPost)
     }
+
+    override fun incrementComments(id: Long) {
+        postCommandDao.incrementComments(id)
+    }
 }

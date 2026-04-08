@@ -27,4 +27,12 @@ class PostQueryDao {
             .limit(size)
             .map { row -> PostEntity.from(row) }
     }
+
+    fun findOne(id: Long): PostEntity? {
+        return PostTable
+            .selectAll()
+            .where { (PostTable.id eq id) and (PostTable.deleted eq false) }
+            .map { row -> PostEntity.from(row) }
+            .singleOrNull()
+    }
 }
