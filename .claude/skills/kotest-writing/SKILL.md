@@ -56,12 +56,31 @@ class SomeServiceTest : FunSpec({
 })
 ```
 
+### 테스트 대상 선정 기준
+
+테스트는 **비즈니스 로직이 있는 코드에만** 작성한다. 단순 값 매핑, 위임만 하는 코드는 테스트하지 않는다.
+
+| 테스트 여부 | 대상 | 예시 |
+|:-:|------|------|
+| O | DAO (DB 통합 테스트) | `PostLikeDao`, `CommentCommandDao` — 실제 DB 쿼리가 의도대로 동작하는지 검증 |
+| O | 값 변환/계산이 있는 코드 | `TimeAgoCalculator.calculate()`, `PostResponse.from(postWithAuthor)` (timeAgo 변환) |
+| O | 유효성 검증이 있는 도메인 객체 | `FourDigit`, `Year`, `Comment.validateCanBeParent()` |
+| O | 조합 로직이 있는 Service | `PostQueryService.find()` (조회 + 닉네임 조합) |
+| O | 분기/판단이 있는 도메인 컴포넌트 | `CommentValidator.validatePostExists()` |
+| X | 단순 값 매핑만 하는 Response DTO | `PostLikeResponse.from(result)` — liked, likeCount를 그대로 옮기기만 함 |
+| X | 생성자 호출만 하는 팩토리 메서드 | `PostLikeResult.liked(likeCount)` — 인자를 그대로 전달 |
+| X | 비즈니스 로직 없는 Service | 포트 호출 → 결과 반환만 하는 Service. mock verify만으로 구성된 테스트는 가치 없음. `PostLikeService.like()`, `CommentLikeService.unlike()` 등 |
+| X | 단순 위임만 하는 Repository | DAO 호출 + toDomain() 변환만 하는 포트 구현체 |
+
+**판단 기준: "이 코드가 잘못 구현되면 테스트 없이도 바로 알 수 있는가?"** 단순 매핑은 컴파일러가 잡아주므로 테스트가 불필요하다.
+
 ### 필수 테스트 케이스 범위
 
 테스트는 **성공 케이스와 실패 케이스를 모두** 작성한다. 성공만 테스트하고 실패를 생략하지 않는다.
 
 | 테스트 대상 | 필수 성공 케이스 | 필수 실패 케이스 |
 |------------|----------------|----------------|
+| DAO (DB 통합) | CRUD 동작 검증, 조건 쿼리 결과 | 존재하지 않는 데이터 조회, 유니크 제약 위반 |
 | 도메인 모델 생성 | 정상 생성 + 필드 검증 | 유효성 검증 실패 (빈값, 초과, 형식 오류) |
 | 도메인 행위 메서드 | 정상 동작 | 예외 발생 조건 |
 | Service | 정상 흐름 (조합 결과) | 의존 포트에서 예외 전파 |
