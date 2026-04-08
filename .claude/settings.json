@@ -13,6 +13,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"[COMMAND CHECK] 슬래시 커맨드(/pr, /push, /merge, /imple-pr 등)를 실행할 때, 해당 커맨드 파일(.claude/commands/*.md)의 내용이 이미 프롬프트로 전개되어 있습니다. 전개된 내용을 반드시 그대로 따르세요. 추측하거나 시스템 기본값으로 대체하지 마세요. 특히 대상 브랜치, 실행 순서, 조건 분기 등 커맨드에 명시된 규칙을 정확히 이행하세요.\"}}'",
+            "timeout": 5
+          }
+        ]
       }
     ]
   }

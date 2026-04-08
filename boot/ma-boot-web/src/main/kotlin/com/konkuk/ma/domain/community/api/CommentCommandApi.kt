@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/community/posts/{postId}/comments")
-class CommunityCommentCommandApi(
+class CommentCommandApi(
     private val commentCommandService: CommentCommandService,
 ) {
     @PostMapping

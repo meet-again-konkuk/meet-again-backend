@@ -19,27 +19,27 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(CommunityCommentLikeApi::class)
+@WebMvcTest(CommentLikeApi::class)
 @BaseApiTest
 @WithAuthMember(email = "test@example.com")
-class CommunityCommentLikeApiTest(
+class CommentLikeApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val commentLikeService: CommentLikeService,
 ) : FunSpec({
 
-    test("댓글 좋아요 토글 API 문서화 - 좋아요") {
+    test("댓글 좋아요 추가 API 문서화") {
         // Given
-        every { commentLikeService.toggle(1L, "test@example.com") } returns
+        every { commentLikeService.like(1L, "test@example.com") } returns
             CommentLikeResult(liked = true, likeCount = 3)
 
         // When & Then
         mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/comments/{commentId}/like", 1L)
+            RestDocumentationRequestBuilders.post("/api/community/comments/{commentId}/likes", 1L)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andDocument(
-                "community/toggle-comment-like",
+                "community/like-comment",
                 pathVariables(
                     commentIdPath(),
                 ),
@@ -50,19 +50,19 @@ class CommunityCommentLikeApiTest(
             )
     }
 
-    test("댓글 좋아요 토글 API 문서화 - 좋아요 취소") {
+    test("댓글 좋아요 취소 API 문서화") {
         // Given
-        every { commentLikeService.toggle(1L, "test@example.com") } returns
+        every { commentLikeService.unlike(1L, "test@example.com") } returns
             CommentLikeResult(liked = false, likeCount = 2)
 
         // When & Then
         mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/comments/{commentId}/like", 1L)
+            RestDocumentationRequestBuilders.delete("/api/community/comments/{commentId}/likes", 1L)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andDocument(
-                "community/toggle-comment-unlike",
+                "community/unlike-comment",
                 pathVariables(
                     commentIdPath(),
                 ),

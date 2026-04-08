@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/community/posts")
-class CommunityPostQueryApi(
+class PostQueryApi(
     private val postQueryService: PostQueryService,
 ) {
     @GetMapping

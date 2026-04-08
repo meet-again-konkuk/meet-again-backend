@@ -21,9 +21,9 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(CommunityCommentCommandApi::class)
+@WebMvcTest(CommentCommandApi::class)
 @BaseApiTest
-class CommunityCommentCommandApiTest(
+class CommentCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
     @MockkBean private val commentCommandService: CommentCommandService,

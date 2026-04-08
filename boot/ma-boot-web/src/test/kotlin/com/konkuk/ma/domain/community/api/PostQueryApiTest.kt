@@ -31,10 +31,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import java.time.LocalDateTime
 
-@WebMvcTest(CommunityPostQueryApi::class)
+@WebMvcTest(PostQueryApi::class)
 @BaseApiTest
 @WithAuthMember(email = "test@example.com")
-class CommunityPostQueryApiTest(
+class PostQueryApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val postQueryService: PostQueryService,
 ) : FunSpec({

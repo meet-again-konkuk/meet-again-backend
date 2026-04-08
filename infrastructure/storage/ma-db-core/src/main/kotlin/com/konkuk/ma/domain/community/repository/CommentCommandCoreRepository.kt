@@ -13,11 +13,11 @@ class CommentCommandCoreRepository(
         return commentCommandDao.save(newComment)
     }
 
-    override fun increaseLikes(commentId: Long) {
-        commentCommandDao.increaseLikes(commentId)
+    override fun increaseLikes(commentId: Long): Int {
+        return commentCommandDao.increaseLikes(commentId)
     }
 
-    override fun decreaseLikes(commentId: Long) {
-        commentCommandDao.decreaseLikes(commentId)
+    override fun decreaseLikes(commentId: Long): Int {
+        return commentCommandDao.decreaseLikes(commentId)
     }
 }

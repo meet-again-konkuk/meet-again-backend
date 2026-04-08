@@ -16,7 +16,4 @@ class CommentQueryCoreRepository(
             ?: throw EntityNotFoundException(EntityType.COMMUNITY_COMMENT, id.toString())
     }
 
-    override fun findLikeCount(commentId: Long): Int {
-        return commentQueryDao.findLikeCount(commentId)
-    }
 }

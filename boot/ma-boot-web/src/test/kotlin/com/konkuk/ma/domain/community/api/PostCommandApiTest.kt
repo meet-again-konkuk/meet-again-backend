@@ -20,10 +20,10 @@ import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 
-@WebMvcTest(CommunityPostCommandApi::class)
+@WebMvcTest(PostCommandApi::class)
 @BaseApiTest
 @WithAuthMember(email = "test@example.com")
-class CommunityPostCommandApiTest(
+class PostCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
     @MockkBean private val postCommandService: PostCommandService,
