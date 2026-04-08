@@ -21,11 +21,11 @@ class Comments(val data: List<Comment>) {
 
             CommentWithAuthor(
                 comment = parent,
-                nickname = members.findNicknameByEmail(parent.authorEmail),
+                nickname = members.findNickname(parent.authorEmail),
                 replies = previewReplies.map { reply ->
                     ReplyWithAuthor(
                         comment = reply,
-                        nickname = members.findNicknameByEmail(reply.authorEmail),
+                        nickname = members.findNickname(reply.authorEmail),
                     )
                 },
                 remainingReplyCount = remainingCount,

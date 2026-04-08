@@ -8,7 +8,7 @@ class Members(val data: List<Member>) {
 
     fun findOne(email: String): Member? = data.find { it.email == email }
 
-    fun findNicknameByEmail(email: String): String {
+    fun findNickname(email: String): String {
         return nicknameByEmail[email] ?: UNKNOWN_NICKNAME
     }
 

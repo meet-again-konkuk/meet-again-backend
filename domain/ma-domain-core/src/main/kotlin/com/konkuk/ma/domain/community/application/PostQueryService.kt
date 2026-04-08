@@ -42,7 +42,7 @@ class PostQueryService(
 
         return PostDetail(
             post = post,
-            nickname = members.findNicknameByEmail(post.authorEmail),
+            nickname = members.findNickname(post.authorEmail),
             comments = comments.combineWithAuthors(members),
         )
     }

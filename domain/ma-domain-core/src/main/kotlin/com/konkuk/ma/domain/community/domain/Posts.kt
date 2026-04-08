@@ -12,7 +12,7 @@ class Posts(val data: List<Post>) {
         return data.map { post ->
             PostWithAuthor(
                 post = post,
-                nickname = members.findNicknameByEmail(post.authorEmail),
+                nickname = members.findNickname(post.authorEmail),
             )
         }
     }
