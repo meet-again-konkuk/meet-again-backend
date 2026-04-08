@@ -4,9 +4,9 @@ import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
-import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.MatchingResultWithProfile
 import com.konkuk.ma.domain.matching.domain.MatchingResultsWithProfiles
+import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
@@ -35,8 +35,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @WebMvcTest(MatchingResultQueryApi::class)
 @BaseApiTest
@@ -49,20 +47,10 @@ class MatchingResultQueryApiTest(
 
     test("매칭 결과 목록 조회 API 문서화") {
         // Given
-        val matchingResult = MatchingResult(
-            id = 1L,
+        val matchingResult = MatchingResultFixture.create(
             registerEmail = "test@example.com",
-            targetInfoId = 10L,
-            targetEmail = "target@example.com",
-            middleNumberMatched = true,
-            lastNumberMatched = true,
-            yearMatched = true,
             monthMatched = false,
             dayMatched = false,
-            regionMatched = true,
-            showingExpiryDate = LocalDateTime.now().plusDays(25),
-            matchingExpiryDate = LocalDate.now().plusDays(200),
-            excluded = false,
         )
         val resultsWithProfiles = MatchingResultsWithProfiles(
             data = listOf(
@@ -101,20 +89,10 @@ class MatchingResultQueryApiTest(
 
     test("excluded=true로 제외된 매칭 결과 목록 조회 API 문서화") {
         // Given
-        val matchingResult = MatchingResult(
-            id = 1L,
+        val matchingResult = MatchingResultFixture.create(
             registerEmail = "test@example.com",
-            targetInfoId = 10L,
-            targetEmail = "target@example.com",
-            middleNumberMatched = true,
-            lastNumberMatched = true,
-            yearMatched = true,
             monthMatched = false,
             dayMatched = false,
-            regionMatched = true,
-            showingExpiryDate = LocalDateTime.now().plusDays(25),
-            matchingExpiryDate = LocalDate.now().plusDays(200),
-            excluded = false,
         )
         val resultsWithProfiles = MatchingResultsWithProfiles(
             data = listOf(
@@ -171,20 +149,11 @@ class MatchingResultQueryApiTest(
         // Given
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
-        val matchingResult = MatchingResult(
+        val matchingResult = MatchingResultFixture.create(
             id = matchingResultId,
             registerEmail = "test@example.com",
-            targetInfoId = 10L,
-            targetEmail = "target@example.com",
-            middleNumberMatched = true,
-            lastNumberMatched = true,
-            yearMatched = true,
             monthMatched = false,
             dayMatched = false,
-            regionMatched = true,
-            showingExpiryDate = LocalDateTime.now().plusDays(25),
-            matchingExpiryDate = LocalDate.now().plusDays(200),
-            excluded = false,
         )
 
         every { matchingResultQueryService.findDetailById(matchingResultId, "test@example.com") } returns matchingResult

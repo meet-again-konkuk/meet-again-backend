@@ -29,6 +29,7 @@ dependencies {
 	testImplementation(project(":infrastructure:support:ma-jwt-core"))
 	testImplementation(project(":infrastructure:support:ma-id-obfuscator"))
 	testImplementation(testFixtures(project(":infrastructure:storage:ma-db-core")))
+	testImplementation(testFixtures(project(":domain:ma-domain-core")))
 
 	// AsciiDocs
 	val asciidoctorExt: Configuration by configurations.creating
