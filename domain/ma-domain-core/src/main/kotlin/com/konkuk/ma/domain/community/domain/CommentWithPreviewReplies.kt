@@ -2,21 +2,16 @@ package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.member.domain.Members
 
-class GroupedComment(
+class CommentWithPreviewReplies(
     val parent: Comment,
-    val previewReplies: List<Comment>,
+    val previewReplies: Replies,
     val remainingReplyCount: Int,
 ) {
     fun combineWithAuthor(members: Members): CommentWithAuthor {
         return CommentWithAuthor(
             comment = parent,
             nickname = members.findNickname(parent.authorEmail),
-            replies = previewReplies.map { reply ->
-                ReplyWithAuthor(
-                    comment = reply,
-                    nickname = members.findNickname(reply.authorEmail),
-                )
-            },
+            replies = previewReplies.combineWithAuthors(members),
             remainingReplyCount = remainingReplyCount,
         )
     }

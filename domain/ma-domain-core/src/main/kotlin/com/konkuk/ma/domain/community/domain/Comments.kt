@@ -8,10 +8,10 @@ class Comments(val data: List<Comment>) {
         return data.map { it.authorEmail }.toSet()
     }
 
-    fun groupByParent(members: Members): List<CommentWithAuthor> {
+    fun groupByRootComment(members: Members): List<CommentWithAuthor> {
         val rootComments = RootComments(data.filter { !it.hasParent() })
         val replies = Replies(data.filter { it.hasParent() })
-        val groupedComments = GroupedComments(rootComments.groupWith(replies))
-        return groupedComments.combineWithAuthors(members)
+        val commentsWithPreviewReplies = CommentsWithPreviewReplies(rootComments.groupWith(replies))
+        return commentsWithPreviewReplies.combineWithAuthors(members)
     }
 }
