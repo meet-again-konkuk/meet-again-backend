@@ -24,6 +24,8 @@
 | POST | /api/community/posts/{postId}/comments | 댓글/대댓글 작성 | Done |
 | POST | /api/community/comments/{commentId}/likes | 댓글 좋아요 추가 | Done |
 | DELETE | /api/community/comments/{commentId}/likes | 댓글 좋아요 취소 | Done |
+| POST | /api/community/posts/{postId}/likes | 게시글 좋아요 추가 | Done |
+| DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 | Done |
 
 ---
 
@@ -42,10 +44,7 @@
 - 댓글 목록을 같이 조회해오는데 대댓글은 최신순으로 세 개까지만 내용을 가져오고 그 외에는 개수만 표시
 - 댓글 응답 값은 닉네임, 댓글 내용, 좋아요 개수, 작성 경과 시간 등이 표기
 
-### POST /api/community/posts/{postId}/like — 좋아요 토글
-
-- **인증**: 필요
-- **설명**: 게시글에 좋아요를 토글한다
+### ~~게시글 좋아요~~ ✔ 완료
 
 ### GET /api/community/posts/{postId}/comments — 댓글 목록
 
