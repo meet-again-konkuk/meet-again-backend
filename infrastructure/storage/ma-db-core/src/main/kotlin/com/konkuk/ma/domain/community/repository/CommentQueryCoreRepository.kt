@@ -16,4 +16,7 @@ class CommentQueryCoreRepository(
             ?: throw EntityNotFoundException(EntityType.COMMUNITY_COMMENT, id.toString())
     }
 
+    override fun find(postId: Long): List<Comment> {
+        return commentQueryDao.find(postId).map { it.toDomain() }
+    }
 }

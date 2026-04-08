@@ -2,6 +2,7 @@ package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.domain.community.domain.NewPost
+import com.konkuk.ma.extension.ARRAY
 import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
@@ -105,3 +106,70 @@ fun commentLikeCount(fieldName: String = "likeCount") =
 
 fun commentIdPath(fieldName: String = "commentId") =
     fieldName requestParam "댓글 ID"
+
+// --- 게시글 상세 응답 필드 ---
+
+fun detailPostId(fieldName: String = "id") =
+    fieldName responseType NUMBER means "게시글 ID" example "1"
+
+fun detailNickname(fieldName: String = "nickname") =
+    fieldName responseType STRING means "작성자 닉네임" example "테스트닉네임"
+
+fun detailCategory(fieldName: String = "category") =
+    fieldName responseType STRING means "게시글 카테고리" example "CHEER"
+
+fun detailTitle(fieldName: String = "title") =
+    fieldName responseType STRING means "게시글 제목" example "안녕하세요"
+
+fun detailContent(fieldName: String = "content") =
+    fieldName responseType STRING means "게시글 내용" example "반갑습니다"
+
+fun detailLikes(fieldName: String = "likes") =
+    fieldName responseType NUMBER means "좋아요 수" example "5"
+
+fun detailTimeAgo(fieldName: String = "timeAgo") =
+    fieldName responseType STRING means "작성 경과 시간" example "5분 전"
+
+fun detailComments(fieldName: String = "comments[]") =
+    fieldName responseType ARRAY means "댓글 목록"
+
+fun detailCommentId(fieldName: String = "comments[].id") =
+    fieldName responseType NUMBER means "댓글 ID" example "1"
+
+fun detailCommentNickname(fieldName: String = "comments[].nickname") =
+    fieldName responseType STRING means "댓글 작성자 닉네임" example "댓글작성자"
+
+fun detailCommentContent(fieldName: String = "comments[].content") =
+    fieldName responseType STRING means "댓글 내용" example "좋은 글이네요!"
+
+fun detailCommentLikes(fieldName: String = "comments[].likes") =
+    fieldName responseType NUMBER means "댓글 좋아요 수" example "2"
+
+fun detailCommentTimeAgo(fieldName: String = "comments[].timeAgo") =
+    fieldName responseType STRING means "댓글 작성 경과 시간" example "3분 전"
+
+fun detailReplies(fieldName: String = "comments[].replies[]") =
+    fieldName responseType ARRAY means "대댓글 목록"
+
+fun detailReplyId(fieldName: String = "comments[].replies[].id") =
+    fieldName responseType NUMBER means "대댓글 ID" example "2"
+
+fun detailReplyNickname(fieldName: String = "comments[].replies[].nickname") =
+    fieldName responseType STRING means "대댓글 작성자 닉네임" example "대댓글작성자"
+
+fun detailReplyContent(fieldName: String = "comments[].replies[].content") =
+    fieldName responseType STRING means "대댓글 내용" example "감사합니다!"
+
+fun detailReplyLikes(fieldName: String = "comments[].replies[].likes") =
+    fieldName responseType NUMBER means "대댓글 좋아요 수" example "1"
+
+fun detailReplyTimeAgo(fieldName: String = "comments[].replies[].timeAgo") =
+    fieldName responseType STRING means "대댓글 작성 경과 시간" example "1분 전"
+
+fun detailRemainingReplyCount(fieldName: String = "comments[].remainingReplyCount") =
+    fieldName responseType NUMBER means "남은 대댓글 수" example "3"
+
+// --- 게시글 상세 관련 Path Variable ---
+
+fun postDetailIdPath(fieldName: String = "id") =
+    fieldName requestParam "게시글 ID"

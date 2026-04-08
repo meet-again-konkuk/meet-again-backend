@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 게시글 상세 조회 API
+
+== 게시글 상세 조회
+
+게시글 ID로 게시글 상세 정보를 조회합니다. 댓글과 대댓글 정보를 포함합니다.
+
+=== 요청
+
+include::{snippets}/community/find-post-detail/http-request.adoc[]
+
+=== Path Parameters
+
+include::{snippets}/community/find-post-detail/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/find-post-detail/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/find-post-detail/response-fields.adoc[]

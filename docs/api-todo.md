@@ -165,3 +165,5 @@
 - PostCommandServiceTest — 예외 전파 케이스
 - PostQueryServiceTest — 예외 전파 케이스
 - StoragePathTest — 잘못된 입력 검증
+
+### kotest-writing 대상 불필요 테스트 코드 제거하고 없는 dao 테스트 클래스 생성

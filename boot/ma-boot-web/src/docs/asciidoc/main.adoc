@@ -88,6 +88,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/find-posts.html[게시글 목록 조회 API,window=_blank]
 
+[[community-find-post-detail]]
+=== 게시글 상세 조회
+
+* link:community/find-post-detail.html[게시글 상세 조회 API,window=_blank]
+
 [[community-create-post]]
 === 게시글 작성
 

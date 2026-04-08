@@ -1,0 +1,31 @@
+package com.konkuk.ma.domain.community.api.response
+
+import com.konkuk.ma.domain.common.domain.TimeAgoCalculator
+import com.konkuk.ma.domain.community.domain.PostDetail
+
+class PostDetailResponse(
+    val id: Long,
+    val nickname: String,
+    val category: String,
+    val title: String,
+    val content: String,
+    val likes: Int,
+    val timeAgo: String,
+    val comments: List<CommentResponse>,
+) {
+    companion object {
+        fun from(postDetail: PostDetail): PostDetailResponse {
+            val post = postDetail.post
+            return PostDetailResponse(
+                id = post.id,
+                nickname = postDetail.nickname,
+                category = post.category.name,
+                title = post.title,
+                content = post.content,
+                likes = post.likes,
+                timeAgo = TimeAgoCalculator.calculate(post.createdDate),
+                comments = postDetail.comments.map { CommentResponse.from(it) },
+            )
+        }
+    }
+}

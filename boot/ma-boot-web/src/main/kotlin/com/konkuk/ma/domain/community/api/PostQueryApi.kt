@@ -1,11 +1,13 @@
 package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
+import com.konkuk.ma.domain.community.api.response.PostDetailResponse
 import com.konkuk.ma.domain.community.api.response.PostResponse
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.support.payload.response.CursorResponse
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -27,5 +29,13 @@ class PostQueryApi(
             hasNext = cursorResult.hasNext,
             nextCursorId = cursorResult.nextCursorId,
         )
+    }
+
+    @GetMapping("/{id}")
+    fun findDetail(
+        @PathVariable id: Long,
+    ): PostDetailResponse {
+        val postDetail = postQueryService.findDetail(id)
+        return PostDetailResponse.from(postDetail)
     }
 }

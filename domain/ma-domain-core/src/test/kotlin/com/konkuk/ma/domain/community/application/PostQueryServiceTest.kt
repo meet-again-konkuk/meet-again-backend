@@ -4,10 +4,15 @@ import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
+import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
+import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.community.fixture.PostFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -18,8 +23,9 @@ import io.mockk.mockk
 class PostQueryServiceTest : FunSpec({
 
     val postQueryRepository = mockk<PostQueryRepository>()
+    val commentQueryRepository = mockk<CommentQueryRepository>()
     val memberQueryRepository = mockk<MemberQueryRepository>()
-    val service = PostQueryService(postQueryRepository, memberQueryRepository)
+    val service = PostQueryService(postQueryRepository, commentQueryRepository, memberQueryRepository)
 
     beforeEach {
         clearAllMocks()
@@ -120,6 +126,83 @@ class PostQueryServiceTest : FunSpec({
             // Then
             result.data shouldHaveSize 1
             result.data[0].nickname shouldBe "알 수 없음"
+        }
+    }
+
+    context("findDetail") {
+
+        test("게시글과 댓글을 조회하고 작성자 닉네임을 매핑하여 반환한다") {
+            // Given
+            val post = PostFixture.create()
+            val comment = CommentFixture.create(postId = post.id, authorEmail = "commenter@example.com")
+            val postAuthor = MemberFixture.create(email = post.authorEmail, nickname = "게시글작성자")
+            val commentAuthor = MemberFixture.create(email = comment.authorEmail, nickname = "댓글작성자")
+
+            every { postQueryRepository.findOne(post.id) } returns post
+            every { commentQueryRepository.find(post.id) } returns listOf(comment)
+            every {
+                memberQueryRepository.findByEmails(setOf(comment.authorEmail, post.authorEmail))
+            } returns listOf(postAuthor, commentAuthor)
+
+            // When
+            val result = service.findDetail(post.id)
+
+            // Then
+            result.post shouldBe post
+            result.nickname shouldBe postAuthor.nickname
+            result.comments shouldHaveSize 1
+            result.comments[0].nickname shouldBe commentAuthor.nickname
+        }
+
+        test("댓글이 없는 게시글을 조회하면 빈 댓글 목록을 반환한다") {
+            // Given
+            val post = PostFixture.create()
+            val postAuthor = MemberFixture.create(email = post.authorEmail, nickname = "게시글작성자")
+
+            every { postQueryRepository.findOne(post.id) } returns post
+            every { commentQueryRepository.find(post.id) } returns emptyList()
+            every {
+                memberQueryRepository.findByEmails(setOf(post.authorEmail))
+            } returns listOf(postAuthor)
+
+            // When
+            val result = service.findDetail(post.id)
+
+            // Then
+            result.post shouldBe post
+            result.nickname shouldBe postAuthor.nickname
+            result.comments shouldHaveSize 0
+        }
+
+        test("존재하지 않는 게시글을 조회하면 EntityNotFoundException이 발생한다") {
+            // Given
+            val nonExistentId = 999L
+
+            every { postQueryRepository.findOne(nonExistentId) } throws EntityNotFoundException(
+                EntityType.COMMUNITY_POST, nonExistentId.toString()
+            )
+
+            // When & Then
+            shouldThrow<EntityNotFoundException> {
+                service.findDetail(nonExistentId)
+            }.message shouldBe "CommunityPost을(를) 찾을 수 없습니다."
+        }
+
+        test("탈퇴한 회원의 게시글은 닉네임이 '알 수 없음'으로 표시된다") {
+            // Given
+            val post = PostFixture.create(authorEmail = "deleted@example.com")
+
+            every { postQueryRepository.findOne(post.id) } returns post
+            every { commentQueryRepository.find(post.id) } returns emptyList()
+            every {
+                memberQueryRepository.findByEmails(setOf(post.authorEmail))
+            } returns emptyList()
+
+            // When
+            val result = service.findDetail(post.id)
+
+            // Then
+            result.nickname shouldBe "알 수 없음"
         }
     }
 })
