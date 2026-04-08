@@ -2,7 +2,9 @@ package com.konkuk.ma.domain.community.dao
 
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.entity.table.PostTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,5 +18,31 @@ class PostCommandDao {
             it[createdBy] = newPost.authorEmail
             it[lastModifiedBy] = newPost.authorEmail
         }.value
+    }
+
+    fun increaseLikes(postId: Long): Int {
+        PostTable.update({ PostTable.id eq postId }) {
+            with(SqlExpressionBuilder) {
+                it[likes] = likes + 1
+            }
+        }
+        return findLikeCount(postId)
+    }
+
+    fun decreaseLikes(postId: Long): Int {
+        PostTable.update({ PostTable.id eq postId }) {
+            with(SqlExpressionBuilder) {
+                it[likes] = likes - 1
+            }
+        }
+        return findLikeCount(postId)
+    }
+
+    private fun findLikeCount(postId: Long): Int {
+        return PostTable
+            .select(PostTable.likes)
+            .where { PostTable.id eq postId }
+            .map { row -> row[PostTable.likes] }
+            .single()
     }
 }

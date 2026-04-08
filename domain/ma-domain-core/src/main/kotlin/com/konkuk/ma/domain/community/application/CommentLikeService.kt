@@ -16,12 +16,12 @@ class CommentLikeService(
     fun like(commentId: Long, memberEmail: String): CommentLikeResult {
         commentLikeRepository.save(CommentLike(commentId = commentId, memberEmail = memberEmail))
         val likeCount = commentCommandRepository.increaseLikes(commentId)
-        return CommentLikeResult(liked = true, likeCount = likeCount)
+        return CommentLikeResult.liked(likeCount)
     }
 
     fun unlike(commentId: Long, memberEmail: String): CommentLikeResult {
         commentLikeRepository.delete(commentId, memberEmail)
         val likeCount = commentCommandRepository.decreaseLikes(commentId)
-        return CommentLikeResult(liked = false, likeCount = likeCount)
+        return CommentLikeResult.unliked(likeCount)
     }
 }

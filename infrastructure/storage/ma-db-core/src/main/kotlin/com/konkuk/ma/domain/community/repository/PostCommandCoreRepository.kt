@@ -12,4 +12,12 @@ class PostCommandCoreRepository(
     override fun save(newPost: NewPost): Long {
         return postCommandDao.save(newPost)
     }
+
+    override fun increaseLikes(postId: Long): Int {
+        return postCommandDao.increaseLikes(postId)
+    }
+
+    override fun decreaseLikes(postId: Long): Int {
+        return postCommandDao.decreaseLikes(postId)
+    }
 }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.dao
 
-import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -11,12 +10,12 @@ import org.springframework.stereotype.Component
 
 @Component
 class CommentLikeDao {
-    fun save(commentLike: CommentLike): Long {
+    fun save(commentId: Long, memberEmail: String): Long {
         return CommentLikeTable.insertAndGetId {
-            it[this.commentId] = commentLike.commentId
-            it[memberEmail] = commentLike.memberEmail
-            it[createdBy] = commentLike.memberEmail
-            it[lastModifiedBy] = commentLike.memberEmail
+            it[CommentLikeTable.commentId] = commentId
+            it[CommentLikeTable.memberEmail] = memberEmail
+            it[createdBy] = memberEmail
+            it[lastModifiedBy] = memberEmail
         }.value
     }
 

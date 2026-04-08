@@ -1,0 +1,48 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 게시글 좋아요 API
+
+== 좋아요 추가
+
+게시글에 좋아요를 추가합니다.
+
+=== 요청
+
+include::{snippets}/community/like-post/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/like-post/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/like-post/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/like-post/response-fields.adoc[]
+
+== 좋아요 취소
+
+게시글의 좋아요를 취소합니다.
+
+=== 요청
+
+include::{snippets}/community/unlike-post/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/unlike-post/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/unlike-post/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/unlike-post/response-fields.adoc[]

@@ -10,7 +10,7 @@ class CommentLikeCoreRepository(
     private val commentLikeDao: CommentLikeDao,
 ) : CommentLikeRepository {
     override fun save(commentLike: CommentLike): Long {
-        return commentLikeDao.save(commentLike)
+        return commentLikeDao.save(commentLike.commentId, commentLike.memberEmail)
     }
 
     override fun delete(commentId: Long, memberEmail: String) {
