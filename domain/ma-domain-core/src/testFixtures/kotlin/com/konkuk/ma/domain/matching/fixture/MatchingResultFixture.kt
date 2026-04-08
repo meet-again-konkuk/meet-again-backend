@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 
 object MatchingResultFixture {
     fun create(
+        id: Long = 1L,
         registerEmail: String = "register@example.com",
         targetInfoId: Long = 1L,
         targetEmail: String = "target@example.com",
@@ -21,6 +22,7 @@ object MatchingResultFixture {
         excluded: Boolean = false,
     ): MatchingResult {
         return MatchingResult(
+            id = id,
             registerEmail = registerEmail,
             targetInfoId = targetInfoId,
             targetEmail = targetEmail,

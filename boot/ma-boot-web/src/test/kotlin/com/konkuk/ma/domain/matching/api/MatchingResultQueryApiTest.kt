@@ -62,6 +62,7 @@ class MatchingResultQueryApiTest(
             regionMatched = true,
             showingExpiryDate = LocalDateTime.now().plusDays(25),
             matchingExpiryDate = LocalDate.now().plusDays(200),
+            excluded = false,
         )
         val resultsWithProfiles = MatchingResultsWithProfiles(
             data = listOf(
@@ -113,6 +114,7 @@ class MatchingResultQueryApiTest(
             regionMatched = true,
             showingExpiryDate = LocalDateTime.now().plusDays(25),
             matchingExpiryDate = LocalDate.now().plusDays(200),
+            excluded = false,
         )
         val resultsWithProfiles = MatchingResultsWithProfiles(
             data = listOf(
@@ -182,6 +184,7 @@ class MatchingResultQueryApiTest(
             regionMatched = true,
             showingExpiryDate = LocalDateTime.now().plusDays(25),
             matchingExpiryDate = LocalDate.now().plusDays(200),
+            excluded = false,
         )
 
         every { matchingResultQueryService.findDetailById(matchingResultId, "test@example.com") } returns matchingResult

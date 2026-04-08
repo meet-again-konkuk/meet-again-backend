@@ -5,8 +5,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
+
+
 class MatchingResult(
-    val id: Long = 0L,
+    val id: Long,
     val registerEmail: String,
     val targetInfoId: Long,
     val targetEmail: String,
@@ -18,12 +20,9 @@ class MatchingResult(
     val dayMatched: Boolean,
     val regionMatched: Boolean,
 
-    val showingExpiryDate: LocalDateTime = LocalDate.now()
-        .atTime(SHOWING_START_HOUR, 0)
-        .plusDays(SHOWING_EXPIRY_DAYS),
-    val matchingExpiryDate: LocalDate = LocalDate.now()
-        .plusDays(MATCHING_EXPIRY_DAYS),
-    excluded: Boolean = false,
+    val showingExpiryDate: LocalDateTime,
+    val matchingExpiryDate: LocalDate,
+    excluded: Boolean,
 ) {
     var excluded: Boolean = excluded
         private set
@@ -35,12 +34,6 @@ class MatchingResult(
             ),
             regionMatched = regionMatched,
         ).calculate()
-    }
-
-    companion object {
-        private const val SHOWING_EXPIRY_DAYS = 30L
-        private const val MATCHING_EXPIRY_DAYS = 210L
-        private const val SHOWING_START_HOUR = 11
     }
 
     fun createUniqueKey(): Pair<Long, String> {
