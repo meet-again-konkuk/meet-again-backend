@@ -15,7 +15,7 @@ class NewComment(
         require(content.length <= MAX_CONTENT_LENGTH) { "댓글 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다." }
     }
 
-    fun isReply(): Boolean = parentCommentId != null
+    fun hasParent(): Boolean = parentCommentId != null
 
     companion object {
         private const val MAX_CONTENT_LENGTH = 500

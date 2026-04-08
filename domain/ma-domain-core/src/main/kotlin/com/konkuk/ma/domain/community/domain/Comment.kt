@@ -10,5 +10,5 @@ class Comment(
     val parentCommentId: Long? = null,
     val createdDate: LocalDateTime = LocalDateTime.now(),
 ) {
-    fun isReply(): Boolean = parentCommentId != null
+    fun hasParent(): Boolean = parentCommentId != null
 }

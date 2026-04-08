@@ -48,18 +48,18 @@ class NewCommentTest : FunSpec({
         }
     }
 
-    context("isReply") {
+    context("hasParent") {
 
         test("parentCommentId가 null이면 false를 반환한다") {
             val newComment = NewCommentFixture.create(parentCommentId = null)
 
-            newComment.isReply().shouldBeFalse()
+            newComment.hasParent().shouldBeFalse()
         }
 
         test("parentCommentId가 존재하면 true를 반환한다") {
             val newComment = NewCommentFixture.create(parentCommentId = 10L)
 
-            newComment.isReply().shouldBeTrue()
+            newComment.hasParent().shouldBeTrue()
         }
     }
 })

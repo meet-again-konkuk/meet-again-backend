@@ -26,9 +26,9 @@ class CommentCommandService(
     }
 
     private fun validateParentComment(newComment: NewComment) {
-        if (!newComment.isReply()) return
+        if (!newComment.hasParent()) return
         val parentComment = commentQueryRepository.findOne(newComment.parentCommentId!!)
-        if (parentComment.isReply()) {
+        if (parentComment.hasParent()) {
             throw ReplyDepthExceededException(newComment.parentCommentId)
         }
     }
