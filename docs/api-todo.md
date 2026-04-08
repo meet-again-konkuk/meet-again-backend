@@ -21,6 +21,7 @@
 | GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 | Done |
 | GET | /api/community/posts | 게시글 목록 조회 | Done |
 | POST | /api/community/posts | 게시글 작성 | Done |
+| POST | /api/community/posts/{postId}/comments | 댓글/대댓글 작성 | Done |
 
 ---
 
@@ -35,6 +36,9 @@
 ### GET /api/community/posts/{id} — 게시글 상세
 
 - **인증**: 필요
+  **참고사항**:
+- 댓글 목록을 같이 조회해오는데 대댓글은 최신순으로 세 개까지만 내용을 가져오고 그 외에는 개수만 표시
+- 
 
 ### POST /api/community/posts/{postId}/like — 좋아요 토글
 
@@ -42,10 +46,6 @@
 - **설명**: 게시글에 좋아요를 토글한다
 
 ### GET /api/community/posts/{postId}/comments — 댓글 목록
-
-- **인증**: 필요
-
-### POST /api/community/posts/{postId}/comments — 댓글 작성
 
 - **인증**: 필요
 

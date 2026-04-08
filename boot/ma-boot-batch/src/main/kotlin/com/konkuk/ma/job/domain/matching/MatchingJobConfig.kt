@@ -1,7 +1,6 @@
 package com.konkuk.ma.job.domain.matching
 
-import com.konkuk.ma.domain.matching.domain.MatchingResult
-import com.konkuk.ma.domain.matching.domain.MatchingResults
+import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.TargetInfos
 import com.konkuk.ma.domain.matching.domain.Targets
@@ -36,7 +35,7 @@ class MatchingJobConfig(
     @Bean
     fun matchingStep(): Step {
         return StepBuilder("matchingStep", jobRepository)
-            .chunk<List<TargetInfo>, List<MatchingResult>>(CHUNK_SIZE_1, transactionManager)
+            .chunk<List<TargetInfo>, List<NewMatchingResult>>(CHUNK_SIZE_1, transactionManager)
             .reader(matchingReader())
             .processor(matchingProcessor())
             .writer(matchingWriter())
@@ -57,19 +56,19 @@ class MatchingJobConfig(
 
     @Bean
     @StepScope
-    fun matchingProcessor(): ItemProcessor<List<TargetInfo>, List<MatchingResult>> {
+    fun matchingProcessor(): ItemProcessor<List<TargetInfo>, List<NewMatchingResult>> {
         return ItemProcessor { targetInfoList ->
             val targetInfos = TargetInfos(targetInfoList)
             val targets = Targets.from(memberQueryRepository.findByNames(targetInfos.extractTargetNames()))
-            val matchingResults = targetInfos.makeMatchingResults(targets)
-            val existing = MatchingResults(matchingResultRepository.findExistingMatchingResults(matchingResults.targetInfoIds()))
-            matchingResults.filterNew(existing).data
+            val newMatchingResults = targetInfos.makeMatchingResults(targets)
+            val existing = matchingResultRepository.findExistingMatchingResults(newMatchingResults.targetInfoIds())
+            newMatchingResults.filterNew(existing).data
         }
     }
 
     @Bean
     @StepScope
-    fun matchingWriter(): ItemWriter<List<MatchingResult>> {
+    fun matchingWriter(): ItemWriter<List<NewMatchingResult>> {
         return ItemWriter { chunk ->
             chunk.items.forEach { matchingResults ->
                 matchingResultRepository.saveAll(matchingResults)

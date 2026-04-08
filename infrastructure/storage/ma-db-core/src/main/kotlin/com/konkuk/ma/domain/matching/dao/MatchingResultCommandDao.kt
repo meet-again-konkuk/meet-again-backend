@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.domain.matching.domain.MatchingResult
+import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
@@ -25,7 +26,7 @@ class MatchingResultCommandDao {
         }
     }
 
-    fun saveAll(matchingResults: List<MatchingResult>) {
+    fun saveAll(matchingResults: List<NewMatchingResult>) {
         MatchingResultTable.batchInsert(matchingResults) {
             this[MatchingResultTable.registerEmail] = it.registerEmail
             this[MatchingResultTable.targetInfoId] = it.targetInfoId
@@ -40,7 +41,7 @@ class MatchingResultCommandDao {
             this[MatchingResultTable.matchingExpiryDate] = it.matchingExpiryDate
             this[MatchingResultTable.createdBy] = it.registerEmail
             this[MatchingResultTable.lastModifiedBy] = it.registerEmail
-            this[MatchingResultTable.excluded] = it.excluded
+            this[MatchingResultTable.excluded] = false
         }
     }
 

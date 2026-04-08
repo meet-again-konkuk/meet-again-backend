@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.matching.repository
 import com.konkuk.ma.domain.matching.dao.MatchingResultCommandDao
 import com.konkuk.ma.domain.matching.dao.MatchingResultQueryDao
 import com.konkuk.ma.domain.matching.domain.MatchingResult
+import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
@@ -14,7 +15,7 @@ class MatchingResultCoreRepository(
     private val matchingResultCommandDao: MatchingResultCommandDao,
     private val matchingResultQueryDao: MatchingResultQueryDao
 ) : MatchingResultRepository {
-    override fun saveAll(matchingResults: List<MatchingResult>) {
+    override fun saveAll(matchingResults: List<NewMatchingResult>) {
         matchingResultCommandDao.saveAll(matchingResults)
     }
 

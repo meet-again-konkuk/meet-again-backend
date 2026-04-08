@@ -22,14 +22,14 @@ class TargetInfo(
 
     val region: Region?
 ) {
-    fun makeMatchingResults(targets: Targets): MatchingResults {
+    fun makeMatchingResults(targets: Targets): NewMatchingResults {
         val results = targets
             .filterCandidates(targetName, targetGender)
             .map { makeMatchingResult(it) }
-        return MatchingResults(results)
+        return NewMatchingResults(results)
     }
 
-    private fun makeMatchingResult(target: Target): MatchingResult {
+    private fun makeMatchingResult(target: Target): NewMatchingResult {
         val middleNumberMatched = middleNumber == target.middleNumber
         val lastNumberMatched = lastNumber == target.lastNumber
 
@@ -39,7 +39,7 @@ class TargetInfo(
 
         val regionMatched = region == target.region
 
-        return MatchingResult(
+        return NewMatchingResult(
             registerEmail = registerEmail,
             targetInfoId = targetInfoId,
             targetEmail = target.email,

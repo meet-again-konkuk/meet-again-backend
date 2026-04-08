@@ -7,9 +7,9 @@ class TargetInfos(
         return data.map { it.targetName }.toSet()
     }
 
-    fun makeMatchingResults(targets: Targets): MatchingResults {
+    fun makeMatchingResults(targets: Targets): NewMatchingResults {
         return data.map { targetInfo ->
             targetInfo.makeMatchingResults(targets)
-        }.let { MatchingResults.merge(it) }
+        }.let { NewMatchingResults.merge(it) }
     }
 }
