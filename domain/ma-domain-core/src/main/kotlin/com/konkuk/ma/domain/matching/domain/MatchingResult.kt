@@ -10,8 +10,8 @@ import java.time.temporal.ChronoUnit
 class MatchingResult(
     val id: Long,
     val registerEmail: String,
-    val targetInfoId: Long,
-    val targetEmail: String,
+    override val targetInfoId: Long,
+    override val targetEmail: String,
 
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,
@@ -23,7 +23,7 @@ class MatchingResult(
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
     excluded: Boolean,
-) {
+) : HasMatchingKey {
     var excluded: Boolean = excluded
         private set
     val matchRate: Int by lazy {
@@ -36,9 +36,6 @@ class MatchingResult(
         ).calculate()
     }
 
-    fun createUniqueKey(): Pair<Long, String> {
-        return Pair(targetInfoId, targetEmail)
-    }
 
     fun getRemainingDays(): Long {
         val now = LocalDate.now()

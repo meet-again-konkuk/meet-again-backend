@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 
 class NewMatchingResult(
     val registerEmail: String,
-    val targetInfoId: Long,
-    val targetEmail: String,
+    override val targetInfoId: Long,
+    override val targetEmail: String,
 
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,
@@ -20,14 +20,11 @@ class NewMatchingResult(
         .plusDays(SHOWING_EXPIRY_DAYS),
     val matchingExpiryDate: LocalDate = LocalDate.now()
         .plusDays(MATCHING_EXPIRY_DAYS),
-) {
+) : HasMatchingKey {
     companion object {
         private const val SHOWING_EXPIRY_DAYS = 30L
         private const val MATCHING_EXPIRY_DAYS = 210L
         private const val SHOWING_START_HOUR = 11
     }
 
-    fun createUniqueKey(): Pair<Long, String> {
-        return Pair(targetInfoId, targetEmail)
-    }
 }
