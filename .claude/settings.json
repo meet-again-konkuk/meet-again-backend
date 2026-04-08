@@ -1,5 +1,19 @@
 {
   "plugins": {
     "autoUpdate": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; if echo \"$f\" | grep -qE '\\.kt$'; then echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"[SKILL CHECK] .kt 파일을 수정하기 전에 반드시 clean-code와 code-implementation-rules 스킬을 Skill 도구로 로드했는지 확인하세요. 로드하지 않았다면 이 Edit/Write를 중단하고 먼저 스킬을 로드한 후 다시 시도하세요. 특히 다음을 점검하세요: (1) 메서드명이 동사로 시작하는가 (2) 일급 컬렉션을 활용했는가 (3) 도메인 객체에 행위를 부여했는가 (4) 필드 복사 대신 has-a 또는 is-a 조합을 사용했는가 (5) 팩토리 메서드가 단일 인스턴스만 반환하는가\"}}'; else echo '{}'; fi; }",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
   }
-}
+}/

@@ -2,9 +2,12 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
-import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
+import com.konkuk.ma.domain.community.domain.PostWithAuthor
+import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
+import com.konkuk.ma.domain.member.domain.Members
+import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,8 +15,17 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class PostQueryService(
     private val postQueryRepository: PostQueryRepository,
+    private val memberQueryRepository: MemberQueryRepository,
 ) {
-    fun find(category: PostCategory?, cursorCondition: CursorIdCondition): CursorResult<List<Post>> {
-        return postQueryRepository.find(category, cursorCondition)
+    fun find(category: PostCategory?, cursorCondition: CursorIdCondition): CursorResult<List<PostWithAuthor>> {
+        val cursorResult = postQueryRepository.find(category, cursorCondition)
+        val posts = Posts(cursorResult.data)
+        val members = Members(memberQueryRepository.findByEmails(posts.extractAuthorEmails()))
+
+        return CursorResult(
+            data = posts.combineWithAuthors(members),
+            hasNext = cursorResult.hasNext,
+            nextCursorId = cursorResult.nextCursorId,
+        )
     }
 }

@@ -189,9 +189,10 @@ fun matchingWriter(): ItemWriter<TargetInfo> {
 
 ## 7. 팩토리 메서드 활용
 
-복잡한 객체 생성은 `companion object`의 팩토리 메서드로 의도를 드러낸다.
+복잡한 객체 생성은 `companion object`의 팩토리 메서드로 의도를 드러낸다. **팩토리 메서드는 반드시 자기 자신의 단일 인스턴스를 반환**한다. `List<T>`를 반환하는 것은 팩토리 메서드가 아니라 컬렉션 조립 로직이므로, 일급 컬렉션이나 호출하는 쪽에서 처리한다.
 
 ```kotlin
+// GOOD - 팩토리 메서드는 단일 인스턴스 반환
 class Target(
     val email: String,
     val name: String,
@@ -210,6 +211,25 @@ class Target(
                 month = member.getMonth(),
                 day = member.getDay(),
                 region = member.region
+            )
+        }
+    }
+}
+
+// BAD - companion object에서 List<T>를 반환하는 메서드
+class PostSummary(...) {
+    companion object {
+        fun listFrom(posts: List<Post>, members: List<Member>): List<PostSummary>  // 팩토리가 아닌 컬렉션 조립
+    }
+}
+
+// GOOD - 컬렉션 변환은 일급 컬렉션의 책임
+class Posts(val data: List<Post>) {
+    fun combineWithAuthors(members: Members): List<PostWithAuthor> {
+        return data.map { post ->
+            PostWithAuthor(
+                post = post,
+                nickname = members.findNicknameByEmail(post.authorEmail),
             )
         }
     }
@@ -331,7 +351,7 @@ class SignUpService(
 
 로직 재사용이 필요하면 도메인 객체에 행위를 부여하거나, 공통 로직을 도메인 서비스(순수 함수)로 분리한다.
 
-## 11. Service는 비즈니스 로직을 포함하지 않는다 — 조합만 담당
+## 12. Service는 비즈니스 로직을 포함하지 않는다 — 조합만 담당
 
 Service 클래스는 비즈니스 로직을 직접 구현하지 않는다. 비즈니스 로직을 담당하는 도메인 객체/컴포넌트들을 **조합(orchestrate)**하는 역할만 한다.
 
@@ -375,7 +395,7 @@ class MemberPhotoService(
 - 도메인 컴포넌트는 포트를 의존하고, 결과를 Value Object로 반환
 - Service 메서드를 읽었을 때 "무엇을 하는지"가 한눈에 보여야 한다 ("어떻게 하는지"는 도메인 컴포넌트 내부)
 
-## 12. 설정 파일은 해당 인프라 모듈에 배치
+## 13. 설정 파일은 해당 인프라 모듈에 배치
 
 각 인프라 모듈의 설정(application-{profile}.yml)은 **해당 모듈의 `src/main/resources/config/`** 에 둔다. boot 모듈에 모든 설정을 몰아넣지 않는다.
 
@@ -396,7 +416,7 @@ infrastructure/support/ma-file-storage/src/main/resources/config/application-loc
 - boot 모듈의 `application.yml`에는 `spring.profiles.active`와 Spring 공통 설정(multipart 등)만 둔다
 - 테스트 설정도 해당 모듈에 둔다 (예: `ma-file-storage`의 테스트 경로는 `ma-file-storage`에)
 
-## 13. 로깅은 반드시 AppLogger 사용
+## 14. 로깅은 반드시 AppLogger 사용
 
 `org.slf4j.LoggerFactory`를 직접 사용하지 않는다. `config/ma-config-logging`의 `AppLogger`(`com.konkuk.ma.logger`)를 사용한다.
 
@@ -414,7 +434,7 @@ logger.warn { "실패 (email=$email): ${e.message}" }
 - `logger`는 top-level val로 선언된 싱글톤이므로 별도 선언 없이 import만 하면 됨
 - 람다 기반 API (`logger.info { }`, `logger.warn { }`, `logger.error { }`)로 메시지를 지연 평가
 
-## 14. 메서드 네이밍 — 파라미터로 유추 가능한 조건은 생략
+## 15. 메서드 네이밍 — 파라미터로 유추 가능한 조건은 생략
 
 메서드명에 파라미터 타입/이름으로 유추 가능한 조건을 반복하지 않는다. 같은 시그니처의 메서드가 추가되어 구분이 필요할 때만 `findByXxx` 형태를 사용한다.
 
@@ -435,7 +455,7 @@ fun findOne(email: String): Member
 fun findOneByNickname(nickname: String): Member
 ```
 
-## 15. RESTful URL 설계 규칙
+## 16. RESTful URL 설계 규칙
 
 ### 리소스 중심 URL
 URL은 **명사(리소스)**를 나타내고, 행위는 **HTTP 메서드**로 표현한다. URL에 동사를 넣지 않는다.
@@ -518,8 +538,91 @@ GET /api/matching-results?page=0&size=20
 GET /api/matching-results?sort=matchRate,desc
 ```
 
-## 16. 성능 고려사항
+## 17. Api(Controller)는 Service만 의존한다
+
+Api 클래스는 **Service 클래스만** 의존한다. Repository(포트)나 다른 인프라 컴포넌트에 직접 접근하지 않는다. 비즈니스 로직, 데이터 변환, 조회 조합 등은 모두 Service에서 처리하고, Api는 요청을 받아 Service에 위임하고 응답을 반환하는 역할만 한다.
+
+```kotlin
+// BAD - Api가 Repository에 직접 접근하고 비즈니스 로직을 포함
+@RestController
+class CommunityPostQueryApi(
+    private val postQueryService: PostQueryService,
+    private val memberQueryRepository: MemberQueryRepository,  // Repository 직접 의존
+) {
+    @GetMapping
+    fun findPosts(...): CursorResponse<List<PostResponse>> {
+        val cursorResult = postQueryService.find(category, cursorCondition)
+        val posts = cursorResult.data
+        // 닉네임 조회 로직이 Api에 존재
+        val nicknameByEmail = memberQueryRepository.findByEmails(posts.map { it.authorEmail }.toSet())
+            .associate { it.email to it.nickname }
+        return CursorResponse(
+            data = posts.map { PostResponse.from(it, nicknameByEmail[it.authorEmail] ?: "알 수 없음") },
+            ...
+        )
+    }
+}
+
+// GOOD - Api는 Service만 의존, 로직은 Service에서 처리
+@RestController
+class CommunityPostQueryApi(
+    private val postQueryService: PostQueryService,
+) {
+    @GetMapping
+    fun findPosts(...): CursorResponse<List<PostResponse>> {
+        return postQueryService.find(category, cursorCondition)
+    }
+}
+```
+
+규칙:
+- Api 클래스의 생성자에는 **Service만** 주입받는다
+- Api 메서드는 요청 파싱 → Service 호출 → 응답 반환만 담당
+- 데이터 변환, 조합, 조회 로직은 Service 또는 도메인 객체에서 처리
+
+## 18. 성능 고려사항
 
 - **N+1 쿼리 방지**: 반복문 안에서 DB 조회하지 않는다. 벌크 조회 후 메모리에서 처리한다
 - **불필요한 조건 제거**: enum 값이 2개뿐인 경우(예: Gender) DB 조건으로 넣지 말고 메모리에서 필터링
 - **NoOffset 페이징**: 대용량 데이터 조회 시 cursor 기반 페이징 사용
+
+## 19. 객체 관계 설계 — is-a와 has-a 구분
+
+기존 도메인 객체의 필드를 그대로 복사하여 새 클래스를 만들지 않는다. 객체 간 관계를 먼저 판단하고, 적절한 관계를 사용한다.
+
+### is-a 관계 (상속)
+상위 개념과 하위 개념이 **"~은 ~이다"** 관계일 때 사용한다.
+
+```kotlin
+// 동물-사자: 사자는 동물이다 → is-a
+abstract class Animal(val name: String)
+class Lion(name: String, val maneColor: String) : Animal(name)
+```
+
+### has-a 관계 (조합)
+한 객체가 다른 객체를 **"~을 가지고 있다"** 관계일 때 사용한다. 대부분의 경우 has-a가 적합하다.
+
+```kotlin
+// BAD - Post의 필드를 전부 복사
+class PostSummary(
+    val id: Long,
+    val nickname: String,
+    val category: PostCategory,
+    val title: String,        // Post에서 복사
+    val content: String,      // Post에서 복사
+    val likes: Int,           // Post에서 복사
+    val comments: Int,        // Post에서 복사
+    val createdDate: LocalDateTime,  // Post에서 복사
+)
+
+// GOOD - Post를 참조로 가짐
+class PostWithAuthor(
+    val post: Post,           // has-a
+    val nickname: String,
+)
+```
+
+### 판단 기준
+- **is-a**: 하위 타입이 상위 타입으로 대체 가능한가? (리스코프 치환 원칙)
+- **has-a**: 두 객체가 독립적으로 존재 가능한가? 하나가 다른 하나를 "소유"하는가?
+- **필드 복사가 보이면 has-a를 의심**: 기존 객체의 필드를 3개 이상 그대로 옮기고 있다면, 해당 객체를 참조로 가져야 한다

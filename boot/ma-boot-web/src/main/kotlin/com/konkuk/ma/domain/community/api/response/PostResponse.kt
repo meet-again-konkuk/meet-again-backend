@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.api.response
 
 import com.konkuk.ma.domain.common.domain.TimeAgoCalculator
-import com.konkuk.ma.domain.community.domain.Post
+import com.konkuk.ma.domain.community.domain.PostWithAuthor
 
 class PostResponse(
     val id: Long,
@@ -14,10 +14,11 @@ class PostResponse(
     val timeAgo: String,
 ) {
     companion object {
-        fun from(post: Post, nickname: String): PostResponse {
+        fun from(postWithAuthor: PostWithAuthor): PostResponse {
+            val post = postWithAuthor.post
             return PostResponse(
                 id = post.id,
-                nickname = nickname,
+                nickname = postWithAuthor.nickname,
                 category = post.category.name,
                 title = post.title,
                 content = post.content,
