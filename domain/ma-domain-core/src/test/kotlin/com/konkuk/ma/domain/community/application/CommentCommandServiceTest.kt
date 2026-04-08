@@ -1,20 +1,21 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
-import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
-import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
-import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
 import com.konkuk.ma.domain.community.fixture.PostFixture
 import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 
 class CommentCommandServiceTest : FunSpec({
@@ -22,12 +23,12 @@ class CommentCommandServiceTest : FunSpec({
     val postQueryRepository = mockk<PostQueryRepository>()
     val postCommandRepository = mockk<PostCommandRepository>()
     val commentCommandRepository = mockk<CommentCommandRepository>()
-    val commentQueryRepository = mockk<CommentQueryRepository>()
+    val commentValidator = mockk<CommentValidator>()
     val service = CommentCommandService(
         postQueryRepository,
         postCommandRepository,
         commentCommandRepository,
-        commentQueryRepository,
+        commentValidator,
     )
 
     beforeEach {
@@ -43,6 +44,7 @@ class CommentCommandServiceTest : FunSpec({
             val expectedCommentId = 1L
 
             every { postQueryRepository.findOne(newComment.postId) } returns post
+            every { commentValidator.validate(newComment) } just runs
             every { commentCommandRepository.save(any()) } returns expectedCommentId
             every { postCommandRepository.incrementComments(newComment.postId) } returns Unit
 
@@ -51,19 +53,19 @@ class CommentCommandServiceTest : FunSpec({
 
             // Then
             result shouldBe expectedCommentId
+            verify { commentValidator.validate(newComment) }
             verify { commentCommandRepository.save(newComment) }
             verify { postCommandRepository.incrementComments(newComment.postId) }
         }
 
         test("대댓글을 저장하고 생성된 ID를 반환한다") {
             // Given
-            val parentComment = CommentFixture.create(id = 10L, parentCommentId = null)
-            val newComment = NewCommentFixture.create(parentCommentId = parentComment.id)
+            val newComment = NewCommentFixture.create(parentCommentId = 10L)
             val post = PostFixture.create(id = newComment.postId)
             val expectedCommentId = 2L
 
             every { postQueryRepository.findOne(newComment.postId) } returns post
-            every { commentQueryRepository.findOne(parentComment.id) } returns parentComment
+            every { commentValidator.validate(newComment) } just runs
             every { commentCommandRepository.save(any()) } returns expectedCommentId
             every { postCommandRepository.incrementComments(newComment.postId) } returns Unit
 
@@ -72,23 +74,7 @@ class CommentCommandServiceTest : FunSpec({
 
             // Then
             result shouldBe expectedCommentId
-            verify { commentCommandRepository.save(newComment) }
-            verify { postCommandRepository.incrementComments(newComment.postId) }
-        }
-
-        test("부모 댓글이 대댓글이면 ReplyDepthExceededException이 발생한다") {
-            // Given
-            val parentComment = CommentFixture.create(id = 10L, parentCommentId = 5L)
-            val newComment = NewCommentFixture.create(parentCommentId = parentComment.id)
-            val post = PostFixture.create(id = newComment.postId)
-
-            every { postQueryRepository.findOne(newComment.postId) } returns post
-            every { commentQueryRepository.findOne(parentComment.id) } returns parentComment
-
-            // When & Then
-            shouldThrow<ReplyDepthExceededException> {
-                service.create(newComment)
-            }.message shouldBe "대댓글에는 답글을 달 수 없습니다."
+            verify { commentValidator.validate(newComment) }
         }
 
         test("존재하지 않는 게시글이면 EntityNotFoundException이 발생한다") {
@@ -96,10 +82,7 @@ class CommentCommandServiceTest : FunSpec({
             val newComment = NewCommentFixture.create(postId = 999L)
 
             every { postQueryRepository.findOne(newComment.postId) } throws
-                EntityNotFoundException(
-                    entityType = com.konkuk.ma.exception.EntityType.COMMUNITY_POST,
-                    value = newComment.postId.toString(),
-                )
+                EntityNotFoundException(EntityType.COMMUNITY_POST, newComment.postId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
