@@ -26,6 +26,6 @@ class NewPostRequest(
     }
 
     companion object {
-        private const val MAX_TITLE_LENGTH = 40
+        const val MAX_TITLE_LENGTH = 40
     }
 }

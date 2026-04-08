@@ -22,6 +22,6 @@ class NewCommentRequest(
     }
 
     companion object {
-        private const val MAX_CONTENT_LENGTH = 500
+        const val MAX_CONTENT_LENGTH = 500
     }
 }

@@ -17,5 +17,4 @@ class PostCommandDao {
             it[lastModifiedBy] = newPost.authorEmail
         }.value
     }
-
 }
