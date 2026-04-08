@@ -18,6 +18,6 @@ class NewComment(
     fun hasParent(): Boolean = parentCommentId != null
 
     companion object {
-        private const val MAX_CONTENT_LENGTH = 500
+        const val MAX_CONTENT_LENGTH = 500
     }
 }

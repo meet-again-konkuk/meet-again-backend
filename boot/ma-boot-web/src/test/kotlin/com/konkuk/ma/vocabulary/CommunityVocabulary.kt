@@ -1,7 +1,7 @@
 package com.konkuk.ma.vocabulary
 
-import com.konkuk.ma.domain.community.api.request.NewCommentRequest
-import com.konkuk.ma.domain.community.api.request.NewPostRequest
+import com.konkuk.ma.domain.community.domain.NewComment
+import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
@@ -14,10 +14,10 @@ fun newPostCategory(fieldName: String = "category") =
     fieldName responseType STRING means "게시글 카테고리 (SUCCESS_STORY, CHEER, COUNSELING)" example "CHEER"
 
 fun newPostTitle(fieldName: String = "title") =
-    fieldName responseType STRING means "게시글 제목 (최대 ${NewPostRequest.MAX_TITLE_LENGTH}자)" example "안녕하세요"
+    fieldName responseType STRING means "게시글 제목 (최대 ${NewPost.MAX_TITLE_LENGTH}자)" example "안녕하세요"
 
 fun newPostContent(fieldName: String = "content") =
-    fieldName responseType STRING means "게시글 내용" example "반갑습니다"
+    fieldName responseType STRING means "게시글 내용 (최대 ${NewPost.MAX_CONTENT_LENGTH}자)" example "반갑습니다"
 
 // --- 게시글 작성 응답 필드 ---
 
@@ -70,7 +70,7 @@ fun sizeParam(fieldName: String = "size") =
 // --- 댓글 작성 요청 필드 ---
 
 fun commentContent(fieldName: String = "content") =
-    fieldName responseType STRING means "댓글 내용 (최대 ${NewCommentRequest.MAX_CONTENT_LENGTH}자)" example "좋은 글이네요!"
+    fieldName responseType STRING means "댓글 내용 (최대 ${NewComment.MAX_CONTENT_LENGTH}자)" example "좋은 글이네요!"
 
 fun parentCommentId(fieldName: String = "parentCommentId") =
     fieldName responseType NUMBER means "부모 댓글 ID (대댓글인 경우, 일반 댓글이면 null)" example "1" isOptional true

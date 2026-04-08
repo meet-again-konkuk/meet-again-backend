@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.community.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.community.api.request.NewCommentRequest
 import com.konkuk.ma.domain.community.application.CommentCommandService
+import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.requestBody
@@ -94,7 +94,7 @@ class CommunityCommentCommandApiTest(
 
     test("댓글 내용이 최대 글자수를 초과하면 400을 반환한다") {
         // Given
-        val overLengthContent = "a".repeat(NewCommentRequest.MAX_CONTENT_LENGTH + 1)
+        val overLengthContent = "a".repeat(NewComment.MAX_CONTENT_LENGTH + 1)
         val request = mapOf("content" to overLengthContent)
 
         // When & Then

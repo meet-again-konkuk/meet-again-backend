@@ -10,10 +10,11 @@ class NewPostRequest(
     val category: PostCategory,
 
     @field:NotBlank(message = ValidationMessages.POST_TITLE_REQUIRED)
-    @field:Size(max = MAX_TITLE_LENGTH, message = ValidationMessages.POST_TITLE_SIZE)
+    @field:Size(max = NewPost.MAX_TITLE_LENGTH, message = ValidationMessages.POST_TITLE_SIZE)
     val title: String,
 
     @field:NotBlank(message = ValidationMessages.POST_CONTENT_REQUIRED)
+    @field:Size(max = NewPost.MAX_CONTENT_LENGTH, message = ValidationMessages.POST_CONTENT_SIZE)
     val content: String,
 ) {
     fun toNewPost(authorEmail: String): NewPost {
@@ -25,7 +26,4 @@ class NewPostRequest(
         )
     }
 
-    companion object {
-        const val MAX_TITLE_LENGTH = 40
-    }
 }

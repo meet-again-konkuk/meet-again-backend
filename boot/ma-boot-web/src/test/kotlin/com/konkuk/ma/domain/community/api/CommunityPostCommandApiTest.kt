@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.community.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.community.application.PostCommandService
+import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
@@ -61,5 +62,65 @@ class CommunityPostCommandApiTest(
                     newPostId(),
                 ),
             )
+    }
+
+    test("제목이 최대 글자수를 초과하면 400을 반환한다") {
+        // Given
+        val request = mapOf(
+            "category" to "CHEER",
+            "title" to "가".repeat(NewPost.MAX_TITLE_LENGTH + 1),
+            "content" to "내용",
+        )
+
+        // When & Then
+        mockMvc.postJson("/api/community/posts") {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    test("내용이 최대 글자수를 초과하면 400을 반환한다") {
+        // Given
+        val request = mapOf(
+            "category" to "CHEER",
+            "title" to "제목",
+            "content" to "가".repeat(NewPost.MAX_CONTENT_LENGTH + 1),
+        )
+
+        // When & Then
+        mockMvc.postJson("/api/community/posts") {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    test("제목이 비어있으면 400을 반환한다") {
+        // Given
+        val request = mapOf(
+            "category" to "CHEER",
+            "title" to "",
+            "content" to "내용",
+        )
+
+        // When & Then
+        mockMvc.postJson("/api/community/posts") {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isBadRequest() } }
+    }
+
+    test("내용이 비어있으면 400을 반환한다") {
+        // Given
+        val request = mapOf(
+            "category" to "CHEER",
+            "title" to "제목",
+            "content" to "",
+        )
+
+        // When & Then
+        mockMvc.postJson("/api/community/posts") {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isBadRequest() } }
     }
 })

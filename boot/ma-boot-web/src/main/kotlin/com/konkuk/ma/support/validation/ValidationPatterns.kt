@@ -26,8 +26,9 @@ object ValidationMessages {
     const val REFRESH_TOKEN_REQUIRED = "리프레시 토큰은 필수입니다."
     const val POST_CATEGORY_REQUIRED = "카테고리는 필수입니다."
     const val POST_TITLE_REQUIRED = "제목은 필수입니다."
-    const val POST_TITLE_SIZE = "제목은 40자 이하여야 합니다."
+    const val POST_TITLE_SIZE = "제목은 30자 이하여야 합니다."
     const val POST_CONTENT_REQUIRED = "내용은 필수입니다."
+    const val POST_CONTENT_SIZE = "내용은 2000자 이하여야 합니다."
     const val COMMENT_CONTENT_REQUIRED = "댓글 내용은 필수입니다."
     const val COMMENT_CONTENT_SIZE = "댓글 내용은 500자 이하여야 합니다."
 }

@@ -18,9 +18,11 @@ class NewPost(
 
     private fun validateContent() {
         require(content.isNotBlank()) { "게시글 내용은 비어있을 수 없습니다." }
+        require(content.length <= MAX_CONTENT_LENGTH) { "게시글 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다." }
     }
 
     companion object {
-        private const val MAX_TITLE_LENGTH = 40
+        const val MAX_TITLE_LENGTH = 30
+        const val MAX_CONTENT_LENGTH = 2000
     }
 }

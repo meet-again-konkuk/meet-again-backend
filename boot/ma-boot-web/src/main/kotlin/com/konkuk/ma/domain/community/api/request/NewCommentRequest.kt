@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 
 class NewCommentRequest(
     @field:NotBlank(message = ValidationMessages.COMMENT_CONTENT_REQUIRED)
-    @field:Size(max = MAX_CONTENT_LENGTH, message = ValidationMessages.COMMENT_CONTENT_SIZE)
+    @field:Size(max = NewComment.MAX_CONTENT_LENGTH, message = ValidationMessages.COMMENT_CONTENT_SIZE)
     val content: String,
 
     val parentCommentId: Long? = null,
@@ -21,7 +21,4 @@ class NewCommentRequest(
         )
     }
 
-    companion object {
-        const val MAX_CONTENT_LENGTH = 500
-    }
 }

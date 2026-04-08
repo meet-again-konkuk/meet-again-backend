@@ -17,8 +17,8 @@ class NewPostTest : FunSpec({
             newPost.category shouldBe PostCategory.SUCCESS_STORY
         }
 
-        test("제목이 40자인 경우 객체 생성에 성공한다") {
-            val title = "가".repeat(40)
+        test("제목이 30자인 경우 객체 생성에 성공한다") {
+            val title = "가".repeat(30)
 
             val newPost = NewPostFixture.create(title = title)
 
@@ -37,12 +37,12 @@ class NewPostTest : FunSpec({
             }.message shouldBe "게시글 제목은 비어있을 수 없습니다."
         }
 
-        test("제목이 40자를 초과하면 예외가 발생한다") {
-            val title = "가".repeat(41)
+        test("제목이 30자를 초과하면 예외가 발생한다") {
+            val title = "가".repeat(31)
 
             shouldThrow<IllegalArgumentException> {
                 NewPostFixture.create(title = title)
-            }.message shouldBe "게시글 제목은 40자 이하여야 합니다."
+            }.message shouldBe "게시글 제목은 30자 이하여야 합니다."
         }
 
         test("내용이 빈 문자열이면 예외가 발생한다") {
@@ -55,6 +55,22 @@ class NewPostTest : FunSpec({
             shouldThrow<IllegalArgumentException> {
                 NewPostFixture.create(content = "   ")
             }.message shouldBe "게시글 내용은 비어있을 수 없습니다."
+        }
+
+        test("내용이 2000자인 경우 객체 생성에 성공한다") {
+            val content = "가".repeat(2000)
+
+            val newPost = NewPostFixture.create(content = content)
+
+            newPost.content shouldBe content
+        }
+
+        test("내용이 2000자를 초과하면 예외가 발생한다") {
+            val content = "가".repeat(2001)
+
+            shouldThrow<IllegalArgumentException> {
+                NewPostFixture.create(content = content)
+            }.message shouldBe "게시글 내용은 2000자 이하여야 합니다."
         }
     }
 })
