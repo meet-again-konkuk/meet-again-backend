@@ -22,6 +22,8 @@
 | GET | /api/community/posts | 게시글 목록 조회 | Done |
 | POST | /api/community/posts | 게시글 작성 | Done |
 | POST | /api/community/posts/{postId}/comments | 댓글/대댓글 작성 | Done |
+| POST | /api/community/comments/{commentId}/likes | 댓글 좋아요 추가 | Done |
+| DELETE | /api/community/comments/{commentId}/likes | 댓글 좋아요 취소 | Done |
 
 ---
 
@@ -58,7 +60,7 @@
 
 - **인증**: 필요
 
-### 댓글 좋아요 토글
+### ~~댓글 좋아요~~ ✔ 완료
 
 ### 게시글에 댓글 알림 설정
 
