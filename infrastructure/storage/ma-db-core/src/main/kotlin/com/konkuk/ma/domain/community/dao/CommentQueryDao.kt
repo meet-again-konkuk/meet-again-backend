@@ -15,4 +15,12 @@ class CommentQueryDao {
             .map { row -> CommentEntity.from(row) }
             .singleOrNull()
     }
+
+    fun findLikeCount(commentId: Long): Int {
+        return CommentTable
+            .select(CommentTable.likes)
+            .where { (CommentTable.id eq commentId) and (CommentTable.deleted eq false) }
+            .map { row -> row[CommentTable.likes] }
+            .singleOrNull() ?: 0
+    }
 }

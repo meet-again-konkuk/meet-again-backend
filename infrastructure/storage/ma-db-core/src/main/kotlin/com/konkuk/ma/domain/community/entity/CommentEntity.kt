@@ -11,6 +11,7 @@ class CommentEntity(
     val authorEmail: String,
     val content: String,
     val parentCommentId: Long?,
+    val likes: Int,
     val createdDate: LocalDateTime,
 ) {
     fun toDomain(): Comment {
@@ -20,6 +21,7 @@ class CommentEntity(
             authorEmail = authorEmail,
             content = content,
             parentCommentId = parentCommentId,
+            likes = likes,
             createdDate = createdDate,
         )
     }
@@ -32,6 +34,7 @@ class CommentEntity(
                 authorEmail = row[CommentTable.authorEmail],
                 content = row[CommentTable.content],
                 parentCommentId = row[CommentTable.parentCommentId],
+                likes = row[CommentTable.likes],
                 createdDate = row[CommentTable.createdDate],
             )
         }

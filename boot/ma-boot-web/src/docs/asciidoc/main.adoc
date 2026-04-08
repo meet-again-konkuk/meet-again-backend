@@ -98,3 +98,8 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/create-comment.html[댓글 작성 API,window=_blank]
 
+[[community-toggle-comment-like]]
+=== 댓글 좋아요 토글
+
+* link:community/toggle-comment-like.html[댓글 좋아요 토글 API,window=_blank]
+

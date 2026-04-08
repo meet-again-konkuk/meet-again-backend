@@ -27,7 +27,7 @@
 
 ## 매칭
 
-- MatchingResult를 NewMatchingResult / MatchingResult로 분리 (생성/조회 분리 일관성)
+- ~~MatchingResult를 NewMatchingResult / MatchingResult로 분리 (생성/조회 분리 일관성)~~ ✔ 완료
 
 ---
 

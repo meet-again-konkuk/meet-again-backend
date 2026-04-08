@@ -4,4 +4,5 @@ import com.konkuk.ma.domain.community.domain.Comment
 
 interface CommentQueryRepository {
     fun findOne(id: Long): Comment
+    fun findLikeCount(commentId: Long): Int
 }

@@ -1,0 +1,48 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 댓글 좋아요 토글 API
+
+== 좋아요
+
+댓글에 좋아요를 누릅니다. 이미 좋아요를 누른 상태에서 다시 요청하면 좋아요가 취소됩니다.
+
+=== 요청
+
+include::{snippets}/community/toggle-comment-like/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/toggle-comment-like/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/toggle-comment-like/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/toggle-comment-like/response-fields.adoc[]
+
+== 좋아요 취소
+
+이미 좋아요를 누른 댓글에 다시 요청하면 좋아요가 취소됩니다.
+
+=== 요청
+
+include::{snippets}/community/toggle-comment-unlike/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/toggle-comment-unlike/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/toggle-comment-unlike/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/toggle-comment-unlike/response-fields.adoc[]

@@ -171,7 +171,30 @@ CREATE TABLE COMMUNITY_COMMENTS
     LAST_MODIFIED_BY     VARCHAR(255)  DEFAULT 'MEET_AGAIN',
     DELETED              BOOLEAN       DEFAULT FALSE,
 
+    LIKES                INT           DEFAULT 0,
+
     -- 인덱스
     INDEX idx_community_comment_post_id (POST_ID),
     INDEX idx_community_comment_parent_id (PARENT_COMMENT_ID)
+);
+
+-- COMMUNITY COMMENT LIKES
+CREATE TABLE COMMUNITY_COMMENT_LIKES
+(
+    COMMUNITY_COMMENT_LIKE_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    -- CommentLikeTable 특화 컬럼들
+    COMMENT_ID                BIGINT        NOT NULL,
+    MEMBER_EMAIL              VARCHAR(255)  NOT NULL,
+
+    -- BaseTable 공통 컬럼들
+    CREATED_DATE              DATETIME      DEFAULT CURRENT_TIMESTAMP,
+    CREATED_BY                VARCHAR(255)  DEFAULT 'MEET_AGAIN',
+    LAST_MODIFIED_DATE        DATETIME      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LAST_MODIFIED_BY          VARCHAR(255)  DEFAULT 'MEET_AGAIN',
+    DELETED                   BOOLEAN       DEFAULT FALSE,
+
+    -- 인덱스
+    UNIQUE INDEX idx_comment_like_comment_member (COMMENT_ID, MEMBER_EMAIL),
+    INDEX idx_comment_like_member_email (MEMBER_EMAIL)
 );

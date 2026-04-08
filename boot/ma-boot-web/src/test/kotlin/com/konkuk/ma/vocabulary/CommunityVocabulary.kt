@@ -84,3 +84,16 @@ fun commentId(fieldName: String = "commentId") =
 
 fun postIdPath(fieldName: String = "postId") =
     fieldName requestParam "게시글 ID"
+
+// --- 댓글 좋아요 응답 필드 ---
+
+fun commentLiked(fieldName: String = "liked") =
+    fieldName responseType BOOLEAN means "좋아요 여부 (true: 좋아요, false: 좋아요 취소)" example "true"
+
+fun commentLikeCount(fieldName: String = "likeCount") =
+    fieldName responseType NUMBER means "댓글 좋아요 수" example "3"
+
+// --- 댓글 좋아요 관련 Path Variable ---
+
+fun commentIdPath(fieldName: String = "commentId") =
+    fieldName requestParam "댓글 ID"

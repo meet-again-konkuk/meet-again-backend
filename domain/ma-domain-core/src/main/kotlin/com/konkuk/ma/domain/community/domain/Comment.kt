@@ -9,6 +9,7 @@ class Comment(
     val authorEmail: String,
     val content: String,
     val parentCommentId: Long? = null,
+    val likes: Int = 0,
     val createdDate: LocalDateTime = LocalDateTime.now(),
 ) {
     fun hasParent(): Boolean = parentCommentId != null
