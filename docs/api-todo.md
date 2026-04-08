@@ -26,7 +26,7 @@
 
 ## 매칭
 
-> 작업할 내용 없음
+- MatchingResult를 NewMatchingResult / MatchingResult로 분리 (생성/조회 분리 일관성)
 
 ---
 
@@ -148,3 +148,19 @@
 
 **참고사항**:
 - 토큰 무효화 처리
+
+---
+
+## 테스트 보완
+
+### API 실패 테스트 케이스 추가
+- SignUpApiTest — 유효성 검증 실패 (이메일/비밀번호/닉네임 형식 오류)
+- MemberPhotoApiTest — 파일 관련 실패 케이스
+- MatchingResultCommandApiTest — 소유권 검증 실패
+
+### 도메인 객체 실패 테스트 케이스 추가
+- MemberPhotoServiceTest — 예외 전파 케이스
+- MemberPhotoProcessorTest — 파일 처리 실패 케이스
+- PostCommandServiceTest — 예외 전파 케이스
+- PostQueryServiceTest — 예외 전파 케이스
+- StoragePathTest — 잘못된 입력 검증
