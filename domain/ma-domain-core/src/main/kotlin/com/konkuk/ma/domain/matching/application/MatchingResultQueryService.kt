@@ -28,7 +28,7 @@ class MatchingResultQueryService(
         return matchingResults.combineWithProfiles(members, photos)
     }
 
-    fun findDetailById(matchingResultId: Long, email: String): MatchingResult {
+    fun findDetail(matchingResultId: Long, email: String): MatchingResult {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         return matchingResult

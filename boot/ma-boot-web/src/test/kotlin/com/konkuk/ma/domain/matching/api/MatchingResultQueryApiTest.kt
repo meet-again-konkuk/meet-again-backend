@@ -156,7 +156,7 @@ class MatchingResultQueryApiTest(
             dayMatched = false,
         )
 
-        every { matchingResultQueryService.findDetailById(matchingResultId, "test@example.com") } returns matchingResult
+        every { matchingResultQueryService.findDetail(matchingResultId, "test@example.com") } returns matchingResult
 
         // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}

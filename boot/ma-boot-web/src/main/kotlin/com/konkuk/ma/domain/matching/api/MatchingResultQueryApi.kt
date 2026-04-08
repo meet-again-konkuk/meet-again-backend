@@ -31,7 +31,7 @@ class MatchingResultQueryApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ): MatchingResultDetailResponse {
-        val matchingResult = matchingResultQueryService.findDetailById(matchingResultId, email)
+        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, email)
         return MatchingResultDetailResponse.from(matchingResult)
     }
 }

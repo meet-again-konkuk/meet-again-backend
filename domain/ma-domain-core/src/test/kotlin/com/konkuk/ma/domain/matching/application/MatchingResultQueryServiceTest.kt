@@ -102,7 +102,7 @@ class MatchingResultQueryServiceTest : FunSpec({
         }
     }
 
-    context("findDetailById") {
+    context("findDetail") {
 
         test("정상 조회 시 MatchingResult를 반환한다") {
             // Given
@@ -116,7 +116,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
-            val result = service.findDetailById(matchingResultId, email)
+            val result = service.findDetail(matchingResultId, email)
 
             // Then
             result shouldBe matchingResult
@@ -131,7 +131,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.findDetailById(nonExistentId, email)
+                service.findDetail(nonExistentId, email)
             }.message shouldBe "MatchingResult을(를) 찾을 수 없습니다."
         }
 
@@ -146,7 +146,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {
-                service.findDetailById(matchingResultId, otherEmail)
+                service.findDetail(matchingResultId, otherEmail)
             }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
         }
     }
