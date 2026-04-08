@@ -25,4 +25,8 @@ class PostQueryCoreRepository(
         return postQueryDao.findOne(id)?.toDomain()
             ?: throw EntityNotFoundException(EntityType.COMMUNITY_POST, id.toString())
     }
+
+    override fun exists(id: Long): Boolean {
+        return postQueryDao.exists(id)
+    }
 }

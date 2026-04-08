@@ -35,4 +35,11 @@ class PostQueryDao {
             .map { row -> PostEntity.from(row) }
             .singleOrNull()
     }
+
+    fun exists(id: Long): Boolean {
+        return PostTable
+            .selectAll()
+            .where { (PostTable.id eq id) and (PostTable.deleted eq false) }
+            .count() > 0
+    }
 }

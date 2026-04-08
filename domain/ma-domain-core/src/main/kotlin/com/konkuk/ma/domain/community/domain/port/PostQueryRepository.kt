@@ -8,4 +8,5 @@ import com.konkuk.ma.domain.community.domain.PostCategory
 interface PostQueryRepository {
     fun find(category: PostCategory?, cursorCondition: CursorIdCondition): CursorResult<List<Post>>
     fun findOne(id: Long): Post
+    fun exists(id: Long): Boolean
 }
