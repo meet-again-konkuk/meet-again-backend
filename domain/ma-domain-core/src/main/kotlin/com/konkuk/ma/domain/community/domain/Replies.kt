@@ -4,12 +4,14 @@ class Replies(data: List<Comment>) {
 
     private val byParentId: Map<Long, List<Comment>> = data.groupBy { it.parentCommentId!! }
 
-    fun previewFor(parentId: Long): Pair<List<Comment>, Int> {
-        val sorted = byParentId[parentId].orEmpty()
+    fun previewFor(parent: Comment): GroupedComment {
+        val sorted = byParentId[parent.id].orEmpty()
             .sortedByDescending { it.createdDate }
-        val preview = sorted.take(PREVIEW_COUNT)
-        val remaining = (sorted.size - PREVIEW_COUNT).coerceAtLeast(0)
-        return Pair(preview, remaining)
+        return GroupedComment(
+            parent = parent,
+            previewReplies = sorted.take(PREVIEW_COUNT),
+            remainingReplyCount = (sorted.size - PREVIEW_COUNT).coerceAtLeast(0),
+        )
     }
 
     companion object {

@@ -313,6 +313,18 @@ class MatchingConfig(
 - **상수**: 비즈니스 규칙상 거의 바뀌지 않는 값 (예: 전화번호 자릿수, 비밀번호 최소 길이)
 - **파라미터**: 운영 중 변경될 수 있는 값 (예: 만료일, 페이지 크기, 재시도 횟수)
 
+**반환 타입은 의도를 드러내는 객체로** — `Pair`, `Triple`, `Map<Long, Int>`, `List<Pair<A, B>>` 등 제네릭 컬렉션을 반환하지 않는다. 호출부에서 `first`, `second`, `key`, `value`로는 의미를 파악할 수 없다. 의도를 드러내는 도메인 객체나 전용 클래스를 만들어 반환한다.
+
+```kotlin
+// BAD - 의도 불명확
+fun previewFor(parentId: Long): Pair<List<Comment>, Int>
+fun countByPostIds(postIds: List<Long>): Map<Long, Int>
+
+// GOOD - 의도를 드러내는 객체 반환
+fun previewFor(parent: Comment): GroupedComment
+fun countByPostIds(postIds: List<Long>): List<PostLikeCount>
+```
+
 ## 10. Validation 메시지와 패턴은 상수로 관리
 
 Request DTO의 `@NotBlank`, `@Pattern`, `@Email` 등 Bean Validation 어노테이션의 `message`와 `regexp`는 하드코딩하지 않는다. `ValidationMessages`와 `ValidationPatterns`에 정의된 상수를 사용한다.
