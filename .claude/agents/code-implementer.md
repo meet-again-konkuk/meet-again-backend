@@ -98,6 +98,45 @@ val parentComment = commentQueryRepository.findOne(parentId)
 parentComment.validateCanBeParent()
 ```
 
+## CRITICAL: getter로 꺼내서 외부에서 조합 금지
+
+**도메인 객체의 필드를 getter로 꺼내서 외부에서 조합/변환하지 않는다. 도메인 객체에 행위를 부여한다.**
+
+```kotlin
+// BAD — 외부에서 getter로 꺼내서 조합
+class GroupedComments(val data: List<GroupedComment>) {
+    fun combineWithAuthors(members: Members): List<CommentWithAuthor> {
+        return data.map { grouped ->
+            CommentWithAuthor(
+                comment = grouped.parent,                    // getter
+                nickname = members.findNickname(grouped.parent.authorEmail),  // getter 체이닝
+                replies = grouped.previewReplies.map { ... },  // getter
+                remainingReplyCount = grouped.remainingReplyCount,  // getter
+            )
+        }
+    }
+}
+
+// GOOD — 도메인 객체에 행위 부여
+class GroupedComment(...) {
+    fun combineWithAuthor(members: Members): CommentWithAuthor {
+        return CommentWithAuthor(
+            comment = parent,
+            nickname = members.findNickname(parent.authorEmail),
+            replies = previewReplies.map { ... },
+            remainingReplyCount = remainingReplyCount,
+        )
+    }
+}
+
+// 일급 컬렉션은 위임만
+class GroupedComments(val data: List<GroupedComment>) {
+    fun combineWithAuthors(members: Members): List<CommentWithAuthor> {
+        return data.map { it.combineWithAuthor(members) }
+    }
+}
+```
+
 ## Quality Checklist Before Finishing
 
 - [ ] Domain layer has no Spring dependencies
