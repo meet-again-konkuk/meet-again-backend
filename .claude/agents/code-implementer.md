@@ -70,12 +70,41 @@ You are an elite Kotlin Spring Boot developer with deep expertise in hexagonal a
 - Follow existing package naming conventions in the project
 - For tests: use KoTest spec styles (BehaviorSpec, StringSpec) with Mockk for mocking
 
+## CRITICAL: Service 클래스에 비즈니스 로직 금지
+
+**Service는 조합(orchestrate)만 담당한다. 다음은 절대 Service에 두지 않는다:**
+- if/when 분기로 비즈니스 규칙을 판단하는 코드
+- validate, check, verify 같은 검증 메서드
+- 도메인 객체의 상태를 보고 예외를 던지는 코드
+
+**이런 로직은 반드시 도메인 객체에 행위로 부여한다:**
+```kotlin
+// BAD — Service에 검증 로직
+class CommentCommandService {
+    private fun validateParentComment(newComment: NewComment) {
+        if (parentComment.hasParent()) throw ReplyDepthExceededException(...)
+    }
+}
+
+// GOOD — 도메인 객체에 행위 부여
+class Comment {
+    fun validateCanBeParent() {
+        if (hasParent()) throw ReplyDepthExceededException(id)
+    }
+}
+
+// Service는 호출만
+val parentComment = commentQueryRepository.findOne(parentId)
+parentComment.validateCanBeParent()
+```
+
 ## Quality Checklist Before Finishing
 
 - [ ] Domain layer has no Spring dependencies
 - [ ] Exposed ORM DSL is used for database access (not JPA)
 - [ ] New ports are defined as interfaces in the domain layer
 - [ ] Infrastructure implements domain ports
+- [ ] **Service 클래스에 if/when 비즈니스 분기가 없는가** (조합만 담당)
 - [ ] Code compiles successfully
 - [ ] Follows existing project patterns and conventions
 - [ ] **kotest-writer 에이전트에 테스트 작성을 위임했는가** (직접 테스트 코드 작성 금지)
