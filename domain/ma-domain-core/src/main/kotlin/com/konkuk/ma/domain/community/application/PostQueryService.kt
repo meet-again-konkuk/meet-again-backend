@@ -40,12 +40,10 @@ class PostQueryService(
         val authorEmails = comments.extractAuthorEmails() + post.authorEmail
         val members = Members(memberQueryRepository.findByEmails(authorEmails))
 
-        val groupedComments = comments.groupByParent()
-
         return PostDetail(
             post = post,
             nickname = members.findNickname(post.authorEmail),
-            comments = comments.combineWithAuthors(groupedComments, members),
+            comments = comments.groupByParent().combineWithAuthors(members),
         )
     }
 }
