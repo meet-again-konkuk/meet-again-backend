@@ -80,7 +80,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.combineWithAuthors(members)
+            val result = comments.combineWithAuthors(comments.groupByParent(), members)
 
             // Then
             result shouldHaveSize 1
@@ -110,7 +110,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.combineWithAuthors(members)
+            val result = comments.combineWithAuthors(comments.groupByParent(), members)
 
             // Then
             result shouldHaveSize 1
@@ -128,7 +128,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.combineWithAuthors(members)
+            val result = comments.combineWithAuthors(comments.groupByParent(), members)
 
             // Then
             result shouldHaveSize 1
@@ -149,7 +149,7 @@ class CommentsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = comments.combineWithAuthors(members)
+            val result = comments.combineWithAuthors(comments.groupByParent(), members)
 
             // Then
             result shouldHaveSize 1
@@ -163,7 +163,7 @@ class CommentsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = comments.combineWithAuthors(members)
+            val result = comments.combineWithAuthors(comments.groupByParent(), members)
 
             // Then
             result shouldHaveSize 0
@@ -195,7 +195,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.combineWithAuthors(members)
+            val result = comments.combineWithAuthors(comments.groupByParent(), members)
 
             // Then
             result shouldHaveSize 2

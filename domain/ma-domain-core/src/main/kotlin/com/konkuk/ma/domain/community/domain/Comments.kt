@@ -8,7 +8,7 @@ class Comments(val data: List<Comment>) {
         return data.map { it.authorEmail }.toSet()
     }
 
-    fun combineWithAuthors(members: Members): List<CommentWithAuthor> {
+    fun groupByParent(): List<GroupedComment> {
         val parentComments = data.filter { !it.hasParent() }
         val repliesByParentId = data.filter { it.hasParent() }
             .groupBy { it.parentCommentId!! }
@@ -16,19 +16,27 @@ class Comments(val data: List<Comment>) {
         return parentComments.map { parent ->
             val allReplies = repliesByParentId[parent.id].orEmpty()
                 .sortedByDescending { it.createdDate }
-            val previewReplies = allReplies.take(REPLY_PREVIEW_COUNT)
-            val remainingCount = (allReplies.size - REPLY_PREVIEW_COUNT).coerceAtLeast(0)
 
+            GroupedComment(
+                parent = parent,
+                previewReplies = allReplies.take(REPLY_PREVIEW_COUNT),
+                remainingReplyCount = (allReplies.size - REPLY_PREVIEW_COUNT).coerceAtLeast(0),
+            )
+        }
+    }
+
+    fun combineWithAuthors(groupedComments: List<GroupedComment>, members: Members): List<CommentWithAuthor> {
+        return groupedComments.map { grouped ->
             CommentWithAuthor(
-                comment = parent,
-                nickname = members.findNickname(parent.authorEmail),
-                replies = previewReplies.map { reply ->
+                comment = grouped.parent,
+                nickname = members.findNickname(grouped.parent.authorEmail),
+                replies = grouped.previewReplies.map { reply ->
                     ReplyWithAuthor(
                         comment = reply,
                         nickname = members.findNickname(reply.authorEmail),
                     )
                 },
-                remainingReplyCount = remainingCount,
+                remainingReplyCount = grouped.remainingReplyCount,
             )
         }
     }
