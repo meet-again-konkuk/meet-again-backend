@@ -10,8 +10,8 @@ class Comments(val data: List<Comment>) {
 
     fun groupByParent(members: Members): List<CommentWithAuthor> {
         val rootComments = RootComments(data.filter { !it.hasParent() })
-        val replies = Replies(data.filter { it.hasParent() })
-        val groupedComments = GroupedComments(rootComments.groupWith(replies))
+        val allReplies = data.filter { it.hasParent() }
+        val groupedComments = GroupedComments(rootComments.groupWith(allReplies))
         return groupedComments.combineWithAuthors(members)
     }
 }
