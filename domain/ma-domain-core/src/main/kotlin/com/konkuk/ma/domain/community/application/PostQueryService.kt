@@ -36,7 +36,6 @@ class PostQueryService(
     fun findDetail(id: Long): PostDetail {
         val post = postQueryRepository.findOne(id)
         val comments = Comments(commentQueryRepository.find(id))
-
         val authorEmails = comments.extractAuthorEmails() + post.authorEmail
         val members = Members(memberQueryRepository.findByEmails(authorEmails))
 
