@@ -49,7 +49,12 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error)
     }
 
-    @ExceptionHandler(InvalidValueException::class, SmsNotVerifiedException::class)
+    @ExceptionHandler(
+        InvalidValueException::class,
+        SmsNotVerifiedException::class,
+        com.konkuk.ma.domain.community.exception.PostNotFoundException::class,
+        com.konkuk.ma.domain.community.exception.ReplyDepthExceededException::class,
+    )
     fun handleBadRequestException(e: BusinessException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.INVALID_INPUT_VALUE, e)
         return ResponseEntity.badRequest().body(error)

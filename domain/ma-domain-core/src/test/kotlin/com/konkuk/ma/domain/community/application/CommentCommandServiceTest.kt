@@ -3,9 +3,8 @@ package com.konkuk.ma.domain.community.application
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
+import com.konkuk.ma.domain.community.exception.PostNotFoundException
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
-import com.konkuk.ma.exception.EntityNotFoundException
-import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -57,12 +56,12 @@ class CommentCommandServiceTest : FunSpec({
             val newComment = NewCommentFixture.create(postId = 999L)
 
             every { commentValidator.validate(newComment) } throws
-                EntityNotFoundException(EntityType.COMMUNITY_POST, newComment.postId.toString())
+                PostNotFoundException(newComment.postId)
 
             // When & Then
-            shouldThrow<EntityNotFoundException> {
+            shouldThrow<PostNotFoundException> {
                 service.create(newComment)
-            }.message shouldBe "CommunityPost을(를) 찾을 수 없습니다."
+            }.message shouldBe "존재하지 않는 게시글에는 댓글을 달 수 없습니다."
         }
     }
 })

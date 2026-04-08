@@ -2,8 +2,7 @@ package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
-import com.konkuk.ma.exception.EntityNotFoundException
-import com.konkuk.ma.exception.EntityType
+import com.konkuk.ma.domain.community.exception.PostNotFoundException
 import org.springframework.stereotype.Component
 
 @Component
@@ -18,7 +17,7 @@ class CommentValidator(
 
     private fun validatePostExists(postId: Long) {
         if (!postQueryRepository.exists(postId)) {
-            throw EntityNotFoundException(EntityType.COMMUNITY_POST, postId.toString())
+            throw PostNotFoundException(postId)
         }
     }
 
