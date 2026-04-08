@@ -4,9 +4,9 @@ import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.application.PostQueryService
-import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.PostWithAuthor
+import com.konkuk.ma.domain.community.fixture.PostFixture
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
@@ -42,15 +42,7 @@ class CommunityPostQueryApiTest(
     test("커뮤니티 게시글 목록 조회 API 문서화") {
         // Given
         val postWithAuthor = PostWithAuthor(
-            post = Post(
-                id = 1L,
-                authorEmail = "author@example.com",
-                category = PostCategory.CHEER,
-                title = "안녕하세요",
-                content = "반갑습니다",
-                likes = 5,
-                createdDate = LocalDateTime.now().minusMinutes(5),
-            ),
+            post = PostFixture.create(category = PostCategory.CHEER),
             nickname = "테스트닉네임",
         )
         val cursorResult = CursorResult(
