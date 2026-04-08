@@ -108,6 +108,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/toggle-post-like.html[게시글 좋아요 토글 API,window=_blank]
 
+[[community-find-comment-detail]]
+=== 댓글 상세 조회
+
+* link:community/find-comment-detail.html[댓글 상세 조회 API,window=_blank]
+
 [[community-toggle-comment-like]]
 === 댓글 좋아요 토글
 

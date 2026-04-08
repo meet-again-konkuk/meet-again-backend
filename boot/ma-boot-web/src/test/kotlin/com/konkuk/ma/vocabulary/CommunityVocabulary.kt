@@ -173,3 +173,41 @@ fun detailRemainingReplyCount(fieldName: String = "comments[].remainingReplyCoun
 
 fun postDetailIdPath(fieldName: String = "id") =
     fieldName requestParam "게시글 ID"
+
+// --- 댓글 상세 응답 필드 ---
+
+fun commentDetailId(fieldName: String = "id") =
+    fieldName responseType NUMBER means "댓글 ID" example "1"
+
+fun commentDetailNickname(fieldName: String = "nickname") =
+    fieldName responseType STRING means "댓글 작성자 닉네임" example "댓글작성자"
+
+fun commentDetailContent(fieldName: String = "content") =
+    fieldName responseType STRING means "댓글 내용" example "좋은 글이네요!"
+
+fun commentDetailLikes(fieldName: String = "likes") =
+    fieldName responseType NUMBER means "댓글 좋아요 수" example "2"
+
+fun commentDetailTimeAgo(fieldName: String = "timeAgo") =
+    fieldName responseType STRING means "댓글 작성 경과 시간" example "3분 전"
+
+fun commentDetailReplies(fieldName: String = "replies[]") =
+    fieldName responseType ARRAY means "대댓글 목록"
+
+fun commentDetailReplyId(fieldName: String = "replies[].id") =
+    fieldName responseType NUMBER means "대댓글 ID" example "2"
+
+fun commentDetailReplyNickname(fieldName: String = "replies[].nickname") =
+    fieldName responseType STRING means "대댓글 작성자 닉네임" example "대댓글작성자"
+
+fun commentDetailReplyContent(fieldName: String = "replies[].content") =
+    fieldName responseType STRING means "대댓글 내용" example "감사합니다!"
+
+fun commentDetailReplyLikes(fieldName: String = "replies[].likes") =
+    fieldName responseType NUMBER means "대댓글 좋아요 수" example "1"
+
+fun commentDetailReplyTimeAgo(fieldName: String = "replies[].timeAgo") =
+    fieldName responseType STRING means "대댓글 작성 경과 시간" example "1분 전"
+
+fun commentDetailRemainingReplyCount(fieldName: String = "remainingReplyCount") =
+    fieldName responseType NUMBER means "남은 대댓글 수" example "0"

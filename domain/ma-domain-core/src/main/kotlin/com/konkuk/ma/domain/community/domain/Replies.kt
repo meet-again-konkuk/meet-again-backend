@@ -18,6 +18,10 @@ class Replies(val data: List<Comment>) {
     private fun findReplies(parentId: Long): List<Comment> = byParentId[parentId].orEmpty()
         .sortedByDescending { it.createdDate }
 
+    fun extractAuthorEmails(): Set<String> {
+        return data.map { it.authorEmail }.toSet()
+    }
+
     fun combineWithAuthors(members: Members): List<ReplyWithAuthor> {
         return data.map { reply ->
             ReplyWithAuthor(

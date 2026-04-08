@@ -19,4 +19,8 @@ class CommentQueryCoreRepository(
     override fun find(postId: Long): List<Comment> {
         return commentQueryDao.find(postId).map { it.toDomain() }
     }
+
+    override fun findReplies(parentCommentId: Long): List<Comment> {
+        return commentQueryDao.findReplies(parentCommentId).map { it.toDomain() }
+    }
 }

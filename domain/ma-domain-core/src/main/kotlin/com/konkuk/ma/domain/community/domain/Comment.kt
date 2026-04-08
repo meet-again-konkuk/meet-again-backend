@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import java.time.LocalDateTime
 
@@ -17,6 +18,12 @@ class Comment(
     fun validateCanBeParent() {
         if (hasParent()) {
             throw ReplyDepthExceededException(id)
+        }
+    }
+
+    fun validateIsRootComment() {
+        if (hasParent()) {
+            throw NotRootCommentException(id)
         }
     }
 }

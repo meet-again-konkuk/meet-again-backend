@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import io.kotest.assertions.throwables.shouldNotThrow
@@ -42,6 +43,25 @@ class CommentTest : FunSpec({
             shouldThrow<ReplyDepthExceededException> {
                 comment.validateCanBeParent()
             }.message shouldBe "대댓글에는 답글을 달 수 없습니다."
+        }
+    }
+
+    context("validateIsRootComment") {
+
+        test("루트 댓글이면 예외 없이 통과한다") {
+            val comment = CommentFixture.create(parentCommentId = null)
+
+            shouldNotThrow<NotRootCommentException> {
+                comment.validateIsRootComment()
+            }
+        }
+
+        test("대댓글이면 NotRootCommentException이 발생한다") {
+            val comment = CommentFixture.create(id = 10L, parentCommentId = 5L)
+
+            shouldThrow<NotRootCommentException> {
+                comment.validateIsRootComment()
+            }.message shouldBe "루트 댓글만 조회할 수 있습니다."
         }
     }
 })

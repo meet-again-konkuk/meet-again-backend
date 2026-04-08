@@ -26,6 +26,7 @@
 | DELETE | /api/community/comments/{commentId}/likes | 댓글 좋아요 취소 | Done |
 | POST | /api/community/posts/{postId}/likes | 게시글 좋아요 추가 | Done |
 | DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 | Done |
+| GET | /api/community/posts/{id} | 게시글 상세 조회 | Done |
 
 ---
 
@@ -37,23 +38,15 @@
 
 ## 커뮤니티
 
-### GET /api/community/posts/{id} — 게시글 상세
-
-- **인증**: 필요
-  **참고사항**:
-- 댓글 목록을 같이 조회해오는데 대댓글은 최신순으로 세 개까지만 내용을 가져오고 그 외에는 개수만 표시
-- 댓글 응답 값은 닉네임, 댓글 내용, 좋아요 개수, 작성 경과 시간 등이 표기
 
 ### ~~게시글 좋아요~~ ✔ 완료
 
-### GET /api/community/posts/{postId}/comments — 댓글 목록
+### 댓글 상세 조회
 
 - **인증**: 필요
-
-**Request Body**:
-```json
-{ "content": "string" }
-```
+- **설명**: 대댓글 더보기를 클릭하면 해당 Comment와 대댓글 전체를 조회하는 API
+- **참고사항**:
+- rootComment의 id를 PathVariable로 입력 받아서 rootComment와 하위 Reply 리스트를 전달하는 API. 게시글 상세의 CommentWithAuthor와 응답은 같은데 replies가 3개 짤려서 보이는게 아니라 전체가 보이는 차이가 있다.
 
 ### DELETE /api/community/posts/{postId}/comments/{commentId} — 댓글 삭제
 

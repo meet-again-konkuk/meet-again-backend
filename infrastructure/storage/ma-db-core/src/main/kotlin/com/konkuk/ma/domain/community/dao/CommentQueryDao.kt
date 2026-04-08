@@ -24,4 +24,12 @@ class CommentQueryDao {
             .orderBy(CommentTable.id to SortOrder.ASC)
             .map { row -> CommentEntity.from(row) }
     }
+
+    fun findReplies(parentCommentId: Long): List<CommentEntity> {
+        return CommentTable
+            .selectAll()
+            .where { (CommentTable.parentCommentId eq parentCommentId) and (CommentTable.deleted eq false) }
+            .orderBy(CommentTable.id to SortOrder.DESC)
+            .map { row -> CommentEntity.from(row) }
+    }
 }
