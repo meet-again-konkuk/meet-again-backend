@@ -9,20 +9,9 @@ class Comments(val data: List<Comment>) {
     }
 
     fun groupByParent(): List<GroupedComment> {
-        val parentComments = data.filter { !it.hasParent() }
-        val repliesByParentId = data.filter { it.hasParent() }
-            .groupBy { it.parentCommentId!! }
-
-        return parentComments.map { parent ->
-            val allReplies = repliesByParentId[parent.id].orEmpty()
-                .sortedByDescending { it.createdDate }
-
-            GroupedComment(
-                parent = parent,
-                previewReplies = allReplies.take(REPLY_PREVIEW_COUNT),
-                remainingReplyCount = (allReplies.size - REPLY_PREVIEW_COUNT).coerceAtLeast(0),
-            )
-        }
+        val roots = RootComments(data.filter { !it.hasParent() })
+        val replies = Replies(data.filter { it.hasParent() })
+        return roots.groupWith(replies)
     }
 
     fun combineWithAuthors(groupedComments: List<GroupedComment>, members: Members): List<CommentWithAuthor> {
@@ -39,9 +28,5 @@ class Comments(val data: List<Comment>) {
                 remainingReplyCount = grouped.remainingReplyCount,
             )
         }
-    }
-
-    companion object {
-        private const val REPLY_PREVIEW_COUNT = 3
     }
 }
