@@ -25,19 +25,19 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException::class)
     fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.ENTITY_NOT_FOUND, e)
+        val error = ApiError(ErrorCode.ENTITY_NOT_FOUND)
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error)
     }
 
     @ExceptionHandler(DuplicateNicknameException::class, DuplicateEmailException::class)
     fun handleDuplicateException(e: BusinessException): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.ENTITY_DUPLICATION, e)
+        val error = ApiError(ErrorCode.ENTITY_DUPLICATION)
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error)
     }
 
     @ExceptionHandler(PasswordMismatchException::class, RefreshTokenExpiredException::class)
     fun handleUnauthorizedException(e: BusinessException): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.UNAUTHORIZED, e)
+        val error = ApiError(ErrorCode.UNAUTHORIZED)
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
     }
 
@@ -45,7 +45,7 @@ class GlobalExceptionHandler {
     fun handleMatchingResultAccessDeniedException(
         e: MatchingResultAccessDeniedException
     ): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.ACCESS_DENIED, e)
+        val error = ApiError(ErrorCode.ACCESS_DENIED)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error)
     }
 
@@ -56,20 +56,20 @@ class GlobalExceptionHandler {
         com.konkuk.ma.domain.community.exception.ReplyDepthExceededException::class,
     )
     fun handleBadRequestException(e: BusinessException): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.INVALID_INPUT_VALUE, e)
+        val error = ApiError(ErrorCode.INVALID_INPUT_VALUE)
         return ResponseEntity.badRequest().body(error)
     }
 
     @ExceptionHandler(InvalidObfuscatedIdException::class)
     fun handleInvalidObfuscatedId(e: InvalidObfuscatedIdException): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.INVALID_TYPE_VALUE, e)
+        val error = ApiError(ErrorCode.INVALID_TYPE_VALUE)
         return ResponseEntity.badRequest().body(error)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ApiError> {
         val message = e.bindingResult.allErrors.mapNotNull { it.defaultMessage }.joinToString(", ")
-        val error = ApiError(ErrorCode.INVALID_INPUT_VALUE, e, message)
+        val error = ApiError(ErrorCode.INVALID_INPUT_VALUE, message)
         return ResponseEntity.badRequest().body(error)
     }
 
@@ -81,14 +81,14 @@ class GlobalExceptionHandler {
         } else {
             "파일 크기가 허용 한도를 초과했습니다."
         }
-        val error = ApiError(ErrorCode.FILE_SIZE_EXCEEDED, e, message)
+        val error = ApiError(ErrorCode.FILE_SIZE_EXCEEDED, message)
         return ResponseEntity.badRequest().body(error)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ApiError> {
         logger.error(e) { "예상하지 못한 에러가 발생했습니다." }
-        val error = ApiError(ErrorCode.INTERNAL_SERVER_ERROR, e)
+        val error = ApiError(ErrorCode.INTERNAL_SERVER_ERROR)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error)
     }
 }

@@ -22,7 +22,6 @@ class PostResponseTest : FunSpec({
                     title = "제목",
                     content = "내용",
                     likes = 5,
-                    comments = 3,
                     createdDate = now.minusHours(2),
                 ),
                 nickname = "작성자",
@@ -36,7 +35,6 @@ class PostResponseTest : FunSpec({
             response.title shouldBe postWithAuthor.post.title
             response.content shouldBe postWithAuthor.post.content
             response.likes shouldBe postWithAuthor.post.likes
-            response.comments shouldBe postWithAuthor.post.comments
         }
 
         test("timeAgo는 TimeAgoCalculator 결과를 사용한다") {
@@ -49,7 +47,6 @@ class PostResponseTest : FunSpec({
                     title = "제목",
                     content = "내용",
                     likes = 0,
-                    comments = 0,
                     createdDate = now.minusMinutes(30),
                 ),
                 nickname = "작성자",

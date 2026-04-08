@@ -42,9 +42,6 @@ fun postContent(fieldName: String = "data[].content") =
 fun postLikes(fieldName: String = "data[].likes") =
     fieldName responseType NUMBER means "좋아요 수" example "5"
 
-fun postComments(fieldName: String = "data[].comments") =
-    fieldName responseType NUMBER means "댓글 수" example "3"
-
 fun postTimeAgo(fieldName: String = "data[].timeAgo") =
     fieldName responseType STRING means "작성 경과 시간" example "5분 전"
 

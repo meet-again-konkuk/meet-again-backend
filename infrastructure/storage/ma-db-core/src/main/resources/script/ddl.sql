@@ -140,7 +140,6 @@ CREATE TABLE COMMUNITY_POSTS
     TITLE              VARCHAR(100)  NOT NULL,
     CONTENT            TEXT          NOT NULL,
     LIKES              INT           DEFAULT 0,
-    COMMENTS           INT           DEFAULT 0,
 
     -- BaseTable 공통 컬럼들
     CREATED_DATE       DATETIME      DEFAULT CURRENT_TIMESTAMP,

@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
-import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
 import com.konkuk.ma.domain.community.exception.PostNotFoundException
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
 import io.kotest.assertions.throwables.shouldThrow
@@ -17,11 +16,9 @@ import io.mockk.verify
 
 class CommentCommandServiceTest : FunSpec({
 
-    val postCommandRepository = mockk<PostCommandRepository>()
     val commentCommandRepository = mockk<CommentCommandRepository>()
     val commentValidator = mockk<CommentValidator>()
     val service = CommentCommandService(
-        postCommandRepository,
         commentCommandRepository,
         commentValidator,
     )
@@ -39,7 +36,6 @@ class CommentCommandServiceTest : FunSpec({
 
             every { commentValidator.validate(newComment) } just runs
             every { commentCommandRepository.save(any()) } returns expectedCommentId
-            every { postCommandRepository.incrementComments(newComment.postId) } returns Unit
 
             // When
             val result = service.create(newComment)
@@ -48,7 +44,6 @@ class CommentCommandServiceTest : FunSpec({
             result shouldBe expectedCommentId
             verify { commentValidator.validate(newComment) }
             verify { commentCommandRepository.save(newComment) }
-            verify { postCommandRepository.incrementComments(newComment.postId) }
         }
 
         test("검증 실패 시 예외가 전파된다") {

@@ -8,5 +8,4 @@ object PostTable : BaseTable("COMMUNITY_POSTS", "COMMUNITY_POST_ID") {
     val title = varchar("TITLE", 100)
     val content = text("CONTENT")
     val likes = integer("LIKES").clientDefault { 0 }
-    val comments = integer("COMMENTS").clientDefault { 0 }
 }

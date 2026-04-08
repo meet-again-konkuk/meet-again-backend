@@ -10,7 +10,6 @@ class PostResponse(
     val title: String,
     val content: String,
     val likes: Int,
-    val comments: Int,
     val timeAgo: String,
 ) {
     companion object {
@@ -23,7 +22,6 @@ class PostResponse(
                 title = post.title,
                 content = post.content,
                 likes = post.likes,
-                comments = post.comments,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
             )
         }

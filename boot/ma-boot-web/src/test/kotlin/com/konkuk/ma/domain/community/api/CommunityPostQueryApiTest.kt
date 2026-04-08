@@ -15,7 +15,6 @@ import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.categoryParam
 import com.konkuk.ma.vocabulary.cursorIdParam
 import com.konkuk.ma.vocabulary.postCategory
-import com.konkuk.ma.vocabulary.postComments
 import com.konkuk.ma.vocabulary.postContent
 import com.konkuk.ma.vocabulary.postId
 import com.konkuk.ma.vocabulary.postLikes
@@ -50,7 +49,6 @@ class CommunityPostQueryApiTest(
                 title = "안녕하세요",
                 content = "반갑습니다",
                 likes = 5,
-                comments = 3,
                 createdDate = LocalDateTime.now().minusMinutes(5),
             ),
             nickname = "테스트닉네임",
@@ -83,7 +81,6 @@ class CommunityPostQueryApiTest(
                     postTitle(),
                     postContent(),
                     postLikes(),
-                    postComments(),
                     postTimeAgo(),
                     postsHasNext(),
                     postsNextCursorId(),

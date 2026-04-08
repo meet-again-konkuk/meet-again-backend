@@ -4,9 +4,7 @@ import java.time.LocalDateTime
 
 class ApiError(
     val code: ErrorCode,
-    e: Throwable,
-    val message: String = code.message
+    val message: String = code.message,
 ) {
     val timestamp: LocalDateTime = LocalDateTime.now()
-    val debugMessage: String = e.toString()
 }

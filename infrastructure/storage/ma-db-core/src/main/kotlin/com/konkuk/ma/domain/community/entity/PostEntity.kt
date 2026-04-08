@@ -13,7 +13,6 @@ class PostEntity(
     val title: String,
     val content: String,
     val likes: Int,
-    val comments: Int,
     val createdDate: LocalDateTime,
 ) {
     fun toDomain(): Post {
@@ -24,7 +23,6 @@ class PostEntity(
             title = title,
             content = content,
             likes = likes,
-            comments = comments,
             createdDate = createdDate,
         )
     }
@@ -38,7 +36,6 @@ class PostEntity(
                 title = row[PostTable.title],
                 content = row[PostTable.content],
                 likes = row[PostTable.likes],
-                comments = row[PostTable.comments],
                 createdDate = row[PostTable.createdDate],
             )
         }

@@ -19,9 +19,4 @@
 | String
 | 노출용 메시지
 
-|
-| debugMessage
-| String
-| 디버그용 메시지
-
 |===

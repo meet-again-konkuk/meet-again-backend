@@ -41,19 +41,19 @@ class JwtAuthenticationFilter(
             filterChain.doFilter(request, response)
         } catch (e: AuthTokenException) {
             if (e.isExpired()) {
-                writeApiError(response, ErrorCode.EXPIRED_TOKEN, e, HttpServletResponse.SC_UNAUTHORIZED)
+                writeApiError(response, ErrorCode.EXPIRED_TOKEN, HttpServletResponse.SC_UNAUTHORIZED)
                 return
             }
             if (e.isMalformed()) {
-                writeApiError(response, ErrorCode.MALFORMED_TOKEN, e, HttpServletResponse.SC_BAD_REQUEST)
+                writeApiError(response, ErrorCode.MALFORMED_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
                 return
             }
             if (e.isInvalid()) {
-                writeApiError(response, ErrorCode.INVALID_TOKEN, e, HttpServletResponse.SC_BAD_REQUEST)
+                writeApiError(response, ErrorCode.INVALID_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
                 return
             }
             if (e.isOtherError()) {
-                writeApiError(response, ErrorCode.OTHER_TOKEN_ERROR, e, HttpServletResponse.SC_BAD_REQUEST)
+                writeApiError(response, ErrorCode.OTHER_TOKEN_ERROR, HttpServletResponse.SC_BAD_REQUEST)
 
             }
         }
@@ -62,10 +62,9 @@ class JwtAuthenticationFilter(
     private fun writeApiError(
         response: HttpServletResponse,
         errorCode: ErrorCode,
-        exception: Throwable,
         httpStatus: Int,
     ) {
-        val apiError = ApiError(errorCode, exception)
+        val apiError = ApiError(errorCode)
         response.status = httpStatus
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
