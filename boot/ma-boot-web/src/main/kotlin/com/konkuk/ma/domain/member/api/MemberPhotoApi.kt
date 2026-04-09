@@ -31,7 +31,6 @@ class MemberPhotoApi(
     }
 
     @DeleteMapping
-    @ResponseStatus(HttpStatus.OK)
     fun deletePhoto(
         @AuthenticationPrincipal email: String
     ): MemberPhotoResponse {

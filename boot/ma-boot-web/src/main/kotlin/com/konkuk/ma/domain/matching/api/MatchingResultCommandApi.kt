@@ -17,7 +17,6 @@ class MatchingResultCommandApi(
     private val matchingResultCommandService: MatchingResultCommandService,
 ) {
     @PatchMapping("/{matchingResultId}/exclude")
-    @ResponseStatus(HttpStatus.OK)
     fun exclude(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
@@ -26,7 +25,6 @@ class MatchingResultCommandApi(
     }
 
     @PatchMapping("/{matchingResultId}/include")
-    @ResponseStatus(HttpStatus.OK)
     fun include(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,

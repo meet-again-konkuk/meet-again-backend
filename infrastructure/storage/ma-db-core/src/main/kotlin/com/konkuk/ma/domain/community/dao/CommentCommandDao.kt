@@ -43,12 +43,6 @@ class CommentCommandDao {
         }
     }
 
-    fun deleteReplies(parentCommentId: Long) {
-        CommentTable.update({ CommentTable.parentCommentId eq parentCommentId }) {
-            it[deleted] = true
-        }
-    }
-
     private fun findLikeCount(commentId: Long): Int {
         return CommentTable
             .select(CommentTable.likes)

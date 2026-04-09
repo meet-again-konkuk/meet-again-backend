@@ -31,7 +31,6 @@ class CommentCommandApi(
     }
 
     @DeleteMapping("/{commentId}")
-    @ResponseStatus(HttpStatus.OK)
     fun delete(
         @AuthenticationPrincipal email: String,
         @PathVariable postId: Long,

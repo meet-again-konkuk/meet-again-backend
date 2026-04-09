@@ -23,8 +23,5 @@ class CommentCommandService(
         val comment = commentQueryRepository.findOne(commentId)
         comment.validateOwnership(email)
         commentCommandRepository.delete(commentId)
-        if (!comment.hasParent()) {
-            commentCommandRepository.deleteReplies(commentId)
-        }
     }
 }
