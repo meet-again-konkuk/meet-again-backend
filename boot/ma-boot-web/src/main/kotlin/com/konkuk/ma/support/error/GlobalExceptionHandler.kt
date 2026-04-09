@@ -2,6 +2,7 @@ package com.konkuk.ma.support.error
 
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
 import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
+import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.common.exception.InvalidValueException
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.member.exception.DuplicateEmailException
@@ -41,10 +42,11 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
     }
 
-    @ExceptionHandler(MatchingResultAccessDeniedException::class)
-    fun handleMatchingResultAccessDeniedException(
-        e: MatchingResultAccessDeniedException
-    ): ResponseEntity<ApiError> {
+    @ExceptionHandler(
+        MatchingResultAccessDeniedException::class,
+        CommentAccessDeniedException::class,
+    )
+    fun handleAccessDeniedException(e: BusinessException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.ACCESS_DENIED)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error)
     }

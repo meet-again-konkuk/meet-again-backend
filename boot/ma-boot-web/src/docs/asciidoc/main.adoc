@@ -113,6 +113,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/find-comment-detail.html[댓글 상세 조회 API,window=_blank]
 
+[[community-delete-comment]]
+=== 댓글 삭제
+
+* link:community/delete-comment.html[댓글 삭제 API,window=_blank]
+
 [[community-toggle-comment-like]]
 === 댓글 좋아요 토글
 

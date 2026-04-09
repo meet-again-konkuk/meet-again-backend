@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
@@ -62,6 +63,24 @@ class CommentTest : FunSpec({
             shouldThrow<NotRootCommentException> {
                 comment.validateIsRootComment()
             }.message shouldBe "루트 댓글만 조회할 수 있습니다."
+        }
+    }
+
+    context("validateOwnership") {
+
+        test("본인 이메일이면 예외 없이 통과한다") {
+            val comment = CommentFixture.create()
+
+            comment.validateOwnership(comment.authorEmail)
+        }
+
+        test("다른 이메일이면 CommentAccessDeniedException이 발생한다") {
+            val comment = CommentFixture.create()
+            val otherEmail = "other@example.com"
+
+            shouldThrow<CommentAccessDeniedException> {
+                comment.validateOwnership(otherEmail)
+            }.message shouldBe "댓글에 대한 접근 권한이 없습니다."
         }
     }
 })

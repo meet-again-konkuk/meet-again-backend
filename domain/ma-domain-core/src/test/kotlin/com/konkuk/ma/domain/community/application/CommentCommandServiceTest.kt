@@ -2,8 +2,13 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
+import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
+import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.PostNotFoundException
+import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
+import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -17,9 +22,11 @@ import io.mockk.verify
 class CommentCommandServiceTest : FunSpec({
 
     val commentCommandRepository = mockk<CommentCommandRepository>()
+    val commentQueryRepository = mockk<CommentQueryRepository>()
     val commentValidator = mockk<CommentValidator>()
     val service = CommentCommandService(
         commentCommandRepository,
+        commentQueryRepository,
         commentValidator,
     )
 
@@ -57,6 +64,66 @@ class CommentCommandServiceTest : FunSpec({
             shouldThrow<PostNotFoundException> {
                 service.create(newComment)
             }.message shouldBe "존재하지 않는 게시글에는 댓글을 달 수 없습니다."
+        }
+    }
+
+    context("delete") {
+
+        test("루트 댓글을 삭제하면 댓글과 대댓글이 모두 삭제된다") {
+            // Given
+            val comment = CommentFixture.create(parentCommentId = null)
+
+            every { commentQueryRepository.findOne(comment.id) } returns comment
+            every { commentCommandRepository.delete(comment.id) } just runs
+            every { commentCommandRepository.deleteReplies(comment.id) } just runs
+
+            // When
+            service.delete(comment.id, comment.authorEmail)
+
+            // Then
+            verify { commentCommandRepository.delete(comment.id) }
+            verify { commentCommandRepository.deleteReplies(comment.id) }
+        }
+
+        test("대댓글을 삭제하면 해당 댓글만 삭제된다") {
+            // Given
+            val reply = CommentFixture.create(id = 2L, parentCommentId = 1L)
+
+            every { commentQueryRepository.findOne(reply.id) } returns reply
+            every { commentCommandRepository.delete(reply.id) } just runs
+
+            // When
+            service.delete(reply.id, reply.authorEmail)
+
+            // Then
+            verify { commentCommandRepository.delete(reply.id) }
+            verify(exactly = 0) { commentCommandRepository.deleteReplies(any()) }
+        }
+
+        test("소유권이 없는 댓글을 삭제하면 CommentAccessDeniedException이 발생한다") {
+            // Given
+            val comment = CommentFixture.create()
+            val otherEmail = "other@example.com"
+
+            every { commentQueryRepository.findOne(comment.id) } returns comment
+
+            // When & Then
+            shouldThrow<CommentAccessDeniedException> {
+                service.delete(comment.id, otherEmail)
+            }.message shouldBe "댓글에 대한 접근 권한이 없습니다."
+        }
+
+        test("존재하지 않는 댓글을 삭제하면 EntityNotFoundException이 발생한다") {
+            // Given
+            val nonExistentId = 999L
+
+            every { commentQueryRepository.findOne(nonExistentId) } throws
+                EntityNotFoundException(EntityType.COMMUNITY_COMMENT, nonExistentId.toString())
+
+            // When & Then
+            shouldThrow<EntityNotFoundException> {
+                service.delete(nonExistentId, "any@example.com")
+            }.message shouldBe "CommunityComment을(를) 찾을 수 없습니다."
         }
     }
 })

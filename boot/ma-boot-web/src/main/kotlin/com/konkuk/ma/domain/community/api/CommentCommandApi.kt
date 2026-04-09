@@ -6,6 +6,7 @@ import com.konkuk.ma.domain.community.application.CommentCommandService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,5 +28,15 @@ class CommentCommandApi(
     ): NewCommentResponse {
         val commentId = commentCommandService.create(request.toNewComment(email, postId))
         return NewCommentResponse(commentId = commentId)
+    }
+
+    @DeleteMapping("/{commentId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun delete(
+        @AuthenticationPrincipal email: String,
+        @PathVariable postId: Long,
+        @PathVariable commentId: Long,
+    ) {
+        commentCommandService.delete(commentId, email)
     }
 }

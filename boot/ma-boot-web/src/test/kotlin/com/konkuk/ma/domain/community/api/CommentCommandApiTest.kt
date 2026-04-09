@@ -4,17 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.community.application.CommentCommandService
 import com.konkuk.ma.domain.community.domain.NewComment
+import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.commentContent
 import com.konkuk.ma.vocabulary.commentId
+import com.konkuk.ma.vocabulary.commentIdPath
 import com.konkuk.ma.vocabulary.parentCommentId
 import com.konkuk.ma.vocabulary.postIdPath
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
+import io.mockk.just
+import io.mockk.runs
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
@@ -105,5 +109,39 @@ class CommentCommandApiTest(
                 .content(mapper.writeValueAsString(request))
         )
             .andExpect(status().isBadRequest)
+    }
+
+    test("댓글 삭제 API 문서화") {
+        // Given
+        every { commentCommandService.delete(any(), any()) } just runs
+
+        // When & Then
+        mockMvc.perform(
+            RestDocumentationRequestBuilders.delete(
+                "/api/community/posts/{postId}/comments/{commentId}", 1L, 1L
+            )
+        )
+            .andExpect(status().isOk)
+            .andDocument(
+                "community/delete-comment",
+                pathVariables(
+                    postIdPath(),
+                    commentIdPath(),
+                ),
+            )
+    }
+
+    test("소유권이 없는 댓글 삭제 시 403을 반환한다") {
+        // Given
+        every { commentCommandService.delete(any(), any()) } throws
+            CommentAccessDeniedException(1L, "owner@example.com", "holeman@naver.com")
+
+        // When & Then
+        mockMvc.perform(
+            RestDocumentationRequestBuilders.delete(
+                "/api/community/posts/{postId}/comments/{commentId}", 1L, 1L
+            )
+        )
+            .andExpect(status().isForbidden)
     }
 })

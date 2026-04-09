@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import java.time.LocalDateTime
@@ -24,6 +25,12 @@ class Comment(
     fun validateIsRootComment() {
         if (hasParent()) {
             throw NotRootCommentException(id)
+        }
+    }
+
+    fun validateOwnership(email: String) {
+        if (authorEmail != email) {
+            throw CommentAccessDeniedException(id, authorEmail, email)
         }
     }
 }

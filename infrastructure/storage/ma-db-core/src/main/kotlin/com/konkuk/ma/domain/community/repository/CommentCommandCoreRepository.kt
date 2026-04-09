@@ -20,4 +20,12 @@ class CommentCommandCoreRepository(
     override fun decreaseLikes(commentId: Long): Int {
         return commentCommandDao.decreaseLikes(commentId)
     }
+
+    override fun delete(commentId: Long) {
+        commentCommandDao.delete(commentId)
+    }
+
+    override fun deleteReplies(parentCommentId: Long) {
+        commentCommandDao.deleteReplies(parentCommentId)
+    }
 }

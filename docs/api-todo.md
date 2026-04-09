@@ -27,6 +27,7 @@
 | POST | /api/community/posts/{postId}/likes | 게시글 좋아요 추가 | Done |
 | DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 | Done |
 | GET | /api/community/posts/{id} | 게시글 상세 조회 | Done |
+| GET | /api/community/comments/{commentId} | 댓글 상세 조회 | Done |
 
 ---
 
@@ -41,12 +42,7 @@
 
 ### ~~게시글 좋아요~~ ✔ 완료
 
-### 댓글 상세 조회
-
-- **인증**: 필요
-- **설명**: 대댓글 더보기를 클릭하면 해당 Comment와 대댓글 전체를 조회하는 API
-- **참고사항**:
-- rootComment의 id를 PathVariable로 입력 받아서 rootComment와 하위 Reply 리스트를 전달하는 API. 게시글 상세의 CommentWithAuthor와 응답은 같은데 replies가 3개 짤려서 보이는게 아니라 전체가 보이는 차이가 있다.
+### ~~댓글 상세 조회~~ ✔ 완료
 
 ### DELETE /api/community/posts/{postId}/comments/{commentId} — 댓글 삭제
 
@@ -58,7 +54,7 @@
 
 ---
 
-## X룸/추억
+## X룸//me 
 
 ### GET /api/xroom/status — X룸 존재 여부 확인
 
