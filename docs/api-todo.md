@@ -28,6 +28,7 @@
 | DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 | Done |
 | GET | /api/community/posts/{id} | 게시글 상세 조회 | Done |
 | GET | /api/community/comments/{commentId} | 댓글 상세 조회 | Done |
+| DELETE | /api/community/posts/{postId}/comments/{commentId} | 댓글 삭제 | Done |
 
 ---
 
@@ -44,9 +45,7 @@
 
 ### ~~댓글 상세 조회~~ ✔ 완료
 
-### DELETE /api/community/posts/{postId}/comments/{commentId} — 댓글 삭제
-
-- **인증**: 필요
+### ~~댓글 삭제~~ ✔ 완료
 
 ### ~~댓글 좋아요~~ ✔ 완료
 
