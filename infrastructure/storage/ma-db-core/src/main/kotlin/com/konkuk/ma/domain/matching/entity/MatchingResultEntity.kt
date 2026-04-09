@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.entity
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -24,9 +25,9 @@ class MatchingResultEntity(
     fun toDomain(): MatchingResult {
         return MatchingResult(
             id = id,
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetInfoId = targetInfoId,
-            targetEmail = targetEmail,
+            targetEmail = Email(targetEmail),
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,

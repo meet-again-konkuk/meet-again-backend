@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.auth.domain
 
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.exception.DuplicateEmailException
@@ -25,9 +26,9 @@ class SignUpValidator(
         }
     }
 
-    private fun checkDuplicatedEmail(email: String) {
+    private fun checkDuplicatedEmail(email: Email) {
         if (memberQueryRepository.existsByEmail(email)) {
-            throw DuplicateEmailException(email)
+            throw DuplicateEmailException(email.value)
         }
     }
 

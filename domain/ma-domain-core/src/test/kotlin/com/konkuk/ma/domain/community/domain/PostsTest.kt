@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.PostFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
@@ -37,7 +38,7 @@ class PostsTest : FunSpec({
 
             // Then
             result shouldHaveSize 1
-            result.first() shouldBe sameEmail
+            result.first() shouldBe Email(sameEmail)
         }
 
         test("게시글이 없으면 빈 Set을 반환한다") {
@@ -61,8 +62,8 @@ class PostsTest : FunSpec({
             val posts = Posts(listOf(post1, post2))
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = post1.authorEmail, nickname = "작성자1"),
-                    MemberFixture.create(email = post2.authorEmail, nickname = "작성자2"),
+                    MemberFixture.create(email = post1.authorEmail.value, nickname = "작성자1"),
+                    MemberFixture.create(email = post2.authorEmail.value, nickname = "작성자2"),
                 )
             )
 

@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component
 class RefreshTokenDao {
     fun save(refreshToken: RefreshToken) {
         RefreshTokenTable.insert {
-            it[email] = refreshToken.email
+            it[email] = refreshToken.email.value
             it[token] = refreshToken.token
             it[expirationDate] = refreshToken.expirationDate
-            it[createdBy] = refreshToken.email
-            it[lastModifiedBy] = refreshToken.email
+            it[createdBy] = refreshToken.email.value
+            it[lastModifiedBy] = refreshToken.email.value
         }
     }
 

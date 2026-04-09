@@ -28,9 +28,9 @@ class MatchingResultCommandDao {
 
     fun saveAll(matchingResults: List<NewMatchingResult>) {
         MatchingResultTable.batchInsert(matchingResults) {
-            this[MatchingResultTable.registerEmail] = it.registerEmail
+            this[MatchingResultTable.registerEmail] = it.registerEmail.value
             this[MatchingResultTable.targetInfoId] = it.targetInfoId
-            this[MatchingResultTable.targetEmail] = it.targetEmail
+            this[MatchingResultTable.targetEmail] = it.targetEmail.value
             this[MatchingResultTable.middleNumberMatched] = it.middleNumberMatched
             this[MatchingResultTable.lastNumberMatched] = it.lastNumberMatched
             this[MatchingResultTable.yearMatched] = it.yearMatched
@@ -39,8 +39,8 @@ class MatchingResultCommandDao {
             this[MatchingResultTable.regionMatched] = it.regionMatched
             this[MatchingResultTable.showingExpiryDate] = it.showingExpiryDate
             this[MatchingResultTable.matchingExpiryDate] = it.matchingExpiryDate
-            this[MatchingResultTable.createdBy] = it.registerEmail
-            this[MatchingResultTable.lastModifiedBy] = it.registerEmail
+            this[MatchingResultTable.createdBy] = it.registerEmail.value
+            this[MatchingResultTable.lastModifiedBy] = it.registerEmail.value
             this[MatchingResultTable.excluded] = false
         }
     }

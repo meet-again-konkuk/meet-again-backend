@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.auth.api.request
 
 import com.konkuk.ma.domain.auth.application.command.SignUpCommand
+import com.konkuk.ma.domain.common.domain.Email as DomainEmail
 import com.konkuk.ma.support.validation.ValidationMessages
 import com.konkuk.ma.support.validation.ValidationPatterns
 import com.konkuk.ma.domain.member.domain.Gender
@@ -45,7 +46,7 @@ class SignUpRequest(
 ) {
     fun toCommand(): SignUpCommand {
         return SignUpCommand(
-            email = this.email,
+            email = DomainEmail(this.email),
             password = this.password,
             nickname = this.nickname,
             gender = this.gender,

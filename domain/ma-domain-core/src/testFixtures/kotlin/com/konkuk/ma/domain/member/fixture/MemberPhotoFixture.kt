@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.photo.ApprovalStatus
 import com.konkuk.ma.domain.member.domain.photo.MemberPhoto
 
@@ -14,7 +15,7 @@ object MemberPhotoFixture {
     ): MemberPhoto {
         return MemberPhoto(
             id = id,
-            memberEmail = memberEmail,
+            memberEmail = Email(memberEmail),
             filePath = filePath,
             originalFileName = originalFileName,
             approvalStatus = approvalStatus,

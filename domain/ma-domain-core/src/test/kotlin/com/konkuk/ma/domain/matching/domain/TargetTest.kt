@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
@@ -58,7 +59,7 @@ class TargetTest : FunSpec({
 
             val target = Target.create(member)
 
-            target.email shouldBe "test@example.com"
+            target.email shouldBe Email("test@example.com")
             target.name shouldBe "홍길동"
             target.gender shouldBe Gender.MALE
             target.middleNumber shouldBe member.phoneNumber.middleNumber

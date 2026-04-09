@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 
 class CommentDetail(
@@ -15,7 +16,7 @@ class CommentDetail(
         )
     }
 
-    fun extractAuthorEmails(): Set<String> {
+    fun extractAuthorEmails(): Set<Email> {
         return replies.extractAuthorEmails() + rootComment.authorEmail
     }
 }

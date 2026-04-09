@@ -14,6 +14,7 @@ import com.konkuk.ma.vocabulary.accessToken
 import com.konkuk.ma.vocabulary.email
 import com.konkuk.ma.vocabulary.nickname
 import com.konkuk.ma.vocabulary.refreshToken
+import com.konkuk.ma.domain.common.domain.Email
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -33,10 +34,10 @@ class RefreshTokenApiTest(
     test("리프레시 토큰 재발급 API 문서화") {
         val request = RefreshTokenRequest(refreshToken = "old-refresh-token")
         val loginInfo = LoginInfo(
-            email = "user@example.com",
+            email = Email("user@example.com"),
             nickname = "tester",
             accessToken = "new-access-token",
-            refreshToken = RefreshToken("user@example.com", LocalDateTime.now().plusDays(7), "new-refresh-token")
+            refreshToken = RefreshToken(Email("user@example.com"), LocalDateTime.now().plusDays(7), "new-refresh-token")
         )
         every { refreshTokenService.refreshToken(request.refreshToken) } returns loginInfo
 

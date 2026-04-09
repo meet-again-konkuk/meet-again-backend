@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.dao.MemberQueryDao
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
@@ -13,12 +14,12 @@ class MemberQueryCoreRepository(
         return memberQueryDao.existsByNickname(nickname)
     }
 
-    override fun existsByEmail(email: String): Boolean {
-        return memberQueryDao.existsByEmail(email)
+    override fun existsByEmail(email: Email): Boolean {
+        return memberQueryDao.existsByEmail(email.value)
     }
 
-    override fun findOne(email: String): Member {
-        return memberQueryDao.findOne(email)
+    override fun findOne(email: Email): Member {
+        return memberQueryDao.findOne(email.value)
             .toDomain()
     }
 
@@ -27,7 +28,8 @@ class MemberQueryCoreRepository(
             .map { it.toDomain() }
     }
 
-    override fun findByEmails(emails: Set<String>): List<Member> {
-        return memberQueryDao.findByEmails(emails).map { it.toDomain() }
+    override fun findByEmails(emails: Set<Email>): List<Member> {
+        return memberQueryDao.findByEmails(emails.map { it.value }.toSet())
+            .map { it.toDomain() }
     }
 }

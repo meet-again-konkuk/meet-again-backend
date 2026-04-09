@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.NewMatchingResultFixture
 import io.kotest.core.spec.style.FunSpec
@@ -48,7 +49,7 @@ class NewMatchingResultsTest : FunSpec({
 
             newResults.data shouldHaveSize 1
             newResults.data.first().targetInfoId shouldBe 2L
-            newResults.data.first().targetEmail shouldBe "b@b.com"
+            newResults.data.first().targetEmail shouldBe Email("b@b.com")
         }
 
         test("모두 기존에 존재하면 빈 결과를 반환한다") {

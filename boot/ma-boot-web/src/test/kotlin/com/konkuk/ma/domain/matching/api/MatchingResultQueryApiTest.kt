@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.matching.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
@@ -64,7 +65,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("test@example.com", false) } returns resultsWithProfiles
+        every { matchingResultQueryService.find(Email("test@example.com"), false) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -106,7 +107,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("test@example.com", true) } returns resultsWithProfiles
+        every { matchingResultQueryService.find(Email("test@example.com"), true) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {
@@ -135,7 +136,7 @@ class MatchingResultQueryApiTest(
         // Given
         val emptyResults = MatchingResultsWithProfiles(data = emptyList())
 
-        every { matchingResultQueryService.find("test@example.com", false) } returns emptyResults
+        every { matchingResultQueryService.find(Email("test@example.com"), false) } returns emptyResults
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -156,7 +157,7 @@ class MatchingResultQueryApiTest(
             dayMatched = false,
         )
 
-        every { matchingResultQueryService.findDetail(matchingResultId, "test@example.com") } returns matchingResult
+        every { matchingResultQueryService.findDetail(matchingResultId, Email("test@example.com")) } returns matchingResult
 
         // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}

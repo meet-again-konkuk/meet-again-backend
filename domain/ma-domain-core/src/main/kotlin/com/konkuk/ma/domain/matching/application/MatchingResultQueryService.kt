@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.MatchingResultsWithProfiles
@@ -18,7 +19,7 @@ class MatchingResultQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
 ) {
-    fun find(email: String, excluded: Boolean = false): MatchingResultsWithProfiles {
+    fun find(email: Email, excluded: Boolean = false): MatchingResultsWithProfiles {
         val matchingResults = MatchingResults(matchingResultRepository.find(email, excluded))
         val targetEmails = matchingResults.extractTargetEmails()
 
@@ -28,7 +29,7 @@ class MatchingResultQueryService(
         return matchingResults.combineWithProfiles(members, photos)
     }
 
-    fun findDetail(matchingResultId: Long, email: String): MatchingResult {
+    fun findDetail(matchingResultId: Long, email: Email): MatchingResult {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         return matchingResult

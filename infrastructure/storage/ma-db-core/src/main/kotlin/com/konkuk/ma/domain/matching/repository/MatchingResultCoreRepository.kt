@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.dao.MatchingResultCommandDao
 import com.konkuk.ma.domain.matching.dao.MatchingResultQueryDao
 import com.konkuk.ma.domain.matching.domain.MatchingResult
@@ -32,8 +33,8 @@ class MatchingResultCoreRepository(
         return matchingResultCommandDao.deleteExcludedExpired(baseDate)
     }
 
-    override fun find(email: String, excluded: Boolean): List<MatchingResult> {
-        return matchingResultQueryDao.find(email, excluded)
+    override fun find(email: Email, excluded: Boolean): List<MatchingResult> {
+        return matchingResultQueryDao.find(email.value, excluded)
             .map { it.toDomain() }
     }
 

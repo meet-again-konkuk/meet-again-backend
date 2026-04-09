@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.entity
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -26,7 +27,7 @@ class TargetInfoEntity(
     fun toDomain(): TargetInfo {
         return TargetInfo(
             targetInfoId = id,
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetName = name,
             targetGender = targetGender,
             middleNumber = middleNumber?.let { FourDigit(it) },

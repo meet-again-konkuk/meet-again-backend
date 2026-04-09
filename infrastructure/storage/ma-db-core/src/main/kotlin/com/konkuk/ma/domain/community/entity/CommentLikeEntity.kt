@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.entity
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -13,7 +14,7 @@ class CommentLikeEntity(
         return CommentLike(
             id = id,
             commentId = commentId,
-            memberEmail = memberEmail,
+            memberEmail = Email(memberEmail),
         )
     }
 

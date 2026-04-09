@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.fixture.PhotoFileFixture
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoProcessor
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
@@ -30,7 +31,7 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("새 사진을 업로드하면 processor로 처리하고 DB에 저장한다") {
             // Given
-            val email = "user@example.com"
+            val email = Email("user@example.com")
             val photoFile = PhotoFileFixture.create()
             val processed = ProcessedPhoto("stored/path.jpg", "stored/thumb.jpg")
 
@@ -50,10 +51,10 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("기존 사진이 있으면 삭제 후 새 사진을 업로드한다") {
             // Given
-            val email = "user@example.com"
+            val email = Email("user@example.com")
             val photoFile = PhotoFileFixture.create()
             val existingPhoto = MemberPhotoFixture.create(
-                memberEmail = email,
+                memberEmail = email.value,
                 thumbnailPath = "old/thumb.jpg"
             )
             val processed = ProcessedPhoto("new/path.jpg", "new/thumb.jpg")
@@ -79,8 +80,8 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("기존 사진이 있으면 파일과 DB 레코드를 삭제한다") {
             // Given
-            val email = "user@example.com"
-            val existingPhoto = MemberPhotoFixture.create(memberEmail = email)
+            val email = Email("user@example.com")
+            val existingPhoto = MemberPhotoFixture.create(memberEmail = email.value)
 
             every { memberPhotoRepository.findOne(email) } returns existingPhoto
             every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
@@ -96,7 +97,7 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("기존 사진이 없으면 아무 동작도 하지 않는다") {
             // Given
-            val email = "nonexistent@example.com"
+            val email = Email("nonexistent@example.com")
 
             every { memberPhotoRepository.findOne(email) } returns null
 

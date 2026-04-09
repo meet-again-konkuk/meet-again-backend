@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
@@ -19,7 +20,7 @@ class CommentCommandService(
         return commentCommandRepository.save(newComment)
     }
 
-    fun delete(commentId: Long, email: String) {
+    fun delete(commentId: Long, email: Email) {
         val comment = commentQueryRepository.findOne(commentId)
         comment.validateOwnership(email)
         commentCommandRepository.delete(commentId)

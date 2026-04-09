@@ -2,6 +2,7 @@ package com.konkuk.ma.auth
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import com.konkuk.ma.domain.auth.exception.JwtExceptionType
 import com.konkuk.ma.exception.BusinessException.LogLevel
@@ -35,15 +36,15 @@ class JwtManager(
 
     private val key: SecretKey = Keys.hmacShaKeyFor(secretKey.toByteArray())
 
-    override fun generateAccessToken(email: String): String {
-        logger.info { "Generating access token for email: $email" }
-        val generated = generateJwt(email, accessTokenExpiration)
+    override fun generateAccessToken(email: Email): String {
+        logger.info { "Generating access token for email: ${email.value}" }
+        val generated = generateJwt(email.value, accessTokenExpiration)
         return generated.token
     }
 
-    override fun generateRefreshToken(email: String): RefreshToken {
-        logger.info { "Generating refresh token for email: $email" }
-        val generated = generateJwt(email, refreshTokenExpiration)
+    override fun generateRefreshToken(email: Email): RefreshToken {
+        logger.info { "Generating refresh token for email: ${email.value}" }
+        val generated = generateJwt(email.value, refreshTokenExpiration)
         return RefreshToken(
             email = email,
             expirationDate = generated.expiry,

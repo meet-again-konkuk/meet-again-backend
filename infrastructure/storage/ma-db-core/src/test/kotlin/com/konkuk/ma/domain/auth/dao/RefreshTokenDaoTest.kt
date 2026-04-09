@@ -4,6 +4,7 @@ import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.EntityNotFoundException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -45,7 +46,7 @@ class RefreshTokenDaoTest(
                 // Then
                 RefreshTokenTable.selectAll().count() shouldBe 1
                 val row = RefreshTokenTable.selectAll().first()
-                row[RefreshTokenTable.email] shouldBe refreshToken.email
+                row[RefreshTokenTable.email] shouldBe refreshToken.email.value
                 row[RefreshTokenTable.token] shouldBe refreshToken.token
             }
         }
@@ -117,7 +118,7 @@ class RefreshTokenDaoTest(
         token: String = "test-token-value",
     ): RefreshToken {
         return RefreshToken(
-            email = email,
+            email = Email(email),
             expirationDate = LocalDateTime.now().plusDays(7),
             token = token
         )

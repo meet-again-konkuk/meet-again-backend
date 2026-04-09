@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -9,9 +10,9 @@ import java.time.temporal.ChronoUnit
 
 class MatchingResult(
     val id: Long,
-    val registerEmail: String,
+    val registerEmail: Email,
     override val targetInfoId: Long,
-    override val targetEmail: String,
+    override val targetEmail: Email,
 
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,
@@ -43,9 +44,9 @@ class MatchingResult(
             .coerceAtLeast(0)
     }
 
-    fun validateOwnership(email: String) {
+    fun validateOwnership(email: Email) {
         if (registerEmail != email) {
-            throw MatchingResultAccessDeniedException(id, registerEmail, email)
+            throw MatchingResultAccessDeniedException(id, registerEmail.value, email.value)
         }
     }
 

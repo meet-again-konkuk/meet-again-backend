@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.domain.photo
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.file.port.FileStorage
 import com.konkuk.ma.domain.common.domain.file.port.ThumbnailGenerator
 import com.konkuk.ma.domain.common.fixture.PhotoFileFixture
@@ -28,7 +29,7 @@ class MemberPhotoProcessorTest : FunSpec({
 
         test("원본과 썸네일을 저장하고 ProcessedPhoto를 반환한다") {
             // Given
-            val email = "user@example.com"
+            val email = Email("user@example.com")
             val photoFile = PhotoFileFixture.create()
 
             every { fileStorage.store(any(), photoFile) } returns "member/profile/user@example.com/photo.jpg"
@@ -45,7 +46,7 @@ class MemberPhotoProcessorTest : FunSpec({
 
         test("썸네일 생성에 실패하면 thumbnailPath가 null인 ProcessedPhoto를 반환한다") {
             // Given
-            val email = "user@example.com"
+            val email = Email("user@example.com")
             val photoFile = PhotoFileFixture.create()
 
             every { fileStorage.store(any(), photoFile) } returns "member/profile/user@example.com/photo.jpg"

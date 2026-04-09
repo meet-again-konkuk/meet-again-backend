@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
@@ -32,15 +33,15 @@ class MatchingResultQueryServiceTest : FunSpec({
 
         test("매칭결과를 조회하고 회원정보와 사진정보를 조합하여 반환한다") {
             // Given
-            val email = "register@example.com"
+            val email = Email("register@example.com")
             val matchingResult = MatchingResultFixture.create(
-                registerEmail = email,
+                registerEmail = email.value,
                 targetEmail = "target@example.com"
             )
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail)
+            val member = MemberFixture.create(email = matchingResult.targetEmail.value)
             val photo = MemberPhotoFixture.create(
-                memberEmail = matchingResult.targetEmail,
+                memberEmail = matchingResult.targetEmail.value,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -60,15 +61,15 @@ class MatchingResultQueryServiceTest : FunSpec({
 
         test("excluded=true로 조회하면 제외된 매칭결과를 반환한다") {
             // Given
-            val email = "register@example.com"
+            val email = Email("register@example.com")
             val matchingResult = MatchingResultFixture.create(
-                registerEmail = email,
+                registerEmail = email.value,
                 targetEmail = "target@example.com"
             )
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail)
+            val member = MemberFixture.create(email = matchingResult.targetEmail.value)
             val photo = MemberPhotoFixture.create(
-                memberEmail = matchingResult.targetEmail,
+                memberEmail = matchingResult.targetEmail.value,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -88,7 +89,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
         test("매칭결과가 없으면 빈 결과를 반환한다") {
             // Given
-            val email = "register@example.com"
+            val email = Email("register@example.com")
 
             every { matchingResultRepository.find(email, false) } returns emptyList()
             every { memberQueryRepository.findByEmails(emptySet()) } returns emptyList()
@@ -107,9 +108,9 @@ class MatchingResultQueryServiceTest : FunSpec({
         test("정상 조회 시 MatchingResult를 반환한다") {
             // Given
             val matchingResultId = 1L
-            val email = "register@example.com"
+            val email = Email("register@example.com")
             val matchingResult = MatchingResultFixture.create(
-                registerEmail = email,
+                registerEmail = email.value,
                 targetEmail = "target@example.com"
             )
 
@@ -125,7 +126,7 @@ class MatchingResultQueryServiceTest : FunSpec({
         test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
             // Given
             val nonExistentId = 999L
-            val email = "register@example.com"
+            val email = Email("register@example.com")
 
             every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
 
@@ -146,7 +147,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {
-                service.findDetail(matchingResultId, otherEmail)
+                service.findDetail(matchingResultId, Email(otherEmail))
             }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
         }
     }

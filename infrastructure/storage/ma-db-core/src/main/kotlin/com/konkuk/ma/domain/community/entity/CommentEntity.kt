@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.entity
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.Comment
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -19,7 +20,7 @@ class CommentEntity(
         return Comment(
             id = id,
             postId = postId,
-            authorEmail = authorEmail,
+            authorEmail = Email(authorEmail),
             content = content,
             parentCommentId = parentCommentId,
             likes = likes,

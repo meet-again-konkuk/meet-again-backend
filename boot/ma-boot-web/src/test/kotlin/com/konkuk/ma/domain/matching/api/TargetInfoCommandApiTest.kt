@@ -17,6 +17,7 @@ import com.konkuk.ma.vocabulary.targetInfoId
 import com.konkuk.ma.vocabulary.targetName
 import com.konkuk.ma.vocabulary.targetRegion
 import com.konkuk.ma.vocabulary.year
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.support.security.WithAuthMember
@@ -54,7 +55,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == "test@example.com" &&
+                    it.registerEmail == Email("test@example.com") &&
                     it.targetName == "김만남" &&
                     it.middleNumber?.value == "1234" &&
                     it.lastNumber?.value == "5678" &&
@@ -110,7 +111,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == "test@example.com" &&
+                    it.registerEmail == Email("test@example.com") &&
                     it.targetName == "이재회" &&
                     it.middleNumber == null &&
                     it.lastNumber == null &&

@@ -11,11 +11,11 @@ class CommentCommandDao {
     fun save(newComment: NewComment): Long {
         return CommentTable.insertAndGetId {
             it[postId] = newComment.postId
-            it[authorEmail] = newComment.authorEmail
+            it[authorEmail] = newComment.authorEmail.value
             it[content] = newComment.content
             it[parentCommentId] = newComment.parentCommentId
-            it[createdBy] = newComment.authorEmail
-            it[lastModifiedBy] = newComment.authorEmail
+            it[createdBy] = newComment.authorEmail.value
+            it[lastModifiedBy] = newComment.authorEmail.value
         }.value
     }
 

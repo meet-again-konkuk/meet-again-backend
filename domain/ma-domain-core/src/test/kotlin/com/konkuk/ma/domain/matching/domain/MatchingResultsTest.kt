@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
@@ -26,7 +27,7 @@ class MatchingResultsTest : FunSpec({
             val emails = results.extractTargetEmails()
 
             emails shouldHaveSize 2
-            emails shouldContainExactlyInAnyOrder listOf("a@a.com", "b@b.com")
+            emails shouldContainExactlyInAnyOrder listOf(Email("a@a.com"), Email("b@b.com"))
         }
 
         test("빈 리스트이면 빈 Set을 반환한다") {
@@ -54,9 +55,9 @@ class MatchingResultsTest : FunSpec({
             val matchingResult = MatchingResultFixture.create(targetEmail = "target@example.com")
             val matchingResults = MatchingResults(listOf(matchingResult))
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail, name = "홍길동", nickname = "닉네임")
+            val member = MemberFixture.create(email = matchingResult.targetEmail.value, name = "홍길동", nickname = "닉네임")
             val photo = MemberPhotoFixture.create(
-                memberEmail = matchingResult.targetEmail,
+                memberEmail = matchingResult.targetEmail.value,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -75,7 +76,7 @@ class MatchingResultsTest : FunSpec({
             val withdrawnResult = MatchingResultFixture.create(targetEmail = "withdrawn@example.com")
             val matchingResults = MatchingResults(listOf(activeResult, withdrawnResult))
 
-            val activeMember = MemberFixture.create(email = activeResult.targetEmail)
+            val activeMember = MemberFixture.create(email = activeResult.targetEmail.value)
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(activeMember)), MemberPhotos(emptyList())
@@ -93,7 +94,7 @@ class MatchingResultsTest : FunSpec({
             val matchingResult = MatchingResultFixture.create(targetEmail = "target@example.com")
             val matchingResults = MatchingResults(listOf(matchingResult))
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail)
+            val member = MemberFixture.create(email = matchingResult.targetEmail.value)
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(member)), MemberPhotos(emptyList())
@@ -118,9 +119,9 @@ class MatchingResultsTest : FunSpec({
             val result2 = MatchingResultFixture.create(targetEmail = "b@example.com", targetInfoId = 2L)
             val matchingResults = MatchingResults(listOf(result1, result2))
 
-            val memberA = MemberFixture.create(email = result1.targetEmail, name = "김철수", nickname = "철수")
-            val memberB = MemberFixture.create(email = result2.targetEmail, name = "이영희", nickname = "영희")
-            val photoA = MemberPhotoFixture.create(memberEmail = result1.targetEmail, thumbnailPath = "thumb/a.jpg")
+            val memberA = MemberFixture.create(email = result1.targetEmail.value, name = "김철수", nickname = "철수")
+            val memberB = MemberFixture.create(email = result2.targetEmail.value, name = "이영희", nickname = "영희")
+            val photoA = MemberPhotoFixture.create(memberEmail = result1.targetEmail.value, thumbnailPath = "thumb/a.jpg")
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(memberA, memberB)), MemberPhotos(listOf(photoA))

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import java.time.LocalDate
@@ -23,9 +24,9 @@ object MatchingResultFixture {
     ): MatchingResult {
         return MatchingResult(
             id = id,
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetInfoId = targetInfoId,
-            targetEmail = targetEmail,
+            targetEmail = Email(targetEmail),
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,
@@ -54,9 +55,9 @@ object NewMatchingResultFixture {
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
     ): NewMatchingResult {
         return NewMatchingResult(
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetInfoId = targetInfoId,
-            targetEmail = targetEmail,
+            targetEmail = Email(targetEmail),
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,

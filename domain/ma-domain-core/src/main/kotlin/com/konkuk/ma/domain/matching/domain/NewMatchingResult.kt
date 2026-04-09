@@ -1,12 +1,13 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class NewMatchingResult(
-    val registerEmail: String,
+    val registerEmail: Email,
     override val targetInfoId: Long,
-    override val targetEmail: String,
+    override val targetEmail: Email,
 
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,

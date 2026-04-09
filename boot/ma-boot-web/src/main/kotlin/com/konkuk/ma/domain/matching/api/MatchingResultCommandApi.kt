@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.api
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.matching.application.MatchingResultCommandService
 import com.konkuk.ma.support.id.DecryptId
@@ -21,7 +22,7 @@ class MatchingResultCommandApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.exclude(matchingResultId, email)
+        matchingResultCommandService.exclude(matchingResultId, Email(email))
     }
 
     @PatchMapping("/{matchingResultId}/include")
@@ -29,6 +30,6 @@ class MatchingResultCommandApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.include(matchingResultId, email)
+        matchingResultCommandService.include(matchingResultId, Email(email))
     }
 }

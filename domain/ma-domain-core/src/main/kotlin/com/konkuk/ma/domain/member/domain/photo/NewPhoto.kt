@@ -1,14 +1,16 @@
 package com.konkuk.ma.domain.member.domain.photo
 
+import com.konkuk.ma.domain.common.domain.Email
+
 class NewPhoto(
-    val memberEmail: String,
+    val memberEmail: Email,
     val filePath: String,
     val originalFileName: String,
     val thumbnailPath: String? = null
 ) {
     companion object {
         fun create(
-            memberEmail: String,
+            memberEmail: Email,
             filePath: String,
             originalFileName: String,
             thumbnailPath: String? = null

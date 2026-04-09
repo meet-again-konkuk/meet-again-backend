@@ -15,6 +15,7 @@ import com.konkuk.ma.vocabulary.email
 import com.konkuk.ma.vocabulary.nickname
 import com.konkuk.ma.vocabulary.password
 import com.konkuk.ma.vocabulary.refreshToken
+import com.konkuk.ma.domain.common.domain.Email
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -34,12 +35,12 @@ class LoginApiTest(
     test("로그인 API 문서화") {
         val request = LoginRequest(email = "user@example.com", password = "password1")
         val loginInfo = LoginInfo(
-            email = request.email,
+            email = Email(request.email),
             nickname = "tester",
             accessToken = "access-token",
-            refreshToken = RefreshToken("user@example.com", LocalDateTime.now().plusDays(7), "refresh-token")
+            refreshToken = RefreshToken(Email("user@example.com"), LocalDateTime.now().plusDays(7), "refresh-token")
         )
-        every { loginService.login(match { it.email == request.email && it.password == request.password }) } returns loginInfo
+        every { loginService.login(match { it.email == Email(request.email) && it.password == request.password }) } returns loginInfo
 
         mockMvc.postJson("/api/auth/login") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isOk() } }

@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component
 class PostCommandDao {
     fun save(newPost: NewPost): Long {
         return PostTable.insertAndGetId {
-            it[authorEmail] = newPost.authorEmail
+            it[authorEmail] = newPost.authorEmail.value
             it[category] = newPost.category.name
             it[title] = newPost.title
             it[content] = newPost.content
-            it[createdBy] = newPost.authorEmail
-            it[lastModifiedBy] = newPost.authorEmail
+            it[createdBy] = newPost.authorEmail.value
+            it[lastModifiedBy] = newPost.authorEmail.value
         }.value
     }
 

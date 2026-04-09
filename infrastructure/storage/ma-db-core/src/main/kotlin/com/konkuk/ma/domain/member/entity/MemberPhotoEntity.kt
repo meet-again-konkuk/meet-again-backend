@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.entity
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.photo.ApprovalStatus
 import com.konkuk.ma.domain.member.domain.photo.MemberPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
@@ -16,7 +17,7 @@ class MemberPhotoEntity(
     fun toDomain(): MemberPhoto {
         return MemberPhoto(
             id = id,
-            memberEmail = memberEmail,
+            memberEmail = Email(memberEmail),
             filePath = filePath,
             originalFileName = originalFileName,
             approvalStatus = ApprovalStatus.valueOf(approvalStatus),

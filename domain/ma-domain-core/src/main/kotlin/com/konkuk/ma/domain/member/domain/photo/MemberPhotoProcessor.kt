@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.domain.photo
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.common.domain.file.StorageDomainType
 import com.konkuk.ma.domain.common.domain.file.StoragePath
@@ -15,7 +16,7 @@ class MemberPhotoProcessor(
     private val thumbnailGenerator: ThumbnailGenerator
 ) {
 
-    fun process(email: String, photoFile: PhotoFile): ProcessedPhoto {
+    fun process(email: Email, photoFile: PhotoFile): ProcessedPhoto {
         val filePath = storeOriginal(email, photoFile)
         val thumbnailPath = storeThumbnail(email, photoFile)
         return ProcessedPhoto(filePath, thumbnailPath)
@@ -28,18 +29,18 @@ class MemberPhotoProcessor(
         }
     }
 
-    private fun storeOriginal(email: String, photoFile: PhotoFile): String {
-        val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.PROFILE, email)
+    private fun storeOriginal(email: Email, photoFile: PhotoFile): String {
+        val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.PROFILE, email.value)
         return fileStorage.store(directory.value, photoFile)
     }
 
-    private fun storeThumbnail(email: String, photoFile: PhotoFile): String? {
+    private fun storeThumbnail(email: Email, photoFile: PhotoFile): String? {
         return try {
             val thumbnailBytes = thumbnailGenerator.generate(photoFile.content, THUMBNAIL_WIDTH)
-            val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.THUMBNAIL, email)
+            val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.THUMBNAIL, email.value)
             fileStorage.storeBytes(directory.value, "thumb_${photoFile.originalFileName}", thumbnailBytes)
         } catch (e: Exception) {
-            logger.warn { "썸네일 생성 실패 (email=$email): ${e.message}" }
+            logger.warn { "썸네일 생성 실패 (email=${email.value}): ${e.message}" }
             null
         }
     }

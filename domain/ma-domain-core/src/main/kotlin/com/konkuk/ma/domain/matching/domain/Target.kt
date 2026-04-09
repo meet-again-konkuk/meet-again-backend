@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -9,7 +10,7 @@ import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.Region
 
 class Target(
-    val email: String,
+    val email: Email,
     val name: String,
     val gender: Gender,
     val middleNumber: FourDigit,

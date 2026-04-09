@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.auth.application.command
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.PhoneNumber
@@ -8,7 +9,7 @@ import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import java.time.LocalDate
 
 data class SignUpCommand(
-    val email: String,
+    val email: Email,
     val password: String,
     val nickname: String,
     val gender: Gender,

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.member.domain.FourDigit
@@ -51,8 +52,8 @@ class TargetInfoTest : FunSpec({
             results.data shouldHaveSize 1
 
             val result = results.data.first()
-            result.registerEmail shouldBe "register@example.com"
-            result.targetEmail shouldBe "target@example.com"
+            result.registerEmail shouldBe Email("register@example.com")
+            result.targetEmail shouldBe Email("target@example.com")
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe true
             result.regionMatched shouldBe true

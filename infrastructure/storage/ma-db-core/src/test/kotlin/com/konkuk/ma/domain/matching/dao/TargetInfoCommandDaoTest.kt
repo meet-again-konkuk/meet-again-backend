@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.domain.Gender
@@ -39,7 +40,7 @@ class TargetInfoCommandDaoTest(
             test("모든 필드가 채워진 NewTargetInfo를 저장하고 ID를 반환한다") {
                 // Given
                 val newTargetInfo = NewTargetInfo(
-                    registerEmail = "test@example.com",
+                    registerEmail = Email("test@example.com"),
                     targetName = "타겟이름",
                     middleNumber = com.konkuk.ma.domain.member.domain.FourDigit("1234"),
                     lastNumber = com.konkuk.ma.domain.member.domain.FourDigit("5678"),
@@ -60,7 +61,7 @@ class TargetInfoCommandDaoTest(
             test("nullable 필드가 null인 NewTargetInfo를 저장한다") {
                 // Given
                 val newTargetInfo = NewTargetInfo(
-                    registerEmail = "test@example.com",
+                    registerEmail = Email("test@example.com"),
                     targetName = "타겟이름",
                     middleNumber = null,
                     lastNumber = null,
@@ -119,7 +120,7 @@ class TargetInfoCommandDaoTest(
         targetName: String = "타겟이름",
     ): NewTargetInfo {
         return NewTargetInfo(
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetName = targetName,
             middleNumber = null,
             lastNumber = null,

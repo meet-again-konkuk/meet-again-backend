@@ -2,6 +2,7 @@ package com.konkuk.ma.auth
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
+import com.konkuk.ma.domain.common.domain.Email
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import io.kotest.assertions.throwables.shouldThrow
@@ -30,7 +31,7 @@ class JwtGeneratorTest : FunSpec({
             val email = "user@example.com"
 
             // When
-            val token = generator.generateAccessToken(email)
+            val token = generator.generateAccessToken(Email(email))
 
             // Then
             generator.validateToken(token).shouldBeTrue()
@@ -50,7 +51,7 @@ class JwtGeneratorTest : FunSpec({
 
             // When
             val before = LocalDateTime.now()
-            val refresh: RefreshToken = generator.generateRefreshToken("user@example.com")
+            val refresh: RefreshToken = generator.generateRefreshToken(Email("user@example.com"))
 
             // Then
             refresh.token shouldNotBe null
@@ -69,7 +70,7 @@ class JwtGeneratorTest : FunSpec({
             )
 
             // When
-            val refresh = generator.generateRefreshToken("user@example.com")
+            val refresh = generator.generateRefreshToken(Email("user@example.com"))
 
             // Then
             val parser = Jwts.parserBuilder()
@@ -88,7 +89,7 @@ class JwtGeneratorTest : FunSpec({
                 accessTokenExpiration = 5_000L,
                 refreshTokenExpiration = 500L
             )
-            val refresh = generator.generateRefreshToken("user@example.com")
+            val refresh = generator.generateRefreshToken(Email("user@example.com"))
 
             // When
             // 만료 시간을 충분히 초과하여 대기
@@ -124,7 +125,7 @@ class JwtGeneratorTest : FunSpec({
                 refreshTokenExpiration = 10_000L
             )
             val email = "user@example.com"
-            val token = generator.generateAccessToken(email)
+            val token = generator.generateAccessToken(Email(email))
 
             // When
             // 경계 시간 문제 방지를 위해 만료 시간을 충분히 초과하여 대기

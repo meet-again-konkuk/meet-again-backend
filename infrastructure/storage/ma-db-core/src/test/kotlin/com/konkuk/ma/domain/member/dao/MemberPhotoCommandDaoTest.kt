@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
 import io.kotest.core.spec.style.FunSpec
@@ -58,7 +59,7 @@ class MemberPhotoCommandDaoTest(
 
                 // Then
                 val row = MemberPhotoTable.selectAll().first()
-                row[MemberPhotoTable.memberEmail] shouldBe newPhoto.memberEmail
+                row[MemberPhotoTable.memberEmail] shouldBe newPhoto.memberEmail.value
                 row[MemberPhotoTable.filePath] shouldBe newPhoto.filePath
                 row[MemberPhotoTable.originalFileName] shouldBe newPhoto.originalFileName
                 row[MemberPhotoTable.thumbnailPath] shouldBe newPhoto.thumbnailPath
@@ -135,7 +136,7 @@ class MemberPhotoCommandDaoTest(
         thumbnailPath: String? = "/uploads/thumb.jpg",
     ): NewPhoto {
         return NewPhoto(
-            memberEmail = memberEmail,
+            memberEmail = Email(memberEmail),
             filePath = filePath,
             originalFileName = originalFileName,
             thumbnailPath = thumbnailPath

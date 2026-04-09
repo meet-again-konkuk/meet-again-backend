@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.CommentLike
 
 object CommentLikeFixture {
@@ -11,7 +12,7 @@ object CommentLikeFixture {
         return CommentLike(
             id = id,
             commentId = commentId,
-            memberEmail = memberEmail,
+            memberEmail = Email(memberEmail),
         )
     }
 }

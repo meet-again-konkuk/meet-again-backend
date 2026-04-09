@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.Comment
 import java.time.LocalDateTime
 
@@ -17,7 +18,7 @@ object CommentFixture {
         return Comment(
             id = id,
             postId = postId,
-            authorEmail = authorEmail,
+            authorEmail = Email(authorEmail),
             content = content,
             parentCommentId = parentCommentId,
             likes = likes,

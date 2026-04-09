@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
@@ -42,7 +43,7 @@ class CommentsTest : FunSpec({
 
             // Then
             result shouldHaveSize 1
-            result.first() shouldBe sameEmail
+            result.first() shouldBe Email(sameEmail)
         }
 
         test("댓글이 없으면 빈 Set을 반환한다") {
@@ -73,9 +74,9 @@ class CommentsTest : FunSpec({
 
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = parentComment.authorEmail, nickname = "부모작성자"),
+                    MemberFixture.create(email = parentComment.authorEmail.value, nickname = "부모작성자"),
                 ) + replies.mapIndexed { index, reply ->
-                    MemberFixture.create(email = reply.authorEmail, nickname = "대댓글작성자${index + 1}")
+                    MemberFixture.create(email = reply.authorEmail.value, nickname = "대댓글작성자${index + 1}")
                 }
             )
 
@@ -103,9 +104,9 @@ class CommentsTest : FunSpec({
 
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = parentComment.authorEmail, nickname = "부모작성자"),
+                    MemberFixture.create(email = parentComment.authorEmail.value, nickname = "부모작성자"),
                 ) + replies.map { reply ->
-                    MemberFixture.create(email = reply.authorEmail, nickname = "닉네임")
+                    MemberFixture.create(email = reply.authorEmail.value, nickname = "닉네임")
                 }
             )
 
@@ -124,7 +125,7 @@ class CommentsTest : FunSpec({
             val comments = Comments(listOf(parentComment))
 
             val members = Members(
-                listOf(MemberFixture.create(email = parentComment.authorEmail, nickname = "작성자"))
+                listOf(MemberFixture.create(email = parentComment.authorEmail.value, nickname = "작성자"))
             )
 
             // When
@@ -187,10 +188,10 @@ class CommentsTest : FunSpec({
 
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = parent1.authorEmail, nickname = "부모1"),
-                    MemberFixture.create(email = parent2.authorEmail, nickname = "부모2"),
-                    MemberFixture.create(email = replyToParent1.authorEmail, nickname = "대댓글1"),
-                    MemberFixture.create(email = replyToParent2.authorEmail, nickname = "대댓글2"),
+                    MemberFixture.create(email = parent1.authorEmail.value, nickname = "부모1"),
+                    MemberFixture.create(email = parent2.authorEmail.value, nickname = "부모2"),
+                    MemberFixture.create(email = replyToParent1.authorEmail.value, nickname = "대댓글1"),
+                    MemberFixture.create(email = replyToParent2.authorEmail.value, nickname = "대댓글2"),
                 )
             )
 

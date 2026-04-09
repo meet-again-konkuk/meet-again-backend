@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.entity
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.entity.table.PostTable
@@ -18,7 +19,7 @@ class PostEntity(
     fun toDomain(): Post {
         return Post(
             id = id,
-            authorEmail = authorEmail,
+            authorEmail = Email(authorEmail),
             category = category,
             title = title,
             content = content,

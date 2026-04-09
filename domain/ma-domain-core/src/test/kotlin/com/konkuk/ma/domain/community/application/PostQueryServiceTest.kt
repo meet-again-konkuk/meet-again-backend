@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
@@ -47,7 +48,7 @@ class PostQueryServiceTest : FunSpec({
             val member = MemberFixture.create(email = authorEmail, nickname = "테스트닉네임")
 
             every { postQueryRepository.find(category, cursorCondition) } returns cursorResult
-            every { memberQueryRepository.findByEmails(setOf(authorEmail)) } returns listOf(member)
+            every { memberQueryRepository.findByEmails(setOf(Email(authorEmail))) } returns listOf(member)
 
             // When
             val result = service.find(category, cursorCondition)
@@ -95,7 +96,7 @@ class PostQueryServiceTest : FunSpec({
             val member = MemberFixture.create(email = authorEmail, nickname = "테스트닉네임")
 
             every { postQueryRepository.find(category, cursorCondition) } returns cursorResult
-            every { memberQueryRepository.findByEmails(setOf(authorEmail)) } returns listOf(member)
+            every { memberQueryRepository.findByEmails(setOf(Email(authorEmail))) } returns listOf(member)
 
             // When
             val result = service.find(category, cursorCondition)
@@ -118,7 +119,7 @@ class PostQueryServiceTest : FunSpec({
             )
 
             every { postQueryRepository.find(category, cursorCondition) } returns cursorResult
-            every { memberQueryRepository.findByEmails(setOf("unknown@example.com")) } returns emptyList()
+            every { memberQueryRepository.findByEmails(setOf(Email("unknown@example.com"))) } returns emptyList()
 
             // When
             val result = service.find(category, cursorCondition)
@@ -135,8 +136,8 @@ class PostQueryServiceTest : FunSpec({
             // Given
             val post = PostFixture.create()
             val comment = CommentFixture.create(postId = post.id, authorEmail = "commenter@example.com")
-            val postAuthor = MemberFixture.create(email = post.authorEmail, nickname = "게시글작성자")
-            val commentAuthor = MemberFixture.create(email = comment.authorEmail, nickname = "댓글작성자")
+            val postAuthor = MemberFixture.create(email = post.authorEmail.value, nickname = "게시글작성자")
+            val commentAuthor = MemberFixture.create(email = comment.authorEmail.value, nickname = "댓글작성자")
 
             every { postQueryRepository.findOne(post.id) } returns post
             every { commentQueryRepository.find(post.id) } returns listOf(comment)
@@ -157,7 +158,7 @@ class PostQueryServiceTest : FunSpec({
         test("댓글이 없는 게시글을 조회하면 빈 댓글 목록을 반환한다") {
             // Given
             val post = PostFixture.create()
-            val postAuthor = MemberFixture.create(email = post.authorEmail, nickname = "게시글작성자")
+            val postAuthor = MemberFixture.create(email = post.authorEmail.value, nickname = "게시글작성자")
 
             every { postQueryRepository.findOne(post.id) } returns post
             every { commentQueryRepository.find(post.id) } returns emptyList()

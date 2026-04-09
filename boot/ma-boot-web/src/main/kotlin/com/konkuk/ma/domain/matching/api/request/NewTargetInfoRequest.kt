@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.api.request
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.support.validation.ValidationMessages
 import com.konkuk.ma.support.validation.ValidationPatterns
 import com.konkuk.ma.domain.common.domain.date.Day
@@ -30,7 +31,7 @@ class NewTargetInfoRequest(
 ) {
     fun toNewTargetInfo(registerEmail: String): NewTargetInfo {
         return NewTargetInfo(
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetName = name,
             middleNumber = middleNumber?.let { FourDigit(it) },
             lastNumber = lastNumber?.let { FourDigit(it) },

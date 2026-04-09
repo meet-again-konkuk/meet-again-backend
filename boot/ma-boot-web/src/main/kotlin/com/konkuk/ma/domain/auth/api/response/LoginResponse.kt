@@ -12,7 +12,7 @@ class LoginResponse(
     val refreshToken: String
 ) {
     constructor(loginInfo: LoginInfo) : this(
-        email = loginInfo.email,
+        email = loginInfo.email.value,
         nickname = loginInfo.nickname,
         accessToken = loginInfo.accessToken,
         refreshToken = loginInfo.refreshToken.token

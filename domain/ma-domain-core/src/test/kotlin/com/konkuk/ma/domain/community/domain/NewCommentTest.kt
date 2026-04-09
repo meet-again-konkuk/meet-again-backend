@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -16,7 +17,7 @@ class NewCommentTest : FunSpec({
 
             newComment.content shouldBe "테스트 댓글 내용입니다."
             newComment.postId shouldBe 1L
-            newComment.authorEmail shouldBe "commenter@example.com"
+            newComment.authorEmail shouldBe Email("commenter@example.com")
         }
 
         test("내용이 500자인 경우 객체 생성에 성공한다") {

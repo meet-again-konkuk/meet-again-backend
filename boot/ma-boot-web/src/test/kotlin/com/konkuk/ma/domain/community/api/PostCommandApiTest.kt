@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.community.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.application.PostCommandService
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.PostCategory
@@ -39,7 +40,7 @@ class PostCommandApiTest(
 
         every {
             postCommandService.create(match {
-                it.authorEmail == "test@example.com" &&
+                it.authorEmail == Email("test@example.com") &&
                     it.category == PostCategory.CHEER &&
                     it.title == "안녕하세요" &&
                     it.content == "반갑습니다"

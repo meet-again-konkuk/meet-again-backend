@@ -96,7 +96,7 @@ class MatchingProcessorTest : FunSpec({
             val member = MemberFixture.create(name = targetInfo.targetName)
             val existingResult = MatchingResultFixture.create(
                 targetInfoId = targetInfo.targetInfoId,
-                targetEmail = member.email
+                targetEmail = member.email.value
             )
             val targetInfos = TargetInfos(listOf(targetInfo))
 
@@ -117,7 +117,7 @@ class MatchingProcessorTest : FunSpec({
             val member2 = MemberFixture.create(name = targetInfo.targetName, email = "member2@example.com")
             val existingResult = MatchingResultFixture.create(
                 targetInfoId = targetInfo.targetInfoId,
-                targetEmail = member1.email
+                targetEmail = member1.email.value
             )
             val targetInfos = TargetInfos(listOf(targetInfo))
 
@@ -236,8 +236,8 @@ class MatchingProcessorTest : FunSpec({
             val targetInfo = TargetInfoFixture.create()
             val member1 = MemberFixture.create(name = targetInfo.targetName, email = "member1@example.com")
             val member2 = MemberFixture.create(name = targetInfo.targetName, email = "member2@example.com")
-            val existingResult1 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetEmail = member1.email)
-            val existingResult2 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetEmail = member2.email)
+            val existingResult1 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetEmail = member1.email.value)
+            val existingResult2 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetEmail = member2.email.value)
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2)

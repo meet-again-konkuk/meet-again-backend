@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -7,7 +8,7 @@ import java.time.LocalDate
 
 class Member(
     val id: Long = 0L,
-    val email: String,
+    val email: Email,
     val password: String,
     val nickname: String,
     val gender: Gender,
@@ -34,7 +35,7 @@ class Member(
         ): Member {
             return Member(
                 id = id,
-                email = email,
+                email = Email(email),
                 password = password,
                 nickname = nickname,
                 gender = gender,

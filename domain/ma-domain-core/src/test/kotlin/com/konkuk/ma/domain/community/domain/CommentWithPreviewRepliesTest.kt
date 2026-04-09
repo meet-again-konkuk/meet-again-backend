@@ -20,7 +20,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
                 remainingReplyCount = 0,
             )
             val members = Members(
-                listOf(MemberFixture.create(email = parent.authorEmail, nickname = "부모작성자"))
+                listOf(MemberFixture.create(email = parent.authorEmail.value, nickname = "부모작성자"))
             )
 
             // When
@@ -45,9 +45,9 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = parent.authorEmail, nickname = "부모작성자"),
-                    MemberFixture.create(email = reply1.authorEmail, nickname = "대댓글작성자1"),
-                    MemberFixture.create(email = reply2.authorEmail, nickname = "대댓글작성자2"),
+                    MemberFixture.create(email = parent.authorEmail.value, nickname = "부모작성자"),
+                    MemberFixture.create(email = reply1.authorEmail.value, nickname = "대댓글작성자1"),
+                    MemberFixture.create(email = reply2.authorEmail.value, nickname = "대댓글작성자2"),
                 )
             )
 
@@ -70,7 +70,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
                 remainingReplyCount = 5,
             )
             val members = Members(
-                listOf(MemberFixture.create(email = parent.authorEmail, nickname = "작성자"))
+                listOf(MemberFixture.create(email = parent.authorEmail.value, nickname = "작성자"))
             )
 
             // When

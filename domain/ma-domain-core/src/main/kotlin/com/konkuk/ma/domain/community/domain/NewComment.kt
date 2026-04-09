@@ -1,8 +1,10 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
+
 class NewComment(
     val postId: Long,
-    val authorEmail: String,
+    val authorEmail: Email,
     val content: String,
     val parentCommentId: Long? = null,
 ) {

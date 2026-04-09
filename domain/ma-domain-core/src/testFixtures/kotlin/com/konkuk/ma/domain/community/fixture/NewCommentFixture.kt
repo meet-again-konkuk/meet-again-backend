@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.NewComment
 
 object NewCommentFixture {
@@ -11,7 +12,7 @@ object NewCommentFixture {
     ): NewComment {
         return NewComment(
             postId = postId,
-            authorEmail = authorEmail,
+            authorEmail = Email(authorEmail),
             content = content,
             parentCommentId = parentCommentId,
         )

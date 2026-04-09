@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.community.application
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.PostNotFoundException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
@@ -86,7 +87,7 @@ class CommentCommandServiceTest : FunSpec({
         test("소유권이 없는 댓글을 삭제하면 CommentAccessDeniedException이 발생한다") {
             // Given
             val comment = CommentFixture.create()
-            val otherEmail = "other@example.com"
+            val otherEmail = Email("other@example.com")
 
             every { commentQueryRepository.findOne(comment.id) } returns comment
 
@@ -105,7 +106,7 @@ class CommentCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.delete(nonExistentId, "any@example.com")
+                service.delete(nonExistentId, Email("any@example.com"))
             }.message shouldBe "CommunityComment을(를) 찾을 수 없습니다."
         }
     }

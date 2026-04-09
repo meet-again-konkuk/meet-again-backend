@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -9,14 +10,14 @@ import org.springframework.transaction.annotation.Transactional
 class MatchingResultCommandService(
     private val matchingResultRepository: MatchingResultRepository,
 ) {
-    fun exclude(matchingResultId: Long, email: String) {
+    fun exclude(matchingResultId: Long, email: Email) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         matchingResult.exclude()
         matchingResultRepository.updateExcluded(matchingResult)
     }
 
-    fun include(matchingResultId: Long, email: String) {
+    fun include(matchingResultId: Long, email: Email) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(email)
         matchingResult.include()

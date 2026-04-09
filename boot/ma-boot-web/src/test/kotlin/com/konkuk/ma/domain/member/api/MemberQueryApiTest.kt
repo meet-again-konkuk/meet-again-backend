@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
@@ -69,7 +70,7 @@ class MemberQueryApiTest(
         val email = "test@example.com"
 
         // When & Then
-        every { memberQueryService.checkDuplicatedEmail(email) } returns false
+        every { memberQueryService.checkDuplicatedEmail(Email(email)) } returns false
 
         mockMvc.postJson("/api/members/email/exists")
         { content = """{"email":"$email"}""" }

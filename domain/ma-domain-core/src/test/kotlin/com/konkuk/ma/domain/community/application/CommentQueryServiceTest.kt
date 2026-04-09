@@ -31,8 +31,8 @@ class CommentQueryServiceTest : FunSpec({
             // Given
             val rootComment = CommentFixture.create(authorEmail = "root@example.com")
             val reply = CommentFixture.create(id = 2L, authorEmail = "reply@example.com", parentCommentId = rootComment.id)
-            val rootMember = MemberFixture.create(email = rootComment.authorEmail, nickname = "루트작성자")
-            val replyMember = MemberFixture.create(email = reply.authorEmail, nickname = "대댓글작성자")
+            val rootMember = MemberFixture.create(email = rootComment.authorEmail.value, nickname = "루트작성자")
+            val replyMember = MemberFixture.create(email = reply.authorEmail.value, nickname = "대댓글작성자")
 
             every { commentQueryRepository.findOne(rootComment.id) } returns rootComment
             every { commentQueryRepository.findReplies(rootComment.id) } returns listOf(reply)
@@ -54,7 +54,7 @@ class CommentQueryServiceTest : FunSpec({
         test("대댓글이 없으면 빈 대댓글 목록을 반환한다") {
             // Given
             val rootComment = CommentFixture.create(authorEmail = "root@example.com")
-            val rootMember = MemberFixture.create(email = rootComment.authorEmail, nickname = "루트작성자")
+            val rootMember = MemberFixture.create(email = rootComment.authorEmail.value, nickname = "루트작성자")
 
             every { commentQueryRepository.findOne(rootComment.id) } returns rootComment
             every { commentQueryRepository.findReplies(rootComment.id) } returns emptyList()

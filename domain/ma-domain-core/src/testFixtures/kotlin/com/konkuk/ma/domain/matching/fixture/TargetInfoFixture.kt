@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -23,7 +24,7 @@ object TargetInfoFixture {
     ): TargetInfo {
         return TargetInfo(
             targetInfoId = targetInfoId,
-            registerEmail = registerEmail,
+            registerEmail = Email(registerEmail),
             targetName = targetName,
             targetGender = targetGender,
             middleNumber = middleNumber,

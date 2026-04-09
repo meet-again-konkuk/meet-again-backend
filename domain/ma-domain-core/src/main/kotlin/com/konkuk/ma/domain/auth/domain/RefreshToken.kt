@@ -1,9 +1,10 @@
 package com.konkuk.ma.domain.auth.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import java.time.LocalDateTime
 
 class RefreshToken(
-    val email: String,
+    val email: Email,
 
     val expirationDate: LocalDateTime,
 

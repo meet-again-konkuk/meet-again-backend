@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 
 class Replies(val data: List<Comment>) {
@@ -18,7 +19,7 @@ class Replies(val data: List<Comment>) {
     private fun findReplies(parentId: Long): List<Comment> = byParentId[parentId].orEmpty()
         .sortedByDescending { it.createdDate }
 
-    fun extractAuthorEmails(): Set<String> {
+    fun extractAuthorEmails(): Set<Email> {
         return data.map { it.authorEmail }.toSet()
     }
 

@@ -21,6 +21,7 @@ import com.konkuk.ma.vocabulary.nickname
 import com.konkuk.ma.vocabulary.password
 import com.konkuk.ma.vocabulary.phoneNumber
 import com.konkuk.ma.vocabulary.region
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.vocabulary.university
@@ -61,7 +62,7 @@ class SignUpApiTest(
         every {
             signUpService.signUp(
                 SignUpCommand(
-                    email = "test@example.com",
+                    email = Email("test@example.com"),
                     password = "password123",
                     nickname = "testuser",
                     gender = Gender.MALE,
@@ -127,7 +128,7 @@ class SignUpApiTest(
         every {
             signUpService.signUp(
                 SignUpCommand(
-                    email = "test2@example.com",
+                    email = Email("test2@example.com"),
                     password = "password123",
                     nickname = "테스터2",
                     gender = Gender.FEMALE,

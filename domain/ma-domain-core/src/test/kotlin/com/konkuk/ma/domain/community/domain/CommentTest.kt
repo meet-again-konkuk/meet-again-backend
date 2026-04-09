@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
@@ -91,7 +92,7 @@ class CommentTest : FunSpec({
 
         test("다른 이메일이면 CommentAccessDeniedException이 발생한다") {
             val comment = CommentFixture.create()
-            val otherEmail = "other@example.com"
+            val otherEmail = Email("other@example.com")
 
             shouldThrow<CommentAccessDeniedException> {
                 comment.validateOwnership(otherEmail)

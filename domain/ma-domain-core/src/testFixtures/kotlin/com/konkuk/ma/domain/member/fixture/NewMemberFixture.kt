@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.PhoneNumber
@@ -20,7 +21,7 @@ object NewMemberFixture {
         university: String? = null
     ): NewMember {
         return NewMember(
-            email = email,
+            email = Email(email),
             password = password,
             nickname = nickname,
             gender = gender,

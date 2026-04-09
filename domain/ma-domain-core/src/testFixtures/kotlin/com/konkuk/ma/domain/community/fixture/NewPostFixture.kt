@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.PostCategory
 
@@ -11,7 +12,7 @@ object NewPostFixture {
         content: String = "테스트 내용입니다.",
     ): NewPost {
         return NewPost(
-            authorEmail = authorEmail,
+            authorEmail = Email(authorEmail),
             category = category,
             title = title,
             content = content,

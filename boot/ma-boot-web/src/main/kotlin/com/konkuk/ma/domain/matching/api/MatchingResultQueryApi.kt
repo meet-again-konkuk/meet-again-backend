@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.api
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.matching.api.response.MatchingResultDetailResponse
 import com.konkuk.ma.domain.matching.api.response.MatchingResultsResponse
@@ -22,7 +23,7 @@ class MatchingResultQueryApi(
         @AuthenticationPrincipal email: String,
         @RequestParam(defaultValue = "false") excluded: Boolean,
     ): MatchingResultsResponse {
-        val results = matchingResultQueryService.find(email, excluded)
+        val results = matchingResultQueryService.find(Email(email), excluded)
         return MatchingResultsResponse.from(results)
     }
 
@@ -31,7 +32,7 @@ class MatchingResultQueryApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ): MatchingResultDetailResponse {
-        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, email)
+        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, Email(email))
         return MatchingResultDetailResponse.from(matchingResult)
     }
 }

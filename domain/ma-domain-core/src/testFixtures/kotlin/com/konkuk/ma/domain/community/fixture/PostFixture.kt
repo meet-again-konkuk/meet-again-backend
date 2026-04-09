@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.fixture
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import java.time.LocalDateTime
@@ -16,7 +17,7 @@ object PostFixture {
     ): Post {
         return Post(
             id = id,
-            authorEmail = authorEmail,
+            authorEmail = Email(authorEmail),
             category = category,
             title = title,
             content = content,

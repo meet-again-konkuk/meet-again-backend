@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
@@ -33,7 +34,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
-            service.exclude(matchingResultId, email)
+            service.exclude(matchingResultId, Email(email))
 
             // Then
             matchingResult.excluded shouldBe true
@@ -51,7 +52,7 @@ class MatchingResultCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {
-                service.exclude(matchingResultId, otherEmail)
+                service.exclude(matchingResultId, Email(otherEmail))
             }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
         }
 
@@ -64,7 +65,7 @@ class MatchingResultCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.exclude(nonExistentId, email)
+                service.exclude(nonExistentId, Email(email))
             }.message shouldBe "MatchingResult을(를) 찾을 수 없습니다."
         }
     }
@@ -74,8 +75,8 @@ class MatchingResultCommandServiceTest : FunSpec({
         test("제외된 매칭 결과를 해제 처리한다") {
             // Given
             val matchingResultId = 1L
-            val email = "owner@example.com"
-            val matchingResult = MatchingResultFixture.create(registerEmail = email, excluded = true)
+            val email = Email("owner@example.com")
+            val matchingResult = MatchingResultFixture.create(registerEmail = email.value, excluded = true)
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
@@ -98,7 +99,7 @@ class MatchingResultCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<MatchingResultAccessDeniedException> {
-                service.include(matchingResultId, otherEmail)
+                service.include(matchingResultId, Email(otherEmail))
             }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
         }
     }

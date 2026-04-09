@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
@@ -42,7 +43,7 @@ class CommentDetailTest : FunSpec({
 
             // Then
             result shouldHaveSize 1
-            result shouldContainExactlyInAnyOrder setOf(sameEmail)
+            result shouldContainExactlyInAnyOrder setOf(Email(sameEmail))
         }
 
         test("대댓글이 없으면 루트 댓글 이메일만 추출한다") {
@@ -68,9 +69,9 @@ class CommentDetailTest : FunSpec({
             val reply2 = CommentFixture.create(id = 3L, authorEmail = "reply2@example.com", parentCommentId = rootComment.id)
             val commentDetail = CommentDetail(rootComment, Replies(listOf(reply1, reply2)))
 
-            val rootMember = MemberFixture.create(email = rootComment.authorEmail, nickname = "루트작성자")
-            val reply1Member = MemberFixture.create(email = reply1.authorEmail, nickname = "대댓글작성자1")
-            val reply2Member = MemberFixture.create(email = reply2.authorEmail, nickname = "대댓글작성자2")
+            val rootMember = MemberFixture.create(email = rootComment.authorEmail.value, nickname = "루트작성자")
+            val reply1Member = MemberFixture.create(email = reply1.authorEmail.value, nickname = "대댓글작성자1")
+            val reply2Member = MemberFixture.create(email = reply2.authorEmail.value, nickname = "대댓글작성자2")
             val members = Members(listOf(rootMember, reply1Member, reply2Member))
 
             // When
@@ -90,7 +91,7 @@ class CommentDetailTest : FunSpec({
             val rootComment = CommentFixture.create(authorEmail = "root@example.com")
             val commentDetail = CommentDetail(rootComment, Replies(emptyList()))
 
-            val rootMember = MemberFixture.create(email = rootComment.authorEmail, nickname = "루트작성자")
+            val rootMember = MemberFixture.create(email = rootComment.authorEmail.value, nickname = "루트작성자")
             val members = Members(listOf(rootMember))
 
             // When

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.api.response.CommentLikeResponse
 import com.konkuk.ma.domain.community.application.CommentLikeService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -22,7 +23,7 @@ class CommentLikeApi(
         @AuthenticationPrincipal email: String,
         @PathVariable commentId: Long,
     ): CommentLikeResponse {
-        val result = commentLikeService.like(commentId, email)
+        val result = commentLikeService.like(commentId, Email(email))
         return CommentLikeResponse.from(result)
     }
 
@@ -31,7 +32,7 @@ class CommentLikeApi(
         @AuthenticationPrincipal email: String,
         @PathVariable commentId: Long,
     ): CommentLikeResponse {
-        val result = commentLikeService.unlike(commentId, email)
+        val result = commentLikeService.unlike(commentId, Email(email))
         return CommentLikeResponse.from(result)
     }
 }

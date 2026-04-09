@@ -1,12 +1,13 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 
 class MatchingResults(
     val data: List<MatchingResult>
 ) {
-    fun extractTargetEmails(): Set<String> {
+    fun extractTargetEmails(): Set<Email> {
         return data.map { it.targetEmail }.toSet()
     }
 

@@ -92,8 +92,8 @@ class RepliesTest : FunSpec({
             val replies = Replies(listOf(reply1, reply2))
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = reply1.authorEmail, nickname = "대댓글작성자1"),
-                    MemberFixture.create(email = reply2.authorEmail, nickname = "대댓글작성자2"),
+                    MemberFixture.create(email = reply1.authorEmail.value, nickname = "대댓글작성자1"),
+                    MemberFixture.create(email = reply2.authorEmail.value, nickname = "대댓글작성자2"),
                 )
             )
 

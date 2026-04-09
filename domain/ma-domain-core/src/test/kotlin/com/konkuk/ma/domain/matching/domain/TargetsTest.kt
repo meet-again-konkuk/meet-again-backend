@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Gender
 import io.kotest.core.spec.style.FunSpec
@@ -22,7 +23,7 @@ class TargetsTest : FunSpec({
             val candidates = targets.filterCandidates("홍길동", Gender.MALE)
 
             candidates shouldHaveSize 1
-            candidates.first().email shouldBe "a@a.com"
+            candidates.first().email shouldBe Email("a@a.com")
         }
 
         test("이름만 일치하고 성별이 다르면 반환하지 않는다") {
@@ -70,9 +71,9 @@ class TargetsTest : FunSpec({
             val targets = Targets.from(members)
 
             targets.data shouldHaveSize 2
-            targets.data[0].email shouldBe "a@a.com"
+            targets.data[0].email shouldBe Email("a@a.com")
             targets.data[0].name shouldBe "홍길동"
-            targets.data[1].email shouldBe "b@b.com"
+            targets.data[1].email shouldBe Email("b@b.com")
             targets.data[1].name shouldBe "김철수"
         }
 

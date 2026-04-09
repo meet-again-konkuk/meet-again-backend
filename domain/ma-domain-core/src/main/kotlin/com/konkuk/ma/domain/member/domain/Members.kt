@@ -1,14 +1,16 @@
 package com.konkuk.ma.domain.member.domain
 
+import com.konkuk.ma.domain.common.domain.Email
+
 class Members(val data: List<Member>) {
 
-    private val nicknameByEmail: Map<String, String> by lazy {
+    private val nicknameByEmail: Map<Email, String> by lazy {
         data.associate { it.email to it.nickname }
     }
 
-    fun findOne(email: String): Member? = data.find { it.email == email }
+    fun findOne(email: Email): Member? = data.find { it.email == email }
 
-    fun findNickname(email: String): String {
+    fun findNickname(email: Email): String {
         return nicknameByEmail[email] ?: UNKNOWN_NICKNAME
     }
 

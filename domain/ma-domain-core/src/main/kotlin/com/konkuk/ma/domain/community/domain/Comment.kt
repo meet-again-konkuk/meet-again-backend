@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
@@ -8,7 +9,7 @@ import java.time.LocalDateTime
 class Comment(
     val id: Long = 0L,
     val postId: Long,
-    val authorEmail: String,
+    val authorEmail: Email,
     val content: String,
     val parentCommentId: Long? = null,
     val likes: Int = 0,
@@ -34,9 +35,9 @@ class Comment(
         }
     }
 
-    fun validateOwnership(email: String) {
+    fun validateOwnership(email: Email) {
         if (authorEmail != email) {
-            throw CommentAccessDeniedException(id, authorEmail, email)
+            throw CommentAccessDeniedException(id, authorEmail.value, email.value)
         }
     }
 

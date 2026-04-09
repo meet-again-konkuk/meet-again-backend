@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 class TargetInfoCommandDao {
     fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long {
         return TargetInfoTable.insertAndGetId {
-            it[TargetInfoTable.registerEmail] = newTargetInfo.registerEmail
+            it[TargetInfoTable.registerEmail] = newTargetInfo.registerEmail.value
             it[name] = newTargetInfo.targetName
             it[TargetInfoTable.targetGender] = targetGender.name
             it[middleNumber] = newTargetInfo.middleNumber?.value
@@ -19,8 +19,8 @@ class TargetInfoCommandDao {
             it[month] = newTargetInfo.month?.value
             it[day] = newTargetInfo.day?.value
             it[region] = newTargetInfo.region?.name
-            it[createdBy] = newTargetInfo.registerEmail
-            it[lastModifiedBy] = newTargetInfo.registerEmail
+            it[createdBy] = newTargetInfo.registerEmail.value
+            it[lastModifiedBy] = newTargetInfo.registerEmail.value
         }.value
     }
 }

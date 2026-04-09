@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.domain.CommentLikeResult
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
@@ -13,13 +14,13 @@ class CommentLikeService(
     private val commentLikeRepository: CommentLikeRepository,
     private val commentCommandRepository: CommentCommandRepository,
 ) {
-    fun like(commentId: Long, memberEmail: String): CommentLikeResult {
+    fun like(commentId: Long, memberEmail: Email): CommentLikeResult {
         commentLikeRepository.save(CommentLike(commentId = commentId, memberEmail = memberEmail))
         val likeCount = commentCommandRepository.increaseLikes(commentId)
         return CommentLikeResult.liked(likeCount)
     }
 
-    fun unlike(commentId: Long, memberEmail: String): CommentLikeResult {
+    fun unlike(commentId: Long, memberEmail: Email): CommentLikeResult {
         commentLikeRepository.delete(commentId, memberEmail)
         val likeCount = commentCommandRepository.decreaseLikes(commentId)
         return CommentLikeResult.unliked(likeCount)

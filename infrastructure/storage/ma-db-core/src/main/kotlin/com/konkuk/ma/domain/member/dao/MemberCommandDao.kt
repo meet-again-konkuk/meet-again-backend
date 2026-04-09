@@ -10,7 +10,7 @@ class MemberCommandDao {
     
     fun save(newMember: NewMember): Long {
         return MemberTable.insertAndGetId {
-            it[email] = newMember.email
+            it[email] = newMember.email.value
             it[password] = newMember.password
             it[nickname] = newMember.nickname
             it[phoneNumber] = newMember.phoneNumber.fullNumber
@@ -20,8 +20,8 @@ class MemberCommandDao {
             it[birthDate] = newMember.birthDate
             it[highSchool] = newMember.highSchool
             it[university] = newMember.university
-            it[createdBy] = newMember.email
-            it[lastModifiedBy] = newMember.email
+            it[createdBy] = newMember.email.value
+            it[lastModifiedBy] = newMember.email.value
         }.value
     }
 } 

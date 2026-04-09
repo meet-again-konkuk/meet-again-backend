@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.PhoneNumber
@@ -59,7 +60,7 @@ class MemberCommandDaoTest(
 
                 // Then
                 val row = MemberTable.selectAll().first()
-                row[MemberTable.email] shouldBe newMember.email
+                row[MemberTable.email] shouldBe newMember.email.value
                 row[MemberTable.nickname] shouldBe newMember.nickname
                 row[MemberTable.gender] shouldBe newMember.gender.name
                 row[MemberTable.name] shouldBe newMember.name
@@ -121,7 +122,7 @@ class MemberCommandDaoTest(
         university: String? = null,
     ): NewMember {
         return NewMember(
-            email = email,
+            email = Email(email),
             password = "password123",
             nickname = nickname,
             gender = Gender.MALE,
