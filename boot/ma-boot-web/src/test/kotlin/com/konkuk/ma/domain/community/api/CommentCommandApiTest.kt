@@ -111,6 +111,20 @@ class CommentCommandApiTest(
             .andExpect(status().isBadRequest)
     }
 
+    test("댓글 내용이 비어있으면 400을 반환한다") {
+        // Given
+        val request = mapOf("content" to " ")
+
+        // When & Then
+        mockMvc.perform(
+            RestDocumentationRequestBuilders.post("/api/community/posts/{postId}/comments", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+    }
+
     test("댓글 삭제 API 문서화") {
         // Given
         every { commentCommandService.delete(any(), any()) } just runs

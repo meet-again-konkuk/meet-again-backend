@@ -76,4 +76,14 @@ class LoginApiTest(
                 )
             )
     }
+
+    test("로그인 - 비밀번호가 비어있으면 400을 반환한다") {
+        val badRequest = mapOf(
+            "email" to "user@example.com",
+            "password" to ""
+        )
+
+        mockMvc.postJson("/api/auth/login") { content = mapper.writeValueAsString(badRequest) }
+            .andExpect { status { isBadRequest() } }
+    }
 })

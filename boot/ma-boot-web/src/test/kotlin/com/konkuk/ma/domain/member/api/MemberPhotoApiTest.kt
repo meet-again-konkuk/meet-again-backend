@@ -55,6 +55,23 @@ class MemberPhotoApiTest(
             )
     }
 
+    test("사진 업로드 - 허용되지 않은 확장자이면 400을 반환한다") {
+        // Given
+        val invalidFile = MockMultipartFile(
+            "photo",
+            "profile.gif",
+            "image/gif",
+            "fake-image-content".toByteArray()
+        )
+
+        // When & Then
+        mockMvc.perform(
+            multipart("/api/members/photos")
+                .file(invalidFile)
+        )
+            .andExpect(status().isBadRequest)
+    }
+
     test("사진 삭제 - DELETE 요청시 성공한다") {
         // Given
         every { memberPhotoService.delete(any()) } just runs

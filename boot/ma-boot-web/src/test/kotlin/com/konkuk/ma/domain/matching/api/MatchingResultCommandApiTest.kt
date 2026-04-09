@@ -4,6 +4,7 @@ import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.application.MatchingResultCommandService
+import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.patchJson
 import com.konkuk.ma.support.security.WithAuthMember
@@ -48,5 +49,18 @@ class MatchingResultCommandApiTest(
         mockMvc.patchJson("/api/matching-results/$encodedId/include") {}
             .andExpect { status { isOk() } }
             .andDocument("matching/include-matching-result")
+    }
+
+    test("소유권이 없는 매칭 결과 제외 시 403을 반환한다") {
+        // Given
+        val matchingResultId = 1L
+        val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
+
+        every { matchingResultCommandService.exclude(matchingResultId, "test@example.com") } throws
+            MatchingResultAccessDeniedException(matchingResultId, "owner@example.com", "test@example.com")
+
+        // When & Then
+        mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}
+            .andExpect { status { isForbidden() } }
     }
 })

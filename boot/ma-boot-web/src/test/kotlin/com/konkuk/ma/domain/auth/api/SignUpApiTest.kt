@@ -171,4 +171,89 @@ class SignUpApiTest(
                 )
             )
     }
+
+    context("signUp - 유효성 검증 실패") {
+        val validRequest = mapOf(
+            "email" to "test@example.com",
+            "password" to "password123",
+            "phoneNumber" to "01012345678",
+            "nickname" to "testuser",
+            "gender" to Gender.MALE.name,
+            "name" to "김테스트",
+            "birthDate" to "1990-01-01",
+            "region" to "SEOUL"
+        )
+
+        test("이메일이 비어있으면 400을 반환한다") {
+            val request = validRequest + ("email" to "")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("유효하지 않은 이메일 형식이면 400을 반환한다") {
+            val request = validRequest + ("email" to "invalid-email")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("비밀번호가 비어있으면 400을 반환한다") {
+            val request = validRequest + ("password" to "")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("유효하지 않은 비밀번호 형식이면 400을 반환한다") {
+            val request = validRequest + ("password" to "short1")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("휴대폰 번호가 비어있으면 400을 반환한다") {
+            val request = validRequest + ("phoneNumber" to "")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("유효하지 않은 휴대폰 번호 형식이면 400을 반환한다") {
+            val request = validRequest + ("phoneNumber" to "0111234567")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("유효하지 않은 닉네임 형식이면 400을 반환한다") {
+            val request = validRequest + ("nickname" to "!@#invalid")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("이름이 비어있으면 400을 반환한다") {
+            val request = validRequest + ("name" to "")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("유효하지 않은 이름 형식이면 400을 반환한다") {
+            val request = validRequest + ("name" to "abc123")
+
+            mockMvc.postJson("/api/auth/sign-up") {
+                content = mapper.writeValueAsString(request)
+            }.andExpect { status { isBadRequest() } }
+        }
+    }
 })
