@@ -13,6 +13,7 @@ class CommentEntity(
     val parentCommentId: Long?,
     val likes: Int,
     val createdDate: LocalDateTime,
+    val deleted: Boolean,
 ) {
     fun toDomain(): Comment {
         return Comment(
@@ -23,6 +24,7 @@ class CommentEntity(
             parentCommentId = parentCommentId,
             likes = likes,
             createdDate = createdDate,
+            deleted = deleted,
         )
     }
 
@@ -36,6 +38,7 @@ class CommentEntity(
                 parentCommentId = row[CommentTable.parentCommentId],
                 likes = row[CommentTable.likes],
                 createdDate = row[CommentTable.createdDate],
+                deleted = row[CommentTable.deleted],
             )
         }
     }

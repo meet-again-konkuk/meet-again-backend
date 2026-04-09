@@ -16,7 +16,7 @@ class ReplyResponse(
             return ReplyResponse(
                 id = comment.id,
                 nickname = replyWithAuthor.nickname,
-                content = comment.content,
+                content = comment.displayContent(),
                 likes = comment.likes,
                 timeAgo = TimeAgoCalculator.calculate(comment.createdDate),
             )

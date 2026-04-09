@@ -13,7 +13,13 @@ class Comment(
     val parentCommentId: Long? = null,
     val likes: Int = 0,
     val createdDate: LocalDateTime = LocalDateTime.now(),
+    val deleted: Boolean = false,
 ) {
+    fun displayContent(): String {
+        if (deleted) return DELETED_CONTENT
+        return content
+    }
+
     fun hasParent(): Boolean = parentCommentId != null
 
     fun validateCanBeParent() {
@@ -32,5 +38,9 @@ class Comment(
         if (authorEmail != email) {
             throw CommentAccessDeniedException(id, authorEmail, email)
         }
+    }
+
+    companion object {
+        private const val DELETED_CONTENT = "삭제된 댓글입니다."
     }
 }

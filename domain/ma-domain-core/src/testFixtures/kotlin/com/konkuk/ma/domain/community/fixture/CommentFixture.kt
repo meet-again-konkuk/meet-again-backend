@@ -12,6 +12,7 @@ object CommentFixture {
         parentCommentId: Long? = null,
         likes: Int = 0,
         createdDate: LocalDateTime = LocalDateTime.now(),
+        deleted: Boolean = false,
     ): Comment {
         return Comment(
             id = id,
@@ -21,6 +22,7 @@ object CommentFixture {
             parentCommentId = parentCommentId,
             likes = likes,
             createdDate = createdDate,
+            deleted = deleted,
         )
     }
 }

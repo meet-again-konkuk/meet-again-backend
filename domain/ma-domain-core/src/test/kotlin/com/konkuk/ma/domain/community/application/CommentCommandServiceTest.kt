@@ -69,35 +69,18 @@ class CommentCommandServiceTest : FunSpec({
 
     context("delete") {
 
-        test("루트 댓글을 삭제하면 댓글과 대댓글이 모두 삭제된다") {
+        test("댓글을 삭제한다") {
             // Given
-            val comment = CommentFixture.create(parentCommentId = null)
+            val comment = CommentFixture.create()
 
             every { commentQueryRepository.findOne(comment.id) } returns comment
             every { commentCommandRepository.delete(comment.id) } just runs
-            every { commentCommandRepository.deleteReplies(comment.id) } just runs
 
             // When
             service.delete(comment.id, comment.authorEmail)
 
             // Then
             verify { commentCommandRepository.delete(comment.id) }
-            verify { commentCommandRepository.deleteReplies(comment.id) }
-        }
-
-        test("대댓글을 삭제하면 해당 댓글만 삭제된다") {
-            // Given
-            val reply = CommentFixture.create(id = 2L, parentCommentId = 1L)
-
-            every { commentQueryRepository.findOne(reply.id) } returns reply
-            every { commentCommandRepository.delete(reply.id) } just runs
-
-            // When
-            service.delete(reply.id, reply.authorEmail)
-
-            // Then
-            verify { commentCommandRepository.delete(reply.id) }
-            verify(exactly = 0) { commentCommandRepository.deleteReplies(any()) }
         }
 
         test("소유권이 없는 댓글을 삭제하면 CommentAccessDeniedException이 발생한다") {

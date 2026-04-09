@@ -86,6 +86,49 @@ class CommentQueryDaoTest(
                 result shouldBe null
             }
         }
+
+        context("find") {
+
+            test("삭제된 댓글도 함께 조회된다") {
+                // Given
+                val postId = PostTable.selectAll().first()[PostTable.id].value
+                insertComment(content = "일반 댓글")
+                insertComment(content = "삭제된 댓글")
+                val deletedCommentId = CommentTable.selectAll().toList().last()[CommentTable.id].value
+                CommentTable.update({ CommentTable.id eq deletedCommentId }) {
+                    it[deleted] = true
+                }
+
+                // When
+                val result = commentQueryDao.find(postId)
+
+                // Then
+                result.size shouldBe 2
+                result.last().deleted shouldBe true
+            }
+        }
+
+        context("findReplies") {
+
+            test("삭제된 대댓글도 함께 조회된다") {
+                // Given
+                insertComment(content = "부모 댓글")
+                val parentId = CommentTable.selectAll().first()[CommentTable.id].value
+                insertComment(content = "일반 대댓글", parentCommentId = parentId)
+                insertComment(content = "삭제된 대댓글", parentCommentId = parentId)
+                val deletedReplyId = CommentTable.selectAll().toList().last()[CommentTable.id].value
+                CommentTable.update({ CommentTable.id eq deletedReplyId }) {
+                    it[deleted] = true
+                }
+
+                // When
+                val result = commentQueryDao.findReplies(parentId)
+
+                // Then
+                result.size shouldBe 2
+                result.any { it.deleted } shouldBe true
+            }
+        }
     }
 
     private fun insertPost(

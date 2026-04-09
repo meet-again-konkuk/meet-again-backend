@@ -13,6 +13,21 @@ import io.kotest.matchers.shouldBe
 
 class CommentTest : FunSpec({
 
+    context("displayContent") {
+
+        test("삭제되지 않은 댓글은 원본 내용을 반환한다") {
+            val comment = CommentFixture.create(content = "원본 내용")
+
+            comment.displayContent() shouldBe "원본 내용"
+        }
+
+        test("삭제된 댓글은 '삭제된 댓글입니다.'를 반환한다") {
+            val comment = CommentFixture.create(content = "원본 내용", deleted = true)
+
+            comment.displayContent() shouldBe "삭제된 댓글입니다."
+        }
+    }
+
     context("hasParent") {
 
         test("parentCommentId가 null이면 false를 반환한다") {
