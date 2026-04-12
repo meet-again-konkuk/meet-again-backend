@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 1:1 문의 접수 API
+
+== 문의 접수
+
+1:1 문의를 접수합니다.
+
+=== 요청
+
+include::{snippets}/support/create-inquiry/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/support/create-inquiry/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/support/create-inquiry/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/support/create-inquiry/response-fields.adoc[]

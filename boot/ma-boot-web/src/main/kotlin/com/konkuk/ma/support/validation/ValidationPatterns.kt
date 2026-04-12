@@ -31,4 +31,8 @@ object ValidationMessages {
     const val POST_CONTENT_SIZE = "내용은 2000자 이하여야 합니다."
     const val COMMENT_CONTENT_REQUIRED = "댓글 내용은 필수입니다."
     const val COMMENT_CONTENT_SIZE = "댓글 내용은 500자 이하여야 합니다."
+    const val INQUIRY_TITLE_REQUIRED = "문의 제목은 필수입니다."
+    const val INQUIRY_TITLE_SIZE = "문의 제목은 50자 이하여야 합니다."
+    const val INQUIRY_CONTENT_REQUIRED = "문의 내용은 필수입니다."
+    const val INQUIRY_CONTENT_SIZE = "문의 내용은 500자 이하여야 합니다."
 }
