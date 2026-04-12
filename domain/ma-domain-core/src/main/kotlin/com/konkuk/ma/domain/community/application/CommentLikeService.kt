@@ -14,14 +14,14 @@ class CommentLikeService(
     private val commentLikeRepository: CommentLikeRepository,
     private val commentCommandRepository: CommentCommandRepository,
 ) {
-    fun like(commentId: Long, memberEmail: Email): CommentLikeResult {
-        commentLikeRepository.save(CommentLike(commentId = commentId, memberEmail = memberEmail))
+    fun like(commentId: Long, memberEmail: String): CommentLikeResult {
+        commentLikeRepository.save(CommentLike(commentId = commentId, memberEmail = Email(memberEmail)))
         val likeCount = commentCommandRepository.increaseLikes(commentId)
         return CommentLikeResult.liked(likeCount)
     }
 
-    fun unlike(commentId: Long, memberEmail: Email): CommentLikeResult {
-        commentLikeRepository.delete(commentId, memberEmail)
+    fun unlike(commentId: Long, memberEmail: String): CommentLikeResult {
+        commentLikeRepository.delete(commentId, Email(memberEmail))
         val likeCount = commentCommandRepository.decreaseLikes(commentId)
         return CommentLikeResult.unliked(likeCount)
     }

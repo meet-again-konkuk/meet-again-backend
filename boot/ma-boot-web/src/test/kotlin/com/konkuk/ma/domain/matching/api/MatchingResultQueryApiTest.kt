@@ -65,7 +65,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find(Email("test@example.com"), false) } returns resultsWithProfiles
+        every { matchingResultQueryService.find("test@example.com", false) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -107,7 +107,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find(Email("test@example.com"), true) } returns resultsWithProfiles
+        every { matchingResultQueryService.find("test@example.com", true) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {
@@ -136,7 +136,7 @@ class MatchingResultQueryApiTest(
         // Given
         val emptyResults = MatchingResultsWithProfiles(data = emptyList())
 
-        every { matchingResultQueryService.find(Email("test@example.com"), false) } returns emptyResults
+        every { matchingResultQueryService.find("test@example.com", false) } returns emptyResults
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -157,7 +157,7 @@ class MatchingResultQueryApiTest(
             dayMatched = false,
         )
 
-        every { matchingResultQueryService.findDetail(matchingResultId, Email("test@example.com")) } returns matchingResult
+        every { matchingResultQueryService.findDetail(matchingResultId, "test@example.com") } returns matchingResult
 
         // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}

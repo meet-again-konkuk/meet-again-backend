@@ -4,10 +4,12 @@ import com.konkuk.ma.domain.common.domain.Email
 
 class NewComment(
     val postId: Long,
-    val authorEmail: Email,
+    authorEmail: String,
     val content: String,
     val parentCommentId: Long? = null,
 ) {
+    val authorEmail: Email = Email(authorEmail)
+
     init {
         validateContent()
     }

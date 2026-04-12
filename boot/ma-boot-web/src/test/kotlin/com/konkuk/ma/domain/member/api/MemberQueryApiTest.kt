@@ -70,7 +70,7 @@ class MemberQueryApiTest(
         val email = "test@example.com"
 
         // When & Then
-        every { memberQueryService.checkDuplicatedEmail(Email(email)) } returns false
+        every { memberQueryService.checkDuplicatedEmail(email) } returns false
 
         mockMvc.postJson("/api/members/email/exists")
         { content = """{"email":"$email"}""" }

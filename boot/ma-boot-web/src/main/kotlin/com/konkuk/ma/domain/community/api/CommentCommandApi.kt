@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.api
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.api.request.NewCommentRequest
 import com.konkuk.ma.domain.community.api.response.NewCommentResponse
 import com.konkuk.ma.domain.community.application.CommentCommandService
@@ -37,6 +36,6 @@ class CommentCommandApi(
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
     ) {
-        commentCommandService.delete(commentId, Email(email))
+        commentCommandService.delete(commentId, email)
     }
 }

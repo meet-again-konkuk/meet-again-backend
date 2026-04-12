@@ -14,14 +14,14 @@ class PostLikeService(
     private val postLikeRepository: PostLikeRepository,
     private val postCommandRepository: PostCommandRepository,
 ) {
-    fun like(postId: Long, memberEmail: Email): PostLikeResult {
-        postLikeRepository.save(PostLike(postId = postId, memberEmail = memberEmail))
+    fun like(postId: Long, memberEmail: String): PostLikeResult {
+        postLikeRepository.save(PostLike(postId = postId, memberEmail = Email(memberEmail)))
         val likeCount = postCommandRepository.increaseLikes(postId)
         return PostLikeResult.liked(likeCount)
     }
 
-    fun unlike(postId: Long, memberEmail: Email): PostLikeResult {
-        postLikeRepository.delete(postId, memberEmail)
+    fun unlike(postId: Long, memberEmail: String): PostLikeResult {
+        postLikeRepository.delete(postId, Email(memberEmail))
         val likeCount = postCommandRepository.decreaseLikes(postId)
         return PostLikeResult.unliked(likeCount)
     }

@@ -78,7 +78,7 @@ class CommentCommandServiceTest : FunSpec({
             every { commentCommandRepository.delete(comment.id) } just runs
 
             // When
-            service.delete(comment.id, comment.authorEmail)
+            service.delete(comment.id, comment.authorEmail.value)
 
             // Then
             verify { commentCommandRepository.delete(comment.id) }
@@ -87,7 +87,7 @@ class CommentCommandServiceTest : FunSpec({
         test("소유권이 없는 댓글을 삭제하면 CommentAccessDeniedException이 발생한다") {
             // Given
             val comment = CommentFixture.create()
-            val otherEmail = Email("other@example.com")
+            val otherEmail = "other@example.com"
 
             every { commentQueryRepository.findOne(comment.id) } returns comment
 
@@ -106,7 +106,7 @@ class CommentCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.delete(nonExistentId, Email("any@example.com"))
+                service.delete(nonExistentId, "any@example.com")
             }.message shouldBe "CommunityComment을(를) 찾을 수 없습니다."
         }
     }

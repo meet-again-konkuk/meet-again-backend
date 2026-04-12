@@ -40,7 +40,7 @@ class TargetInfoCommandDaoTest(
             test("모든 필드가 채워진 NewTargetInfo를 저장하고 ID를 반환한다") {
                 // Given
                 val newTargetInfo = NewTargetInfo(
-                    registerEmail = Email("test@example.com"),
+                    registerEmail = "test@example.com",
                     targetName = "타겟이름",
                     middleNumber = com.konkuk.ma.domain.member.domain.FourDigit("1234"),
                     lastNumber = com.konkuk.ma.domain.member.domain.FourDigit("5678"),
@@ -61,7 +61,7 @@ class TargetInfoCommandDaoTest(
             test("nullable 필드가 null인 NewTargetInfo를 저장한다") {
                 // Given
                 val newTargetInfo = NewTargetInfo(
-                    registerEmail = Email("test@example.com"),
+                    registerEmail = "test@example.com",
                     targetName = "타겟이름",
                     middleNumber = null,
                     lastNumber = null,
@@ -120,7 +120,7 @@ class TargetInfoCommandDaoTest(
         targetName: String = "타겟이름",
     ): NewTargetInfo {
         return NewTargetInfo(
-            registerEmail = Email(registerEmail),
+            registerEmail = registerEmail,
             targetName = targetName,
             middleNumber = null,
             lastNumber = null,

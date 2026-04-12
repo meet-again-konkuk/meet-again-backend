@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.api
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.api.request.DuplicatedEmailRequest
 import com.konkuk.ma.domain.member.api.request.DuplicatedNicknameRequest
 import com.konkuk.ma.domain.member.api.response.CheckDuplicatedEmailResponse
@@ -28,7 +27,7 @@ class MemberQueryApi(
 
     @PostMapping("/email/exists")
     fun checkDuplicatedEmail(@Validated @RequestBody request: DuplicatedEmailRequest): CheckDuplicatedEmailResponse {
-        val duplicated = memberQueryService.checkDuplicatedEmail(Email(request.email))
+        val duplicated = memberQueryService.checkDuplicatedEmail(request.email)
         return CheckDuplicatedEmailResponse(
             email = request.email,
             duplicated = duplicated

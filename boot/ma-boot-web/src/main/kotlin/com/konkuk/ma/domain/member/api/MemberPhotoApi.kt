@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.api
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.member.api.response.MemberPhotoResponse
 import com.konkuk.ma.domain.member.application.MemberPhotoService
@@ -27,7 +26,7 @@ class MemberPhotoApi(
         @RequestPart("photo") photo: MultipartFile
     ): MemberPhotoResponse {
         val photoFile = PhotoFile.create(photo.originalFilename, photo.size, photo.bytes)
-        memberPhotoService.upload(Email(email), photoFile)
+        memberPhotoService.upload(email, photoFile)
         return MemberPhotoResponse.uploaded()
     }
 
@@ -35,7 +34,7 @@ class MemberPhotoApi(
     fun deletePhoto(
         @AuthenticationPrincipal email: String
     ): MemberPhotoResponse {
-        memberPhotoService.delete(Email(email))
+        memberPhotoService.delete(email)
         return MemberPhotoResponse.deleted()
     }
 }

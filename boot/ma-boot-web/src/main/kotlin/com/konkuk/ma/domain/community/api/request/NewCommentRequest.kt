@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.api.request
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.support.validation.ValidationMessages
 import jakarta.validation.constraints.NotBlank
@@ -16,7 +15,7 @@ class NewCommentRequest(
     fun toNewComment(authorEmail: String, postId: Long): NewComment {
         return NewComment(
             postId = postId,
-            authorEmail = Email(authorEmail),
+            authorEmail = authorEmail,
             content = content,
             parentCommentId = parentCommentId,
         )

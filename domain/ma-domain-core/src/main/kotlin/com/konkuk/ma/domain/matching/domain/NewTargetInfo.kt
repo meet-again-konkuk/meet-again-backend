@@ -8,7 +8,7 @@ import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Region
 
 class NewTargetInfo(
-    val registerEmail: Email,
+    registerEmail: String,
     val targetName: String,
     val middleNumber: FourDigit?,
     val lastNumber: FourDigit?,
@@ -18,4 +18,6 @@ class NewTargetInfo(
     val day: Day?,
 
     val region: Region?
-)
+) {
+    val registerEmail: Email = Email(registerEmail)
+}

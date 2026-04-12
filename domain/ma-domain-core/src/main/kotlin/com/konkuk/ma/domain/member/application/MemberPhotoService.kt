@@ -14,16 +14,18 @@ class MemberPhotoService(
     private val memberPhotoProcessor: MemberPhotoProcessor,
     private val memberPhotoRepository: MemberPhotoRepository
 ) {
-    fun upload(email: Email, photoFile: PhotoFile) {
+    fun upload(email: String, photoFile: PhotoFile) {
+        val domainEmail = Email(email)
         delete(email)
-        val processed = memberPhotoProcessor.process(email, photoFile)
-        val newPhoto = NewPhoto.create(email, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
+        val processed = memberPhotoProcessor.process(domainEmail, photoFile)
+        val newPhoto = NewPhoto.create(domainEmail, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
         memberPhotoRepository.save(newPhoto)
     }
 
-    fun delete(email: Email) {
-        val existing = memberPhotoRepository.findOne(email) ?: return
+    fun delete(email: String) {
+        val domainEmail = Email(email)
+        val existing = memberPhotoRepository.findOne(domainEmail) ?: return
         memberPhotoProcessor.deleteFiles(existing)
-        memberPhotoRepository.delete(email)
+        memberPhotoRepository.delete(domainEmail)
     }
 }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.api.request
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.support.validation.ValidationMessages
@@ -20,7 +19,7 @@ class NewPostRequest(
 ) {
     fun toNewPost(authorEmail: String): NewPost {
         return NewPost(
-            authorEmail = Email(authorEmail),
+            authorEmail = authorEmail,
             category = category,
             title = title,
             content = content,

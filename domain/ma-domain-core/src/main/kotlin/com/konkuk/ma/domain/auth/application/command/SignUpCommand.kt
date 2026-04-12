@@ -8,8 +8,8 @@ import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
 import java.time.LocalDate
 
-data class SignUpCommand(
-    val email: Email,
+class SignUpCommand(
+    email: String,
     val password: String,
     val nickname: String,
     val gender: Gender,
@@ -20,9 +20,11 @@ data class SignUpCommand(
     val highSchool: String?,
     val university: String?
 ) {
+    val email: Email = Email(email)
+
     fun toNewMember(passwordEncryptor: PasswordEncryptor): NewMember {
         return NewMember(
-            email = email,
+            email = this.email,
             password = passwordEncryptor.encode(password),
             nickname = nickname,
             gender = gender,

@@ -1,15 +1,12 @@
 package com.konkuk.ma.domain.matching.api
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.matching.application.MatchingResultCommandService
 import com.konkuk.ma.support.id.DecryptId
-import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -22,7 +19,7 @@ class MatchingResultCommandApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.exclude(matchingResultId, Email(email))
+        matchingResultCommandService.exclude(matchingResultId, email)
     }
 
     @PatchMapping("/{matchingResultId}/include")
@@ -30,6 +27,6 @@ class MatchingResultCommandApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.include(matchingResultId, Email(email))
+        matchingResultCommandService.include(matchingResultId, email)
     }
 }

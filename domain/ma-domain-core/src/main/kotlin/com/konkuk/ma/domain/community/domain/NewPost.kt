@@ -3,11 +3,13 @@ package com.konkuk.ma.domain.community.domain
 import com.konkuk.ma.domain.common.domain.Email
 
 class NewPost(
-    val authorEmail: Email,
+    authorEmail: String,
     val category: PostCategory,
     val title: String,
     val content: String,
 ) {
+    val authorEmail: Email = Email(authorEmail)
+
     init {
         validateTitle()
         validateContent()

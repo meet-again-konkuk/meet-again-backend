@@ -19,8 +19,9 @@ class MatchingResultQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
 ) {
-    fun find(email: Email, excluded: Boolean = false): MatchingResultsWithProfiles {
-        val matchingResults = MatchingResults(matchingResultRepository.find(email, excluded))
+    fun find(email: String, excluded: Boolean = false): MatchingResultsWithProfiles {
+        val domainEmail = Email(email)
+        val matchingResults = MatchingResults(matchingResultRepository.find(domainEmail, excluded))
         val targetEmails = matchingResults.extractTargetEmails()
 
         val members = Members(memberQueryRepository.findByEmails(targetEmails))
@@ -29,9 +30,9 @@ class MatchingResultQueryService(
         return matchingResults.combineWithProfiles(members, photos)
     }
 
-    fun findDetail(matchingResultId: Long, email: Email): MatchingResult {
+    fun findDetail(matchingResultId: Long, email: String): MatchingResult {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(email)
+        matchingResult.validateOwnership(Email(email))
         return matchingResult
     }
 }

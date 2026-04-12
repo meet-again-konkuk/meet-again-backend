@@ -3,7 +3,6 @@ package com.konkuk.ma.domain.auth.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.auth.application.SignUpService
-import com.konkuk.ma.domain.auth.application.command.SignUpCommand
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.extension.andDocument
@@ -21,7 +20,6 @@ import com.konkuk.ma.vocabulary.nickname
 import com.konkuk.ma.vocabulary.password
 import com.konkuk.ma.vocabulary.phoneNumber
 import com.konkuk.ma.vocabulary.region
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.vocabulary.university
@@ -59,22 +57,7 @@ class SignUpApiTest(
             "university" to "테스트대학교"
         )
 
-        every {
-            signUpService.signUp(
-                SignUpCommand(
-                    email = Email("test@example.com"),
-                    password = "password123",
-                    nickname = "testuser",
-                    gender = Gender.MALE,
-                    phoneNumber = "01012345678",
-                    name = "김테스트",
-                    birthDate = LocalDate.of(1990, 1, 1),
-                    region = Region.SEOUL,
-                    highSchool = "테스트고등학교",
-                    university = "테스트대학교"
-                )
-            )
-        } returns memberId
+        every { signUpService.signUp(any()) } returns memberId
 
         // When & Then
         mockMvc.postJson("/api/auth/sign-up") {
@@ -125,22 +108,7 @@ class SignUpApiTest(
             "region" to "BUSAN"
         )
 
-        every {
-            signUpService.signUp(
-                SignUpCommand(
-                    email = Email("test2@example.com"),
-                    password = "password123",
-                    nickname = "테스터2",
-                    gender = Gender.FEMALE,
-                    phoneNumber = "01098765432",
-                    name = "이테스트",
-                    birthDate = LocalDate.of(1995, 6, 15),
-                    region = Region.BUSAN,
-                    highSchool = null,
-                    university = null
-                )
-            )
-        } returns memberId
+        every { signUpService.signUp(any()) } returns memberId
 
         // When & Then
         mockMvc.postJson("/api/auth/sign-up") {

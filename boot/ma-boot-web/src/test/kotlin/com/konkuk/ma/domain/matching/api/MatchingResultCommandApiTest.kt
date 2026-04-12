@@ -31,7 +31,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.exclude(matchingResultId, Email("test@example.com")) } just runs
+        every { matchingResultCommandService.exclude(matchingResultId, "test@example.com") } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}
@@ -44,7 +44,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.include(matchingResultId, Email("test@example.com")) } just runs
+        every { matchingResultCommandService.include(matchingResultId, "test@example.com") } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/include") {}
@@ -57,7 +57,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.exclude(matchingResultId, Email("test@example.com")) } throws
+        every { matchingResultCommandService.exclude(matchingResultId, "test@example.com") } throws
             MatchingResultAccessDeniedException(matchingResultId, "owner@example.com", "test@example.com")
 
         // When & Then

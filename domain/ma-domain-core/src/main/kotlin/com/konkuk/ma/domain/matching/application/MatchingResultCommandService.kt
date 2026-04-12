@@ -10,16 +10,16 @@ import org.springframework.transaction.annotation.Transactional
 class MatchingResultCommandService(
     private val matchingResultRepository: MatchingResultRepository,
 ) {
-    fun exclude(matchingResultId: Long, email: Email) {
+    fun exclude(matchingResultId: Long, email: String) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(email)
+        matchingResult.validateOwnership(Email(email))
         matchingResult.exclude()
         matchingResultRepository.updateExcluded(matchingResult)
     }
 
-    fun include(matchingResultId: Long, email: Email) {
+    fun include(matchingResultId: Long, email: String) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(email)
+        matchingResult.validateOwnership(Email(email))
         matchingResult.include()
         matchingResultRepository.updateExcluded(matchingResult)
     }

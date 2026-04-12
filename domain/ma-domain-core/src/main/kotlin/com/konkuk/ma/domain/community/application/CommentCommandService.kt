@@ -20,9 +20,9 @@ class CommentCommandService(
         return commentCommandRepository.save(newComment)
     }
 
-    fun delete(commentId: Long, email: Email) {
+    fun delete(commentId: Long, email: String) {
         val comment = commentQueryRepository.findOne(commentId)
-        comment.validateOwnership(email)
+        comment.validateOwnership(Email(email))
         commentCommandRepository.delete(commentId)
     }
 }
