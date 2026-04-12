@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.common.domain.file
 
+import com.konkuk.ma.domain.common.domain.Email
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
@@ -11,7 +12,7 @@ class StoragePathTest : FunSpec({
             // Given
             val domain = StorageDomainType.MEMBER
             val usage = StorageUsageType.PROFILE
-            val email = "test@example.com"
+            val email = Email("test@example.com")
 
             // When
             val path = StoragePath.of(domain, usage, email)
@@ -24,7 +25,7 @@ class StoragePathTest : FunSpec({
             // Given
             val domain = StorageDomainType.MATCHING
             val usage = StorageUsageType.PROFILE
-            val email = "user@example.com"
+            val email = Email("user@example.com")
 
             // When
             val path = StoragePath.of(domain, usage, email)
@@ -39,7 +40,7 @@ class StoragePathTest : FunSpec({
             // Given
             val domain = StorageDomainType.MEMBER
             val usage = StorageUsageType.PROFILE
-            val email = "test@example.com"
+            val email = Email("test@example.com")
             val date = LocalDate.of(2025, 1, 15)
 
             // When
@@ -53,7 +54,7 @@ class StoragePathTest : FunSpec({
             // Given
             val domain = StorageDomainType.MEMBER
             val usage = StorageUsageType.PROFILE
-            val email = "test@example.com"
+            val email = Email("test@example.com")
             val today = LocalDate.now()
 
             // When

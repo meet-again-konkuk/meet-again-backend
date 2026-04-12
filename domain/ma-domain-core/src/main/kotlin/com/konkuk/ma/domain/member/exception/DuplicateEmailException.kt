@@ -1,9 +1,10 @@
 package com.konkuk.ma.domain.member.exception
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.BusinessException
 
 class DuplicateEmailException(
-    email: String
+    email: Email
 ) : BusinessException(
     message = MESSAGE,
     dataMessage = "email: $email",

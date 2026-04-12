@@ -7,6 +7,6 @@ class PasswordMismatchException(
     email: Email
 ) : BusinessException(
     message = "비밀번호가 올바르지 않습니다.",
-    dataMessage = "email: ${email.value}",
+    dataMessage = "email: $email",
     logLevel = LogLevel.WARN
 )

@@ -30,14 +30,14 @@ class MemberPhotoProcessor(
     }
 
     private fun storeOriginal(email: Email, photoFile: PhotoFile): String {
-        val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.PROFILE, email.value)
+        val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.PROFILE, email)
         return fileStorage.store(directory.value, photoFile)
     }
 
     private fun storeThumbnail(email: Email, photoFile: PhotoFile): String? {
         return try {
             val thumbnailBytes = thumbnailGenerator.generate(photoFile.content, THUMBNAIL_WIDTH)
-            val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.THUMBNAIL, email.value)
+            val directory = StoragePath.of(StorageDomainType.MEMBER, StorageUsageType.THUMBNAIL, email)
             fileStorage.storeBytes(directory.value, "thumb_${photoFile.originalFileName}", thumbnailBytes)
         } catch (e: Exception) {
             logger.warn { "썸네일 생성 실패 (email=${email.value}): ${e.message}" }
