@@ -5,7 +5,7 @@ $ARGUMENTS
 ## 검증 대상 파일 결정
 
 - 인자가 파일 경로이면 해당 파일들을 검증
-- 인자가 비어있으면 현재 브랜치에서 변경된 .kt 파일들을 자동 탐지 (git diff --name-only backend/dev -- '*.kt')
+- 인자가 비어있으면 현재 브랜치에서 변경된 .kt 파일들을 자동 탐지 (git diff --name-only develop -- '*.kt')
 
 ## 검증 → 수정 사이클 (순차 실행)
 

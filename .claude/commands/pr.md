@@ -2,7 +2,7 @@
 
 대상 브랜치: $ARGUMENTS
 
-대상 브랜치가 비어있으면 기본값으로 backend/dev 브랜치를 사용한다.
+대상 브랜치가 비어있으면 기본값으로 develop 브랜치를 사용한다.
 
 ## 1단계: 커밋
 1. git status로 변경사항 확인 (staged, unstaged, untracked 모두)
