@@ -29,6 +29,7 @@
 | GET | /api/community/posts/{id} | 게시글 상세 조회 | Done |
 | GET | /api/community/comments/{commentId} | 댓글 상세 조회 | Done |
 | DELETE | /api/community/posts/{postId}/comments/{commentId} | 댓글 삭제 | Done |
+| POST | /api/domain/inquiries | 1:1 문의 접수 | Done |
 
 ---
 
@@ -137,14 +138,7 @@ X룸 안에 배치하는 콘텐츠 단위. 각 블록은 위치/크기/회전 �
 
 ## 기타
 
-### POST /api/support/inquiries — 1:1 문의 접수
-
-- **인증**: 필요
-
-**Request Body**:
-```json
-{ "title": "string (max 50자)", "content": "string" }
-```
+### ~~1:1 문의 접수~~ ✔ 완료
 
 ### 회원 탈퇴
 
