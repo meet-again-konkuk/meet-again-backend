@@ -123,3 +123,13 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/toggle-comment-like.html[댓글 좋아요 토글 API,window=_blank]
 
+[[support]]
+== 고객지원
+
+고객지원 도메인과 관련된 API 입니다.
+
+[[support-create-inquiry]]
+=== 1:1 문의 접수
+
+* link:support/create-inquiry.html[1:1 문의 접수 API,window=_blank]
+
