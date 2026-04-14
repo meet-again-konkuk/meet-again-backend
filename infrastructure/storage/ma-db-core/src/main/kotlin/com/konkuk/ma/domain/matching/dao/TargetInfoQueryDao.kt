@@ -10,6 +10,13 @@ import org.springframework.stereotype.Component
 
 @Component
 class TargetInfoQueryDao {
+    fun find(email: String): List<TargetInfoEntity> {
+        return TargetInfoTable.selectAll()
+            .where { TargetInfoTable.registerEmail eq email }
+            .orderBy(TargetInfoTable.id to SortOrder.DESC)
+            .map { RowEntityMapper.toTargetInfoEntity(it) }
+    }
+
     fun findNoOffset(cursorId: Long?, size: Int): List<TargetInfoEntity> {
         return TargetInfoTable.selectAll()
             .where { cursorId?.let { TargetInfoTable.id.greater(it) } ?: Op.TRUE }

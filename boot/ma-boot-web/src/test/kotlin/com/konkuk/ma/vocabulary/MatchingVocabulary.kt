@@ -32,6 +32,9 @@ fun month(fieldName: String = "month") =
 fun day(fieldName: String = "day") =
     fieldName responseType NUMBER means "생일" example "15"
 
+fun targetGender(fieldName: String = "targetGender") =
+    fieldName responseType STRING means "찾는 사람 성별" example "FEMALE"
+
 fun targetRegion(fieldName: String = "region") =
     fieldName responseType STRING means "지역" example "SEOUL"
 

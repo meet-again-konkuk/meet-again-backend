@@ -37,6 +37,19 @@
 
 - ~~MatchingResult를 NewMatchingResult / MatchingResult로 분리 (생성/조회 분리 일관성)~~ ✔ 완료
 
+### 찾는 사람 정보 (target-info) CRUD
+
+| Method | Endpoint | 용도 | 인증 |
+|--------|----------|------|------|
+| GET | /api/target-infos | 내가 등록한 찾는 사람 목록 조회 | 필요 |
+| GET | /api/target-infos/{targetInfoId} | 찾는 사람 상세 조회 | 필요 |
+| PUT | /api/target-infos/{targetInfoId} | 찾는 사람 정보 수정 | 필요 |
+| DELETE | /api/target-infos/{targetInfoId} | 찾는 사람 정보 삭제 | 필요 |
+
+**참고사항**:
+- 수정/삭제 시 본인이 등록한 target-info인지 소유권 검증 필요
+- 삭제 시 연관된 매칭 결과 처리 정책 결정 필요 (soft delete / cascade)
+
 ---
 
 ## 커뮤니티
