@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.api
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.matching.api.response.TargetInfoResponse
 import com.konkuk.ma.domain.matching.application.TargetInfoQueryService
@@ -20,7 +19,7 @@ class TargetInfoQueryApi(
     fun findMyTargetInfos(
         @AuthenticationPrincipal email: String,
     ): List<TargetInfoResponse> {
-        return targetInfoQueryService.find(Email(email))
+        return targetInfoQueryService.find(email)
             .map { TargetInfoResponse.from(it) }
     }
 
@@ -29,7 +28,7 @@ class TargetInfoQueryApi(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ): TargetInfoResponse {
-        val targetInfo = targetInfoQueryService.findDetail(targetInfoId, Email(email))
+        val targetInfo = targetInfoQueryService.findDetail(targetInfoId, email)
         return TargetInfoResponse.from(targetInfo)
     }
 }

@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional
 class TargetInfoQueryService(
     private val targetInfoQueryRepository: TargetInfoQueryRepository,
 ) {
-    fun find(email: Email): List<TargetInfo> {
-        return targetInfoQueryRepository.find(email)
+    fun find(email: String): List<TargetInfo> {
+        return targetInfoQueryRepository.find(Email(email))
     }
 
-    fun findDetail(id: Long, email: Email): TargetInfo {
+    fun findDetail(id: Long, email: String): TargetInfo {
         val targetInfo = targetInfoQueryRepository.findOne(id)
-        targetInfo.validateOwnership(email)
+        targetInfo.validateOwnership(Email(email))
         return targetInfo
     }
 }
