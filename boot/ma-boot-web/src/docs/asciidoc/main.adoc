@@ -68,6 +68,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/register-target-info.html[찾는 사람 정보 등록 API,window=_blank]
 
+[[matching-target-info-query]]
+=== 찾는 사람 목록 조회
+
+* link:matching/find-my-target-infos.html[찾는 사람 목록 조회 API,window=_blank]
+
 [[matching-result-query]]
 === 매칭 결과 목록 조회
 
