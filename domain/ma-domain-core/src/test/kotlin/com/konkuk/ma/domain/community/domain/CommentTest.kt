@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
+import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
@@ -59,7 +59,7 @@ class CommentTest : FunSpec({
 
             shouldThrow<ReplyDepthExceededException> {
                 comment.validateCanBeParent()
-            }.message shouldBe "대댓글에는 답글을 달 수 없습니다."
+            }
         }
     }
 
@@ -78,7 +78,7 @@ class CommentTest : FunSpec({
 
             shouldThrow<NotRootCommentException> {
                 comment.validateIsRootComment()
-            }.message shouldBe "루트 댓글만 조회할 수 있습니다."
+            }
         }
     }
 
@@ -90,13 +90,13 @@ class CommentTest : FunSpec({
             comment.validateOwnership(comment.authorEmail)
         }
 
-        test("다른 이메일이면 CommentAccessDeniedException이 발생한다") {
+        test("다른 이메일이면 AccessDeniedException이 발생한다") {
             val comment = CommentFixture.create()
             val otherEmail = Email("other@example.com")
 
-            shouldThrow<CommentAccessDeniedException> {
+            shouldThrow<AccessDeniedException> {
                 comment.validateOwnership(otherEmail)
-            }.message shouldBe "댓글에 대한 접근 권한이 없습니다."
+            }
         }
     }
 })

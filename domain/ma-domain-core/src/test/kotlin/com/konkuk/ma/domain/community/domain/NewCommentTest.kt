@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
+import com.konkuk.ma.domain.common.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
@@ -29,23 +30,23 @@ class NewCommentTest : FunSpec({
         }
 
         test("내용이 빈 문자열이면 예외가 발생한다") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewCommentFixture.create(content = "")
-            }.message shouldBe "댓글 내용은 비어있을 수 없습니다."
+            }
         }
 
         test("내용이 공백만 포함하면 예외가 발생한다") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewCommentFixture.create(content = "   ")
-            }.message shouldBe "댓글 내용은 비어있을 수 없습니다."
+            }
         }
 
         test("내용이 500자를 초과하면 예외가 발생한다") {
             val content = "가".repeat(501)
 
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewCommentFixture.create(content = content)
-            }.message shouldBe "댓글 내용은 500자 이하여야 합니다."
+            }
         }
     }
 

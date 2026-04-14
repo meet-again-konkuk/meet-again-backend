@@ -2,14 +2,14 @@ package com.konkuk.ma.support.error
 
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
 import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.common.exception.InvalidValueException
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
-import com.konkuk.ma.domain.member.exception.DuplicateEmailException
-import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
+import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
+import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.BusinessException
+import com.konkuk.ma.exception.DuplicateException
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.logger
 import com.konkuk.ma.support.payload.response.ApiError
@@ -30,8 +30,8 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error)
     }
 
-    @ExceptionHandler(DuplicateNicknameException::class, DuplicateEmailException::class)
-    fun handleDuplicateException(e: BusinessException): ResponseEntity<ApiError> {
+    @ExceptionHandler(DuplicateException::class)
+    fun handleDuplicateException(e: DuplicateException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.ENTITY_DUPLICATION)
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error)
     }
@@ -42,11 +42,8 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
     }
 
-    @ExceptionHandler(
-        MatchingResultAccessDeniedException::class,
-        CommentAccessDeniedException::class,
-    )
-    fun handleAccessDeniedException(e: BusinessException): ResponseEntity<ApiError> {
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.ACCESS_DENIED)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error)
     }
@@ -54,8 +51,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(
         InvalidValueException::class,
         SmsNotVerifiedException::class,
-        com.konkuk.ma.domain.community.exception.PostNotFoundException::class,
-        com.konkuk.ma.domain.community.exception.ReplyDepthExceededException::class,
+        ReplyDepthExceededException::class,
+        NotRootCommentException::class,
     )
     fun handleBadRequestException(e: BusinessException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.INVALID_INPUT_VALUE)

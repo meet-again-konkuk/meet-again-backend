@@ -1,11 +1,12 @@
 package com.konkuk.ma.domain.matching.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.common.domain.Email
+
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.application.MatchingResultCommandService
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.patchJson
 import com.ninjasquad.springmockk.MockkBean
@@ -56,7 +57,7 @@ class MatchingResultCommandApiTest(
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
         every { matchingResultCommandService.exclude(matchingResultId, "holeman@naver.com") } throws
-            MatchingResultAccessDeniedException(matchingResultId, Email("owner@example.com"), Email("holeman@naver.com"))
+            AccessDeniedException(EntityType.MATCHING_RESULT, "owner@example.com", "holeman@naver.com")
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}

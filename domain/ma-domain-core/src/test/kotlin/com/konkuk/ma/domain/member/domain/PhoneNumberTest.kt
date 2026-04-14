@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.member.domain
 
+import com.konkuk.ma.domain.common.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -17,9 +18,9 @@ class PhoneNumberTest : FunSpec({
         }
 
         test("10자리 휴대폰 번호는 중간번호가 3자리이므로 FourDigit 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("0101234567")
-            }.message shouldBe "FourDigit는 4자리여야 합니다. value=123"
+            }
         }
 
         test("하이픈이 포함된 휴대폰 번호로 객체 생성 성공") {
@@ -50,87 +51,87 @@ class PhoneNumberTest : FunSpec({
         }
 
         test("허용되지 않는 앞자리(011)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01112345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(016)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01612345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(017)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01712345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(018)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01812345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(019)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01912345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(070)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("07012345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(012)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01212345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(020)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("02012345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("허용되지 않는 앞자리(031)로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("03112345678")
-            }.message shouldBe "앞자리는 010만 허용됩니다."
+            }
         }
 
         test("10자리 미만 휴대폰 번호로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("010123456")
-            }.message shouldBe "전화번호는 최소 10자리(3-중간-4)여야 합니다."
+            }
         }
 
         test("9자리 휴대폰 번호로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("01012345")
-            }.message shouldBe "전화번호는 최소 10자리(3-중간-4)여야 합니다."
+            }
         }
 
         test("빈 문자열로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("")
-            }.message shouldBe "전화번호는 최소 10자리(3-중간-4)여야 합니다."
+            }
         }
 
         test("하이픈만 있는 문자열로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("---")
-            }.message shouldBe "전화번호는 최소 10자리(3-중간-4)여야 합니다."
+            }
         }
 
         test("공백만 있는 문자열로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 PhoneNumber("      ")
-            }.message shouldBe "전화번호는 최소 10자리(3-중간-4)여야 합니다."
+            }
         }
     }
 

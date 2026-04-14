@@ -1,5 +1,7 @@
 package com.konkuk.ma.domain.common.domain.file
 
+import com.konkuk.ma.domain.common.exception.InvalidValueException
+
 class PhotoFile(
     val originalFileName: String,
     val extension: AllowedExtension,
@@ -7,12 +9,8 @@ class PhotoFile(
     val content: ByteArray
 ) {
     init {
-        require(sizeInBytes <= MAX_FILE_SIZE_BYTES) {
-            "파일 크기는 ${MAX_FILE_SIZE_MB}MB를 초과할 수 없습니다: ${sizeInBytes}bytes"
-        }
-        require(content.isNotEmpty()) {
-            "파일 내용이 비어있습니다."
-        }
+        if (sizeInBytes > MAX_FILE_SIZE_BYTES) throw InvalidValueException(PhotoFile::class, sizeInBytes, "파일 크기는 ${MAX_FILE_SIZE_MB}MB를 초과할 수 없습니다.")
+        if (content.isEmpty()) throw InvalidValueException(PhotoFile::class, originalFileName, "파일 내용이 비어있습니다.")
     }
 
     companion object {

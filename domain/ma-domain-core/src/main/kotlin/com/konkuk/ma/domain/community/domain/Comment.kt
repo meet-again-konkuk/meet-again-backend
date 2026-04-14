@@ -1,8 +1,9 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
 import com.konkuk.ma.domain.community.exception.NotRootCommentException
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import java.time.LocalDateTime
 
@@ -37,7 +38,7 @@ class Comment(
 
     fun validateOwnership(email: Email) {
         if (authorEmail != email) {
-            throw CommentAccessDeniedException(id, authorEmail.value, email.value)
+            throw AccessDeniedException(EntityType.COMMUNITY_COMMENT, authorEmail.value, email.value)
         }
     }
 

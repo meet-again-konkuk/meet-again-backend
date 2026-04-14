@@ -2,6 +2,8 @@ package com.konkuk.ma.domain.matching.domain
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
 import com.konkuk.ma.domain.member.domain.FourDigit
@@ -24,7 +26,9 @@ class TargetInfo(
     val region: Region?
 ) {
     fun validateOwnership(email: Email) {
-        require(registerEmail == email) { "본인이 등록한 찾는 사람 정보가 아닙니다." }
+        if (registerEmail != email) {
+            throw AccessDeniedException(EntityType.TARGET_INFO, registerEmail.value, email.value)
+        }
     }
 
     fun makeMatchingResults(targets: Targets): NewMatchingResults {

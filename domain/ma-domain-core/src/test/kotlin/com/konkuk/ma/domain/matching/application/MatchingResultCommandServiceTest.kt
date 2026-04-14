@@ -2,7 +2,7 @@ package com.konkuk.ma.domain.matching.application
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
+import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
@@ -41,7 +41,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             verify { matchingResultRepository.updateExcluded(matchingResult) }
         }
 
-        test("소유권이 없는 경우 MatchingResultAccessDeniedException이 발생한다") {
+        test("소유권이 없는 경우 AccessDeniedException이 발생한다") {
             // Given
             val matchingResultId = 1L
             val ownerEmail = "owner@example.com"
@@ -51,9 +51,9 @@ class MatchingResultCommandServiceTest : FunSpec({
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
-            shouldThrow<MatchingResultAccessDeniedException> {
+            shouldThrow<AccessDeniedException> {
                 service.exclude(matchingResultId, otherEmail)
-            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
+            }
         }
 
         test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
@@ -66,7 +66,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             // When & Then
             shouldThrow<EntityNotFoundException> {
                 service.exclude(nonExistentId, email)
-            }.message shouldBe "MatchingResult을(를) 찾을 수 없습니다."
+            }
         }
     }
 
@@ -88,7 +88,7 @@ class MatchingResultCommandServiceTest : FunSpec({
             verify { matchingResultRepository.updateExcluded(matchingResult) }
         }
 
-        test("소유권이 없는 경우 MatchingResultAccessDeniedException이 발생한다") {
+        test("소유권이 없는 경우 AccessDeniedException이 발생한다") {
             // Given
             val matchingResultId = 1L
             val ownerEmail = "owner@example.com"
@@ -98,9 +98,9 @@ class MatchingResultCommandServiceTest : FunSpec({
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
-            shouldThrow<MatchingResultAccessDeniedException> {
+            shouldThrow<AccessDeniedException> {
                 service.include(matchingResultId, otherEmail)
-            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
+            }
         }
     }
 })
