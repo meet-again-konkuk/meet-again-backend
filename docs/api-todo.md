@@ -30,6 +30,7 @@
 | GET | /api/community/comments/{commentId} | 댓글 상세 조회 | Done |
 | DELETE | /api/community/posts/{postId}/comments/{commentId} | 댓글 삭제 | Done |
 | POST | /api/domain/inquiries | 1:1 문의 접수 | Done |
+| GET | /api/target-infos | 내가 등록한 찾는 사람 목록 조회 | Done |
 
 ---
 
@@ -41,7 +42,6 @@
 
 | Method | Endpoint | 용도 | 인증 |
 |--------|----------|------|------|
-| GET | /api/target-infos | 내가 등록한 찾는 사람 목록 조회 | 필요 |
 | GET | /api/target-infos/{targetInfoId} | 찾는 사람 상세 조회 | 필요 |
 | PUT | /api/target-infos/{targetInfoId} | 찾는 사람 정보 수정 | 필요 |
 | DELETE | /api/target-infos/{targetInfoId} | 찾는 사람 정보 삭제 | 필요 |
