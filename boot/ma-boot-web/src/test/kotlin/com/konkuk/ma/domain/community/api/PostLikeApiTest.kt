@@ -7,7 +7,6 @@ import com.konkuk.ma.domain.community.domain.PostLikeResult
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.postIdPath
 import com.konkuk.ma.vocabulary.postLikeCount
 import com.konkuk.ma.vocabulary.postLiked
@@ -22,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(PostLikeApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class PostLikeApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val postLikeService: PostLikeService,
@@ -30,7 +28,7 @@ class PostLikeApiTest(
 
     test("게시글 좋아요 추가 API 문서화") {
         // Given
-        every { postLikeService.like(1L, "test@example.com") } returns
+        every { postLikeService.like(1L, "holeman@naver.com") } returns
             PostLikeResult(liked = true, likeCount = 3)
 
         // When & Then
@@ -53,7 +51,7 @@ class PostLikeApiTest(
 
     test("게시글 좋아요 취소 API 문서화") {
         // Given
-        every { postLikeService.unlike(1L, "test@example.com") } returns
+        every { postLikeService.unlike(1L, "holeman@naver.com") } returns
             PostLikeResult(liked = false, likeCount = 2)
 
         // When & Then

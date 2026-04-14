@@ -9,7 +9,6 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.inquiryContent
 import com.konkuk.ma.vocabulary.inquiryId
 import com.konkuk.ma.vocabulary.inquiryTitle
@@ -21,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest(InquiryCommandApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class InquiryCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
@@ -37,7 +35,7 @@ class InquiryCommandApiTest(
 
         every {
             inquiryCommandService.create(match {
-                it.authorEmail == Email("test@example.com") &&
+                it.authorEmail == Email("holeman@naver.com") &&
                     it.title == "로그인이 안됩니다" &&
                     it.content == "비밀번호를 올바르게 입력해도 로그인이 되지 않습니다."
             })

@@ -10,7 +10,6 @@ import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.commentDetailContent
 import com.konkuk.ma.vocabulary.commentDetailId
 import com.konkuk.ma.vocabulary.commentDetailLikes
@@ -35,7 +34,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(CommentQueryApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class CommentQueryApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val commentQueryService: CommentQueryService,
