@@ -29,6 +29,7 @@
 |--------|----------|------|
 | POST | /api/target-infos | 찾는 사람 정보 등록 |
 | GET | /api/target-infos | 찾는 사람 목록 조회 |
+| GET | /api/target-infos/{targetInfoId} | 찾는 사람 상세 조회 |
 | GET | /api/matching-results | 매칭 결과 목록 조회 |
 | GET | /api/matching-results/{id} | 매칭 결과 상세 조회 |
 | GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 |
@@ -66,7 +67,6 @@
 
 | Method | Endpoint | 용도 | 인증 |
 |--------|----------|------|------|
-| GET | /api/target-infos/{targetInfoId} | 찾는 사람 상세 조회 | 필요 |
 | PUT | /api/target-infos/{targetInfoId} | 찾는 사람 정보 수정 | 필요 |
 | DELETE | /api/target-infos/{targetInfoId} | 찾는 사람 정보 삭제 | 필요 |
 
