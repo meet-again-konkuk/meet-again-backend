@@ -20,7 +20,6 @@ import com.konkuk.ma.vocabulary.year
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
-import com.konkuk.ma.support.security.WithAuthMember
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -30,7 +29,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 
 @WebMvcTest(TargetInfoCommandApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class TargetInfoCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
@@ -55,7 +53,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == Email("test@example.com") &&
+                    it.registerEmail == Email("holeman@naver.com") &&
                     it.targetName == "김만남" &&
                     it.middleNumber?.value == "1234" &&
                     it.lastNumber?.value == "5678" &&
@@ -111,7 +109,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == Email("test@example.com") &&
+                    it.registerEmail == Email("holeman@naver.com") &&
                     it.targetName == "이재회" &&
                     it.middleNumber == null &&
                     it.lastNumber == null &&

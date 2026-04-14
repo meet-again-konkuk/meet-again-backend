@@ -7,7 +7,6 @@ import com.konkuk.ma.domain.community.domain.CommentLikeResult
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.commentIdPath
 import com.konkuk.ma.vocabulary.commentLikeCount
 import com.konkuk.ma.vocabulary.commentLiked
@@ -22,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(CommentLikeApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class CommentLikeApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val commentLikeService: CommentLikeService,
@@ -30,7 +28,7 @@ class CommentLikeApiTest(
 
     test("댓글 좋아요 추가 API 문서화") {
         // Given
-        every { commentLikeService.like(1L, "test@example.com") } returns
+        every { commentLikeService.like(1L, "holeman@naver.com") } returns
             CommentLikeResult(liked = true, likeCount = 3)
 
         // When & Then
@@ -53,7 +51,7 @@ class CommentLikeApiTest(
 
     test("댓글 좋아요 취소 API 문서화") {
         // Given
-        every { commentLikeService.unlike(1L, "test@example.com") } returns
+        every { commentLikeService.unlike(1L, "holeman@naver.com") } returns
             CommentLikeResult(liked = false, likeCount = 2)
 
         // When & Then

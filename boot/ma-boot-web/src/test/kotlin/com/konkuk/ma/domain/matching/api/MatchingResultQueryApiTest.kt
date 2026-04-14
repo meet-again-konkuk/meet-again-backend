@@ -12,7 +12,6 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.dayMatched
 import com.konkuk.ma.vocabulary.detailMatchRate
 import com.konkuk.ma.vocabulary.detailMatchingResultId
@@ -39,7 +38,6 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest(MatchingResultQueryApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class MatchingResultQueryApiTest(
     private val mockMvc: MockMvc,
     private val idObfuscator: IdObfuscator,
@@ -49,7 +47,7 @@ class MatchingResultQueryApiTest(
     test("매칭 결과 목록 조회 API 문서화") {
         // Given
         val matchingResult = MatchingResultFixture.create(
-            registerEmail = "test@example.com",
+            registerEmail = "holeman@naver.com",
             monthMatched = false,
             dayMatched = false,
         )
@@ -65,7 +63,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("test@example.com", false) } returns resultsWithProfiles
+        every { matchingResultQueryService.find("holeman@naver.com", false) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -91,7 +89,7 @@ class MatchingResultQueryApiTest(
     test("excluded=true로 제외된 매칭 결과 목록 조회 API 문서화") {
         // Given
         val matchingResult = MatchingResultFixture.create(
-            registerEmail = "test@example.com",
+            registerEmail = "holeman@naver.com",
             monthMatched = false,
             dayMatched = false,
         )
@@ -107,7 +105,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("test@example.com", true) } returns resultsWithProfiles
+        every { matchingResultQueryService.find("holeman@naver.com", true) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {
@@ -136,7 +134,7 @@ class MatchingResultQueryApiTest(
         // Given
         val emptyResults = MatchingResultsWithProfiles(data = emptyList())
 
-        every { matchingResultQueryService.find("test@example.com", false) } returns emptyResults
+        every { matchingResultQueryService.find("holeman@naver.com", false) } returns emptyResults
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -152,12 +150,12 @@ class MatchingResultQueryApiTest(
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
         val matchingResult = MatchingResultFixture.create(
             id = matchingResultId,
-            registerEmail = "test@example.com",
+            registerEmail = "holeman@naver.com",
             monthMatched = false,
             dayMatched = false,
         )
 
-        every { matchingResultQueryService.findDetail(matchingResultId, "test@example.com") } returns matchingResult
+        every { matchingResultQueryService.findDetail(matchingResultId, "holeman@naver.com") } returns matchingResult
 
         // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}

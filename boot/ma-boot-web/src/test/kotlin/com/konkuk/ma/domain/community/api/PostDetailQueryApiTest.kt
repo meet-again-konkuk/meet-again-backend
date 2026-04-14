@@ -13,7 +13,6 @@ import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.detailCategory
 import com.konkuk.ma.vocabulary.detailCommentContent
 import com.konkuk.ma.vocabulary.detailCommentId
@@ -46,7 +45,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(PostQueryApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class PostDetailQueryApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val postQueryService: PostQueryService,

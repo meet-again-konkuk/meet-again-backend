@@ -5,6 +5,8 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
+import com.konkuk.ma.domain.common.domain.id.ObfuscationType
+import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.application.TargetInfoQueryService
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.member.domain.FourDigit
@@ -13,7 +15,6 @@ import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.day
 import com.konkuk.ma.vocabulary.lastNumber
 import com.konkuk.ma.vocabulary.middleNumber
@@ -31,18 +32,20 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest(TargetInfoQueryApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class TargetInfoQueryApiTest(
     private val mockMvc: MockMvc,
+    private val idObfuscator: IdObfuscator,
     @MockkBean private val targetInfoQueryService: TargetInfoQueryService,
 ) : FunSpec({
 
+    val authEmail = "holeman@naver.com"
+
     test("내가 등록한 찾는 사람 목록 조회 API 문서화") {
         // Given
-        every { targetInfoQueryService.find(Email("test@example.com")) } returns listOf(
+        every { targetInfoQueryService.find(authEmail) } returns listOf(
             TargetInfo(
                 targetInfoId = 1L,
-                registerEmail = Email("test@example.com"),
+                registerEmail = Email(authEmail),
                 targetName = "김만남",
                 targetGender = Gender.FEMALE,
                 middleNumber = FourDigit("1234"),
@@ -75,12 +78,48 @@ class TargetInfoQueryApiTest(
 
     test("등록한 찾는 사람이 없으면 빈 목록을 반환한다") {
         // Given
-        every { targetInfoQueryService.find(Email("test@example.com")) } returns emptyList()
+        every { targetInfoQueryService.find(authEmail) } returns emptyList()
 
         // When & Then
         mockMvc.getJson("/api/target-infos") {}
             .andExpect { status { isOk() } }
             .andExpect { jsonPath("$") { isArray() } }
             .andExpect { jsonPath("$.length()") { value(0) } }
+    }
+
+    test("찾는 사람 상세 조회 API 문서화") {
+        // Given
+        val encryptedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L)
+
+        every { targetInfoQueryService.findDetail(1L, authEmail) } returns TargetInfo(
+            targetInfoId = 1L,
+            registerEmail = Email(authEmail),
+            targetName = "김만남",
+            targetGender = Gender.FEMALE,
+            middleNumber = FourDigit("1234"),
+            lastNumber = FourDigit("5678"),
+            year = Year(1995),
+            month = Month(5),
+            day = Day(15),
+            region = Region.SEOUL,
+        )
+
+        // When & Then
+        mockMvc.getJson("/api/target-infos/$encryptedId") {}
+            .andExpect { status { isOk() } }
+            .andDocument(
+                "matching/find-target-info-detail",
+                responseBody(
+                    targetInfoId(),
+                    targetName("targetName"),
+                    targetGender(),
+                    middleNumber() isOptional true,
+                    lastNumber() isOptional true,
+                    year() isOptional true,
+                    month() isOptional true,
+                    day() isOptional true,
+                    targetRegion() isOptional true,
+                ),
+            )
     }
 })

@@ -10,7 +10,6 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.newPostCategory
 import com.konkuk.ma.vocabulary.newPostContent
 import com.konkuk.ma.vocabulary.newPostId
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest(PostCommandApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class PostCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
@@ -40,7 +38,7 @@ class PostCommandApiTest(
 
         every {
             postCommandService.create(match {
-                it.authorEmail == Email("test@example.com") &&
+                it.authorEmail == Email("holeman@naver.com") &&
                     it.category == PostCategory.CHEER &&
                     it.title == "안녕하세요" &&
                     it.content == "반갑습니다"

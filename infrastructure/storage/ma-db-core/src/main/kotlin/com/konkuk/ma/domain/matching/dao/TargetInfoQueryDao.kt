@@ -10,6 +10,13 @@ import org.springframework.stereotype.Component
 
 @Component
 class TargetInfoQueryDao {
+    fun findOne(id: Long): TargetInfoEntity? {
+        return TargetInfoTable.selectAll()
+            .where { TargetInfoTable.id eq id }
+            .map { RowEntityMapper.toTargetInfoEntity(it) }
+            .singleOrNull()
+    }
+
     fun find(email: String): List<TargetInfoEntity> {
         return TargetInfoTable.selectAll()
             .where { TargetInfoTable.registerEmail eq email }

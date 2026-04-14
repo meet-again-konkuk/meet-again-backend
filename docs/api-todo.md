@@ -1,42 +1,66 @@
 # Backend API To-Do List
 
-## 완료된 API
+---
 
-| Method | Endpoint | 용도 | 상태 |
-|--------|----------|------|------|
-| POST | /api/auth/sign-up | 회원가입 | Done |
-| POST | /api/auth/login | 로그인 | Done |
-| POST | /api/auth/refresh-token | 토큰 갱신 | Done |
-| POST | /api/sms/verification-code | SMS 인증코드 전송 | Done |
-| POST | /api/sms/verification-code/confirm | SMS 인증코드 확인 | Done |
-| POST | /api/members/duplicated-nickname | 닉네임 중복 확인 | Done |
-| POST | /api/members/duplicated-email | 이메일 중복 확인 | Done |
-| POST | /api/target-infos | 찾는 사람 정보 등록 | Done |
-| POST | /api/members/photos | 프로필 사진 업로드 | Done |
-| DELETE | /api/members/photos | 프로필 사진 삭제 | Done |
-| GET | /api/matching-results | 매칭 결과 목록 조회 | Done |
-| GET | /api/matching-results/{id} | 매칭 결과 상세 조회 | Done |
-| PATCH | /api/matching-results/{id}/exclude | 매칭 상대 제외(차단) | Done |
-| PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 | Done |
-| GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 | Done |
-| GET | /api/community/posts | 게시글 목록 조회 | Done |
-| POST | /api/community/posts | 게시글 작성 | Done |
-| POST | /api/community/posts/{postId}/comments | 댓글/대댓글 작성 | Done |
-| POST | /api/community/comments/{commentId}/likes | 댓글 좋아요 추가 | Done |
-| DELETE | /api/community/comments/{commentId}/likes | 댓글 좋아요 취소 | Done |
-| POST | /api/community/posts/{postId}/likes | 게시글 좋아요 추가 | Done |
-| DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 | Done |
-| GET | /api/community/posts/{id} | 게시글 상세 조회 | Done |
-| GET | /api/community/comments/{commentId} | 댓글 상세 조회 | Done |
-| DELETE | /api/community/posts/{postId}/comments/{commentId} | 댓글 삭제 | Done |
-| POST | /api/domain/inquiries | 1:1 문의 접수 | Done |
-| GET | /api/target-infos | 내가 등록한 찾는 사람 목록 조회 | Done |
+# ✅ 완료된 API
+
+### 인증
+
+| Method | Endpoint | 용도 |
+|--------|----------|------|
+| POST | /api/auth/sign-up | 회원가입 |
+| POST | /api/auth/login | 로그인 |
+| POST | /api/auth/refresh-token | 토큰 갱신 |
+| POST | /api/sms/verification-code | SMS 인증코드 전송 |
+| POST | /api/sms/verification-code/confirm | SMS 인증코드 확인 |
+
+### 회원
+
+| Method | Endpoint | 용도 |
+|--------|----------|------|
+| POST | /api/members/nickname/exists | 닉네임 중복 확인 |
+| POST | /api/members/email/exists | 이메일 중복 확인 |
+| POST | /api/members/photos | 프로필 사진 업로드 |
+| DELETE | /api/members/photos | 프로필 사진 삭제 |
+
+### 매칭
+
+| Method | Endpoint | 용도 |
+|--------|----------|------|
+| POST | /api/target-infos | 찾는 사람 정보 등록 |
+| GET | /api/target-infos | 찾는 사람 목록 조회 |
+| GET | /api/matching-results | 매칭 결과 목록 조회 |
+| GET | /api/matching-results/{id} | 매칭 결과 상세 조회 |
+| GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 |
+| PATCH | /api/matching-results/{id}/exclude | 매칭 상대 제외(차단) |
+| PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 |
+
+### 커뮤니티
+
+| Method | Endpoint | 용도 |
+|--------|----------|------|
+| GET | /api/community/posts | 게시글 목록 조회 |
+| GET | /api/community/posts/{id} | 게시글 상세 조회 |
+| POST | /api/community/posts | 게시글 작성 |
+| POST | /api/community/posts/{postId}/likes | 게시글 좋아요 추가 |
+| DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 |
+| POST | /api/community/posts/{postId}/comments | 댓글/대댓글 작성 |
+| GET | /api/community/comments/{commentId} | 댓글 상세 조회 |
+| DELETE | /api/community/posts/{postId}/comments/{commentId} | 댓글 삭제 |
+| POST | /api/community/comments/{commentId}/likes | 댓글 좋아요 추가 |
+| DELETE | /api/community/comments/{commentId}/likes | 댓글 좋아요 취소 |
+
+### 고객지원
+
+| Method | Endpoint | 용도 |
+|--------|----------|------|
+| POST | /api/domain/inquiries | 1:1 문의 접수 |
 
 ---
 
-## 매칭
+# 📋 TODO
 
-- ~~MatchingResult를 NewMatchingResult / MatchingResult로 분리 (생성/조회 분리 일관성)~~ ✔ 완료
+## 매칭
 
 ### 찾는 사람 정보 (target-info) CRUD
 
@@ -53,15 +77,6 @@
 ---
 
 ## 커뮤니티
-
-
-### ~~게시글 좋아요~~ ✔ 완료
-
-### ~~댓글 상세 조회~~ ✔ 완료
-
-### ~~댓글 삭제~~ ✔ 완료
-
-### ~~댓글 좋아요~~ ✔ 완료
 
 ### 게시글에 댓글 알림 설정
 
@@ -150,8 +165,6 @@ X룸 안에 배치하는 콘텐츠 단위. 각 블록은 위치/크기/회전 �
 ---
 
 ## 기타
-
-### ~~1:1 문의 접수~~ ✔ 완료
 
 ### 회원 탈퇴
 

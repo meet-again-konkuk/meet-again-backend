@@ -11,7 +11,6 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
 import com.konkuk.ma.vocabulary.categoryParam
 import com.konkuk.ma.vocabulary.cursorIdParam
 import com.konkuk.ma.vocabulary.postCategory
@@ -33,7 +32,6 @@ import java.time.LocalDateTime
 
 @WebMvcTest(PostQueryApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class PostQueryApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val postQueryService: PostQueryService,

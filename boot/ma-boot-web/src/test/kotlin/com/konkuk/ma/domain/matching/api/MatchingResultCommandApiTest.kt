@@ -8,7 +8,6 @@ import com.konkuk.ma.domain.matching.application.MatchingResultCommandService
 import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.patchJson
-import com.konkuk.ma.support.security.WithAuthMember
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -19,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc
 
 @WebMvcTest(MatchingResultCommandApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class MatchingResultCommandApiTest(
     private val mockMvc: MockMvc,
     private val idObfuscator: IdObfuscator,
@@ -31,7 +29,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.exclude(matchingResultId, "test@example.com") } just runs
+        every { matchingResultCommandService.exclude(matchingResultId, "holeman@naver.com") } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}
@@ -44,7 +42,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.include(matchingResultId, "test@example.com") } just runs
+        every { matchingResultCommandService.include(matchingResultId, "holeman@naver.com") } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/include") {}
@@ -57,8 +55,8 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.exclude(matchingResultId, "test@example.com") } throws
-            MatchingResultAccessDeniedException(matchingResultId, Email("owner@example.com"), Email("test@example.com"))
+        every { matchingResultCommandService.exclude(matchingResultId, "holeman@naver.com") } throws
+            MatchingResultAccessDeniedException(matchingResultId, Email("owner@example.com"), Email("holeman@naver.com"))
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}
