@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.application
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import org.springframework.stereotype.Service
@@ -10,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 class TargetInfoQueryService(
     private val targetInfoQueryRepository: TargetInfoQueryRepository,
 ) {
-    fun find(email: String): List<TargetInfo> {
+    fun find(email: Email): List<TargetInfo> {
         return targetInfoQueryRepository.find(email)
     }
 }

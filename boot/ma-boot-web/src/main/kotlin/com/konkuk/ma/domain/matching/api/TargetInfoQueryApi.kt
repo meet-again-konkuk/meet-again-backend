@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.api
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.api.response.TargetInfoResponse
 import com.konkuk.ma.domain.matching.application.TargetInfoQueryService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -16,7 +17,7 @@ class TargetInfoQueryApi(
     fun findMyTargetInfos(
         @AuthenticationPrincipal email: String,
     ): List<TargetInfoResponse> {
-        return targetInfoQueryService.find(email)
+        return targetInfoQueryService.find(Email(email))
             .map { TargetInfoResponse.from(it) }
     }
 }

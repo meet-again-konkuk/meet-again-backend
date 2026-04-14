@@ -39,7 +39,7 @@ class TargetInfoQueryApiTest(
 
     test("내가 등록한 찾는 사람 목록 조회 API 문서화") {
         // Given
-        every { targetInfoQueryService.find("test@example.com") } returns listOf(
+        every { targetInfoQueryService.find(Email("test@example.com")) } returns listOf(
             TargetInfo(
                 targetInfoId = 1L,
                 registerEmail = Email("test@example.com"),
@@ -75,7 +75,7 @@ class TargetInfoQueryApiTest(
 
     test("등록한 찾는 사람이 없으면 빈 목록을 반환한다") {
         // Given
-        every { targetInfoQueryService.find("test@example.com") } returns emptyList()
+        every { targetInfoQueryService.find(Email("test@example.com")) } returns emptyList()
 
         // When & Then
         mockMvc.getJson("/api/target-infos") {}
