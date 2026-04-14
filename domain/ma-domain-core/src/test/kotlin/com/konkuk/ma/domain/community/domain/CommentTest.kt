@@ -1,9 +1,8 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.AccessDeniedException
-import com.konkuk.ma.domain.community.exception.NotRootCommentException
-import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
@@ -44,39 +43,18 @@ class CommentTest : FunSpec({
         }
     }
 
-    context("validateCanBeParent") {
-
-        test("일반 댓글이면 예외 없이 통과한다") {
-            val comment = CommentFixture.create(parentCommentId = null)
-
-            shouldNotThrow<ReplyDepthExceededException> {
-                comment.validateCanBeParent()
-            }
-        }
-
-        test("대댓글이면 ReplyDepthExceededException이 발생한다") {
-            val comment = CommentFixture.create(id = 10L, parentCommentId = 5L)
-
-            shouldThrow<ReplyDepthExceededException> {
-                comment.validateCanBeParent()
-            }
-        }
-    }
-
     context("validateIsRootComment") {
 
         test("루트 댓글이면 예외 없이 통과한다") {
             val comment = CommentFixture.create(parentCommentId = null)
 
-            shouldNotThrow<NotRootCommentException> {
-                comment.validateIsRootComment()
-            }
+            comment.validateIsRootComment()
         }
 
-        test("대댓글이면 NotRootCommentException이 발생한다") {
+        test("대댓글이면 InvalidStateException이 발생한다") {
             val comment = CommentFixture.create(id = 10L, parentCommentId = 5L)
 
-            shouldThrow<NotRootCommentException> {
+            shouldThrow<InvalidStateException> {
                 comment.validateIsRootComment()
             }
         }

@@ -4,10 +4,9 @@ import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
 import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.domain.common.exception.InvalidValueException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
-import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
-import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.BusinessException
 import com.konkuk.ma.exception.DuplicateException
 import com.konkuk.ma.exception.EntityNotFoundException
@@ -50,9 +49,8 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(
         InvalidValueException::class,
+        InvalidStateException::class,
         SmsNotVerifiedException::class,
-        ReplyDepthExceededException::class,
-        NotRootCommentException::class,
     )
     fun handleBadRequestException(e: BusinessException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.INVALID_INPUT_VALUE)

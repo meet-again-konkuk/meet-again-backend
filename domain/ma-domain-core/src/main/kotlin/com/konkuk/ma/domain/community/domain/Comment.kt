@@ -1,10 +1,9 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.exception.NotRootCommentException
 import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.EntityType
-import com.konkuk.ma.domain.community.exception.ReplyDepthExceededException
 import java.time.LocalDateTime
 
 class Comment(
@@ -24,15 +23,9 @@ class Comment(
 
     fun hasParent(): Boolean = parentCommentId != null
 
-    fun validateCanBeParent() {
-        if (hasParent()) {
-            throw ReplyDepthExceededException(id)
-        }
-    }
-
     fun validateIsRootComment() {
         if (hasParent()) {
-            throw NotRootCommentException(id)
+            throw InvalidStateException(Comment::class, id, "루트 댓글이 아닙니다.")
         }
     }
 

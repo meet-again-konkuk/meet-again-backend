@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
-import com.konkuk.ma.domain.community.exception.NotRootCommentException
+import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
@@ -86,16 +86,16 @@ class CommentQueryServiceTest : FunSpec({
             }.message shouldBe "CommunityComment을(를) 찾을 수 없습니다."
         }
 
-        test("대댓글 ID로 조회하면 NotRootCommentException이 발생한다") {
+        test("대댓글 ID로 조회하면 InvalidStateException이 발생한다") {
             // Given
             val replyComment = CommentFixture.create(id = 5L, parentCommentId = 1L)
 
             every { commentQueryRepository.findOne(replyComment.id) } returns replyComment
 
             // When & Then
-            shouldThrow<NotRootCommentException> {
+            shouldThrow<InvalidStateException> {
                 service.findDetail(replyComment.id)
-            }.message shouldBe "루트 댓글만 조회할 수 있습니다."
+            }
         }
     }
 })

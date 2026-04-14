@@ -25,6 +25,6 @@ class CommentValidator(
     private fun validateParentComment(newComment: NewComment) {
         if (!newComment.hasParent()) return
         val parentComment = commentQueryRepository.findOne(newComment.parentCommentId!!)
-        parentComment.validateCanBeParent()
+        parentComment.validateIsRootComment()
     }
 }
