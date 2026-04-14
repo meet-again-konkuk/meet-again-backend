@@ -14,15 +14,15 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.support.security.WithAuthMember
-import com.konkuk.ma.vocabulary.myDay
-import com.konkuk.ma.vocabulary.myLastNumber
-import com.konkuk.ma.vocabulary.myMiddleNumber
-import com.konkuk.ma.vocabulary.myMonth
-import com.konkuk.ma.vocabulary.myTargetGender
-import com.konkuk.ma.vocabulary.myTargetInfoId
-import com.konkuk.ma.vocabulary.myTargetName
-import com.konkuk.ma.vocabulary.myTargetRegion
-import com.konkuk.ma.vocabulary.myYear
+import com.konkuk.ma.vocabulary.day
+import com.konkuk.ma.vocabulary.lastNumber
+import com.konkuk.ma.vocabulary.middleNumber
+import com.konkuk.ma.vocabulary.month
+import com.konkuk.ma.vocabulary.targetGender
+import com.konkuk.ma.vocabulary.targetInfoId
+import com.konkuk.ma.vocabulary.targetName
+import com.konkuk.ma.vocabulary.targetRegion
+import com.konkuk.ma.vocabulary.year
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -60,15 +60,15 @@ class TargetInfoQueryApiTest(
             .andDocument(
                 "matching/find-my-target-infos",
                 responseBody(
-                    myTargetInfoId(),
-                    myTargetName(),
-                    myTargetGender(),
-                    myMiddleNumber(),
-                    myLastNumber(),
-                    myYear(),
-                    myMonth(),
-                    myDay(),
-                    myTargetRegion(),
+                    targetInfoId("[].targetInfoId"),
+                    targetName("[].targetName"),
+                    targetGender("[].targetGender"),
+                    middleNumber("[].middleNumber") isOptional true,
+                    lastNumber("[].lastNumber") isOptional true,
+                    year("[].year") isOptional true,
+                    month("[].month") isOptional true,
+                    day("[].day") isOptional true,
+                    targetRegion("[].region") isOptional true,
                 ),
             )
     }

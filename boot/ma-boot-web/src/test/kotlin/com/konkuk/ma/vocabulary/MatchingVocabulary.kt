@@ -32,37 +32,11 @@ fun month(fieldName: String = "month") =
 fun day(fieldName: String = "day") =
     fieldName responseType NUMBER means "생일" example "15"
 
-fun targetRegion(fieldName: String = "region") =
-    fieldName responseType STRING means "지역" example "SEOUL"
-
-// --- 찾는 사람 목록 응답 필드 ---
-
-fun myTargetInfoId(fieldName: String = "[].targetInfoId") =
-    fieldName responseType STRING means "찾는 사람 정보 ID (인코딩)" example "abc123"
-
-fun myTargetName(fieldName: String = "[].targetName") =
-    fieldName responseType STRING means "찾는 사람 이름" example "김만남"
-
-fun myTargetGender(fieldName: String = "[].targetGender") =
+fun targetGender(fieldName: String = "targetGender") =
     fieldName responseType STRING means "찾는 사람 성별" example "FEMALE"
 
-fun myMiddleNumber(fieldName: String = "[].middleNumber") =
-    fieldName responseType STRING means "전화번호 중간자리" example "1234" isOptional true
-
-fun myLastNumber(fieldName: String = "[].lastNumber") =
-    fieldName responseType STRING means "전화번호 뒷자리" example "5678" isOptional true
-
-fun myYear(fieldName: String = "[].year") =
-    fieldName responseType NUMBER means "생년" example "1995" isOptional true
-
-fun myMonth(fieldName: String = "[].month") =
-    fieldName responseType NUMBER means "생월" example "5" isOptional true
-
-fun myDay(fieldName: String = "[].day") =
-    fieldName responseType NUMBER means "생일" example "15" isOptional true
-
-fun myTargetRegion(fieldName: String = "[].region") =
-    fieldName responseType STRING means "지역" example "SEOUL" isOptional true
+fun targetRegion(fieldName: String = "region") =
+    fieldName responseType STRING means "지역" example "SEOUL"
 
 // --- 매칭 결과 관련 필드 ---
 
