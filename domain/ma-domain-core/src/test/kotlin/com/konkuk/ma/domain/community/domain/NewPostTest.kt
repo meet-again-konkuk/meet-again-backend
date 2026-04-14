@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.community.fixture.NewPostFixture
+import com.konkuk.ma.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -26,35 +27,35 @@ class NewPostTest : FunSpec({
         }
 
         test("제목이 빈 문자열이면 예외가 발생한다") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewPostFixture.create(title = "")
-            }.message shouldBe "게시글 제목은 비어있을 수 없습니다."
+            }
         }
 
         test("제목이 공백만 포함하면 예외가 발생한다") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewPostFixture.create(title = "   ")
-            }.message shouldBe "게시글 제목은 비어있을 수 없습니다."
+            }
         }
 
         test("제목이 30자를 초과하면 예외가 발생한다") {
             val title = "가".repeat(31)
 
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewPostFixture.create(title = title)
-            }.message shouldBe "게시글 제목은 30자 이하여야 합니다."
+            }
         }
 
         test("내용이 빈 문자열이면 예외가 발생한다") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewPostFixture.create(content = "")
-            }.message shouldBe "게시글 내용은 비어있을 수 없습니다."
+            }
         }
 
         test("내용이 공백만 포함하면 예외가 발생한다") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewPostFixture.create(content = "   ")
-            }.message shouldBe "게시글 내용은 비어있을 수 없습니다."
+            }
         }
 
         test("내용이 2000자인 경우 객체 생성에 성공한다") {
@@ -68,9 +69,9 @@ class NewPostTest : FunSpec({
         test("내용이 2000자를 초과하면 예외가 발생한다") {
             val content = "가".repeat(2001)
 
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 NewPostFixture.create(content = content)
-            }.message shouldBe "게시글 내용은 2000자 이하여야 합니다."
+            }
         }
     }
 })

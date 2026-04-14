@@ -1,6 +1,4 @@
-package com.konkuk.ma.domain.common.exception
-
-import com.konkuk.ma.exception.BusinessException
+package com.konkuk.ma.exception
 
 class InvalidObfuscatedIdException(
     encodedValue: String

@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.support.domain
 
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.exception.InvalidValueException
 
 class NewInquiry(
     authorEmail: String,
@@ -15,13 +16,13 @@ class NewInquiry(
     }
 
     private fun validateTitle() {
-        require(title.isNotBlank()) { "문의 제목은 비어있을 수 없습니다." }
-        require(title.length <= MAX_TITLE_LENGTH) { "문의 제목은 ${MAX_TITLE_LENGTH}자 이하여야 합니다." }
+        if (title.isBlank()) throw InvalidValueException(NewInquiry::class, title, "문의 제목은 비어있을 수 없습니다.")
+        if (title.length > MAX_TITLE_LENGTH) throw InvalidValueException(NewInquiry::class, title, "문의 제목은 ${MAX_TITLE_LENGTH}자 이하여야 합니다.")
     }
 
     private fun validateContent() {
-        require(content.isNotBlank()) { "문의 내용은 비어있을 수 없습니다." }
-        require(content.length <= MAX_CONTENT_LENGTH) { "문의 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다." }
+        if (content.isBlank()) throw InvalidValueException(NewInquiry::class, content, "문의 내용은 비어있을 수 없습니다.")
+        if (content.length > MAX_CONTENT_LENGTH) throw InvalidValueException(NewInquiry::class, content, "문의 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다.")
     }
 
     companion object {

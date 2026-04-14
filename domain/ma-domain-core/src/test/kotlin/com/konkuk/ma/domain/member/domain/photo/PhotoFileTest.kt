@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.domain.photo
 
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
+import com.konkuk.ma.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -29,7 +30,7 @@ class PhotoFileTest : BehaviorSpec({
 
         When("PhotoFile을 생성하면") {
             Then("예외가 발생한다") {
-                shouldThrow<IllegalArgumentException> {
+                shouldThrow<InvalidValueException> {
                     PhotoFile.create(
                         originalFileName = "large.jpg",
                         sizeInBytes = overSizedBytes,
@@ -43,7 +44,7 @@ class PhotoFileTest : BehaviorSpec({
     Given("빈 파일 내용이 주어졌을 때") {
         When("PhotoFile을 생성하면") {
             Then("예외가 발생한다") {
-                shouldThrow<IllegalArgumentException> {
+                shouldThrow<InvalidValueException> {
                     PhotoFile.create(
                         originalFileName = "empty.jpg",
                         sizeInBytes = 0,

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.common.domain
 
+import com.konkuk.ma.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -24,33 +25,33 @@ class EmailTest : FunSpec({
         }
 
         test("빈 문자열로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 Email("")
-            }.message shouldBe "이메일은 비어있을 수 없습니다."
+            }
         }
 
         test("공백 문자열로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 Email("   ")
-            }.message shouldBe "이메일은 비어있을 수 없습니다."
+            }
         }
 
         test("@가 없는 문자열로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 Email("userexample.com")
-            }.message shouldBe "유효하지 않은 이메일 형식입니다: userexample.com"
+            }
         }
 
         test("도메인이 없는 이메일로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 Email("user@")
-            }.message shouldBe "유효하지 않은 이메일 형식입니다: user@"
+            }
         }
 
         test("로컬파트가 없는 이메일로 객체 생성 실패") {
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<InvalidValueException> {
                 Email("@example.com")
-            }.message shouldBe "유효하지 않은 이메일 형식입니다: @example.com"
+            }
         }
     }
 

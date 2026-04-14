@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.exception.InvalidValueException
 
 class NewComment(
     val postId: Long,
@@ -15,8 +16,8 @@ class NewComment(
     }
 
     private fun validateContent() {
-        require(content.isNotBlank()) { "댓글 내용은 비어있을 수 없습니다." }
-        require(content.length <= MAX_CONTENT_LENGTH) { "댓글 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다." }
+        if (content.isBlank()) throw InvalidValueException(NewComment::class, content, "댓글 내용은 비어있을 수 없습니다.")
+        if (content.length > MAX_CONTENT_LENGTH) throw InvalidValueException(NewComment::class, content, "댓글 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다.")
     }
 
     fun hasParent(): Boolean = parentCommentId != null

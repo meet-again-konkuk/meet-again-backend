@@ -2,10 +2,9 @@ package com.konkuk.ma.domain.auth.domain
 
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
-import com.konkuk.ma.domain.member.exception.DuplicateEmailException
-import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.domain.member.fixture.NewMemberFixture
+import com.konkuk.ma.exception.DuplicateException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -38,9 +37,9 @@ class SignUpValidatorTest : FunSpec({
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns true
 
             // When & Then
-            shouldThrow<DuplicateNicknameException> {
+            shouldThrow<DuplicateException> {
                 signUpValidator.validate(newMember)
-            }.message shouldBe DuplicateNicknameException.MESSAGE
+            }.message shouldBe "이미 사용중인 nickname입니다."
         }
 
         test("중복된 이메일이 있으면 예외가 발생한다") {
@@ -51,9 +50,9 @@ class SignUpValidatorTest : FunSpec({
             every { memberQueryRepository.existsByEmail(newMember.email) } returns true
 
             // When & Then
-            shouldThrow<DuplicateEmailException> {
+            shouldThrow<DuplicateException> {
                 signUpValidator.validate(newMember)
-            }.message shouldBe DuplicateEmailException.MESSAGE
+            }.message shouldBe "이미 사용중인 email입니다."
         }
 
         test("SMS 인증이 완료되지 않으면 예외가 발생한다") {
@@ -79,9 +78,9 @@ class SignUpValidatorTest : FunSpec({
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
 
             // When & Then
-            shouldThrow<DuplicateNicknameException> {
+            shouldThrow<DuplicateException> {
                 signUpValidator.validate(newMember)
-            }.message shouldBe DuplicateNicknameException.MESSAGE
+            }.message shouldBe "이미 사용중인 nickname입니다."
         }
     }
 })

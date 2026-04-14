@@ -4,9 +4,9 @@ import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
-import com.konkuk.ma.domain.member.exception.DuplicateEmailException
-import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.exception.DuplicateException
+import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Component
 
 @Component
@@ -22,13 +22,13 @@ class SignUpValidator(
 
     private fun checkDuplicatedNickname(nickname: String) {
         if (memberQueryRepository.existsByNickname(nickname)) {
-            throw DuplicateNicknameException(nickname)
+            throw DuplicateException(EntityType.MEMBER, "nickname", nickname)
         }
     }
 
     private fun checkDuplicatedEmail(email: Email) {
         if (memberQueryRepository.existsByEmail(email)) {
-            throw DuplicateEmailException(email)
+            throw DuplicateException(EntityType.MEMBER, "email", email.value)
         }
     }
 

@@ -1,7 +1,8 @@
 package com.konkuk.ma.domain.matching.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.EntityType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -46,7 +47,7 @@ class MatchingResult(
 
     fun validateOwnership(email: Email) {
         if (registerEmail != email) {
-            throw MatchingResultAccessDeniedException(id, registerEmail, email)
+            throw AccessDeniedException(EntityType.MATCHING_RESULT, registerEmail.value, email.value)
         }
     }
 

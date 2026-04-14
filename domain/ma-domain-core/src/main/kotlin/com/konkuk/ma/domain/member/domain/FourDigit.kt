@@ -1,9 +1,11 @@
 package com.konkuk.ma.domain.member.domain
 
+import com.konkuk.ma.exception.InvalidValueException
+
 data class FourDigit(val value: String) {
     init {
-        require(value.length == 4) { "FourDigit는 4자리여야 합니다. value=$value" }
-        require(value.all { it in '0'..'9' }) { "FourDigit는 0~9 숫자만 허용됩니다. value=$value" }
+        if (value.length != 4) throw InvalidValueException(FourDigit::class, value, "4자리여야 합니다.")
+        if (!value.all { it in '0'..'9' }) throw InvalidValueException(FourDigit::class, value, "0~9 숫자만 허용됩니다.")
     }
 
     override fun toString(): String = value

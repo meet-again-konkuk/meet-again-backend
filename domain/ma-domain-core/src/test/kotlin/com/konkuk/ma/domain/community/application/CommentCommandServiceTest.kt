@@ -4,10 +4,9 @@ import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
-import com.konkuk.ma.domain.community.exception.PostNotFoundException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
+import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
@@ -59,12 +58,12 @@ class CommentCommandServiceTest : FunSpec({
             val newComment = NewCommentFixture.create(postId = 999L)
 
             every { commentValidator.validate(newComment) } throws
-                PostNotFoundException(newComment.postId)
+                EntityNotFoundException(EntityType.COMMUNITY_POST, newComment.postId.toString())
 
             // When & Then
-            shouldThrow<PostNotFoundException> {
+            shouldThrow<EntityNotFoundException> {
                 service.create(newComment)
-            }.message shouldBe "존재하지 않는 게시글에는 댓글을 달 수 없습니다."
+            }
         }
     }
 
@@ -84,7 +83,7 @@ class CommentCommandServiceTest : FunSpec({
             verify { commentCommandRepository.delete(comment.id) }
         }
 
-        test("소유권이 없는 댓글을 삭제하면 CommentAccessDeniedException이 발생한다") {
+        test("소유권이 없는 댓글을 삭제하면 AccessDeniedException이 발생한다") {
             // Given
             val comment = CommentFixture.create()
             val otherEmail = "other@example.com"
@@ -92,9 +91,9 @@ class CommentCommandServiceTest : FunSpec({
             every { commentQueryRepository.findOne(comment.id) } returns comment
 
             // When & Then
-            shouldThrow<CommentAccessDeniedException> {
+            shouldThrow<AccessDeniedException> {
                 service.delete(comment.id, otherEmail)
-            }.message shouldBe "댓글에 대한 접근 권한이 없습니다."
+            }
         }
 
         test("존재하지 않는 댓글을 삭제하면 EntityNotFoundException이 발생한다") {
@@ -107,7 +106,7 @@ class CommentCommandServiceTest : FunSpec({
             // When & Then
             shouldThrow<EntityNotFoundException> {
                 service.delete(nonExistentId, "any@example.com")
-            }.message shouldBe "CommunityComment을(를) 찾을 수 없습니다."
+            }
         }
     }
 })

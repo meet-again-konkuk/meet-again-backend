@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.community.application.CommentCommandService
 import com.konkuk.ma.domain.community.domain.NewComment
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.requestBody
@@ -148,7 +149,7 @@ class CommentCommandApiTest(
     test("소유권이 없는 댓글 삭제 시 403을 반환한다") {
         // Given
         every { commentCommandService.delete(any(), any()) } throws
-            CommentAccessDeniedException(1L, "owner@example.com", "holeman@naver.com")
+            AccessDeniedException(EntityType.COMMUNITY_COMMENT, "owner@example.com", "holeman@naver.com")
 
         // When & Then
         mockMvc.perform(
