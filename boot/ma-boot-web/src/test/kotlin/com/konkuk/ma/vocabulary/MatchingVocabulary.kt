@@ -38,6 +38,9 @@ fun targetGender(fieldName: String = "targetGender") =
 fun targetRegion(fieldName: String = "region") =
     fieldName responseType STRING means "지역" example "SEOUL"
 
+fun targetInfoIdPath(fieldName: String = "targetInfoId") =
+    fieldName requestParam "찾는 사람 정보 ID"
+
 // --- 매칭 결과 관련 필드 ---
 
 fun matchingResultId(fieldName: String = "matchingResults[].matchingResultId") =

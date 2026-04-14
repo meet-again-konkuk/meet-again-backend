@@ -14,4 +14,10 @@ class TargetInfoQueryService(
     fun find(email: Email): List<TargetInfo> {
         return targetInfoQueryRepository.find(email)
     }
+
+    fun findDetail(id: Long, email: Email): TargetInfo {
+        val targetInfo = targetInfoQueryRepository.findOne(id)
+        targetInfo.validateOwnership(email)
+        return targetInfo
+    }
 }

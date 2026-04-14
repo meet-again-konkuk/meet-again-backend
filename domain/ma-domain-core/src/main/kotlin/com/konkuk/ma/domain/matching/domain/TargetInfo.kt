@@ -23,6 +23,10 @@ class TargetInfo(
 
     val region: Region?
 ) {
+    fun validateOwnership(email: Email) {
+        require(registerEmail == email) { "본인이 등록한 찾는 사람 정보가 아닙니다." }
+    }
+
     fun makeMatchingResults(targets: Targets): NewMatchingResults {
         val results = targets
             .filterCandidates(targetName, targetGender)
