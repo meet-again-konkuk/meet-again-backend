@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.common.domain
 
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 
 data class Email(val value: String) {
     init {

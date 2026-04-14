@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.member.domain
 
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 
 data class FourDigit(val value: String) {
     init {

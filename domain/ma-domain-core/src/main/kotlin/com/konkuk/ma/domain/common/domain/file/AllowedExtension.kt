@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.common.domain.file
 
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 
 class AllowedExtension private constructor(val normalized: String) {
 

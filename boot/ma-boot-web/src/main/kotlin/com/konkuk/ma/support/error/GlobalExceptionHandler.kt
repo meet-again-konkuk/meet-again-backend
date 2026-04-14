@@ -1,8 +1,8 @@
 package com.konkuk.ma.support.error
 
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
-import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidObfuscatedIdException
+import com.konkuk.ma.exception.InvalidValueException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.exception.AccessDeniedException

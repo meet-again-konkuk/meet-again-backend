@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.domain.photo
 
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe

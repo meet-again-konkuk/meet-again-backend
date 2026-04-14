@@ -1,6 +1,5 @@
-package com.konkuk.ma.domain.common.exception
+package com.konkuk.ma.exception
 
-import com.konkuk.ma.exception.BusinessException
 import kotlin.reflect.KClass
 
 class InvalidValueException(

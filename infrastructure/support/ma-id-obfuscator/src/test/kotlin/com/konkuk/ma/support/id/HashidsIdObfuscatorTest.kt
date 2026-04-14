@@ -1,6 +1,6 @@
 package com.konkuk.ma.support.id
 
-import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
+import com.konkuk.ma.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec

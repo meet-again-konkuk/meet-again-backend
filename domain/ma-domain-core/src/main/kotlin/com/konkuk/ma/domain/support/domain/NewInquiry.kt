@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.support.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 
 class NewInquiry(
     authorEmail: String,
