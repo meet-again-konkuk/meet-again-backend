@@ -14,23 +14,21 @@ import org.springframework.stereotype.Component
 class MemberQueryDao {
     fun existsByNickname(nickname: String): Boolean {
         return MemberTable.select(intLiteral(1))
-            .where {
-                (MemberTable.nickname eq nickname)
-            }.limit(1)
+            .where { MemberTable.isActive and (MemberTable.nickname eq nickname) }
+            .limit(1)
             .firstOrNull() != null
     }
 
     fun existsByEmail(email: String): Boolean {
         return MemberTable.select(intLiteral(1))
-            .where {
-                (MemberTable.email eq email)
-            }.limit(1)
+            .where { MemberTable.isActive and (MemberTable.email eq email) }
+            .limit(1)
             .firstOrNull() != null
     }
 
     fun findOne(email: String): MemberEntity {
         return MemberTable.selectAll()
-            .where { (MemberTable.email eq email) }
+            .where { MemberTable.isActive and (MemberTable.email eq email) }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
@@ -39,15 +37,15 @@ class MemberQueryDao {
 
     fun findByEmails(emails: Set<String>): List<MemberEntity> {
         if (emails.isEmpty()) return emptyList()
-        return MemberTable
-            .activeRows { MemberTable.email inList emails }
+        return MemberTable.selectAll()
+            .where { MemberTable.isActive and (MemberTable.email inList emails) }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 
     fun findByNames(names: Set<String>): List<MemberEntity> {
         if (names.isEmpty()) return emptyList()
         return MemberTable.selectAll()
-            .where { MemberTable.name inList names }
+            .where { MemberTable.isActive and (MemberTable.name inList names) }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 }
