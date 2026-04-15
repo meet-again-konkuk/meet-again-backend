@@ -27,7 +27,7 @@ class SignUpValidator(
     }
 
     private fun checkDuplicatedEmail(email: Email) {
-        if (memberQueryRepository.existsByEmail(email)) {
+        if (memberQueryRepository.exists(email)) {
             throw DuplicateException(EntityType.MEMBER, "email", email.value)
         }
     }

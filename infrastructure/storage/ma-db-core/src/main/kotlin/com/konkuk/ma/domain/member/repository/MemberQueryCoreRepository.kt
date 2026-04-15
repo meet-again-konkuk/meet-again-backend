@@ -14,7 +14,7 @@ class MemberQueryCoreRepository(
         return memberQueryDao.existsByNickname(nickname)
     }
 
-    override fun existsByEmail(email: Email): Boolean {
+    override fun exists(email: Email): Boolean {
         return memberQueryDao.existsByEmail(email.value)
     }
 
