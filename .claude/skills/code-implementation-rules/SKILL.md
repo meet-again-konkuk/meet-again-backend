@@ -120,6 +120,7 @@ Bean Validation의 `message`, `regexp`는 하드코딩 금지. `ValidationMessag
 
 - **N+1 방지**: 반복문 안에서 DB 조회 금지. 벌크 조회 후 메모리 처리
 - **NoOffset 페이징**: 대용량 조회 시 cursor 기반
+- **exists 쿼리**: `count() > 0` 사용 금지 (전체 행을 셈). `limit(1).any()` 사용
 
 ## 19. 객체 관계 — is-a와 has-a 구분
 
