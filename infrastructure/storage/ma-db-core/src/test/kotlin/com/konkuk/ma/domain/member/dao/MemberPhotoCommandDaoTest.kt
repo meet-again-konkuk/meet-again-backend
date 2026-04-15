@@ -80,7 +80,7 @@ class MemberPhotoCommandDaoTest(
             }
         }
 
-        context("softDelete") {
+        context("delete") {
 
             test("해당 이메일의 사진을 soft delete 처리한다") {
                 // Given
@@ -88,7 +88,7 @@ class MemberPhotoCommandDaoTest(
                 insertMemberPhoto(memberEmail = email)
 
                 // When
-                memberPhotoCommandDao.softDelete(email)
+                memberPhotoCommandDao.delete(email)
 
                 // Then
                 val photo = MemberPhotoTable.selectAll().first()
@@ -104,7 +104,7 @@ class MemberPhotoCommandDaoTest(
                 insertMemberPhoto(memberEmail = email, filePath = "/uploads/2.jpg")
 
                 // When
-                memberPhotoCommandDao.softDelete(email)
+                memberPhotoCommandDao.delete(email)
 
                 // Then
                 val photos = MemberPhotoTable.selectAll().toList()
@@ -118,7 +118,7 @@ class MemberPhotoCommandDaoTest(
                 insertMemberPhoto(memberEmail = "user2@example.com")
 
                 // When
-                memberPhotoCommandDao.softDelete("user1@example.com")
+                memberPhotoCommandDao.delete("user1@example.com")
 
                 // Then
                 val user2Photo = MemberPhotoTable.selectAll()
@@ -129,7 +129,7 @@ class MemberPhotoCommandDaoTest(
 
             test("존재하지 않는 이메일로 삭제해도 예외가 발생하지 않는다") {
                 // When
-                memberPhotoCommandDao.softDelete("nobody@example.com")
+                memberPhotoCommandDao.delete("nobody@example.com")
 
                 // Then
                 MemberPhotoTable.selectAll().count() shouldBe 0

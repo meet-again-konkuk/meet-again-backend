@@ -21,7 +21,7 @@ class MemberPhotoCommandDao {
         }.value
     }
 
-    fun softDelete(email: String) {
+    fun delete(email: String) {
         MemberPhotoTable.update({ MemberPhotoTable.memberEmail eq email }) {
             it[deleted] = true
             it[deletedDate] = LocalDateTime.now()

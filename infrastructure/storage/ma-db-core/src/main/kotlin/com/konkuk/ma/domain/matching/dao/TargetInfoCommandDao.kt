@@ -39,7 +39,7 @@ class TargetInfoCommandDao {
         }
     }
 
-    fun softDelete(id: Long, email: String) {
+    fun delete(id: Long, email: String) {
         TargetInfoTable.update({ TargetInfoTable.id eq id }) {
             it[deleted] = true
             it[deletedDate] = LocalDateTime.now()

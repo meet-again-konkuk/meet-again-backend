@@ -3,6 +3,8 @@ package com.konkuk.ma.domain.matching.dao
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
+import java.time.LocalDate
+import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.and
@@ -10,8 +12,6 @@ import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Component
 class MatchingResultCommandDao {
@@ -52,7 +52,7 @@ class MatchingResultCommandDao {
         }
     }
 
-    fun softDeleteByTargetInfoId(targetInfoId: Long, email: String) {
+    fun delete(targetInfoId: Long, email: String) {
         MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
             it[deleted] = true
             it[deletedDate] = LocalDateTime.now()

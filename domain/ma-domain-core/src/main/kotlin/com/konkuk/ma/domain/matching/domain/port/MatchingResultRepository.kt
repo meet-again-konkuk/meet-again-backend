@@ -13,5 +13,5 @@ interface MatchingResultRepository {
     fun find(email: Email, excluded: Boolean = false): List<MatchingResult>
     fun findOne(matchingResultId: Long): MatchingResult
     fun updateExcluded(matchingResult: MatchingResult)
-    fun deleteByTargetInfoId(targetInfoId: Long, email: String)
+    fun delete(targetInfoId: Long, email: String)
 }

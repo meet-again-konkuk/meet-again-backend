@@ -23,7 +23,7 @@ class MemberPhotoCoreRepository(
     }
 
     override fun delete(email: Email) {
-        memberPhotoCommandDao.softDelete(email.value)
+        memberPhotoCommandDao.delete(email.value)
     }
 
     override fun find(emails: Set<Email>): List<MemberPhoto> {
