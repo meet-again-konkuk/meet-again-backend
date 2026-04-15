@@ -18,12 +18,6 @@ subprojects {
 	apply(plugin = "kotlin-spring")
 	apply(plugin = "kotlin-kapt")
 
-	allOpen {
-		annotation("jakarta.persistence.Entity")
-		annotation("jakarta.persistence.MappedSuperclass")
-		annotation("jakarta.persistence.Embeddable")
-	}
-
 	if (project.name != "ma-config-logging") {
 		dependencies {
 			implementation(project(":config:ma-config-logging"))

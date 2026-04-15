@@ -4,10 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.matching.application.TargetInfoCommandService
 import com.konkuk.ma.domain.member.domain.Region
+import com.konkuk.ma.domain.common.domain.date.Day
+import com.konkuk.ma.domain.common.domain.date.Month
+import com.konkuk.ma.domain.common.domain.date.Year
+import com.konkuk.ma.domain.matching.domain.TargetInfo
+import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
+import com.konkuk.ma.domain.member.domain.FourDigit
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
+import com.konkuk.ma.extension.putJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.targetGender
 import com.konkuk.ma.vocabulary.day
 import com.konkuk.ma.vocabulary.lastNumber
 import com.konkuk.ma.vocabulary.middleNumber
@@ -168,6 +177,65 @@ class TargetInfoCommandApiTest(
                     middleNumber(),
                     lastNumber(),
                 )
+            )
+    }
+
+    test("찾는 사람 정보 수정 API 문서화") {
+        // Given
+        val id = 1L
+        val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
+        val request = mapOf(
+            "name" to "박수정",
+            "middleNumber" to "4321",
+            "lastNumber" to "8765",
+            "year" to 1996,
+            "month" to 3,
+            "day" to 20,
+            "region" to "BUSAN",
+        )
+
+        every {
+            targetInfoCommandService.update(id, "holeman@naver.com", any<UpdateTargetInfo>())
+        } returns TargetInfo(
+            targetInfoId = id,
+            registerEmail = Email("holeman@naver.com"),
+            targetName = "박수정",
+            targetGender = Gender.FEMALE,
+            middleNumber = FourDigit("4321"),
+            lastNumber = FourDigit("8765"),
+            year = Year(1996),
+            month = Month(3),
+            day = Day(20),
+            region = Region.BUSAN,
+        )
+
+        // When & Then
+        mockMvc.putJson("/api/target-infos/$encodedId") {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isOk() } }
+            .andDocument(
+                "matching/update-target-info",
+                requestBody(
+                    targetName(),
+                    middleNumber() isOptional true,
+                    lastNumber() isOptional true,
+                    year() isOptional true,
+                    month() isOptional true,
+                    day() isOptional true,
+                    targetRegion() isOptional true,
+                ),
+                responseBody(
+                    targetInfoId(),
+                    targetName("targetName"),
+                    targetGender(),
+                    middleNumber() isOptional true,
+                    lastNumber() isOptional true,
+                    year() isOptional true,
+                    month() isOptional true,
+                    day() isOptional true,
+                    targetRegion() isOptional true,
+                ),
             )
     }
 
