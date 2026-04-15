@@ -18,33 +18,20 @@ class MatchingResultQueryDao {
 
     fun find(email: String, excluded: Boolean = false): List<MatchingResultEntity> {
         return MatchingResultTable
-            .selectAll()
-            .where {
-                (MatchingResultTable.registerEmail eq email) and
-                    (MatchingResultTable.deleted eq false) and
-                    (MatchingResultTable.excluded eq excluded)
-            }
+            .activeRows { (MatchingResultTable.registerEmail eq email) and (MatchingResultTable.excluded eq excluded) }
             .map { row -> MatchingResultEntity.from(row) }
     }
 
     fun exists(targetInfoId: Long): Boolean {
         return MatchingResultTable
-            .selectAll()
-            .where {
-                (MatchingResultTable.targetInfoId eq targetInfoId) and
-                    (MatchingResultTable.deleted eq false)
-            }
+            .activeRows { MatchingResultTable.targetInfoId eq targetInfoId }
             .limit(1)
             .any()
     }
 
     fun findOne(id: Long): MatchingResultEntity? {
         return MatchingResultTable
-            .selectAll()
-            .where {
-                (MatchingResultTable.id eq id) and
-                    (MatchingResultTable.deleted eq false)
-            }
+            .activeRows { MatchingResultTable.id eq id }
             .map { row -> MatchingResultEntity.from(row) }
             .singleOrNull()
     }
