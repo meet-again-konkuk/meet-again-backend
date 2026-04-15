@@ -30,6 +30,7 @@
 | POST | /api/target-infos | 찾는 사람 정보 등록 |
 | GET | /api/target-infos | 찾는 사람 목록 조회 |
 | GET | /api/target-infos/{targetInfoId} | 찾는 사람 상세 조회 |
+| PUT | /api/target-infos/{targetInfoId} | 찾는 사람 정보 수정 |
 | GET | /api/matching-results | 매칭 결과 목록 조회 |
 | GET | /api/matching-results/{id} | 매칭 결과 상세 조회 |
 | GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 |
@@ -67,11 +68,10 @@
 
 | Method | Endpoint | 용도 | 인증 |
 |--------|----------|------|------|
-| PUT | /api/target-infos/{targetInfoId} | 찾는 사람 정보 수정 | 필요 |
 | DELETE | /api/target-infos/{targetInfoId} | 찾는 사람 정보 삭제 | 필요 |
 
 **참고사항**:
-- 수정/삭제 시 본인이 등록한 target-info인지 소유권 검증 필요
+- 삭제 시 본인이 등록한 target-info인지 소유권 검증 필요
 - 삭제 시 연관된 매칭 결과 처리 정책 결정 필요 (soft delete / cascade)
 
 ---
