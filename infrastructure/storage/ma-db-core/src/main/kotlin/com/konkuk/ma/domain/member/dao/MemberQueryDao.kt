@@ -39,8 +39,8 @@ class MemberQueryDao {
 
     fun findByEmails(emails: Set<String>): List<MemberEntity> {
         if (emails.isEmpty()) return emptyList()
-        return MemberTable
-            .activeRows { MemberTable.email inList emails }
+        return MemberTable.selectAll()
+            .where { (MemberTable.deleted eq false) and (MemberTable.email inList emails) }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 
