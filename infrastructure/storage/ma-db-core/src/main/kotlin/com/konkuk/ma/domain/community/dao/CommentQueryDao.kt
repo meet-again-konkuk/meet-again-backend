@@ -13,8 +13,9 @@ class CommentQueryDao {
         return CommentTable
             .selectAll()
             .where { (CommentTable.id eq id) and (CommentTable.deleted eq false) }
-            .map { row -> CommentEntity.from(row) }
-            .singleOrNull()
+            .limit(1)
+            .firstOrNull()
+            ?.let { CommentEntity.from(it) }
     }
 
     fun find(postId: Long): List<CommentEntity> {

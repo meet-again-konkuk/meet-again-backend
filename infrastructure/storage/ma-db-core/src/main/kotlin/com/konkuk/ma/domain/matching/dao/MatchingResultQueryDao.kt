@@ -45,7 +45,8 @@ class MatchingResultQueryDao {
                 (MatchingResultTable.id eq id) and
                     (MatchingResultTable.deleted eq false)
             }
-            .map { row -> MatchingResultEntity.from(row) }
-            .singleOrNull()
+            .limit(1)
+            .firstOrNull()
+            ?.let { MatchingResultEntity.from(it) }
     }
 }
