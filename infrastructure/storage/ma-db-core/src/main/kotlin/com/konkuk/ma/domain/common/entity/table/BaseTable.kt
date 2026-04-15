@@ -24,6 +24,8 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
     val deletedDate = datetime("DELETED_DATE").nullable()
     val deletedBy = varchar("DELETED_BY", 255).nullable()
 
+    fun activeRows(): Query = selectAll().where { deleted eq false }
+
     fun activeRows(additionalCondition: SqlExpressionBuilder.() -> Op<Boolean>): Query {
         return selectAll().where { (deleted eq false) and additionalCondition() }
     }
