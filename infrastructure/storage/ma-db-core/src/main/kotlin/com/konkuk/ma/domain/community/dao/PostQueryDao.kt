@@ -6,12 +6,13 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
 @Component
 class PostQueryDao {
     fun find(category: String?, cursorId: Long?, size: Int): List<PostEntity> {
-        val query = PostTable.activeRows()
+        val query = PostTable.selectAll().where { PostTable.isActive }
         if (category != null) {
             query.adjustWhere { this!! and (PostTable.category eq category) }
         }
