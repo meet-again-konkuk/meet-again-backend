@@ -6,6 +6,7 @@ import org.springframework.test.web.servlet.ResultActionsDsl
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 
 fun MockMvc.postJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultActionsDsl {
     val builder = JsonRequestBuilder().apply(setup)
@@ -28,6 +29,18 @@ fun MockMvc.getJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultAc
     }
 }
 
+
+fun MockMvc.putJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultActionsDsl {
+    val builder = JsonRequestBuilder().apply(setup)
+    return this.put(uri) {
+        contentType = MediaType.APPLICATION_JSON
+        accept = MediaType.APPLICATION_JSON
+        builder.headers.forEach { (name, value) -> header(name, value) }
+        if (builder.content != null) {
+            content = builder.content
+        }
+    }
+}
 
 fun MockMvc.patchJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultActionsDsl {
     val builder = JsonRequestBuilder().apply(setup)

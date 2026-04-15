@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 찾는 사람 정보 수정 API
+
+== 찾는 사람 정보 수정
+
+인증된 사용자가 자신이 등록한 찾는 사람 정보를 수정합니다.
+
+=== 요청
+
+include::{snippets}/matching/update-target-info/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/matching/update-target-info/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/update-target-info/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/matching/update-target-info/response-fields.adoc[]
