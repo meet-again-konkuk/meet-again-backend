@@ -187,7 +187,6 @@ class TargetInfoCommandApiTest(
         val id = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
         val request = mapOf(
-            "name" to "박수정",
             "middleNumber" to "4321",
             "lastNumber" to "8765",
             "year" to 1996,
@@ -219,7 +218,6 @@ class TargetInfoCommandApiTest(
             .andDocument(
                 "matching/update-target-info",
                 requestBody(
-                    targetName(),
                     middleNumber() isOptional true,
                     lastNumber() isOptional true,
                     year() isOptional true,

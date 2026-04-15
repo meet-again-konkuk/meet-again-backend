@@ -48,7 +48,7 @@ class MatchingResultCoreRepository(
         matchingResultCommandDao.updateExcluded(matchingResult)
     }
 
-    override fun deleteByTargetInfoId(targetInfoId: Long) {
+    override fun delete(targetInfoId: Long) {
         matchingResultCommandDao.deleteByTargetInfoId(targetInfoId)
     }
 }

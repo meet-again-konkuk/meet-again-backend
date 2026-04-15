@@ -30,7 +30,6 @@ class TargetInfoCommandDao {
 
     fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo) {
         TargetInfoTable.update({ TargetInfoTable.id eq id }) {
-            it[name] = updateTargetInfo.targetName
             it[middleNumber] = updateTargetInfo.middleNumber?.value
             it[lastNumber] = updateTargetInfo.lastNumber?.value
             it[year] = updateTargetInfo.year?.value
