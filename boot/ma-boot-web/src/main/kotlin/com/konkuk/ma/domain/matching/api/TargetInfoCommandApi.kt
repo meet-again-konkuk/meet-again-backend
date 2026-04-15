@@ -27,7 +27,7 @@ class TargetInfoCommandApi(
     @ResponseStatus(HttpStatus.CREATED)
     fun save(
         @AuthenticationPrincipal email: String,
-        @Valid @RequestBody request: NewTargetInfoRequest,
+        @Valid @RequestBody request: NewTargetInfoRequest
     ): NewTargetInfoResponse {
         val newTargetInfo = request.toNewTargetInfo(email)
         val targetInfoId = targetInfoCommandService.register(newTargetInfo)
@@ -38,7 +38,7 @@ class TargetInfoCommandApi(
     fun update(
         @AuthenticationPrincipal email: String,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
-        @Valid @RequestBody request: UpdateTargetInfoRequest,
+        @Valid @RequestBody request: UpdateTargetInfoRequest
     ): TargetInfoResponse {
         val updated = targetInfoCommandService.update(targetInfoId, email, request.toUpdateTargetInfo())
         return TargetInfoResponse.from(updated)

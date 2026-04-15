@@ -25,16 +25,7 @@ class TargetInfoCommandService(
     fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo): TargetInfo {
         val targetInfo = targetInfoQueryRepository.findOne(id)
         targetInfo.validateOwnership(Email(email))
-        val updated = targetInfo.update(
-            targetName = updateTargetInfo.targetName,
-            middleNumber = updateTargetInfo.middleNumber,
-            lastNumber = updateTargetInfo.lastNumber,
-            year = updateTargetInfo.year,
-            month = updateTargetInfo.month,
-            day = updateTargetInfo.day,
-            region = updateTargetInfo.region,
-        )
-        targetInfoCommandRepository.update(updated)
-        return updated
+        targetInfoCommandRepository.update(id, email, updateTargetInfo)
+        return targetInfoQueryRepository.findOne(id)
     }
 }

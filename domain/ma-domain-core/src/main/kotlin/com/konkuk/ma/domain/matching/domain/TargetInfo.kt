@@ -25,29 +25,6 @@ class TargetInfo(
 
     val region: Region?
 ) {
-    fun update(
-        targetName: String,
-        middleNumber: FourDigit?,
-        lastNumber: FourDigit?,
-        year: Year?,
-        month: Month?,
-        day: Day?,
-        region: Region?,
-    ): TargetInfo {
-        return TargetInfo(
-            targetInfoId = targetInfoId,
-            registerEmail = registerEmail,
-            targetName = targetName,
-            targetGender = targetGender,
-            middleNumber = middleNumber,
-            lastNumber = lastNumber,
-            year = year,
-            month = month,
-            day = day,
-            region = region,
-        )
-    }
-
     fun validateOwnership(email: Email) {
         if (registerEmail != email) {
             throw AccessDeniedException(EntityType.TARGET_INFO, registerEmail.value, email.value)

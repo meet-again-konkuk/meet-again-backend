@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
-import com.konkuk.ma.domain.matching.domain.TargetInfo
+import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.domain.Gender
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -26,16 +26,16 @@ class TargetInfoCommandDao {
         }.value
     }
 
-    fun update(targetInfo: TargetInfo) {
-        TargetInfoTable.update({ TargetInfoTable.id eq targetInfo.targetInfoId }) {
-            it[name] = targetInfo.targetName
-            it[middleNumber] = targetInfo.middleNumber?.value
-            it[lastNumber] = targetInfo.lastNumber?.value
-            it[year] = targetInfo.year?.value
-            it[month] = targetInfo.month?.value
-            it[day] = targetInfo.day?.value
-            it[region] = targetInfo.region?.name
-            it[lastModifiedBy] = targetInfo.registerEmail.value
+    fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo) {
+        TargetInfoTable.update({ TargetInfoTable.id eq id }) {
+            it[name] = updateTargetInfo.targetName
+            it[middleNumber] = updateTargetInfo.middleNumber?.value
+            it[lastNumber] = updateTargetInfo.lastNumber?.value
+            it[year] = updateTargetInfo.year?.value
+            it[month] = updateTargetInfo.month?.value
+            it[day] = updateTargetInfo.day?.value
+            it[region] = updateTargetInfo.region?.name
+            it[lastModifiedBy] = email
         }
     }
 }
