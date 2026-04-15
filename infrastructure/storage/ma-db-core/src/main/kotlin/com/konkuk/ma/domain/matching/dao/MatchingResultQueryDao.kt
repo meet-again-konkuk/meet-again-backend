@@ -11,8 +11,7 @@ class MatchingResultQueryDao {
     fun find(targetInfoIds: List<Long>): List<MatchingResultEntity> {
         if (targetInfoIds.isEmpty()) return emptyList()
         return MatchingResultTable
-            .selectAll()
-            .where { MatchingResultTable.targetInfoId inList targetInfoIds }
+            .activeRows { MatchingResultTable.targetInfoId inList targetInfoIds }
             .map { row -> MatchingResultEntity.from(row) }
     }
 
