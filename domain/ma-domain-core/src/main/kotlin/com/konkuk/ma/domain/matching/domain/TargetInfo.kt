@@ -33,8 +33,8 @@ class TargetInfo(
         if (hasMatchingResult) {
             throw InvalidStateException(TargetInfo::class, targetInfoId, "매칭 결과가 존재하여 수정할 수 없습니다.")
         }
-        if (createdDate.plusDays(1).isBefore(LocalDateTime.now())) {
-            throw InvalidStateException(TargetInfo::class, targetInfoId, "생성 후 24시간이 경과하여 수정할 수 없습니다.")
+        if (createdDate.plusHours(UPDATABLE_HOURS).isBefore(LocalDateTime.now())) {
+            throw InvalidStateException(TargetInfo::class, targetInfoId, "생성 후 ${UPDATABLE_HOURS}시간이 경과하여 수정할 수 없습니다.")
         }
     }
 
@@ -49,6 +49,10 @@ class TargetInfo(
             .filterCandidates(targetName, targetGender)
             .map { makeMatchingResult(it) }
         return NewMatchingResults(results)
+    }
+
+    companion object {
+        private const val UPDATABLE_HOURS = 24L
     }
 
     private fun makeMatchingResult(target: Target): NewMatchingResult {
