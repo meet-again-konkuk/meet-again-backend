@@ -15,7 +15,7 @@ class MemberQueryDao {
     fun existsByNickname(nickname: String): Boolean {
         return MemberTable.select(intLiteral(1))
             .where {
-                (MemberTable.nickname eq nickname)
+                (MemberTable.deleted eq false) and (MemberTable.nickname eq nickname)
             }.limit(1)
             .firstOrNull() != null
     }
@@ -23,14 +23,14 @@ class MemberQueryDao {
     fun existsByEmail(email: String): Boolean {
         return MemberTable.select(intLiteral(1))
             .where {
-                (MemberTable.email eq email)
+                (MemberTable.deleted eq false) and (MemberTable.email eq email)
             }.limit(1)
             .firstOrNull() != null
     }
 
     fun findOne(email: String): MemberEntity {
         return MemberTable.selectAll()
-            .where { (MemberTable.email eq email) }
+            .where { (MemberTable.deleted eq false) and (MemberTable.email eq email) }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
@@ -47,7 +47,7 @@ class MemberQueryDao {
     fun findByNames(names: Set<String>): List<MemberEntity> {
         if (names.isEmpty()) return emptyList()
         return MemberTable.selectAll()
-            .where { MemberTable.name inList names }
+            .where { (MemberTable.deleted eq false) and (MemberTable.name inList names) }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 }
