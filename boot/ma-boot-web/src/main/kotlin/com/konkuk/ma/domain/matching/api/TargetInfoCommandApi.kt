@@ -11,6 +11,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -42,5 +43,14 @@ class TargetInfoCommandApi(
     ): TargetInfoResponse {
         val updated = targetInfoCommandService.update(targetInfoId, email, request.toUpdateTargetInfo())
         return TargetInfoResponse.from(updated)
+    }
+
+    @DeleteMapping("/{targetInfoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun delete(
+        @AuthenticationPrincipal email: String,
+        @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
+    ) {
+        targetInfoCommandService.delete(targetInfoId, email)
     }
 }

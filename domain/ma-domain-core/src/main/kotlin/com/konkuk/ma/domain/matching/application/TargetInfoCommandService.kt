@@ -28,4 +28,10 @@ class TargetInfoCommandService(
         targetInfoCommandRepository.update(id, email, updateTargetInfo)
         return targetInfoQueryRepository.findOne(id)
     }
+
+    fun delete(id: Long, email: String) {
+        val targetInfo = targetInfoQueryRepository.findOne(id)
+        targetInfo.validateOwnership(Email(email))
+        targetInfoCommandRepository.delete(id)
+    }
 }

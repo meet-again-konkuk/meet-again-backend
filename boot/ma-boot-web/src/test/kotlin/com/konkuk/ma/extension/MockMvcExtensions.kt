@@ -3,6 +3,7 @@ package com.konkuk.ma.extension
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActionsDsl
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
@@ -39,6 +40,14 @@ fun MockMvc.putJson(uri: String, setup: JsonRequestBuilder.() -> Unit): ResultAc
         if (builder.content != null) {
             content = builder.content
         }
+    }
+}
+
+fun MockMvc.deleteJson(uri: String, setup: JsonRequestBuilder.() -> Unit = {}): ResultActionsDsl {
+    val builder = JsonRequestBuilder().apply(setup)
+    return this.delete(uri) {
+        accept = MediaType.APPLICATION_JSON
+        builder.headers.forEach { (name, value) -> header(name, value) }
     }
 }
 
