@@ -184,16 +184,10 @@ X룸 안에 배치하는 콘텐츠 단위. 각 블록은 위치/크기/회전 �
 ## 테스트 보완
 
 ### API 실패 테스트 케이스 추가
-- MemberPhotoApiTest — 파일 관련 실패 케이스
-- MatchingResultCommandApiTest — 소유권 검증 실패
 
-### 도메인 객체 실패 테스트 케이스 추가
-- MemberPhotoServiceTest — 예외 전파 케이스
-- MemberPhotoProcessorTest — 파일 처리 실패 케이스
-- PostQueryServiceTest — 예외 전파 케이스
-- StoragePathTest — 잘못된 입력 검증
+## 데이터 정합성
+### 파일 삭제 처리 시 db 데이터 파일 존재 여부와 정합성 맞추기 필요.
 
-### kotest-writing 대상 불필요 테스트 코드 제거하고 없는 dao 테스트 클래스 생성
 
 ---
 
