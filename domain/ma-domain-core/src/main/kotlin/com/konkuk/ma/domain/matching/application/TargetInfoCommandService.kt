@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
+import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoCommandRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class TargetInfoCommandService(
     private val targetInfoCommandRepository: TargetInfoCommandRepository,
     private val targetInfoQueryRepository: TargetInfoQueryRepository,
+    private val matchingResultRepository: MatchingResultRepository,
     private val memberQueryRepository: MemberQueryRepository,
 ) {
     fun register(newTargetInfo: NewTargetInfo): Long {
@@ -32,6 +34,7 @@ class TargetInfoCommandService(
     fun delete(id: Long, email: String) {
         val targetInfo = targetInfoQueryRepository.findOne(id)
         targetInfo.validateOwnership(Email(email))
+        matchingResultRepository.deleteByTargetInfoId(id)
         targetInfoCommandRepository.delete(id)
     }
 }

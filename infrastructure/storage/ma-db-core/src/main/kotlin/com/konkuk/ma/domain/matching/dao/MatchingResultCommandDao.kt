@@ -50,4 +50,8 @@ class MatchingResultCommandDao {
             it[excluded] = matchingResult.excluded
         }
     }
+
+    fun deleteByTargetInfoId(targetInfoId: Long) {
+        MatchingResultTable.deleteWhere { MatchingResultTable.targetInfoId eq targetInfoId }
+    }
 }
