@@ -7,7 +7,6 @@ import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.intLiteral
-import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
 @Component
@@ -29,8 +28,8 @@ class MemberQueryDao {
     }
 
     fun findOne(email: String): MemberEntity {
-        return MemberTable.selectAll()
-            .where { (MemberTable.deleted eq false) and (MemberTable.email eq email) }
+        return MemberTable
+            .activeRows { MemberTable.email eq email }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
@@ -39,15 +38,15 @@ class MemberQueryDao {
 
     fun findByEmails(emails: Set<String>): List<MemberEntity> {
         if (emails.isEmpty()) return emptyList()
-        return MemberTable.selectAll()
-            .where { (MemberTable.deleted eq false) and (MemberTable.email inList emails) }
+        return MemberTable
+            .activeRows { MemberTable.email inList emails }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 
     fun findByNames(names: Set<String>): List<MemberEntity> {
         if (names.isEmpty()) return emptyList()
-        return MemberTable.selectAll()
-            .where { (MemberTable.deleted eq false) and (MemberTable.name inList names) }
+        return MemberTable
+            .activeRows { MemberTable.name inList names }
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 }

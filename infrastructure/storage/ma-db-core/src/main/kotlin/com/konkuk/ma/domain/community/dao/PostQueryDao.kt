@@ -4,6 +4,8 @@ import com.konkuk.ma.domain.community.entity.PostEntity
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
@@ -30,8 +32,7 @@ class PostQueryDao {
 
     fun findOne(id: Long): PostEntity? {
         return PostTable
-            .selectAll()
-            .where { (PostTable.id eq id) and (PostTable.deleted eq false) }
+            .activeRows { PostTable.id eq id }
             .limit(1)
             .firstOrNull()
             ?.let { PostEntity.from(it) }
@@ -39,8 +40,7 @@ class PostQueryDao {
 
     fun exists(id: Long): Boolean {
         return PostTable
-            .selectAll()
-            .where { (PostTable.id eq id) and (PostTable.deleted eq false) }
+            .activeRows { PostTable.id eq id }
             .limit(1)
             .any()
     }
