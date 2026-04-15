@@ -11,6 +11,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Component
 class MatchingResultCommandDao {
@@ -51,7 +52,11 @@ class MatchingResultCommandDao {
         }
     }
 
-    fun deleteByTargetInfoId(targetInfoId: Long) {
-        MatchingResultTable.deleteWhere { MatchingResultTable.targetInfoId eq targetInfoId }
+    fun softDeleteByTargetInfoId(targetInfoId: Long, email: String) {
+        MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
+            it[deleted] = true
+            it[deletedDate] = LocalDateTime.now()
+            it[deletedBy] = email
+        }
     }
 }

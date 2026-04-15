@@ -2,10 +2,10 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class MemberPhotoCommandDao {
@@ -21,9 +21,11 @@ class MemberPhotoCommandDao {
         }.value
     }
 
-    fun delete(email: String) {
-        MemberPhotoTable.deleteWhere {
-            MemberPhotoTable.memberEmail eq email
+    fun softDelete(email: String) {
+        MemberPhotoTable.update({ MemberPhotoTable.memberEmail eq email }) {
+            it[deleted] = true
+            it[deletedDate] = LocalDateTime.now()
+            it[deletedBy] = email
         }
     }
 }

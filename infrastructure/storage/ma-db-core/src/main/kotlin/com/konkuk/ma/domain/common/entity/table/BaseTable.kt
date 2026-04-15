@@ -15,4 +15,6 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
     val lastModifiedDate = datetime("LAST_MODIFIED_DATE").clientDefault { LocalDateTime.now() }
     val lastModifiedBy = varchar("LAST_MODIFIED_BY", 255).clientDefault { DEFAULT_AUDIT_USER }
     val deleted = bool("DELETED").clientDefault { false }
+    val deletedDate = datetime("DELETED_DATE").nullable()
+    val deletedBy = varchar("DELETED_BY", 255).nullable()
 }

@@ -7,5 +7,5 @@ import com.konkuk.ma.domain.member.domain.Gender
 interface TargetInfoCommandRepository {
     fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long
     fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo)
-    fun delete(id: Long)
+    fun delete(id: Long, email: String)
 }

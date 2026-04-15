@@ -34,7 +34,7 @@ class TargetInfoCommandService(
     fun delete(id: Long, email: String) {
         val targetInfo = targetInfoQueryRepository.findOne(id)
         targetInfo.validateOwnership(Email(email))
-        matchingResultRepository.delete(id)
-        targetInfoCommandRepository.delete(id)
+        matchingResultRepository.deleteByTargetInfoId(id, email)
+        targetInfoCommandRepository.delete(id, email)
     }
 }

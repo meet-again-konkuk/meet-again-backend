@@ -19,7 +19,7 @@ class TargetInfoCommandCoreRepository(
         targetInfoCommandDao.update(id, email, updateTargetInfo)
     }
 
-    override fun delete(id: Long) {
-        targetInfoCommandDao.delete(id)
+    override fun delete(id: Long, email: String) {
+        targetInfoCommandDao.softDelete(id, email)
     }
 }
