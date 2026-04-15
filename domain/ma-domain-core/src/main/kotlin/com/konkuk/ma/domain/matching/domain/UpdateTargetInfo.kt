@@ -7,7 +7,6 @@ import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Region
 
 class UpdateTargetInfo(
-    val targetName: String,
     middleNumber: String?,
     lastNumber: String?,
     year: Int?,

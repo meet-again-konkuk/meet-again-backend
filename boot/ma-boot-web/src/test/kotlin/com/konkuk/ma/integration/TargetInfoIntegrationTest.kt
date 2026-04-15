@@ -13,11 +13,10 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import com.konkuk.ma.extension.postJson
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -69,8 +68,7 @@ class TargetInfoIntegrationTest(
 
     fun login(email: String, password: String): String {
         val request = mapOf("email" to email, "password" to password)
-        val result = mockMvc.post("/api/auth/login") {
-            contentType = MediaType.APPLICATION_JSON
+        val result = mockMvc.postJson("/api/auth/login") {
             content = mapper.writeValueAsString(request)
         }
             .andExpect { status { isOk() } }
@@ -99,10 +97,9 @@ class TargetInfoIntegrationTest(
             )
 
             // When & Then
-            val result = mockMvc.post("/api/target-infos") {
-                contentType = MediaType.APPLICATION_JSON
+            val result = mockMvc.postJson("/api/target-infos") {
                 content = mapper.writeValueAsString(request)
-                header("Authorization", "Bearer $accessToken")
+                authorization("Bearer $accessToken")
             }
                 .andExpect { status { isCreated() } }
                 .andReturn()
@@ -120,8 +117,7 @@ class TargetInfoIntegrationTest(
             )
 
             // When & Then
-            mockMvc.post("/api/target-infos") {
-                contentType = MediaType.APPLICATION_JSON
+            mockMvc.postJson("/api/target-infos") {
                 content = mapper.writeValueAsString(request)
             }
                 .andExpect { status { isUnauthorized() } }

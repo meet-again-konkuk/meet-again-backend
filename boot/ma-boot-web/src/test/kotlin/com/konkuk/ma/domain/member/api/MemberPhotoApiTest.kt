@@ -15,8 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.request.RequestDocumentation.partWithName
 import org.springframework.restdocs.request.RequestDocumentation.requestParts
+import com.konkuk.ma.extension.deleteJson
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -77,7 +77,7 @@ class MemberPhotoApiTest(
         every { memberPhotoService.delete(any()) } just runs
 
         // When & Then
-        mockMvc.delete("/api/members/photos")
+        mockMvc.deleteJson("/api/members/photos")
             .andExpect { status { isOk() } }
             .andDocument(
                 "member-photo-delete",

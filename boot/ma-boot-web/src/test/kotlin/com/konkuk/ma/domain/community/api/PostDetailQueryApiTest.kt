@@ -11,6 +11,7 @@ import com.konkuk.ma.domain.community.fixture.PostFixture
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.detailCategory
@@ -38,10 +39,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(PostQueryApi::class)
 @BaseApiTest
@@ -71,11 +69,8 @@ class PostDetailQueryApiTest(
         every { postQueryService.findDetail(1L) } returns postDetail
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.get("/api/community/posts/{id}", 1L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk)
+        mockMvc.getJson("/api/community/posts/{id}", 1L)
+            .andExpect { status { isOk() } }
             .andDocument(
                 "community/find-post-detail",
                 pathVariables(
@@ -112,10 +107,7 @@ class PostDetailQueryApiTest(
             EntityNotFoundException(EntityType.COMMUNITY_POST, "999")
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.get("/api/community/posts/{id}", 999L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isNotFound)
+        mockMvc.getJson("/api/community/posts/{id}", 999L)
+            .andExpect { status { isNotFound() } }
     }
 })

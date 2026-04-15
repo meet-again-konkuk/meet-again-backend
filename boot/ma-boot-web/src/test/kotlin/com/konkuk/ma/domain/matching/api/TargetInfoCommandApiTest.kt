@@ -13,6 +13,7 @@ import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
+import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.putJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
@@ -32,6 +33,7 @@ import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
+import io.mockk.justRun
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -185,7 +187,6 @@ class TargetInfoCommandApiTest(
         val id = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
         val request = mapOf(
-            "name" to "박수정",
             "middleNumber" to "4321",
             "lastNumber" to "8765",
             "year" to 1996,
@@ -217,7 +218,6 @@ class TargetInfoCommandApiTest(
             .andDocument(
                 "matching/update-target-info",
                 requestBody(
-                    targetName(),
                     middleNumber() isOptional true,
                     lastNumber() isOptional true,
                     year() isOptional true,
@@ -237,6 +237,19 @@ class TargetInfoCommandApiTest(
                     targetRegion() isOptional true,
                 ),
             )
+    }
+
+    test("찾는 사람 정보 삭제 API 문서화") {
+        // Given
+        val id = 1L
+        val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
+
+        justRun { targetInfoCommandService.delete(id, "holeman@naver.com") }
+
+        // When & Then
+        mockMvc.deleteJson("/api/target-infos/$encodedId")
+            .andExpect { status { isNoContent() } }
+            .andDocument("matching/delete-target-info")
     }
 
     test("찾는 사람 정보 등록 - 유효하지 않은 생년월일") {

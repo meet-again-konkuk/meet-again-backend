@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 찾는 사람 정보 삭제 API
+
+== 찾는 사람 정보 삭제
+
+인증된 사용자가 자신이 등록한 찾는 사람 정보를 삭제합니다.
+
+=== 요청
+
+include::{snippets}/matching/delete-target-info/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/delete-target-info/http-response.adoc[]

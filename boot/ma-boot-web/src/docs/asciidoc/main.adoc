@@ -83,6 +83,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/update-target-info.html[찾는 사람 정보 수정 API,window=_blank]
 
+[[matching-target-info-delete]]
+=== 찾는 사람 정보 삭제
+
+* link:matching/delete-target-info.html[찾는 사람 정보 삭제 API,window=_blank]
+
 [[matching-result-query]]
 === 매칭 결과 목록 조회
 

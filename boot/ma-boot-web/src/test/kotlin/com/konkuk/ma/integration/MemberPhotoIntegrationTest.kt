@@ -18,10 +18,10 @@ import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import com.konkuk.ma.extension.deleteJson
+import com.konkuk.ma.extension.postJson
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.multipart
-import org.springframework.test.web.servlet.post
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
@@ -93,8 +93,7 @@ class MemberPhotoIntegrationTest(
 
     fun login(email: String, password: String): String {
         val request = mapOf("email" to email, "password" to password)
-        val result = mockMvc.post("/api/auth/login") {
-            contentType = MediaType.APPLICATION_JSON
+        val result = mockMvc.postJson("/api/auth/login") {
             content = mapper.writeValueAsString(request)
         }
             .andExpect { status { isOk() } }
@@ -214,8 +213,8 @@ class MemberPhotoIntegrationTest(
             }.andExpect { status { isCreated() } }
 
             // When
-            mockMvc.delete("/api/members/photos") {
-                header("Authorization", "Bearer $accessToken")
+            mockMvc.deleteJson("/api/members/photos") {
+                authorization("Bearer $accessToken")
             }.andExpect { status { isOk() } }
 
             // Then

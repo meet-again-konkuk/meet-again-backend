@@ -5,7 +5,9 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.application.CommentLikeService
 import com.konkuk.ma.domain.community.domain.CommentLikeResult
 import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.pathVariables
+import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.commentIdPath
 import com.konkuk.ma.vocabulary.commentLikeCount
@@ -14,10 +16,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(CommentLikeApi::class)
 @BaseApiTest
@@ -32,11 +31,8 @@ class CommentLikeApiTest(
             CommentLikeResult(liked = true, likeCount = 3)
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/comments/{commentId}/likes", 1L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isCreated)
+        mockMvc.postJson("/api/community/comments/{commentId}/likes", 1L)
+            .andExpect { status { isCreated() } }
             .andDocument(
                 "community/like-comment",
                 pathVariables(
@@ -55,11 +51,8 @@ class CommentLikeApiTest(
             CommentLikeResult(liked = false, likeCount = 2)
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.delete("/api/community/comments/{commentId}/likes", 1L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk)
+        mockMvc.deleteJson("/api/community/comments/{commentId}/likes", 1L)
+            .andExpect { status { isOk() } }
             .andDocument(
                 "community/unlike-comment",
                 pathVariables(

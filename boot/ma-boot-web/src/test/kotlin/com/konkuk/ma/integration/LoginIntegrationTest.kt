@@ -12,11 +12,10 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import com.konkuk.ma.extension.postJson
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
 import java.time.LocalDate
 
 @SpringBootTest
@@ -78,8 +77,7 @@ class LoginIntegrationTest(
             val request = mapOf("email" to email, "password" to password)
 
             // When & Then
-            val result = mockMvc.post("/api/auth/login") {
-                contentType = MediaType.APPLICATION_JSON
+            val result = mockMvc.postJson("/api/auth/login") {
                 content = mapper.writeValueAsString(request)
             }
                 .andExpect { status { isOk() } }
@@ -101,8 +99,7 @@ class LoginIntegrationTest(
             val request = mapOf("email" to email, "password" to "wrongPassword1")
 
             // When & Then
-            mockMvc.post("/api/auth/login") {
-                contentType = MediaType.APPLICATION_JSON
+            mockMvc.postJson("/api/auth/login") {
                 content = mapper.writeValueAsString(request)
             }
                 .andExpect { status { isUnauthorized() } }
@@ -116,8 +113,7 @@ class LoginIntegrationTest(
             )
 
             // When & Then
-            mockMvc.post("/api/auth/login") {
-                contentType = MediaType.APPLICATION_JSON
+            mockMvc.postJson("/api/auth/login") {
                 content = mapper.writeValueAsString(request)
             }
                 .andExpect { status { isNotFound() } }
