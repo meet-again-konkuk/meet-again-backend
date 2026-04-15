@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.commentDetailContent
@@ -27,10 +28,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(CommentQueryApi::class)
 @BaseApiTest
@@ -55,11 +53,8 @@ class CommentQueryApiTest(
         every { commentQueryService.findDetail(1L) } returns commentWithAuthor
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.get("/api/community/comments/{commentId}", 1L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk)
+        mockMvc.getJson("/api/community/comments/{commentId}", 1L)
+            .andExpect { status { isOk() } }
             .andDocument(
                 "community/find-comment-detail",
                 pathVariables(
@@ -88,10 +83,7 @@ class CommentQueryApiTest(
             EntityNotFoundException(EntityType.COMMUNITY_COMMENT, "999")
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.get("/api/community/comments/{commentId}", 999L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isNotFound)
+        mockMvc.getJson("/api/community/comments/{commentId}", 999L)
+            .andExpect { status { isNotFound() } }
     }
 })

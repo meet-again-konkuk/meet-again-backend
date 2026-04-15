@@ -7,7 +7,9 @@ import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.pathVariables
+import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.commentContent
@@ -21,10 +23,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.runs
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(CommentCommandApi::class)
 @BaseApiTest
@@ -43,13 +42,10 @@ class CommentCommandApiTest(
         every { commentCommandService.create(any()) } returns 1L
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/posts/{postId}/comments", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request))
-        )
-            .andExpect(status().isCreated)
+        mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isCreated() } }
             .andDocument(
                 "community/create-comment",
                 pathVariables(
@@ -75,13 +71,10 @@ class CommentCommandApiTest(
         every { commentCommandService.create(any()) } returns 2L
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/posts/{postId}/comments", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request))
-        )
-            .andExpect(status().isCreated)
+        mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isCreated() } }
             .andDocument(
                 "community/create-reply-comment",
                 pathVariables(
@@ -103,13 +96,10 @@ class CommentCommandApiTest(
         val request = mapOf("content" to overLengthContent)
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/posts/{postId}/comments", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request))
-        )
-            .andExpect(status().isBadRequest)
+        mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isBadRequest() } }
     }
 
     test("댓글 내용이 비어있으면 400을 반환한다") {
@@ -117,13 +107,10 @@ class CommentCommandApiTest(
         val request = mapOf("content" to " ")
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.post("/api/community/posts/{postId}/comments", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request))
-        )
-            .andExpect(status().isBadRequest)
+        mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isBadRequest() } }
     }
 
     test("댓글 삭제 API 문서화") {
@@ -131,12 +118,8 @@ class CommentCommandApiTest(
         every { commentCommandService.delete(any(), any()) } just runs
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.delete(
-                "/api/community/posts/{postId}/comments/{commentId}", 1L, 1L
-            )
-        )
-            .andExpect(status().isOk)
+        mockMvc.deleteJson("/api/community/posts/{postId}/comments/{commentId}", 1L, 1L)
+            .andExpect { status { isOk() } }
             .andDocument(
                 "community/delete-comment",
                 pathVariables(
@@ -152,11 +135,7 @@ class CommentCommandApiTest(
             AccessDeniedException(EntityType.COMMUNITY_COMMENT, "owner@example.com", "holeman@naver.com")
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.delete(
-                "/api/community/posts/{postId}/comments/{commentId}", 1L, 1L
-            )
-        )
-            .andExpect(status().isForbidden)
+        mockMvc.deleteJson("/api/community/posts/{postId}/comments/{commentId}", 1L, 1L)
+            .andExpect { status { isForbidden() } }
     }
 })
