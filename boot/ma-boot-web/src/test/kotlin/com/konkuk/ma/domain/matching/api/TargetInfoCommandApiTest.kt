@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
 import com.konkuk.ma.domain.matching.domain.TargetInfo
+import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
 import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.extension.andDocument
@@ -194,17 +195,7 @@ class TargetInfoCommandApiTest(
         )
 
         every {
-            targetInfoCommandService.update(
-                id = id,
-                email = "holeman@naver.com",
-                targetName = "박수정",
-                middleNumber = FourDigit("4321"),
-                lastNumber = FourDigit("8765"),
-                year = Year(1996),
-                month = Month(3),
-                day = Day(20),
-                region = Region.BUSAN,
-            )
+            targetInfoCommandService.update(id, "holeman@naver.com", any<UpdateTargetInfo>())
         } returns TargetInfo(
             targetInfoId = id,
             registerEmail = Email("holeman@naver.com"),

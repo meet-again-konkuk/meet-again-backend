@@ -1,8 +1,9 @@
 package com.konkuk.ma.domain.matching.api.request
 
+import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
+import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.support.validation.ValidationMessages
 import com.konkuk.ma.support.validation.ValidationPatterns
-import com.konkuk.ma.domain.member.domain.Region
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 
@@ -22,4 +23,16 @@ class UpdateTargetInfoRequest(
     val day: Int?,
 
     val region: Region?,
-)
+) {
+    fun toUpdateTargetInfo(): UpdateTargetInfo {
+        return UpdateTargetInfo(
+            targetName = name,
+            middleNumber = middleNumber,
+            lastNumber = lastNumber,
+            year = year,
+            month = month,
+            day = day,
+            region = region,
+        )
+    }
+}
