@@ -4,7 +4,6 @@ import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import java.time.LocalDate
-import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.and
@@ -53,10 +52,6 @@ class MatchingResultCommandDao {
     }
 
     fun delete(targetInfoId: Long, email: String) {
-        MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
-            it[deleted] = true
-            it[deletedDate] = LocalDateTime.now()
-            it[deletedBy] = email
-        }
+        MatchingResultTable.softDelete({ MatchingResultTable.targetInfoId eq targetInfoId }, email)
     }
 }

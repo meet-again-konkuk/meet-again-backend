@@ -6,7 +6,6 @@ import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.domain.Gender
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
-import java.time.LocalDateTime
 import org.springframework.stereotype.Component
 
 @Component
@@ -40,10 +39,6 @@ class TargetInfoCommandDao {
     }
 
     fun delete(id: Long, email: String) {
-        TargetInfoTable.update({ TargetInfoTable.id eq id }) {
-            it[deleted] = true
-            it[deletedDate] = LocalDateTime.now()
-            it[deletedBy] = email
-        }
+        TargetInfoTable.softDelete({ TargetInfoTable.id eq id }, email)
     }
 }
