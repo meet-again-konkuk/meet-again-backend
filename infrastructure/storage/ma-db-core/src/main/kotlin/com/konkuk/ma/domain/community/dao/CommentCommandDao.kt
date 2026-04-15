@@ -47,7 +47,7 @@ class CommentCommandDao {
         return CommentTable
             .select(CommentTable.likes)
             .where { CommentTable.id eq commentId }
-            .map { row -> row[CommentTable.likes] }
-            .single()
+            .limit(1)
+            .first()[CommentTable.likes]
     }
 }
