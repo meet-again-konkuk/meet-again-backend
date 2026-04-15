@@ -28,6 +28,8 @@ class TargetInfoCommandService(
         val memberEmail = Email(email)
         val targetInfo = targetInfoQueryRepository.findOne(id)
         targetInfo.validateOwnership(memberEmail)
+        val hasMatchingResult = matchingResultRepository.existsByTargetInfoId(id)
+        targetInfo.validateUpdatable(hasMatchingResult)
         targetInfoCommandRepository.update(id, memberEmail, updateTargetInfo)
         return targetInfoQueryRepository.findOne(id)
     }

@@ -4,6 +4,8 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityType
+import com.konkuk.ma.exception.InvalidStateException
+import java.time.LocalDateTime
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
 import com.konkuk.ma.domain.member.domain.FourDigit
@@ -23,8 +25,19 @@ class TargetInfo(
     val month: Month?,
     val day: Day?,
 
-    val region: Region?
+    val region: Region?,
+
+    val createdDate: LocalDateTime = LocalDateTime.now(),
 ) {
+    fun validateUpdatable(hasMatchingResult: Boolean) {
+        if (hasMatchingResult) {
+            throw InvalidStateException(TargetInfo::class, targetInfoId, "매칭 결과가 존재하여 수정할 수 없습니다.")
+        }
+        if (createdDate.plusDays(1).isBefore(LocalDateTime.now())) {
+            throw InvalidStateException(TargetInfo::class, targetInfoId, "생성 후 24시간이 경과하여 수정할 수 없습니다.")
+        }
+    }
+
     fun validateOwnership(email: Email) {
         if (registerEmail != email) {
             throw AccessDeniedException(EntityType.TARGET_INFO, registerEmail.value, email.value)

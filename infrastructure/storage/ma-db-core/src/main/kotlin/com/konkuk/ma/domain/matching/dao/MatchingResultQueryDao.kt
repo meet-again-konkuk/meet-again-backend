@@ -27,6 +27,16 @@ class MatchingResultQueryDao {
             .map { row -> MatchingResultEntity.from(row) }
     }
 
+    fun existsByTargetInfoId(targetInfoId: Long): Boolean {
+        return MatchingResultTable
+            .selectAll()
+            .where {
+                (MatchingResultTable.targetInfoId eq targetInfoId) and
+                    (MatchingResultTable.deleted eq false)
+            }
+            .count() > 0
+    }
+
     fun findOne(id: Long): MatchingResultEntity? {
         return MatchingResultTable
             .selectAll()

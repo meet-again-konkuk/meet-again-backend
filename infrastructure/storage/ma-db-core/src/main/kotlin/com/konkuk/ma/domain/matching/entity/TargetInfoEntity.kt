@@ -35,7 +35,8 @@ class TargetInfoEntity(
             year = year?.let { Year(it) },
             month = month?.let { Month(it) },
             day = day?.let { Day(it) },
-            region = region
+            region = region,
+            createdDate = createdDate,
         )
     }
 }

@@ -7,6 +7,9 @@ import com.konkuk.ma.support.validation.ValidationPatterns
 import jakarta.validation.constraints.Pattern
 
 class UpdateTargetInfoRequest(
+    @field:Pattern(regexp = ValidationPatterns.NAME, message = ValidationMessages.NAME_INVALID)
+    val name: String?,
+
     @field:Pattern(regexp = ValidationPatterns.FOUR_DIGIT, message = ValidationMessages.FOUR_DIGIT_MIDDLE_INVALID)
     val middleNumber: String?,
 
@@ -21,6 +24,7 @@ class UpdateTargetInfoRequest(
 ) {
     fun toUpdateTargetInfo(): UpdateTargetInfo {
         return UpdateTargetInfo(
+            targetName = name,
             middleNumber = middleNumber,
             lastNumber = lastNumber,
             year = year,
