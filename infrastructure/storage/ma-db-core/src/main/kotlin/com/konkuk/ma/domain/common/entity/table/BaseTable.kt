@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 
+
 abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idName) {
 
     companion object {
@@ -23,8 +24,6 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
     val deleted = bool("DELETED").clientDefault { false }
     val deletedDate = datetime("DELETED_DATE").nullable()
     val deletedBy = varchar("DELETED_BY", 255).nullable()
-
-    fun activeRows(): Query = selectAll().where { deleted eq false }
 
     fun activeRows(additionalCondition: SqlExpressionBuilder.() -> Op<Boolean>): Query {
         return selectAll().where { (deleted eq false) and additionalCondition() }
