@@ -4,8 +4,6 @@ import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.domain.Gender
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
@@ -40,7 +38,7 @@ class TargetInfoCommandDao {
         }
     }
 
-    fun delete(id: Long) {
-        TargetInfoTable.deleteWhere { TargetInfoTable.id eq id }
+    fun delete(id: Long, email: String) {
+        TargetInfoTable.softDelete({ TargetInfoTable.id eq id }, email)
     }
 }

@@ -8,8 +8,8 @@ import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
-import org.springframework.stereotype.Repository
 import java.time.LocalDate
+import org.springframework.stereotype.Repository
 
 @Repository
 class MatchingResultCoreRepository(
@@ -48,7 +48,7 @@ class MatchingResultCoreRepository(
         matchingResultCommandDao.updateExcluded(matchingResult)
     }
 
-    override fun delete(targetInfoId: Long) {
-        matchingResultCommandDao.deleteByTargetInfoId(targetInfoId)
+    override fun delete(targetInfoId: Long, email: Email) {
+        matchingResultCommandDao.delete(targetInfoId, email.value)
     }
 }

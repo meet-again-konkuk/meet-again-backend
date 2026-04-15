@@ -8,6 +8,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -173,15 +174,15 @@ class MemberPhotoIntegrationTest(
                 header("Authorization", "Bearer $accessToken")
             }.andExpect { status { isCreated() } }
 
-            // Then - DB에 사진 레코드가 1개만 존재
-            val photos = transaction {
+            // Then - 활성 사진은 1개, 기존 사진은 soft delete
+            val activePhotos = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq email }
+                    .where { (MemberPhotoTable.memberEmail eq email) and (MemberPhotoTable.deleted eq false) }
                     .toList()
             }
 
-            photos.size shouldBe 1
-            photos[0][MemberPhotoTable.originalFileName] shouldBe "second.png"
+            activePhotos.size shouldBe 1
+            activePhotos[0][MemberPhotoTable.originalFileName] shouldBe "second.png"
         }
 
         test("인증 토큰 없이 사진을 업로드하면 401이 반환된다") {
@@ -198,7 +199,7 @@ class MemberPhotoIntegrationTest(
 
     context("DELETE /api/members/photos") {
 
-        test("업로드된 사진을 삭제하면 DB에서 제거된다") {
+        test("업로드된 사진을 삭제하면 soft delete 처리된다") {
             // Given
             val email = "photo-delete@example.com"
             val password = "password123"
@@ -224,7 +225,10 @@ class MemberPhotoIntegrationTest(
                     .singleOrNull()
             }
 
-            photo shouldBe null
+            photo shouldNotBe null
+            photo!![MemberPhotoTable.deleted] shouldBe true
+            photo[MemberPhotoTable.deletedBy] shouldBe email
+            photo[MemberPhotoTable.deletedDate] shouldNotBe null
         }
     }
 })

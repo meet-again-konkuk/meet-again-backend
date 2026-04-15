@@ -25,16 +25,18 @@ class TargetInfoCommandService(
     }
 
     fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo): TargetInfo {
+        val memberEmail = Email(email)
         val targetInfo = targetInfoQueryRepository.findOne(id)
-        targetInfo.validateOwnership(Email(email))
-        targetInfoCommandRepository.update(id, email, updateTargetInfo)
+        targetInfo.validateOwnership(memberEmail)
+        targetInfoCommandRepository.update(id, memberEmail, updateTargetInfo)
         return targetInfoQueryRepository.findOne(id)
     }
 
     fun delete(id: Long, email: String) {
+        val memberEmail = Email(email)
         val targetInfo = targetInfoQueryRepository.findOne(id)
-        targetInfo.validateOwnership(Email(email))
-        matchingResultRepository.delete(id)
-        targetInfoCommandRepository.delete(id)
+        targetInfo.validateOwnership(memberEmail)
+        matchingResultRepository.delete(id, memberEmail)
+        targetInfoCommandRepository.delete(id, memberEmail)
     }
 }

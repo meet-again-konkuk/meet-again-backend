@@ -2,8 +2,6 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.springframework.stereotype.Component
 
@@ -22,8 +20,6 @@ class MemberPhotoCommandDao {
     }
 
     fun delete(email: String) {
-        MemberPhotoTable.deleteWhere {
-            MemberPhotoTable.memberEmail eq email
-        }
+        MemberPhotoTable.softDelete({ MemberPhotoTable.memberEmail eq email }, email)
     }
 }

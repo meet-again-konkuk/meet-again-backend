@@ -2,7 +2,9 @@ package com.konkuk.ma.domain.common.entity.table
 
 import java.time.LocalDateTime
 import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.update
 
 abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idName) {
 
@@ -15,4 +17,14 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
     val lastModifiedDate = datetime("LAST_MODIFIED_DATE").clientDefault { LocalDateTime.now() }
     val lastModifiedBy = varchar("LAST_MODIFIED_BY", 255).clientDefault { DEFAULT_AUDIT_USER }
     val deleted = bool("DELETED").clientDefault { false }
+    val deletedDate = datetime("DELETED_DATE").nullable()
+    val deletedBy = varchar("DELETED_BY", 255).nullable()
+
+    fun softDelete(where: SqlExpressionBuilder.() -> org.jetbrains.exposed.sql.Op<Boolean>, email: String) {
+        update(where) {
+            it[deleted] = true
+            it[deletedDate] = LocalDateTime.now()
+            it[deletedBy] = email
+        }
+    }
 }

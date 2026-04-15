@@ -9,6 +9,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -81,7 +82,7 @@ class MemberPhotoCommandDaoTest(
 
         context("delete") {
 
-            test("해당 이메일의 사진을 삭제한다") {
+            test("해당 이메일의 사진을 soft delete 처리한다") {
                 // Given
                 val email = "user@example.com"
                 insertMemberPhoto(memberEmail = email)
@@ -90,10 +91,13 @@ class MemberPhotoCommandDaoTest(
                 memberPhotoCommandDao.delete(email)
 
                 // Then
-                MemberPhotoTable.selectAll().count() shouldBe 0
+                val photo = MemberPhotoTable.selectAll().first()
+                photo[MemberPhotoTable.deleted] shouldBe true
+                photo[MemberPhotoTable.deletedBy] shouldBe email
+                photo[MemberPhotoTable.deletedDate] shouldNotBe null
             }
 
-            test("같은 이메일의 사진이 여러 개이면 모두 삭제한다") {
+            test("같은 이메일의 사진이 여러 개이면 모두 soft delete 처리한다") {
                 // Given
                 val email = "user@example.com"
                 insertMemberPhoto(memberEmail = email, filePath = "/uploads/1.jpg")
@@ -103,10 +107,12 @@ class MemberPhotoCommandDaoTest(
                 memberPhotoCommandDao.delete(email)
 
                 // Then
-                MemberPhotoTable.selectAll().count() shouldBe 0
+                val photos = MemberPhotoTable.selectAll().toList()
+                photos.size shouldBe 2
+                photos.all { it[MemberPhotoTable.deleted] } shouldBe true
             }
 
-            test("다른 이메일의 사진은 삭제하지 않는다") {
+            test("다른 이메일의 사진은 soft delete 처리하지 않는다") {
                 // Given
                 insertMemberPhoto(memberEmail = "user1@example.com")
                 insertMemberPhoto(memberEmail = "user2@example.com")
@@ -115,8 +121,10 @@ class MemberPhotoCommandDaoTest(
                 memberPhotoCommandDao.delete("user1@example.com")
 
                 // Then
-                MemberPhotoTable.selectAll().count() shouldBe 1
-                MemberPhotoTable.selectAll().first()[MemberPhotoTable.memberEmail] shouldBe "user2@example.com"
+                val user2Photo = MemberPhotoTable.selectAll()
+                    .where { MemberPhotoTable.memberEmail eq "user2@example.com" }
+                    .first()
+                user2Photo[MemberPhotoTable.deleted] shouldBe false
             }
 
             test("존재하지 않는 이메일로 삭제해도 예외가 발생하지 않는다") {

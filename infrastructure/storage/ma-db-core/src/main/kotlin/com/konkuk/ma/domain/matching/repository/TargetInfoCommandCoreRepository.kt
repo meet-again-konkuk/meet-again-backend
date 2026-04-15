@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.dao.TargetInfoCommandDao
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
@@ -9,17 +10,17 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class TargetInfoCommandCoreRepository(
-    private val targetInfoCommandDao: TargetInfoCommandDao
+    private val targetInfoCommandDao: TargetInfoCommandDao,
 ) : TargetInfoCommandRepository {
     override fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long {
         return targetInfoCommandDao.save(newTargetInfo, targetGender)
     }
 
-    override fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo) {
-        targetInfoCommandDao.update(id, email, updateTargetInfo)
+    override fun update(id: Long, email: Email, updateTargetInfo: UpdateTargetInfo) {
+        targetInfoCommandDao.update(id, email.value, updateTargetInfo)
     }
 
-    override fun delete(id: Long) {
-        targetInfoCommandDao.delete(id)
+    override fun delete(id: Long, email: Email) {
+        targetInfoCommandDao.delete(id, email.value)
     }
 }
