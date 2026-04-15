@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
+import java.time.LocalDateTime
 
 object TargetInfoFixture {
     fun create(
@@ -20,7 +21,8 @@ object TargetInfoFixture {
         year: Year? = Year(1999),
         month: Month? = Month(12),
         day: Day? = Day(31),
-        region: Region? = Region.SEOUL
+        region: Region? = Region.SEOUL,
+        createdDate: LocalDateTime = LocalDateTime.now(),
     ): TargetInfo {
         return TargetInfo(
             targetInfoId = targetInfoId,
@@ -32,7 +34,8 @@ object TargetInfoFixture {
             year = year,
             month = month,
             day = day,
-            region = region
+            region = region,
+            createdDate = createdDate,
         )
     }
 }
