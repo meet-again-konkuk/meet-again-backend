@@ -29,4 +29,9 @@ data class CachedPointProduct(
     val quantity: Int = 0,
     val price: Int = 0,
     val displayOrder: Int = 0,
+    val discountType: String? = null,
+    val discountAmount: Int? = null,
+    val discountPercent: Int? = null,
+    val discountStartDate: String? = null,
+    val discountEndDate: String? = null,
 )

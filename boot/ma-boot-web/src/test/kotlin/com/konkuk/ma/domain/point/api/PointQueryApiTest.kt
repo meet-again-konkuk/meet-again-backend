@@ -3,9 +3,13 @@ package com.konkuk.ma.domain.point.api
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.point.application.PointQueryService
 import com.konkuk.ma.domain.point.domain.PointProduct
+import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.discountType
+import com.konkuk.ma.vocabulary.discountedPrice
+import com.konkuk.ma.vocabulary.isDiscountActive
 import com.konkuk.ma.vocabulary.pointProductId
 import com.konkuk.ma.vocabulary.pointProductName
 import com.konkuk.ma.vocabulary.price
@@ -15,6 +19,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
+import java.time.LocalDate
 
 @WebMvcTest(PointQueryApi::class)
 @BaseApiTest
@@ -32,6 +37,12 @@ class PointQueryApiTest(
                 quantity = 10,
                 price = 1000,
                 displayOrder = 1,
+                discountPolicy = AmountDiscountPolicy(
+                    discountPolicyId = 1L,
+                    startDate = LocalDate.now().minusDays(1),
+                    endDate = LocalDate.now().plusDays(30),
+                    discountAmount = 200,
+                ),
             ),
             PointProduct(
                 pointProductId = 2L,
@@ -59,6 +70,9 @@ class PointQueryApiTest(
                     pointProductName("[].name"),
                     quantity("[].quantity"),
                     price("[].price"),
+                    discountedPrice("[].discountedPrice") isOptional true,
+                    discountType("[].discountType") isOptional true,
+                    isDiscountActive("[].isDiscountActive"),
                 ),
             )
     }

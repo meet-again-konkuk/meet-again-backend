@@ -7,4 +7,5 @@ object PointProductTable : BaseTable("POINT_PRODUCTS", "POINT_PRODUCT_ID") {
     val quantity = integer("QUANTITY")
     val price = integer("PRICE")
     val displayOrder = integer("DISPLAY_ORDER")
+    val discountPolicyId = long("DISCOUNT_POLICY_ID").nullable()
 }
