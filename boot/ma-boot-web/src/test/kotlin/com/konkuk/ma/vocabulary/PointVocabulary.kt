@@ -7,7 +7,7 @@ import com.konkuk.ma.extension.responseType
 // --- 포인트 상품 관련 필드 ---
 
 fun pointProductId(fieldName: String = "pointProductId") =
-    fieldName responseType STRING means "포인트 상품 ID (인코딩)" example "abc123"
+    fieldName responseType NUMBER means "포인트 상품 ID" example "1"
 
 fun pointProductName(fieldName: String = "name") =
     fieldName responseType STRING means "상품명" example "인연 10개"
