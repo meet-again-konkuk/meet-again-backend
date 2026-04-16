@@ -8,6 +8,8 @@ import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import com.konkuk.ma.domain.point.entity.PointProductEntity
+import com.konkuk.ma.domain.point.entity.table.PointProductTable
 import org.jetbrains.exposed.sql.ResultRow
 
 object RowEntityMapper {
@@ -44,5 +46,13 @@ object RowEntityMapper {
         region = row[TargetInfoTable.region]?.let { Region.valueOf(it) },
         createdDate = row[TargetInfoTable.createdDate],
         lastModifiedDate = row[TargetInfoTable.lastModifiedDate]
+    )
+
+    fun toPointProductEntity(row: ResultRow) = PointProductEntity(
+        id = row[PointProductTable.id].value,
+        name = row[PointProductTable.name],
+        quantity = row[PointProductTable.quantity],
+        price = row[PointProductTable.price],
+        displayOrder = row[PointProductTable.displayOrder],
     )
 }
