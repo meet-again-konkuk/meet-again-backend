@@ -4,8 +4,8 @@ import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.entity.RefreshTokenEntity
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.common.RowEntityMapper
-import com.konkuk.ma.exception.EntityNotFoundException
-import com.konkuk.ma.exception.EntityType
+
+
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -30,12 +30,11 @@ class RefreshTokenDao {
         }
     }
 
-    fun findOne(email: String): RefreshTokenEntity {
+    fun findOne(email: String): RefreshTokenEntity? {
         return RefreshTokenTable.selectAll()
             .where { RefreshTokenTable.email eq email }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toRefreshTokenEntity(it) }
-            ?: throw EntityNotFoundException(EntityType.REFRESH_TOKEN, email)
     }
 }

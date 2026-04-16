@@ -3,8 +3,8 @@ package com.konkuk.ma.domain.member.dao
 import com.konkuk.ma.domain.common.RowEntityMapper
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
-import com.konkuk.ma.exception.EntityNotFoundException
-import com.konkuk.ma.exception.EntityType
+
+
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.intLiteral
 import org.springframework.stereotype.Component
@@ -27,13 +27,12 @@ class MemberQueryDao {
             .any()
     }
 
-    fun findOne(email: String): MemberEntity {
+    fun findOne(email: String): MemberEntity? {
         return MemberTable
             .activeRows { MemberTable.email eq email }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toMemberEntity(it) }
-            ?: throw EntityNotFoundException(EntityType.MEMBER, email)
     }
 
     fun findByEmails(emails: Set<String>): List<MemberEntity> {
