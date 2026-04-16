@@ -5,8 +5,10 @@ import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 
 class MatchingResults(
-    val data: List<MatchingResult>
+    data: List<MatchingResult>
 ) {
+    val data: List<MatchingResult> = data.filter { it.isVisible() }
+
     fun extractTargetEmails(): Set<Email> {
         return data.map { it.targetEmail }.toSet()
     }

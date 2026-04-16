@@ -18,7 +18,7 @@ object MatchingResultFixture {
         monthMatched: Boolean = true,
         dayMatched: Boolean = true,
         regionMatched: Boolean = true,
-        showingExpiryDate: LocalDateTime = LocalDate.now().atTime(11, 0).plusDays(30),
+        showingExpiryDate: LocalDateTime = LocalDateTime.now().plusDays(30),
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
         excluded: Boolean = false,
     ): MatchingResult {
@@ -51,7 +51,7 @@ object NewMatchingResultFixture {
         monthMatched: Boolean = true,
         dayMatched: Boolean = true,
         regionMatched: Boolean = true,
-        showingExpiryDate: LocalDateTime = LocalDate.now().atTime(11, 0).plusDays(30),
+        showingExpiryDate: LocalDateTime = LocalDateTime.now().plusDays(30),
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
     ): NewMatchingResult {
         return NewMatchingResult(

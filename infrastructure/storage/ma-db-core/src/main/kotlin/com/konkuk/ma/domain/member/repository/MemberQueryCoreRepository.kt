@@ -4,6 +4,8 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.dao.MemberQueryDao
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.exception.EntityNotFoundException
+import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -14,13 +16,13 @@ class MemberQueryCoreRepository(
         return memberQueryDao.existsByNickname(nickname)
     }
 
-    override fun existsByEmail(email: Email): Boolean {
+    override fun exists(email: Email): Boolean {
         return memberQueryDao.existsByEmail(email.value)
     }
 
     override fun findOne(email: Email): Member {
-        return memberQueryDao.findOne(email.value)
-            .toDomain()
+        return memberQueryDao.findOne(email.value)?.toDomain()
+            ?: throw EntityNotFoundException(EntityType.MEMBER, email.value)
     }
 
     override fun findByNames(names: Set<String>): List<Member> {

@@ -44,6 +44,10 @@ class MatchingResultCoreRepository(
             ?: throw EntityNotFoundException(EntityType.MATCHING_RESULT, matchingResultId.toString())
     }
 
+    override fun exists(targetInfoId: Long): Boolean {
+        return matchingResultQueryDao.exists(targetInfoId)
+    }
+
     override fun updateExcluded(matchingResult: MatchingResult) {
         matchingResultCommandDao.updateExcluded(matchingResult)
     }

@@ -23,7 +23,7 @@ class NewMatchingResult(
         .plusDays(MATCHING_EXPIRY_DAYS),
 ) : HasMatchingKey {
     companion object {
-        private const val SHOWING_EXPIRY_DAYS = 30L
+        const val SHOWING_EXPIRY_DAYS = 30L
         private const val MATCHING_EXPIRY_DAYS = 210L
         private const val SHOWING_START_HOUR = 11
     }

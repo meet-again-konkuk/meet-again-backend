@@ -42,7 +42,7 @@ class PostCommandDao {
         return PostTable
             .select(PostTable.likes)
             .where { PostTable.id eq postId }
-            .map { row -> row[PostTable.likes] }
-            .single()
+            .limit(1)
+            .first()[PostTable.likes]
     }
 }

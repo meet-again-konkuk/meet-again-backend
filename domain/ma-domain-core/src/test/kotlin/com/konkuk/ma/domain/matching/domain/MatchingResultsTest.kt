@@ -10,8 +10,38 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import java.time.LocalDateTime
 
 class MatchingResultsTest : FunSpec({
+
+    context("생성자 isVisible 필터") {
+
+        test("공개 시간이 지난 결과만 포함된다") {
+            val visible = MatchingResultFixture.create(
+                targetInfoId = 1L,
+                showingExpiryDate = LocalDateTime.now().plusDays(29),
+            )
+            val notVisible = MatchingResultFixture.create(
+                targetInfoId = 2L,
+                showingExpiryDate = LocalDateTime.now().plusDays(31),
+            )
+
+            val results = MatchingResults(listOf(visible, notVisible))
+
+            results.data shouldHaveSize 1
+            results.data[0].targetInfoId shouldBe 1L
+        }
+
+        test("모두 공개 전이면 빈 목록이 된다") {
+            val notVisible = MatchingResultFixture.create(
+                showingExpiryDate = LocalDateTime.now().plusDays(31),
+            )
+
+            val results = MatchingResults(listOf(notVisible))
+
+            results.data shouldHaveSize 0
+        }
+    }
 
     context("extractTargetEmails") {
 

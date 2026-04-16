@@ -23,7 +23,7 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
-            every { memberQueryRepository.existsByEmail(newMember.email) } returns false
+            every { memberQueryRepository.exists(newMember.email) } returns false
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns true
 
             // When & Then
@@ -47,7 +47,7 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
-            every { memberQueryRepository.existsByEmail(newMember.email) } returns true
+            every { memberQueryRepository.exists(newMember.email) } returns true
 
             // When & Then
             shouldThrow<DuplicateException> {
@@ -60,7 +60,7 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
-            every { memberQueryRepository.existsByEmail(newMember.email) } returns false
+            every { memberQueryRepository.exists(newMember.email) } returns false
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
 
             // When & Then
@@ -74,7 +74,7 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns true
-            every { memberQueryRepository.existsByEmail(newMember.email) } returns true
+            every { memberQueryRepository.exists(newMember.email) } returns true
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
 
             // When & Then

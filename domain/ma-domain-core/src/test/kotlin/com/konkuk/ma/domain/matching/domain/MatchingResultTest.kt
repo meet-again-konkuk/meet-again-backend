@@ -78,6 +78,25 @@ class MatchingResultTest : FunSpec({
         }
     }
 
+    context("isVisible") {
+
+        test("공개 시작 시각이 지났으면 true를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(
+                showingExpiryDate = LocalDateTime.now().plusDays(29),
+            )
+
+            matchingResult.isVisible() shouldBe true
+        }
+
+        test("공개 시작 시각 전이면 false를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(
+                showingExpiryDate = LocalDateTime.now().plusDays(31),
+            )
+
+            matchingResult.isVisible() shouldBe false
+        }
+    }
+
     context("exclude / include") {
 
         test("exclude 호출 시 excluded가 true가 된다") {
