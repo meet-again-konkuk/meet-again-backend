@@ -52,6 +52,15 @@ class MatchingResultCoreRepository(
         matchingResultCommandDao.updateExcluded(matchingResult)
     }
 
+    override fun updateClaimed(matchingResult: MatchingResult) {
+        matchingResultCommandDao.updateClaimed(matchingResult)
+    }
+
+    override fun findClaimedByTarget(email: Email): List<MatchingResult> {
+        return matchingResultQueryDao.findClaimedByTarget(email.value)
+            .map { it.toDomain() }
+    }
+
     override fun delete(targetInfoId: Long, email: Email) {
         matchingResultCommandDao.delete(targetInfoId, email.value)
     }

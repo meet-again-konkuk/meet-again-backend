@@ -51,6 +51,19 @@ class MatchingResultCommandApiTest(
             .andDocument("matching/include-matching-result")
     }
 
+    test("매칭 결과 claim API 문서화") {
+        // Given
+        val matchingResultId = 1L
+        val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
+
+        every { matchingResultCommandService.claim(matchingResultId, "holeman@naver.com") } just runs
+
+        // When & Then
+        mockMvc.patchJson("/api/matching-results/$encodedId/claim") {}
+            .andExpect { status { isOk() } }
+            .andDocument("matching/claim-matching-result")
+    }
+
     test("소유권이 없는 매칭 결과 제외 시 403을 반환한다") {
         // Given
         val matchingResultId = 1L

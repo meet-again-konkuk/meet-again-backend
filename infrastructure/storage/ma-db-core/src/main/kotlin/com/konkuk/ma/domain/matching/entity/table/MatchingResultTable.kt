@@ -18,4 +18,5 @@ object MatchingResultTable : BaseTable("MATCHING_RESULTS", "MATCHING_RESULT_ID")
     val showingExpiryDate = datetime("SHOWING_EXPIRY_DATE")
     val matchingExpiryDate = date("MATCHING_EXPIRY_DATE")
     val excluded = bool("EXCLUDED").clientDefault { false }
+    val claimed = bool("CLAIMED").clientDefault { false }
 }

@@ -16,6 +16,7 @@ import com.konkuk.ma.vocabulary.dayMatched
 import com.konkuk.ma.vocabulary.detailMatchRate
 import com.konkuk.ma.vocabulary.detailMatchingResultId
 import com.konkuk.ma.vocabulary.detailRemainingDays
+import com.konkuk.ma.vocabulary.claimed
 import com.konkuk.ma.vocabulary.isWithdrawn
 import com.konkuk.ma.vocabulary.lastNumberMatched
 import com.konkuk.ma.vocabulary.matchRate
@@ -82,6 +83,7 @@ class MatchingResultQueryApiTest(
                     remainingDays(),
                     matchRate(),
                     isWithdrawn(),
+                    claimed(),
                 )
             )
     }
@@ -126,7 +128,50 @@ class MatchingResultQueryApiTest(
                     remainingDays(),
                     matchRate(),
                     isWithdrawn(),
+                    claimed(),
                 )
+            )
+    }
+
+    test("나를 claim한 매칭 결과 목록 조회 API 문서화") {
+        // Given
+        val matchingResult = MatchingResultFixture.create(
+            registerEmail = "claimer@example.com",
+            targetEmail = "holeman@naver.com",
+            claimed = true,
+            monthMatched = false,
+            dayMatched = false,
+        )
+        val resultsWithProfiles = MatchingResultsWithProfiles(
+            data = listOf(
+                MatchingResultWithProfile(
+                    matchingResult = matchingResult,
+                    targetMemberId = 1L,
+                    targetName = "김클레임",
+                    targetNickname = "클레이머닉네임",
+                    profileImageUrl = "https://example.com/claimer.jpg",
+                )
+            )
+        )
+
+        every { matchingResultQueryService.findClaimedBy("holeman@naver.com") } returns resultsWithProfiles
+
+        // When & Then
+        mockMvc.getJson("/api/matching-results/claimed-by") {}
+            .andExpect { status { isOk() } }
+            .andDocument(
+                "matching/find-claimed-by",
+                responseBody(
+                    matchingResultId(),
+                    targetMemberId(),
+                    matchingTargetName(),
+                    matchingTargetNickname(),
+                    profileImageUrl(),
+                    remainingDays(),
+                    matchRate(),
+                    isWithdrawn(),
+                    claimed(),
+                ),
             )
     }
 

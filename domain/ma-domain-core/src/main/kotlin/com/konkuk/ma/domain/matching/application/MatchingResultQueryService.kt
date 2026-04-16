@@ -35,4 +35,15 @@ class MatchingResultQueryService(
         matchingResult.validateOwnership(Email(email))
         return matchingResult
     }
+
+    fun findClaimedBy(email: String): MatchingResultsWithProfiles {
+        val domainEmail = Email(email)
+        val matchingResults = MatchingResults(matchingResultRepository.findClaimedByTarget(domainEmail))
+        val registerEmails = matchingResults.extractRegisterEmails()
+
+        val members = Members(memberQueryRepository.findByEmails(registerEmails))
+        val photos = MemberPhotos(memberPhotoRepository.find(registerEmails))
+
+        return matchingResults.combineWithClaimerProfiles(members, photos)
+    }
 }

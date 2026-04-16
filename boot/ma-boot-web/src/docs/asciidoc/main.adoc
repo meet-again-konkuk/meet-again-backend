@@ -98,6 +98,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/exclude-matching-result.html[매칭 결과 제외/해제 API,window=_blank]
 
+[[matching-result-claim]]
+=== 매칭 결과 Claim
+
+* link:matching/claim-matching-result.html[매칭 결과 Claim API,window=_blank]
+
+[[matching-result-claimed-by]]
+=== 나를 Claim한 목록 조회
+
+* link:matching/find-claimed-by.html[나를 Claim한 목록 조회 API,window=_blank]
+
 [[community]]
 == 커뮤니티
 

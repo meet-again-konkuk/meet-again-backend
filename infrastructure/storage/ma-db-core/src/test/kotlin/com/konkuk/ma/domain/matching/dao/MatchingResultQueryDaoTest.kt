@@ -214,6 +214,34 @@ class MatchingResultQueryDaoTest(
                 result.shouldBeFalse()
             }
         }
+
+        context("findClaimedByTarget") {
+
+            test("targetEmail로 claimed=true인 매칭 결과를 조회한다") {
+                insertMatchingResult(claimed = true)
+
+                val result = matchingResultQueryDao.findClaimedByTarget("target@example.com")
+
+                result shouldHaveSize 1
+                result[0].claimed shouldBe true
+            }
+
+            test("claimed=false인 결과는 조회되지 않는다") {
+                insertMatchingResult(claimed = false)
+
+                val result = matchingResultQueryDao.findClaimedByTarget("target@example.com")
+
+                result shouldHaveSize 0
+            }
+
+            test("다른 targetEmail의 결과는 조회되지 않는다") {
+                insertMatchingResult(claimed = true)
+
+                val result = matchingResultQueryDao.findClaimedByTarget("nobody@example.com")
+
+                result shouldHaveSize 0
+            }
+        }
     }
 
     private fun insertMember(email: String) {
@@ -243,12 +271,15 @@ class MatchingResultQueryDaoTest(
 
     private fun insertMatchingResult(
         excluded: Boolean = false,
+        claimed: Boolean = false,
+        registerEmail: String = "register@example.com",
+        targetEmail: String = "target@example.com",
     ) {
         val targetInfoId = getTargetInfoId()
         MatchingResultTable.insert {
-            it[registerEmail] = "register@example.com"
+            it[MatchingResultTable.registerEmail] = registerEmail
             it[MatchingResultTable.targetInfoId] = targetInfoId
-            it[targetEmail] = "target@example.com"
+            it[MatchingResultTable.targetEmail] = targetEmail
             it[middleNumberMatched] = true
             it[lastNumberMatched] = true
             it[yearMatched] = true
@@ -258,6 +289,7 @@ class MatchingResultQueryDaoTest(
             it[showingExpiryDate] = LocalDateTime.now().plusDays(30)
             it[matchingExpiryDate] = LocalDate.now().plusDays(210)
             it[MatchingResultTable.excluded] = excluded
+            it[MatchingResultTable.claimed] = claimed
         }
     }
 }

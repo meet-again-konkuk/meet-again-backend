@@ -26,6 +26,14 @@ class MatchingResultQueryApi(
         return MatchingResultsResponse.from(results)
     }
 
+    @GetMapping("/claimed-by")
+    fun findClaimedByMe(
+        @AuthenticationPrincipal email: String,
+    ): MatchingResultsResponse {
+        val results = matchingResultQueryService.findClaimedBy(email)
+        return MatchingResultsResponse.from(results)
+    }
+
     @GetMapping("/{matchingResultId}")
     fun findMatchingResultDetail(
         @AuthenticationPrincipal email: String,

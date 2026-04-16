@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 나를 Claim한 목록 조회 API
+
+== 나를 Claim한 매칭 결과 조회
+
+나를 X로 지목한 사람들의 매칭 결과 목록을 조회합니다.
+
+=== 요청
+
+include::{snippets}/matching/find-claimed-by/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/find-claimed-by/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/matching/find-claimed-by/response-fields.adoc[]

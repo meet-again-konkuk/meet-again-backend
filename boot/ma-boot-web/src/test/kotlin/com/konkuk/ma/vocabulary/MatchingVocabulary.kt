@@ -64,6 +64,9 @@ fun targetMemberId(fieldName: String = "matchingResults[].targetMemberId") =
 fun isWithdrawn(fieldName: String = "matchingResults[].isWithdrawn") =
     fieldName responseType BOOLEAN means "탈퇴 회원 여부" example "false"
 
+fun claimed(fieldName: String = "matchingResults[].claimed") =
+    fieldName responseType BOOLEAN means "claim 여부" example "false"
+
 // --- 매칭 결과 상세 필드 ---
 
 fun detailMatchingResultId(fieldName: String = "matchingResultId") =

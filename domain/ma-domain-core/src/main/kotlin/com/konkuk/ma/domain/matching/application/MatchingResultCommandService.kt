@@ -23,4 +23,11 @@ class MatchingResultCommandService(
         matchingResult.include()
         matchingResultRepository.updateExcluded(matchingResult)
     }
+
+    fun claim(matchingResultId: Long, email: String) {
+        val matchingResult = matchingResultRepository.findOne(matchingResultId)
+        matchingResult.validateOwnership(Email(email))
+        matchingResult.claim()
+        matchingResultRepository.updateClaimed(matchingResult)
+    }
 }
