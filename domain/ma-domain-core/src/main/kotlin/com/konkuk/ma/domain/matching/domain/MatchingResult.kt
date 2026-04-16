@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.matching.domain
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.remainingDays
+import com.konkuk.ma.domain.matching.domain.NewMatchingResult.Companion.SHOWING_EXPIRY_DAYS
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityType
 import java.time.LocalDate
@@ -41,7 +42,7 @@ class MatchingResult(
 
     fun isVisible(): Boolean {
         val showingStartDate = showingExpiryDate.minusDays(SHOWING_EXPIRY_DAYS)
-        return !LocalDateTime.now().isBefore(showingStartDate)
+        return LocalDateTime.now().isAfter(showingStartDate)
     }
 
     fun getRemainingDays(): Long {
@@ -60,9 +61,5 @@ class MatchingResult(
 
     fun include() {
         excluded = false
-    }
-
-    companion object {
-        private const val SHOWING_EXPIRY_DAYS = 30L
     }
 }
