@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.point.domain
 
 import com.konkuk.ma.domain.point.domain.port.PointProductCacheRepository
+import com.konkuk.ma.domain.point.fixture.PointProductFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -15,7 +16,7 @@ class PointProductProviderTest : FunSpec({
     context("findFromCache") {
 
         test("캐시에 데이터가 있으면 반환한다") {
-            val products = listOf(createPointProduct())
+            val products = listOf(PointProductFixture.create())
             every { pointProductCacheRepository.findOrNull() } returns products
 
             val result = pointProductProvider.findFromCache()
@@ -43,7 +44,7 @@ class PointProductProviderTest : FunSpec({
     context("saveToCache") {
 
         test("캐시 저장 중 예외가 발생해도 예외를 전파하지 않는다") {
-            val products = listOf(createPointProduct())
+            val products = listOf(PointProductFixture.create())
             every { pointProductCacheRepository.save(products) } throws RuntimeException("Redis 연결 실패")
 
             pointProductProvider.saveToCache(products)
@@ -52,19 +53,3 @@ class PointProductProviderTest : FunSpec({
         }
     }
 })
-
-private fun createPointProduct(
-    pointProductId: Long = 1L,
-    name: String = "인연 10개",
-    quantity: Int = 10,
-    price: Int = 1000,
-    displayOrder: Int = 1,
-): PointProduct {
-    return PointProduct(
-        pointProductId = pointProductId,
-        name = name,
-        quantity = quantity,
-        price = price,
-        displayOrder = displayOrder,
-    )
-}

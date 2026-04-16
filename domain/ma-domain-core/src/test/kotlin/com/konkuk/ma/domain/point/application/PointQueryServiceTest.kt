@@ -1,8 +1,8 @@
 package com.konkuk.ma.domain.point.application
 
-import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductProvider
 import com.konkuk.ma.domain.point.domain.port.PointProductQueryRepository
+import com.konkuk.ma.domain.point.fixture.PointProductFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -19,7 +19,7 @@ class PointQueryServiceTest : FunSpec({
     context("findProducts") {
 
         test("캐시에 데이터가 있으면 DB를 조회하지 않는다") {
-            val cached = listOf(createPointProduct())
+            val cached = listOf(PointProductFixture.create())
             every { pointProductProvider.findFromCache() } returns cached
 
             val result = pointQueryService.findProducts()
@@ -29,7 +29,7 @@ class PointQueryServiceTest : FunSpec({
         }
 
         test("캐시에 데이터가 없으면 DB에서 조회하고 캐시에 저장한다") {
-            val products = listOf(createPointProduct())
+            val products = listOf(PointProductFixture.create())
             every { pointProductProvider.findFromCache() } returns null
             every { pointProductQueryRepository.find() } returns products
             every { pointProductProvider.saveToCache(products) } returns Unit
@@ -52,19 +52,3 @@ class PointQueryServiceTest : FunSpec({
         }
     }
 })
-
-private fun createPointProduct(
-    pointProductId: Long = 1L,
-    name: String = "인연 10개",
-    quantity: Int = 10,
-    price: Int = 1000,
-    displayOrder: Int = 1,
-): PointProduct {
-    return PointProduct(
-        pointProductId = pointProductId,
-        name = name,
-        quantity = quantity,
-        price = price,
-        displayOrder = displayOrder,
-    )
-}
