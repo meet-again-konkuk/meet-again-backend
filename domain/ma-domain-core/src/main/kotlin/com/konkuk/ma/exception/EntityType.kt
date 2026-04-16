@@ -7,4 +7,5 @@ enum class EntityType(val entityName: String, val keyName: String) {
     COMMUNITY_POST("CommunityPost", "id"),
     COMMUNITY_COMMENT("CommunityComment", "id"),
     TARGET_INFO("TargetInfo", "id"),
+    XROOM("Xroom", "id"),
 }
