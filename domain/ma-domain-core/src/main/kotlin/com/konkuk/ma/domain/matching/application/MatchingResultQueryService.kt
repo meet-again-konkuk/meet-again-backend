@@ -22,7 +22,6 @@ class MatchingResultQueryService(
     fun find(email: String, excluded: Boolean = false): MatchingResultsWithProfiles {
         val domainEmail = Email(email)
         val matchingResults = MatchingResults(matchingResultRepository.find(domainEmail, excluded))
-            .filterVisible()
         val targetEmails = matchingResults.extractTargetEmails()
 
         val members = Members(memberQueryRepository.findByEmails(targetEmails))
