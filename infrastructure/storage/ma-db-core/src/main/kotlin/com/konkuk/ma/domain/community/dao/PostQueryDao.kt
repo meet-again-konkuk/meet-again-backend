@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
@@ -39,9 +40,9 @@ class PostQueryDao {
     }
 
     fun exists(id: Long): Boolean {
-        return PostTable
-            .activeRows { PostTable.id eq id }
+        return PostTable.select(intLiteral(1))
+            .where { (PostTable.deleted eq false) and (PostTable.id eq id) }
             .limit(1)
-            .any()
+            .firstOrNull() != null
     }
 }

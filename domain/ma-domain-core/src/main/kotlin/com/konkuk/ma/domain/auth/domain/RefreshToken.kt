@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.auth.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.common.domain.isExpired
+import com.konkuk.ma.domain.common.domain.date.isExpired
 import java.time.LocalDateTime
 
 class RefreshToken(

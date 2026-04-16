@@ -2,7 +2,9 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.domain.matching.entity.MatchingResultEntity
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.intLiteral
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
@@ -22,10 +24,10 @@ class MatchingResultQueryDao {
     }
 
     fun exists(targetInfoId: Long): Boolean {
-        return MatchingResultTable
-            .activeRows { MatchingResultTable.targetInfoId eq targetInfoId }
+        return MatchingResultTable.select(intLiteral(1))
+            .where { (MatchingResultTable.deleted eq false) and (MatchingResultTable.targetInfoId eq targetInfoId) }
             .limit(1)
-            .any()
+            .firstOrNull() != null
     }
 
     fun findOne(id: Long): MatchingResultEntity? {
