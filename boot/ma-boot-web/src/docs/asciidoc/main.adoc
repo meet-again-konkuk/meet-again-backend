@@ -143,6 +143,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/toggle-comment-like.html[댓글 좋아요 토글 API,window=_blank]
 
+[[point]]
+== 포인트
+
+포인트(인연) 도메인과 관련된 API 입니다.
+
+[[point-find-products]]
+=== 포인트 상품 목록 조회
+
+* link:point/find-products.html[포인트 상품 목록 조회 API,window=_blank]
+
 [[support]]
 == 고객지원
 

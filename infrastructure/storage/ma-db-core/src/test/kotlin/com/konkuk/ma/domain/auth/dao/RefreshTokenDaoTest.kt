@@ -10,6 +10,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
@@ -99,16 +100,17 @@ class RefreshTokenDaoTest(
                 val result = refreshTokenDao.findOne(email)
 
                 // Then
-                result.email shouldBe email
+                result shouldNotBe null
+                result!!.email shouldBe email
                 result.token shouldBe token
             }
 
-            test("존재하지 않는 이메일로 조회하면 EntityNotFoundException이 발생한다") {
-                // When & Then
-                val exception = shouldThrow<EntityNotFoundException> {
-                    refreshTokenDao.findOne("nobody@example.com")
-                }
-                exception.message shouldContain "RefreshToken"
+            test("존재하지 않는 이메일로 조회하면 null을 반환한다") {
+                // When
+                val result = refreshTokenDao.findOne("nobody@example.com")
+
+                // Then
+                result shouldBe null
             }
         }
     }
