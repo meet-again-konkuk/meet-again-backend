@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.matching.domain
 
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.common.domain.hasElapsed
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -11,6 +12,7 @@ import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.exception.InvalidStateException
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class TargetInfo(
     val targetInfoId: Long,
@@ -32,8 +34,7 @@ class TargetInfo(
         if (hasMatchingResult) {
             throw InvalidStateException(TargetInfo::class, targetInfoId, "매칭 결과가 존재하여 수정할 수 없습니다.")
         }
-        if (createdDate.plusHours(UPDATABLE_HOURS)
-                .isBefore(LocalDateTime.now())) {
+        if (createdDate.hasElapsed(UPDATABLE_HOURS, ChronoUnit.HOURS)) {
             throw InvalidStateException(TargetInfo::class, targetInfoId, "생성 후 ${UPDATABLE_HOURS}시간이 경과하여 수정할 수 없습니다.")
         }
     }

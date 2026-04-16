@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.auth.domain
 
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.common.domain.isExpired
 import java.time.LocalDateTime
 
 class RefreshToken(
@@ -11,6 +12,6 @@ class RefreshToken(
     val token: String,
 ) {
     fun isExpired(): Boolean {
-        return !LocalDateTime.now().isBefore(expirationDate)
+        return expirationDate.isExpired()
     }
 }
