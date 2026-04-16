@@ -1,10 +1,12 @@
 package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.config.DatabaseTest
-import com.konkuk.ma.config.DatabaseTestConfig
 import com.konkuk.ma.config.TestDatabaseConfig
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.springframework.test.context.ContextConfiguration
 import java.time.LocalDate
@@ -13,7 +15,9 @@ import java.time.LocalDate
 @DatabaseTest
 class MemberQueryDaoTest(
     private val memberQueryDao: MemberQueryDao
-) : DatabaseTestConfig() {
+) : FunSpec() {
+
+    override fun extensions() = listOf(SpringExtension)
 
     private fun insertMember(
         email: String = "test@example.com",
@@ -32,6 +36,14 @@ class MemberQueryDaoTest(
     }
 
     init {
+        beforeEach {
+            SchemaUtils.create(MemberTable)
+        }
+
+        afterEach {
+            SchemaUtils.drop(MemberTable)
+        }
+
         test("existsByNickname - 닉네임이 존재하는 경우 true를 반환한다") {
             // Given
             val nickname = "testNickname"
