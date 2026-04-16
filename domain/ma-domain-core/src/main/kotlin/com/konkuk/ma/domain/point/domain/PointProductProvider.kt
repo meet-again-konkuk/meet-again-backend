@@ -10,12 +10,12 @@ class PointProductProvider(
 ) {
     fun findFromCache(): List<PointProduct>? {
         return runCatching { pointProductCacheRepository.findOrNull() }
-            .onFailure { logger.warn { "Redis 캐시 조회 실패: ${it.message}" } }
+            .onFailure { logger.error { "Redis 캐시 조회 실패: ${it.message}" } }
             .getOrNull()
     }
 
     fun saveToCache(products: List<PointProduct>) {
         runCatching { pointProductCacheRepository.save(products) }
-            .onFailure { logger.warn { "Redis 캐시 저장 실패: ${it.message}" } }
+            .onFailure { logger.error { "Redis 캐시 저장 실패: ${it.message}" } }
     }
 }
