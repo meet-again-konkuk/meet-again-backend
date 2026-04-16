@@ -43,6 +43,6 @@ class PostQueryDao {
         return PostTable.select(intLiteral(1))
             .where { (PostTable.deleted eq false) and (PostTable.id eq id) }
             .limit(1)
-            .firstOrNull() != null
+            .any()
     }
 }

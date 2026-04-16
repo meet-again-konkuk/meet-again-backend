@@ -27,7 +27,7 @@ class MatchingResultQueryDao {
         return MatchingResultTable.select(intLiteral(1))
             .where { (MatchingResultTable.deleted eq false) and (MatchingResultTable.targetInfoId eq targetInfoId) }
             .limit(1)
-            .firstOrNull() != null
+            .any()
     }
 
     fun findOne(id: Long): MatchingResultEntity? {
