@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.common.domain.date
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -13,4 +14,8 @@ fun LocalDateTime.hasElapsed(amount: Long, unit: ChronoUnit): Boolean {
 
 fun LocalDateTime.isExpired(): Boolean {
     return !LocalDateTime.now().isBefore(this)
+}
+
+fun LocalDateTime.remainingDays(): Long {
+    return ChronoUnit.DAYS.between(LocalDate.now(), this).coerceAtLeast(0)
 }

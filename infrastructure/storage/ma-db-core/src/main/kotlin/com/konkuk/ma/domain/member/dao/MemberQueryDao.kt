@@ -16,7 +16,7 @@ class MemberQueryDao {
             .where {
                 (MemberTable.deleted eq false) and (MemberTable.nickname eq nickname)
             }.limit(1)
-            .firstOrNull() != null
+            .any()
     }
 
     fun existsByEmail(email: String): Boolean {
@@ -24,7 +24,7 @@ class MemberQueryDao {
             .where {
                 (MemberTable.deleted eq false) and (MemberTable.email eq email)
             }.limit(1)
-            .firstOrNull() != null
+            .any()
     }
 
     fun findOne(email: String): MemberEntity {
