@@ -17,5 +17,6 @@ fun LocalDateTime.isExpired(): Boolean {
 }
 
 fun LocalDateTime.remainingDays(): Long {
-    return ChronoUnit.DAYS.between(LocalDate.now(), this).coerceAtLeast(0)
+    return ChronoUnit.DAYS.between(LocalDate.now(), this)
+        .coerceAtLeast(0)
 }

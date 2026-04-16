@@ -39,6 +39,11 @@ class MatchingResult(
     }
 
 
+    fun isVisible(): Boolean {
+        val showingStartDate = showingExpiryDate.minusDays(SHOWING_EXPIRY_DAYS)
+        return !LocalDateTime.now().isBefore(showingStartDate)
+    }
+
     fun getRemainingDays(): Long {
         return showingExpiryDate.remainingDays()
     }
@@ -55,5 +60,9 @@ class MatchingResult(
 
     fun include() {
         excluded = false
+    }
+
+    companion object {
+        private const val SHOWING_EXPIRY_DAYS = 30L
     }
 }

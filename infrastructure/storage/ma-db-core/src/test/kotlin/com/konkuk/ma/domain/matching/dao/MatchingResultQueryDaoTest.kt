@@ -8,6 +8,8 @@ import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -64,6 +66,21 @@ class MatchingResultQueryDaoTest(
             test("일치하는 targetInfoId가 없으면 빈 리스트를 반환한다") {
                 // When
                 val result = matchingResultQueryDao.find(listOf(9999L))
+
+                // Then
+                result shouldHaveSize 0
+            }
+
+            test("deleted=true인 매칭 결과는 조회되지 않는다") {
+                // Given
+                val targetInfoId = getTargetInfoId()
+                insertMatchingResult()
+                MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
+                    it[deleted] = true
+                }
+
+                // When
+                val result = matchingResultQueryDao.find(listOf(targetInfoId))
 
                 // Then
                 result shouldHaveSize 0
@@ -157,6 +174,44 @@ class MatchingResultQueryDaoTest(
 
                 // Then
                 result shouldBe null
+            }
+        }
+
+        context("exists") {
+
+            test("해당 targetInfoId의 매칭 결과가 존재하면 true를 반환한다") {
+                // Given
+                val targetInfoId = getTargetInfoId()
+                insertMatchingResult()
+
+                // When
+                val result = matchingResultQueryDao.exists(targetInfoId)
+
+                // Then
+                result.shouldBeTrue()
+            }
+
+            test("해당 targetInfoId의 매칭 결과가 없으면 false를 반환한다") {
+                // When
+                val result = matchingResultQueryDao.exists(9999L)
+
+                // Then
+                result.shouldBeFalse()
+            }
+
+            test("deleted=true인 매칭 결과는 존재하지 않는 것으로 판단한다") {
+                // Given
+                val targetInfoId = getTargetInfoId()
+                insertMatchingResult()
+                MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
+                    it[deleted] = true
+                }
+
+                // When
+                val result = matchingResultQueryDao.exists(targetInfoId)
+
+                // Then
+                result.shouldBeFalse()
             }
         }
     }
