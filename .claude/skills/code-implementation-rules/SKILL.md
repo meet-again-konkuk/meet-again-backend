@@ -22,6 +22,35 @@ Service 클래스는 비즈니스 로직을 직접 구현하지 않는다. 도�
 - Service는 포트와 도메인 컴포넌트만 의존, 다른 Service 참조 금지
 - **Repository(포트 구현체)도 비즈니스 로직 금지** — DAO 호출 + `toDomain()` 변환만 담당. 조건 분기, 데이터 가공, 검증 로직을 넣지 않는다
 
+### 1-1. ⚠️ 생성/수정 전 검증은 Validator로 분리
+
+Service의 Command 메서드에서 **여러 저장소를 조회해 수행하는 사전 검증**(중복 체크, 참조 엔티티 존재/소유권 확인, 상태 검증 등)은 Service에 두지 않고 **`XxxValidator` 도메인 컴포넌트**로 분리한다.
+
+- 위치: `domain.xxx.domain.XxxValidator` (`@Component`)
+- 시그니처: `fun validate(newXxx: NewXxx)` — 생성/수정할 도메인 객체를 받아 검증만 수행
+- 기존 예시: `SignUpValidator`, `CommentValidator`, `XroomValidator`
+
+BAD — Service가 직접 조회하고 분기해서 던짐:
+```
+fun create(...) {
+    val targetInfo = targetInfoQueryRepository.findOne(id)
+    targetInfo.validateOwnership(Email(email))
+    if (xroomQueryRepository.exists(id)) throw DuplicateException(...)
+    return xroomCommandRepository.save(newXroom)
+}
+```
+
+GOOD — Service는 조합만, 검증은 Validator에 위임:
+```
+fun create(...) {
+    val newXroom = NewXroom(...)
+    xroomValidator.validate(newXroom)
+    return xroomCommandRepository.save(newXroom)
+}
+```
+
+**판단 기준**: Command 메서드에 `if (...) throw ...` 또는 조회-후-분기가 2개 이상 있으면 Validator로 분리 대상.
+
 ## 2. 도메인 객체에 행위 부여
 
 외부에서 getter로 꺼내서 판단하지 말고, 객체 스스로 판단/행동하게 한다.
@@ -90,9 +119,11 @@ Bean Validation의 `message`, `regexp`는 하드코딩 금지. `ValidationMessag
 
 ## 13. 메서드 네이밍
 
-- 파라미터로 유추 가능한 조건은 메서드명에 반복하지 않는다
-- 단건: `findOne`, 복수: `find`로 구분
-- 같은 타입 파라미터로 다른 조건이 필요할 때만 `findByXxx`, `findOneByXxx`
+- 파라미터로 유추 가능한 조건은 메서드명에 반복하지 않는다 (`find`, `findOne`, `exists`, `delete`, `count` 등 **모든 조회/존재/삭제/집계 메서드에 동일 적용**)
+  - 나쁜 예: `existsByTargetInfoId(targetInfoId: Long)`, `deleteByMemberId(memberId: Long)`
+  - 좋은 예: `exists(targetInfoId: Long)`, `delete(memberId: Long)`
+- 단건 조회: `findOne`, 복수 조회: `find`로 구분
+- 같은 타입 파라미터로 **다른 조건**이 필요할 때만 `findByXxx`, `findOneByXxx`, `existsByXxx`, `deleteByXxx` 등 접미사 허용 (오버로드 구분 목적)
 
 ## 14. RESTful URL 설계
 

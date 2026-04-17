@@ -153,6 +153,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:point/find-products.html[포인트 상품 목록 조회 API,window=_blank]
 
+[[xroom]]
+== X룸
+
+X룸 도메인과 관련된 API 입니다.
+
+[[xroom-create]]
+=== X룸 생성
+
+* link:xroom/create-xroom.html[X룸 생성 API,window=_blank]
+
 [[support]]
 == 고객지원
 
