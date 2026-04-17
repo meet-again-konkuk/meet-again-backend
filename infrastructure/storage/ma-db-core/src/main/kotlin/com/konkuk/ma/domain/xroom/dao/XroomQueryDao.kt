@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class XroomQueryDao {
-    fun existsByTargetInfoId(targetInfoId: Long): Boolean {
+    fun exists(targetInfoId: Long): Boolean {
         return XroomTable
             .activeRows { XroomTable.targetInfoId eq targetInfoId }
             .limit(1)

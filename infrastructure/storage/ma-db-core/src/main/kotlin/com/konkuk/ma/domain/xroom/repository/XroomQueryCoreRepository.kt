@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 class XroomQueryCoreRepository(
     private val xroomQueryDao: XroomQueryDao,
 ) : XroomQueryRepository {
-    override fun existsByTargetInfoId(targetInfoId: Long): Boolean {
-        return xroomQueryDao.existsByTargetInfoId(targetInfoId)
+    override fun exists(targetInfoId: Long): Boolean {
+        return xroomQueryDao.exists(targetInfoId)
     }
 }

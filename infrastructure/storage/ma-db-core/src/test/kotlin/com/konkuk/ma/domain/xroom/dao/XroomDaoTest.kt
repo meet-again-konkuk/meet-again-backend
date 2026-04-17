@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.xroom.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.xroom.domain.NewXroom
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import io.kotest.core.spec.style.FunSpec
@@ -34,7 +35,7 @@ class XroomDaoTest(
         context("save") {
 
             test("X룸을 저장하고 ID를 반환한다") {
-                val newXroom = NewXroom(ownerEmail = "test@example.com", targetInfoId = 1L)
+                val newXroom = NewXroom(ownerEmail = Email("test@example.com"), targetInfoId = 1L)
 
                 val id = xroomCommandDao.save(newXroom)
 
@@ -43,25 +44,25 @@ class XroomDaoTest(
             }
         }
 
-        context("existsByTargetInfoId") {
+        context("exists") {
 
             test("해당 targetInfoId의 X룸이 존재하면 true를 반환한다") {
-                val newXroom = NewXroom(ownerEmail = "test@example.com", targetInfoId = 1L)
+                val newXroom = NewXroom(ownerEmail = Email("test@example.com"), targetInfoId = 1L)
                 xroomCommandDao.save(newXroom)
 
-                xroomQueryDao.existsByTargetInfoId(1L).shouldBeTrue()
+                xroomQueryDao.exists(1L).shouldBeTrue()
             }
 
             test("해당 targetInfoId의 X룸이 없으면 false를 반환한다") {
-                xroomQueryDao.existsByTargetInfoId(999L).shouldBeFalse()
+                xroomQueryDao.exists(999L).shouldBeFalse()
             }
 
             test("deleted=true인 X룸은 존재하지 않는 것으로 판단한다") {
-                val newXroom = NewXroom(ownerEmail = "test@example.com", targetInfoId = 1L)
+                val newXroom = NewXroom(ownerEmail = Email("test@example.com"), targetInfoId = 1L)
                 xroomCommandDao.save(newXroom)
                 XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "test@example.com")
 
-                xroomQueryDao.existsByTargetInfoId(1L).shouldBeFalse()
+                xroomQueryDao.exists(1L).shouldBeFalse()
             }
         }
     }

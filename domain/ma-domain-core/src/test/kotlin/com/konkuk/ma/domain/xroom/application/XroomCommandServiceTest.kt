@@ -1,63 +1,35 @@
 package com.konkuk.ma.domain.xroom.application
 
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.matching.domain.TargetInfo
-import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
-import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
+import com.konkuk.ma.domain.xroom.domain.NewXroom
+import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.port.XroomCommandRepository
-import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
-import com.konkuk.ma.exception.AccessDeniedException
-import com.konkuk.ma.exception.DuplicateException
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 
 class XroomCommandServiceTest : FunSpec({
 
-    val targetInfoQueryRepository = mockk<TargetInfoQueryRepository>()
     val xroomCommandRepository = mockk<XroomCommandRepository>()
-    val xroomQueryRepository = mockk<XroomQueryRepository>()
-    val xroomCommandService = XroomCommandService(
-        targetInfoQueryRepository, xroomCommandRepository, xroomQueryRepository
-    )
+    val xroomValidator = mockk<XroomValidator>()
+    val xroomCommandService = XroomCommandService(xroomCommandRepository, xroomValidator)
 
     context("create") {
 
-        test("X룸을 정상적으로 생성한다") {
-            val targetInfo = TargetInfoFixture.create()
-            val email = targetInfo.registerEmail.value
-            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
-            every { xroomQueryRepository.existsByTargetInfoId(targetInfo.targetInfoId) } returns false
+        test("검증을 통과하면 X룸을 저장하고 ID를 반환한다") {
+            val targetInfoId = 1L
+            val email = "holeman@naver.com"
+            every { xroomValidator.validate(any()) } just runs
             every { xroomCommandRepository.save(any()) } returns 1L
 
-            val result = xroomCommandService.create(targetInfo.targetInfoId, email)
+            val result = xroomCommandService.create(targetInfoId, email)
 
             result shouldBe 1L
+            verify { xroomValidator.validate(any<NewXroom>()) }
             verify { xroomCommandRepository.save(any()) }
-        }
-
-        test("본인 소유가 아닌 TargetInfo로 생성하면 예외가 발생한다") {
-            val targetInfo = TargetInfoFixture.create()
-            val otherEmail = "other@example.com"
-            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
-
-            shouldThrow<AccessDeniedException> {
-                xroomCommandService.create(targetInfo.targetInfoId, otherEmail)
-            }
-        }
-
-        test("이미 X룸이 존재하는 TargetInfo로 생성하면 예외가 발생한다") {
-            val targetInfo = TargetInfoFixture.create()
-            val email = targetInfo.registerEmail.value
-            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
-            every { xroomQueryRepository.existsByTargetInfoId(targetInfo.targetInfoId) } returns true
-
-            shouldThrow<DuplicateException> {
-                xroomCommandService.create(targetInfo.targetInfoId, email)
-            }
         }
     }
 })
