@@ -37,8 +37,8 @@ class MatchingResultQueryService(
     }
 
     fun findClaimedBy(email: String): MatchingResultsWithProfiles {
-        val domainEmail = Email(email)
-        val matchingResults = MatchingResults(matchingResultRepository.findClaimedByTarget(domainEmail))
+        val memberEmail = Email(email)
+        val matchingResults = MatchingResults(matchingResultRepository.findClaimedByTarget(memberEmail))
         val registerEmails = matchingResults.extractRegisterEmails()
 
         val members = Members(memberQueryRepository.findByEmails(registerEmails))
