@@ -37,6 +37,8 @@
 | GET | /api/matching-results?excluded=true | 제외된 매칭 결과 조회 |
 | PATCH | /api/matching-results/{id}/exclude | 매칭 상대 제외(차단) |
 | PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 |
+| PATCH | /api/matching-results/{id}/claim | 매칭 결과 Claim |
+| GET | /api/claimers/me | 나를 Claim한 요청자 목록 조회 |
 
 ### 커뮤니티
 
@@ -77,11 +79,7 @@
 
 ## 매칭
 
-### 상대방에게 당신이 나의 X임을 표시하기
-- **인증**: 필요 / 불필요
-
-**상세내용**:
-- Matching Result 결과를 보고 이 사람이 나의 X임을 의사 전달하기는 
+> 작업할 내용 없음
 
 ---
 
