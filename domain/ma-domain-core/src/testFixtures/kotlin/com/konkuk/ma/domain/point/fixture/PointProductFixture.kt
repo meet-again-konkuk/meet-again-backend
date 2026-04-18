@@ -10,6 +10,7 @@ object PointProductFixture {
         quantity: Int = 10,
         price: Int = 1000,
         displayOrder: Int = 1,
+        discountPolicyId: Long? = null,
         discountPolicy: DiscountPolicy? = null,
     ): PointProduct {
         return PointProduct(
@@ -18,6 +19,7 @@ object PointProductFixture {
             quantity = quantity,
             price = price,
             displayOrder = displayOrder,
+            discountPolicyId = discountPolicyId,
             discountPolicy = discountPolicy,
         )
     }

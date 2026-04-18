@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class DiscountPolicyQueryDao {
-    fun find(ids: List<Long>): List<DiscountPolicyEntity> {
+    fun find(ids: Set<Long>): List<DiscountPolicyEntity> {
         if (ids.isEmpty()) return emptyList()
 
         return DiscountPolicyTable
