@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.matching.api
 
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
+import com.konkuk.ma.domain.matching.api.response.ClaimersResponse
 import com.konkuk.ma.domain.matching.api.response.MatchingResultDetailResponse
 import com.konkuk.ma.domain.matching.api.response.MatchingResultsResponse
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
@@ -29,9 +30,9 @@ class MatchingResultQueryApi(
     @GetMapping("/claimed-by")
     fun findClaimedByMe(
         @AuthenticationPrincipal email: String,
-    ): MatchingResultsResponse {
-        val results = matchingResultQueryService.findClaimedBy(email)
-        return MatchingResultsResponse.from(results)
+    ): ClaimersResponse {
+        val profiles = matchingResultQueryService.findClaimedBy(email)
+        return ClaimersResponse.from(profiles)
     }
 
     @GetMapping("/{matchingResultId}")

@@ -17,6 +17,10 @@ class MatchingResults(
         return data.map { it.registerEmail }.toSet()
     }
 
+    fun extractTargetInfoIds(): Set<Long> {
+        return data.map { it.targetInfoId }.toSet()
+    }
+
     fun combineWithProfiles(members: Members, photos: MemberPhotos): MatchingResultsWithProfiles {
         val combined = data.map { result ->
             val member = members.findOne(result.targetEmail)
@@ -32,18 +36,22 @@ class MatchingResults(
         return MatchingResultsWithProfiles(combined)
     }
 
-    fun combineWithClaimerProfiles(members: Members, photos: MemberPhotos): MatchingResultsWithProfiles {
-        val combined = data.map { result ->
+    fun toClaimerProfiles(
+        members: Members,
+        photos: MemberPhotos,
+        xroomExistTargetInfoIds: Set<Long>,
+    ): ClaimerProfiles {
+        val profiles = data.map { result ->
             val member = members.findOne(result.registerEmail)
             val photo = photos.findOne(result.registerEmail)
-            MatchingResultWithProfile(
-                matchingResult = result,
-                targetMemberId = member?.id,
-                targetName = member?.name,
-                targetNickname = member?.nickname,
+            ClaimerProfile(
+                memberId = member?.id,
+                name = member?.name,
+                nickname = member?.nickname,
                 profileImageUrl = photo?.thumbnailPath,
+                hasXroom = xroomExistTargetInfoIds.contains(result.targetInfoId),
             )
         }
-        return MatchingResultsWithProfiles(combined)
+        return ClaimerProfiles(profiles)
     }
 }

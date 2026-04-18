@@ -83,9 +83,6 @@
 **상세내용**:
 - Matching Result 결과를 보고 이 사람이 나의 X임을 의사 전달하기
 
-**수정사항**:
-- findClaimedByMe는 MatchingResult 결과가 아닌 X 요청자 정보가 리턴 되어야함.
-
 ---
 
 ## 커뮤니티

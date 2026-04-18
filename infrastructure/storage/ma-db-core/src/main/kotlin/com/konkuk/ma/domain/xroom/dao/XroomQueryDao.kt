@@ -11,4 +11,12 @@ class XroomQueryDao {
             .limit(1)
             .any()
     }
+
+    fun exists(targetInfoIds: List<Long>): Set<Long> {
+        if (targetInfoIds.isEmpty()) return emptySet()
+        return XroomTable
+            .activeRows { XroomTable.targetInfoId inList targetInfoIds }
+            .map { it[XroomTable.targetInfoId] }
+            .toSet()
+    }
 }

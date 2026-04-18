@@ -116,3 +116,23 @@ fun resultExcludedParam(fieldName: String = "excluded") =
 
 fun matchingResultIdPath(fieldName: String = "matchingResultId") =
     fieldName requestParam "매칭 결과 ID (인코딩)"
+
+// --- Claimer(나를 X로 신청한 요청자) 관련 필드 ---
+
+fun claimerMemberId(fieldName: String = "claimers[].memberId") =
+    fieldName responseType STRING means "요청자의 회원 ID (인코딩, 탈퇴 시 null)" example "abc123"
+
+fun claimerName(fieldName: String = "claimers[].name") =
+    fieldName responseType STRING means "요청자 이름" example "김만남"
+
+fun claimerNickname(fieldName: String = "claimers[].nickname") =
+    fieldName responseType STRING means "요청자 닉네임" example "테스트닉네임"
+
+fun claimerProfileImageUrl(fieldName: String = "claimers[].profileImageUrl") =
+    fieldName responseType STRING means "요청자 프로필 이미지 URL" example "https://example.com/image.jpg"
+
+fun claimerIsWithdrawn(fieldName: String = "claimers[].isWithdrawn") =
+    fieldName responseType BOOLEAN means "요청자 탈퇴 여부" example "false"
+
+fun claimerHasXroom(fieldName: String = "claimers[].hasXroom") =
+    fieldName responseType BOOLEAN means "요청자가 해당 MatchingResult의 targetInfo로 X룸을 만들었는지 여부" example "true"

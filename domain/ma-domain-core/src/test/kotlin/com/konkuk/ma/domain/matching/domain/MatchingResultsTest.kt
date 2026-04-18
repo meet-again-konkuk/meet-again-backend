@@ -165,4 +165,100 @@ class MatchingResultsTest : FunSpec({
         }
     }
 
+    context("extractRegisterEmails") {
+
+        test("중복 없이 등록자 이메일을 추출한다") {
+            val results = MatchingResults(
+                listOf(
+                    MatchingResultFixture.create(targetInfoId = 1L, registerEmail = "a@a.com"),
+                    MatchingResultFixture.create(targetInfoId = 2L, registerEmail = "b@b.com"),
+                    MatchingResultFixture.create(targetInfoId = 3L, registerEmail = "a@a.com"),
+                )
+            )
+
+            results.extractRegisterEmails() shouldContainExactlyInAnyOrder listOf(Email("a@a.com"), Email("b@b.com"))
+        }
+    }
+
+    context("extractTargetInfoIds") {
+
+        test("중복 없이 targetInfoId를 추출한다") {
+            val results = MatchingResults(
+                listOf(
+                    MatchingResultFixture.create(targetInfoId = 1L),
+                    MatchingResultFixture.create(targetInfoId = 2L),
+                    MatchingResultFixture.create(targetInfoId = 1L),
+                )
+            )
+
+            results.extractTargetInfoIds() shouldContainExactlyInAnyOrder setOf(1L, 2L)
+        }
+    }
+
+    context("toClaimerProfiles") {
+
+        test("요청자 프로필과 xroom 존재 여부를 조합한다") {
+            val result1 = MatchingResultFixture.create(targetInfoId = 10L, registerEmail = "claimer1@a.com")
+            val result2 = MatchingResultFixture.create(targetInfoId = 20L, registerEmail = "claimer2@a.com")
+            val matchingResults = MatchingResults(listOf(result1, result2))
+
+            val member1 = MemberFixture.create(email = "claimer1@a.com", name = "갑", nickname = "gap")
+            val member2 = MemberFixture.create(email = "claimer2@a.com", name = "을", nickname = "eul")
+            val photo1 = MemberPhotoFixture.create(memberEmail = "claimer1@a.com", thumbnailPath = "thumb/1.jpg")
+
+            val profiles = matchingResults.toClaimerProfiles(
+                Members(listOf(member1, member2)),
+                MemberPhotos(listOf(photo1)),
+                xroomExistTargetInfoIds = setOf(10L),
+            )
+
+            profiles.data shouldHaveSize 2
+            profiles.data[0].name shouldBe "갑"
+            profiles.data[0].profileImageUrl shouldBe "thumb/1.jpg"
+            profiles.data[0].hasXroom shouldBe true
+            profiles.data[1].name shouldBe "을"
+            profiles.data[1].profileImageUrl shouldBe null
+            profiles.data[1].hasXroom shouldBe false
+        }
+
+        test("xroomExistTargetInfoIds가 빈 집합이면 모든 hasXroom이 false이다") {
+            val result = MatchingResultFixture.create(targetInfoId = 1L, registerEmail = "c@a.com")
+            val matchingResults = MatchingResults(listOf(result))
+
+            val profiles = matchingResults.toClaimerProfiles(
+                Members(listOf(MemberFixture.create(email = "c@a.com"))),
+                MemberPhotos(emptyList()),
+                xroomExistTargetInfoIds = emptySet(),
+            )
+
+            profiles.data[0].hasXroom shouldBe false
+        }
+
+        test("탈퇴한 요청자는 memberId가 null이고 isWithdrawn이 true이다") {
+            val result = MatchingResultFixture.create(targetInfoId = 1L, registerEmail = "withdrawn@a.com")
+            val matchingResults = MatchingResults(listOf(result))
+
+            val profiles = matchingResults.toClaimerProfiles(
+                Members(emptyList()),
+                MemberPhotos(emptyList()),
+                xroomExistTargetInfoIds = emptySet(),
+            )
+
+            profiles.data[0].memberId shouldBe null
+            profiles.data[0].isWithdrawn shouldBe true
+        }
+
+        test("빈 매칭결과이면 빈 프로필 목록을 반환한다") {
+            val matchingResults = MatchingResults(emptyList())
+
+            val profiles = matchingResults.toClaimerProfiles(
+                Members(emptyList()),
+                MemberPhotos(emptyList()),
+                xroomExistTargetInfoIds = emptySet(),
+            )
+
+            profiles.data shouldHaveSize 0
+        }
+    }
+
 })

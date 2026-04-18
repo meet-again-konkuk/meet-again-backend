@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
+import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
@@ -23,7 +24,10 @@ class MatchingResultQueryServiceTest : FunSpec({
     val matchingResultRepository = mockk<MatchingResultRepository>()
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val memberPhotoRepository = mockk<MemberPhotoRepository>()
-    val service = MatchingResultQueryService(matchingResultRepository, memberQueryRepository, memberPhotoRepository)
+    val xroomQueryRepository = mockk<XroomQueryRepository>()
+    val service = MatchingResultQueryService(
+        matchingResultRepository, memberQueryRepository, memberPhotoRepository, xroomQueryRepository
+    )
 
     beforeEach {
         clearAllMocks()
@@ -149,6 +153,53 @@ class MatchingResultQueryServiceTest : FunSpec({
             shouldThrow<AccessDeniedException> {
                 service.findDetail(matchingResultId, otherEmail)
             }
+        }
+    }
+
+    context("findClaimedBy") {
+
+        test("요청자 프로필과 X룸 존재 여부를 조합하여 반환한다") {
+            val myEmail = "me@example.com"
+            val claimer1 = MatchingResultFixture.create(
+                targetInfoId = 10L,
+                registerEmail = "claimer1@a.com",
+                targetEmail = myEmail,
+            )
+            val claimer2 = MatchingResultFixture.create(
+                targetInfoId = 20L,
+                registerEmail = "claimer2@a.com",
+                targetEmail = myEmail,
+            )
+            val member1 = MemberFixture.create(email = "claimer1@a.com", name = "갑")
+            val member2 = MemberFixture.create(email = "claimer2@a.com", name = "을")
+            val photo1 = MemberPhotoFixture.create(memberEmail = "claimer1@a.com", thumbnailPath = "thumb/1.jpg")
+
+            every { matchingResultRepository.findClaimedByTarget(Email(myEmail)) } returns listOf(claimer1, claimer2)
+            every { memberQueryRepository.findByEmails(any()) } returns listOf(member1, member2)
+            every { memberPhotoRepository.find(any()) } returns listOf(photo1)
+            every { xroomQueryRepository.exists(listOf(10L, 20L)) } returns setOf(10L)
+
+            val profiles = service.findClaimedBy(myEmail)
+
+            profiles.data shouldHaveSize 2
+            profiles.data[0].name shouldBe "갑"
+            profiles.data[0].profileImageUrl shouldBe "thumb/1.jpg"
+            profiles.data[0].hasXroom shouldBe true
+            profiles.data[1].name shouldBe "을"
+            profiles.data[1].hasXroom shouldBe false
+        }
+
+        test("claim 목록이 비어있으면 빈 프로필을 반환한다") {
+            val myEmail = "me@example.com"
+
+            every { matchingResultRepository.findClaimedByTarget(Email(myEmail)) } returns emptyList()
+            every { memberQueryRepository.findByEmails(any()) } returns emptyList()
+            every { memberPhotoRepository.find(any()) } returns emptyList()
+            every { xroomQueryRepository.exists(emptyList<Long>()) } returns emptySet()
+
+            val profiles = service.findClaimedBy(myEmail)
+
+            profiles.data shouldHaveSize 0
         }
     }
 })
