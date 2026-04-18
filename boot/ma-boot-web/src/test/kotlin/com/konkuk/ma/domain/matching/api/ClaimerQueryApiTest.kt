@@ -8,11 +8,11 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.hasXroom
+import com.konkuk.ma.vocabulary.isWithdrawn
 import com.konkuk.ma.vocabulary.memberId
-import com.konkuk.ma.vocabulary.memberIsWithdrawn
-import com.konkuk.ma.vocabulary.memberName
-import com.konkuk.ma.vocabulary.memberNickname
-import com.konkuk.ma.vocabulary.memberProfileImageUrl
+import com.konkuk.ma.vocabulary.name
+import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.vocabulary.profileImageUrl
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -54,10 +54,10 @@ class ClaimerQueryApiTest(
                 "claimer/find-my-claimers",
                 responseBody(
                     memberId("claimers[].memberId"),
-                    memberName("claimers[].name"),
-                    memberNickname("claimers[].nickname"),
-                    memberProfileImageUrl("claimers[].profileImageUrl"),
-                    memberIsWithdrawn("claimers[].isWithdrawn"),
+                    name("claimers[].name"),
+                    nickname("claimers[].nickname"),
+                    profileImageUrl("claimers[].profileImageUrl"),
+                    isWithdrawn("claimers[].isWithdrawn"),
                     hasXroom(),
                 ),
             )

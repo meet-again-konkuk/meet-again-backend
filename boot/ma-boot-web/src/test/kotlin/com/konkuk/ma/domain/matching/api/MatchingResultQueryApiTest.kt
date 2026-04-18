@@ -16,16 +16,16 @@ import com.konkuk.ma.vocabulary.dayMatched
 import com.konkuk.ma.vocabulary.detailMatchRate
 import com.konkuk.ma.vocabulary.detailMatchingResultId
 import com.konkuk.ma.vocabulary.detailRemainingDays
+import com.konkuk.ma.vocabulary.isWithdrawn
 import com.konkuk.ma.vocabulary.lastNumberMatched
 import com.konkuk.ma.vocabulary.matchRate
 import com.konkuk.ma.vocabulary.matchingResultId
 import com.konkuk.ma.vocabulary.memberId
-import com.konkuk.ma.vocabulary.memberIsWithdrawn
-import com.konkuk.ma.vocabulary.memberName
-import com.konkuk.ma.vocabulary.memberNickname
-import com.konkuk.ma.vocabulary.memberProfileImageUrl
 import com.konkuk.ma.vocabulary.middleNumberMatched
 import com.konkuk.ma.vocabulary.monthMatched
+import com.konkuk.ma.vocabulary.name
+import com.konkuk.ma.vocabulary.nickname
+import com.konkuk.ma.vocabulary.profileImageUrl
 import com.konkuk.ma.vocabulary.regionMatched
 import com.konkuk.ma.vocabulary.remainingDays
 import com.konkuk.ma.vocabulary.resultExcludedParam
@@ -76,12 +76,12 @@ class MatchingResultQueryApiTest(
                 responseBody(
                     matchingResultId(),
                     memberId("matchingResults[].targetMemberId"),
-                    memberName("matchingResults[].targetName"),
-                    memberNickname("matchingResults[].targetNickname"),
-                    memberProfileImageUrl("matchingResults[].profileImageUrl"),
+                    name("matchingResults[].targetName"),
+                    nickname("matchingResults[].targetNickname"),
+                    profileImageUrl("matchingResults[].profileImageUrl"),
                     remainingDays(),
                     matchRate(),
-                    memberIsWithdrawn("matchingResults[].isWithdrawn"),
+                    isWithdrawn("matchingResults[].isWithdrawn"),
                     claimed(),
                 )
             )
@@ -121,12 +121,12 @@ class MatchingResultQueryApiTest(
                 responseBody(
                     matchingResultId(),
                     memberId("matchingResults[].targetMemberId"),
-                    memberName("matchingResults[].targetName"),
-                    memberNickname("matchingResults[].targetNickname"),
-                    memberProfileImageUrl("matchingResults[].profileImageUrl"),
+                    name("matchingResults[].targetName"),
+                    nickname("matchingResults[].targetNickname"),
+                    profileImageUrl("matchingResults[].profileImageUrl"),
                     remainingDays(),
                     matchRate(),
-                    memberIsWithdrawn("matchingResults[].isWithdrawn"),
+                    isWithdrawn("matchingResults[].isWithdrawn"),
                     claimed(),
                 )
             )
