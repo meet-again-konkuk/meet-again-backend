@@ -13,12 +13,12 @@
 
 === 요청
 
-include::{snippets}/matching/find-claimed-by/http-request.adoc[]
+include::{snippets}/claimer/find-my-claimers/http-request.adoc[]
 
 === 응답
 
-include::{snippets}/matching/find-claimed-by/http-response.adoc[]
+include::{snippets}/claimer/find-my-claimers/http-response.adoc[]
 
 === 응답 필드
 
-include::{snippets}/matching/find-claimed-by/response-fields.adoc[]
+include::{snippets}/claimer/find-my-claimers/response-fields.adoc[]
