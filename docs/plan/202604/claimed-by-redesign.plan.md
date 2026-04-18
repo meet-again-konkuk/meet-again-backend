@@ -31,7 +31,7 @@
 | Service 반환 | `MatchingResultsWithProfiles` | `ClaimerProfiles` | `MatchingResultQueryService.findClaimedBy` |
 | 도메인 조합 | `MatchingResults.combineWithClaimerProfiles(members, photos)` | `MatchingResults.toClaimerProfiles(members, photos, xroomExistTargetInfoIds)` | `MatchingResults.kt` |
 | 조합 결과 타입 | `MatchingResultsWithProfiles`(MatchingResult 중심) | `ClaimerProfiles`(요청자 중심) | 신규 도메인 모델 |
-| Xroom 존재 조회 | `existsByTargetInfoId(id: Long): Boolean` (단건) | 단건 유지 + `existsByTargetInfoIds(ids: List<Long>): Set<Long>` (벌크) 추가 | 포트 오버로드 |
+| Xroom 존재 조회 | `exists(id: Long): Boolean` (단건) | 단건 유지 + `exists(targetInfoIds: Set<Long>): Set<Long>` (벌크) 오버로드 추가 | 포트 오버로드 |
 
 ### 2.2 신규 도메인 모델
 
@@ -61,7 +61,7 @@
 | 항목 | 현재 | 변경 후 |
 |------|------|---------|
 | 메서드 | `existsByTargetInfoId(targetInfoId: Long): Boolean` | 유지 |
-| 메서드 추가 | - | `existsByTargetInfoIds(targetInfoIds: List<Long>): Set<Long>` |
+| 메서드 추가 | - | `exists(targetInfoIds: Set<Long>): Set<Long>` (Kotlin 오버로드) |
 | 반환 의미 | - | "존재하는 targetInfoId들의 집합"(존재하지 않는 id는 포함되지 않음) |
 | 네이밍 근거 | - | 기존 메서드와 일관된 접두/접미 규칙(`existsByTargetInfoId*`) 유지. 프로젝트에 오버로드된 port 메서드 선례는 없으므로 **파라미터 타입 차이를 이름(`...Ids` 복수형)으로 구분**하여 호출부 가독성 확보 |
 | 빈 리스트 처리 | - | 빈 리스트 입력 시 DB 쿼리 없이 `emptySet()` 반환 (DAO에서 가드) |
@@ -121,7 +121,7 @@
 ### Phase 1: Xroom 포트/어댑터 (벌크 exists 추가)
 | # | 파일 | 내용 |
 |---|------|------|
-| 1 | `domain/ma-domain-core/src/main/kotlin/com/konkuk/ma/domain/xroom/domain/port/XroomQueryRepository.kt` | `existsByTargetInfoIds(ids: List<Long>): Set<Long>` 메서드 추가 |
+| 1 | `domain/ma-domain-core/src/main/kotlin/com/konkuk/ma/domain/xroom/domain/port/XroomQueryRepository.kt` | `exists(targetInfoIds: Set<Long>): Set<Long>` 오버로드 추가 |
 | 2 | `infrastructure/storage/ma-db-core/src/main/kotlin/com/konkuk/ma/domain/xroom/dao/XroomQueryDao.kt` | 벌크 exists 구현 (`inList` + `select(targetInfoId)` → `Set<Long>`, 빈 리스트 가드) |
 | 3 | `infrastructure/storage/ma-db-core/src/main/kotlin/com/konkuk/ma/domain/xroom/repository/XroomQueryCoreRepository.kt` | 벌크 exists 위임 오버라이드 |
 

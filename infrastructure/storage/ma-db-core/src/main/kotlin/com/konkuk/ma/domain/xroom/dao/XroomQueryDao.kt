@@ -12,7 +12,7 @@ class XroomQueryDao {
             .any()
     }
 
-    fun exists(targetInfoIds: List<Long>): Set<Long> {
+    fun exists(targetInfoIds: Set<Long>): Set<Long> {
         if (targetInfoIds.isEmpty()) return emptySet()
         return XroomTable
             .activeRows { XroomTable.targetInfoId inList targetInfoIds }

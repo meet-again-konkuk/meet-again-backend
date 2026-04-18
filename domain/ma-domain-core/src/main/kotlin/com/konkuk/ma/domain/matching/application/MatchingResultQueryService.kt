@@ -47,7 +47,7 @@ class MatchingResultQueryService(
         val members = Members(memberQueryRepository.findByEmails(registerEmails))
         val photos = MemberPhotos(memberPhotoRepository.find(registerEmails))
 
-        val xroomExistTargetInfoIds = xroomQueryRepository.exists(matchingResults.extractTargetInfoIds().toList())
+        val xroomExistTargetInfoIds = xroomQueryRepository.exists(matchingResults.extractTargetInfoIds())
 
         return matchingResults.toClaimerProfiles(members, photos, xroomExistTargetInfoIds)
     }

@@ -177,7 +177,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             every { matchingResultRepository.findClaimedByTarget(Email(myEmail)) } returns listOf(claimer1, claimer2)
             every { memberQueryRepository.findByEmails(any()) } returns listOf(member1, member2)
             every { memberPhotoRepository.find(any()) } returns listOf(photo1)
-            every { xroomQueryRepository.exists(listOf(10L, 20L)) } returns setOf(10L)
+            every { xroomQueryRepository.exists(setOf(10L, 20L)) } returns setOf(10L)
 
             val profiles = service.findClaimedBy(myEmail)
 
@@ -195,7 +195,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             every { matchingResultRepository.findClaimedByTarget(Email(myEmail)) } returns emptyList()
             every { memberQueryRepository.findByEmails(any()) } returns emptyList()
             every { memberPhotoRepository.find(any()) } returns emptyList()
-            every { xroomQueryRepository.exists(emptyList<Long>()) } returns emptySet()
+            every { xroomQueryRepository.exists(emptySet<Long>()) } returns emptySet()
 
             val profiles = service.findClaimedBy(myEmail)
 
