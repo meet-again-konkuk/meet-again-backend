@@ -16,7 +16,7 @@ class PointProductProviderTest : FunSpec({
     context("findFromCache") {
 
         test("캐시에 데이터가 있으면 반환한다") {
-            val products = listOf(PointProductFixture.create())
+            val products = listOf(PointProductWithDiscount(PointProductFixture.create(), null))
             every { pointProductCacheRepository.findOrNull() } returns products
 
             val result = pointProductProvider.findFromCache()
@@ -44,7 +44,7 @@ class PointProductProviderTest : FunSpec({
     context("saveToCache") {
 
         test("캐시 저장 중 예외가 발생해도 예외를 전파하지 않는다") {
-            val products = listOf(PointProductFixture.create())
+            val products = listOf(PointProductWithDiscount(PointProductFixture.create(), null))
             every { pointProductCacheRepository.save(products) } throws RuntimeException("Redis 연결 실패")
 
             pointProductProvider.saveToCache(products)

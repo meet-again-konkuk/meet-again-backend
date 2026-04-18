@@ -9,10 +9,10 @@ class PointProducts(
         return data.mapNotNull { it.discountPolicyId }.toSet()
     }
 
-    fun combineWith(discountPolicies: List<DiscountPolicy>): PointProducts {
+    fun combineWith(discountPolicies: List<DiscountPolicy>): PointProductsWithDiscount {
         val policyMap = discountPolicies.associateBy { it.discountPolicyId }
-        return PointProducts(
-            data.map { product -> product.withDiscountPolicy(policyMap[product.discountPolicyId]) }
+        return PointProductsWithDiscount(
+            data.map { product -> PointProductWithDiscount(product, policyMap[product.discountPolicyId]) }
         )
     }
 }

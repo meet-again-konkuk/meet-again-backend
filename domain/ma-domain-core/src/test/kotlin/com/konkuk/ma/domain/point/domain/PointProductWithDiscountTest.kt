@@ -9,14 +9,14 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 
-class PointProductTest : FunSpec({
+class PointProductWithDiscountTest : FunSpec({
 
     val now = LocalDate.of(2026, 4, 17)
 
     context("discountedPrice") {
 
         test("할인 정책이 없으면 원래 가격을 반환한다") {
-            val product = PointProductFixture.create(price = 1000)
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), null)
 
             product.discountedPrice(now) shouldBe 1000
         }
@@ -27,7 +27,7 @@ class PointProductTest : FunSpec({
                 endDate = now.plusDays(1),
                 discountAmount = 300,
             )
-            val product = PointProductFixture.create(price = 1000, discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
             product.discountedPrice(now) shouldBe 700
         }
@@ -38,7 +38,7 @@ class PointProductTest : FunSpec({
                 endDate = now.plusDays(10),
                 discountAmount = 300,
             )
-            val product = PointProductFixture.create(price = 1000, discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
             product.discountedPrice(now) shouldBe 1000
         }
@@ -49,7 +49,7 @@ class PointProductTest : FunSpec({
                 endDate = now.plusDays(1),
                 discountPercent = 20,
             )
-            val product = PointProductFixture.create(price = 1000, discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
             product.discountedPrice(now) shouldBe 800
         }
@@ -58,7 +58,9 @@ class PointProductTest : FunSpec({
     context("discountedPriceOrNull") {
 
         test("할인 정책이 없으면 null을 반환한다") {
-            PointProductFixture.create(price = 1000).discountedPriceOrNull(now) shouldBe null
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), null)
+
+            product.discountedPriceOrNull(now) shouldBe null
         }
 
         test("비활성 할인 정책이면 null을 반환한다") {
@@ -67,7 +69,7 @@ class PointProductTest : FunSpec({
                 endDate = now.plusDays(10),
                 discountAmount = 300,
             )
-            val product = PointProductFixture.create(price = 1000, discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
             product.discountedPriceOrNull(now) shouldBe null
         }
@@ -78,7 +80,7 @@ class PointProductTest : FunSpec({
                 endDate = now.plusDays(1),
                 discountAmount = 300,
             )
-            val product = PointProductFixture.create(price = 1000, discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
             product.discountedPriceOrNull(now) shouldBe 700
         }
@@ -87,7 +89,7 @@ class PointProductTest : FunSpec({
     context("isDiscountActive / discountType") {
 
         test("정책이 없으면 비활성, 타입도 null") {
-            val product = PointProductFixture.create()
+            val product = PointProductWithDiscount(PointProductFixture.create(), null)
 
             product.isDiscountActive(now).shouldBeFalse()
             product.discountType() shouldBe null
@@ -98,7 +100,7 @@ class PointProductTest : FunSpec({
                 startDate = now.minusDays(1),
                 endDate = now.plusDays(1),
             )
-            val product = PointProductFixture.create(discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(), policy)
 
             product.isDiscountActive(now).shouldBeTrue()
             product.discountType() shouldBe DiscountType.AMOUNT
@@ -109,7 +111,7 @@ class PointProductTest : FunSpec({
                 startDate = now.minusDays(1),
                 endDate = now.plusDays(1),
             )
-            val product = PointProductFixture.create(discountPolicy = policy)
+            val product = PointProductWithDiscount(PointProductFixture.create(), policy)
 
             product.isDiscountActive(now).shouldBeTrue()
             product.discountType() shouldBe DiscountType.PERCENT

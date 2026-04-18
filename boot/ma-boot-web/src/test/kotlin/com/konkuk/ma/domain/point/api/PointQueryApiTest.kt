@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.api
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.point.application.PointQueryService
 import com.konkuk.ma.domain.point.domain.PointProduct
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
@@ -31,12 +32,15 @@ class PointQueryApiTest(
     test("포인트 상품 목록 조회 API 문서화") {
         // Given
         every { pointQueryService.findProducts() } returns listOf(
-            PointProduct(
-                pointProductId = 1L,
-                name = "인연 10개",
-                quantity = 10,
-                price = 1000,
-                displayOrder = 1,
+            PointProductWithDiscount(
+                pointProduct = PointProduct(
+                    pointProductId = 1L,
+                    name = "인연 10개",
+                    quantity = 10,
+                    price = 1000,
+                    displayOrder = 1,
+                    discountPolicyId = 1L,
+                ),
                 discountPolicy = AmountDiscountPolicy(
                     discountPolicyId = 1L,
                     startDate = LocalDate.now().minusDays(1),
@@ -44,19 +48,25 @@ class PointQueryApiTest(
                     discountAmount = 200,
                 ),
             ),
-            PointProduct(
-                pointProductId = 2L,
-                name = "인연 30개",
-                quantity = 30,
-                price = 2500,
-                displayOrder = 2,
+            PointProductWithDiscount(
+                pointProduct = PointProduct(
+                    pointProductId = 2L,
+                    name = "인연 30개",
+                    quantity = 30,
+                    price = 2500,
+                    displayOrder = 2,
+                ),
+                discountPolicy = null,
             ),
-            PointProduct(
-                pointProductId = 3L,
-                name = "인연 50개",
-                quantity = 50,
-                price = 4000,
-                displayOrder = 3,
+            PointProductWithDiscount(
+                pointProduct = PointProduct(
+                    pointProductId = 3L,
+                    name = "인연 50개",
+                    quantity = 50,
+                    price = 4000,
+                    displayOrder = 3,
+                ),
+                discountPolicy = null,
             ),
         )
 

@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.point.api.response
 
-import com.konkuk.ma.domain.point.domain.PointProduct
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import java.time.LocalDate
 
 class PointProductResponse(
@@ -13,16 +13,16 @@ class PointProductResponse(
     val isDiscountActive: Boolean,
 ) {
     companion object {
-        fun from(pointProduct: PointProduct): PointProductResponse {
+        fun from(product: PointProductWithDiscount): PointProductResponse {
             val now = LocalDate.now()
             return PointProductResponse(
-                pointProductId = pointProduct.pointProductId,
-                name = pointProduct.name,
-                quantity = pointProduct.quantity,
-                price = pointProduct.price,
-                discountedPrice = pointProduct.discountedPriceOrNull(now),
-                discountType = pointProduct.discountType()?.name,
-                isDiscountActive = pointProduct.isDiscountActive(now),
+                pointProductId = product.pointProduct.pointProductId,
+                name = product.pointProduct.name,
+                quantity = product.pointProduct.quantity,
+                price = product.pointProduct.price,
+                discountedPrice = product.discountedPriceOrNull(now),
+                discountType = product.discountType()?.name,
+                isDiscountActive = product.isDiscountActive(now),
             )
         }
     }

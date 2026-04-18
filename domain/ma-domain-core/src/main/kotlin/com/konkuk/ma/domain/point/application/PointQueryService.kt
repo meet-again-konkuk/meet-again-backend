@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.point.application
 
-import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductProvider
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.PointProducts
 import com.konkuk.ma.domain.point.domain.port.DiscountPolicyQueryRepository
 import com.konkuk.ma.domain.point.domain.port.PointProductQueryRepository
@@ -15,7 +15,7 @@ class PointQueryService(
     private val discountPolicyQueryRepository: DiscountPolicyQueryRepository,
     private val pointProductProvider: PointProductProvider,
 ) {
-    fun findProducts(): List<PointProduct> {
+    fun findProducts(): List<PointProductWithDiscount> {
         val cached = pointProductProvider.findFromCache()
         if (cached != null) return cached
 

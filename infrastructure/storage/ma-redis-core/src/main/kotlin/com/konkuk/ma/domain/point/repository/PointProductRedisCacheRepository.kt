@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.repository
 import com.konkuk.ma.domain.point.dao.CachedPointProduct
 import com.konkuk.ma.domain.point.dao.PointProductCacheDao
 import com.konkuk.ma.domain.point.domain.PointProduct
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
@@ -16,23 +17,25 @@ class PointProductRedisCacheRepository(
     private val pointProductCacheDao: PointProductCacheDao,
 ) : PointProductCacheRepository {
 
-    override fun findOrNull(): List<PointProduct>? {
+    override fun findOrNull(): List<PointProductWithDiscount>? {
         return pointProductCacheDao.findOrNull()?.map { it.toDomain() }
     }
 
-    override fun save(products: List<PointProduct>) {
+    override fun save(products: List<PointProductWithDiscount>) {
         pointProductCacheDao.save(products.map { it.toCached() })
     }
 
-    private fun CachedPointProduct.toDomain(): PointProduct {
-        return PointProduct(
+    private fun CachedPointProduct.toDomain(): PointProductWithDiscount {
+        val policy = toDiscountPolicy()
+        val product = PointProduct(
             pointProductId = pointProductId,
             name = name,
             quantity = quantity,
             price = price,
             displayOrder = displayOrder,
-            discountPolicy = toDiscountPolicy(),
+            discountPolicyId = policy?.discountPolicyId,
         )
+        return PointProductWithDiscount(product, policy)
     }
 
     private fun CachedPointProduct.toDiscountPolicy(): DiscountPolicy? {
@@ -55,18 +58,19 @@ class PointProductRedisCacheRepository(
         }
     }
 
-    private fun PointProduct.toCached(): CachedPointProduct {
+    private fun PointProductWithDiscount.toCached(): CachedPointProduct {
+        val policy = discountPolicy
         return CachedPointProduct(
-            pointProductId = pointProductId,
-            name = name,
-            quantity = quantity,
-            price = price,
-            displayOrder = displayOrder,
-            discountType = discountPolicy?.type?.name,
-            discountAmount = (discountPolicy as? AmountDiscountPolicy)?.discountAmount,
-            discountPercent = (discountPolicy as? PercentDiscountPolicy)?.discountPercent,
-            discountStartDate = discountPolicy?.startDate?.toString(),
-            discountEndDate = discountPolicy?.endDate?.toString(),
+            pointProductId = pointProduct.pointProductId,
+            name = pointProduct.name,
+            quantity = pointProduct.quantity,
+            price = pointProduct.price,
+            displayOrder = pointProduct.displayOrder,
+            discountType = policy?.type?.name,
+            discountAmount = (policy as? AmountDiscountPolicy)?.discountAmount,
+            discountPercent = (policy as? PercentDiscountPolicy)?.discountPercent,
+            discountStartDate = policy?.startDate?.toString(),
+            discountEndDate = policy?.endDate?.toString(),
         )
     }
 }

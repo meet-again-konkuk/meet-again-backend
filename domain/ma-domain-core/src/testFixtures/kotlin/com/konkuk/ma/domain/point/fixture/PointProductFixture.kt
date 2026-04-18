@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.point.fixture
 
 import com.konkuk.ma.domain.point.domain.PointProduct
-import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 
 object PointProductFixture {
     fun create(
@@ -11,7 +10,6 @@ object PointProductFixture {
         price: Int = 1000,
         displayOrder: Int = 1,
         discountPolicyId: Long? = null,
-        discountPolicy: DiscountPolicy? = null,
     ): PointProduct {
         return PointProduct(
             pointProductId = pointProductId,
@@ -20,7 +18,6 @@ object PointProductFixture {
             price = price,
             displayOrder = displayOrder,
             discountPolicyId = discountPolicyId,
-            discountPolicy = discountPolicy,
         )
     }
 }

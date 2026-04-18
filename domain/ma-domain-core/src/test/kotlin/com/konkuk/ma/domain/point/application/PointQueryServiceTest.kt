@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.point.application
 
 import com.konkuk.ma.domain.point.domain.PointProductProvider
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.port.DiscountPolicyQueryRepository
 import com.konkuk.ma.domain.point.domain.port.PointProductQueryRepository
 import com.konkuk.ma.domain.point.fixture.DiscountPolicyFixture
@@ -26,7 +27,7 @@ class PointQueryServiceTest : FunSpec({
     context("findProducts") {
 
         test("캐시에 데이터가 있으면 DB를 조회하지 않는다") {
-            val cached = listOf(PointProductFixture.create())
+            val cached = listOf(PointProductWithDiscount(PointProductFixture.create(), null))
             every { pointProductProvider.findFromCache() } returns cached
 
             val result = pointQueryService.findProducts()
