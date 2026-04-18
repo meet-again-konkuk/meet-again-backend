@@ -99,6 +99,7 @@ CREATE TABLE MATCHING_RESULTS
     SHOWING_EXPIRY_DATE   DATETIME     NOT NULL,
     MATCHING_EXPIRY_DATE  DATE         NOT NULL,
     EXCLUDED              BOOLEAN      DEFAULT FALSE,
+    CLAIMED               BOOLEAN      DEFAULT FALSE,
 
     -- BaseTable 공통 컬럼들
     CREATED_DATE          DATETIME     DEFAULT CURRENT_TIMESTAMP,
@@ -111,7 +112,8 @@ CREATE TABLE MATCHING_RESULTS
 
     -- 인덱스
     INDEX idx_matching_expiry_date (MATCHING_EXPIRY_DATE),
-    INDEX idx_matching_register_email (REGISTER_EMAIL)
+    INDEX idx_matching_register_email (REGISTER_EMAIL),
+    INDEX idx_matching_target_email_claimed (TARGET_EMAIL, CLAIMED)
 );
 
 -- MEMBER PHOTOS

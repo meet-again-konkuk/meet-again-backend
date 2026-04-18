@@ -9,6 +9,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -63,6 +65,28 @@ class XroomDaoTest(
                 XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "test@example.com")
 
                 xroomQueryDao.exists(1L).shouldBeFalse()
+            }
+        }
+
+        context("exists (복수)") {
+
+            test("일부만 존재하면 존재하는 targetInfoId만 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerEmail = Email("a@example.com"), targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerEmail = Email("b@example.com"), targetInfoId = 2L))
+
+                xroomQueryDao.exists(setOf(1L, 2L, 999L)) shouldContainExactlyInAnyOrder setOf(1L, 2L)
+            }
+
+            test("빈 Set이 입력되면 빈 Set을 반환한다") {
+                xroomQueryDao.exists(emptySet()).shouldBeEmpty()
+            }
+
+            test("soft-deleted는 결과에서 제외된다") {
+                xroomCommandDao.save(NewXroom(ownerEmail = Email("a@example.com"), targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerEmail = Email("b@example.com"), targetInfoId = 2L))
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "a@example.com")
+
+                xroomQueryDao.exists(setOf(1L, 2L)) shouldContainExactlyInAnyOrder setOf(2L)
             }
         }
     }

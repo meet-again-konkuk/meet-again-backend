@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.matching.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
@@ -12,6 +11,7 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.claimed
 import com.konkuk.ma.vocabulary.dayMatched
 import com.konkuk.ma.vocabulary.detailMatchRate
 import com.konkuk.ma.vocabulary.detailMatchingResultId
@@ -20,15 +20,15 @@ import com.konkuk.ma.vocabulary.isWithdrawn
 import com.konkuk.ma.vocabulary.lastNumberMatched
 import com.konkuk.ma.vocabulary.matchRate
 import com.konkuk.ma.vocabulary.matchingResultId
-import com.konkuk.ma.vocabulary.matchingTargetName
-import com.konkuk.ma.vocabulary.matchingTargetNickname
+import com.konkuk.ma.vocabulary.memberId
 import com.konkuk.ma.vocabulary.middleNumberMatched
 import com.konkuk.ma.vocabulary.monthMatched
+import com.konkuk.ma.vocabulary.name
+import com.konkuk.ma.vocabulary.nickname
 import com.konkuk.ma.vocabulary.profileImageUrl
 import com.konkuk.ma.vocabulary.regionMatched
 import com.konkuk.ma.vocabulary.remainingDays
 import com.konkuk.ma.vocabulary.resultExcludedParam
-import com.konkuk.ma.vocabulary.targetMemberId
 import com.konkuk.ma.vocabulary.yearMatched
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
@@ -75,13 +75,14 @@ class MatchingResultQueryApiTest(
                 ),
                 responseBody(
                     matchingResultId(),
-                    targetMemberId(),
-                    matchingTargetName(),
-                    matchingTargetNickname(),
-                    profileImageUrl(),
+                    memberId("matchingResults[].targetMemberId"),
+                    name("matchingResults[].targetName"),
+                    nickname("matchingResults[].targetNickname"),
+                    profileImageUrl("matchingResults[].profileImageUrl"),
                     remainingDays(),
                     matchRate(),
-                    isWithdrawn(),
+                    isWithdrawn("matchingResults[].isWithdrawn"),
+                    claimed(),
                 )
             )
     }
@@ -119,13 +120,14 @@ class MatchingResultQueryApiTest(
                 ),
                 responseBody(
                     matchingResultId(),
-                    targetMemberId(),
-                    matchingTargetName(),
-                    matchingTargetNickname(),
-                    profileImageUrl(),
+                    memberId("matchingResults[].targetMemberId"),
+                    name("matchingResults[].targetName"),
+                    nickname("matchingResults[].targetNickname"),
+                    profileImageUrl("matchingResults[].profileImageUrl"),
                     remainingDays(),
                     matchRate(),
-                    isWithdrawn(),
+                    isWithdrawn("matchingResults[].isWithdrawn"),
+                    claimed(),
                 )
             )
     }

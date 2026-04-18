@@ -21,6 +21,7 @@ class MatchingResultEntity(
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
     val excluded: Boolean,
+    val claimed: Boolean,
 ) {
     fun toDomain(): MatchingResult {
         return MatchingResult(
@@ -37,6 +38,7 @@ class MatchingResultEntity(
             showingExpiryDate = showingExpiryDate,
             matchingExpiryDate = matchingExpiryDate,
             excluded = excluded,
+            claimed = claimed,
         )
     }
 
@@ -56,6 +58,7 @@ class MatchingResultEntity(
                 showingExpiryDate = row[MatchingResultTable.showingExpiryDate],
                 matchingExpiryDate = row[MatchingResultTable.matchingExpiryDate],
                 excluded = row[MatchingResultTable.excluded],
+                claimed = row[MatchingResultTable.claimed],
             )
         }
     }

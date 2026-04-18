@@ -29,4 +29,12 @@ class MatchingResultCommandApi(
     ) {
         matchingResultCommandService.include(matchingResultId, email)
     }
+
+    @PatchMapping("/{matchingResultId}/claim")
+    fun claim(
+        @AuthenticationPrincipal email: String,
+        @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
+    ) {
+        matchingResultCommandService.claim(matchingResultId, email)
+    }
 }

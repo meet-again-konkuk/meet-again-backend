@@ -11,4 +11,8 @@ class XroomQueryCoreRepository(
     override fun exists(targetInfoId: Long): Boolean {
         return xroomQueryDao.exists(targetInfoId)
     }
+
+    override fun exists(targetInfoIds: Set<Long>): Set<Long> {
+        return xroomQueryDao.exists(targetInfoIds)
+    }
 }

@@ -21,6 +21,7 @@ object MatchingResultFixture {
         showingExpiryDate: LocalDateTime = LocalDateTime.now().plusDays(30),
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
         excluded: Boolean = false,
+        claimed: Boolean = false,
     ): MatchingResult {
         return MatchingResult(
             id = id,
@@ -36,6 +37,7 @@ object MatchingResultFixture {
             showingExpiryDate = showingExpiryDate,
             matchingExpiryDate = matchingExpiryDate,
             excluded = excluded,
+            claimed = claimed,
         )
     }
 }

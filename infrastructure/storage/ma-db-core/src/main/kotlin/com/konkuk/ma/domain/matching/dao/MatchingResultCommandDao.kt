@@ -42,12 +42,19 @@ class MatchingResultCommandDao {
             this[MatchingResultTable.createdBy] = it.registerEmail.value
             this[MatchingResultTable.lastModifiedBy] = it.registerEmail.value
             this[MatchingResultTable.excluded] = false
+            this[MatchingResultTable.claimed] = false
         }
     }
 
     fun updateExcluded(matchingResult: MatchingResult) {
         MatchingResultTable.update({ MatchingResultTable.id eq matchingResult.id }) {
             it[excluded] = matchingResult.excluded
+        }
+    }
+
+    fun updateClaimed(matchingResult: MatchingResult) {
+        MatchingResultTable.update({ MatchingResultTable.id eq matchingResult.id }) {
+            it[claimed] = matchingResult.claimed
         }
     }
 
