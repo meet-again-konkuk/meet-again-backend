@@ -9,6 +9,8 @@ class AmountDiscountPolicy(
     val discountAmount: Int,
 ) : DiscountPolicy(discountPolicyId, startDate, endDate) {
 
+    override val type: DiscountType = DiscountType.AMOUNT
+
     override fun calculateDiscountedPrice(price: Int): Int {
         return maxOf(0, price - discountAmount)
     }

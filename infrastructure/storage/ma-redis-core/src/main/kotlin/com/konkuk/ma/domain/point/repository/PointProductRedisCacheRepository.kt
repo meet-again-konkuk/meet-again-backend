@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.point.dao.PointProductCacheDao
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
+import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 import com.konkuk.ma.domain.point.domain.port.PointProductCacheRepository
 import org.springframework.stereotype.Repository
@@ -38,20 +39,19 @@ class PointProductRedisCacheRepository(
         if (discountType == null || discountStartDate == null || discountEndDate == null) return null
         val startDate = LocalDate.parse(discountStartDate)
         val endDate = LocalDate.parse(discountEndDate)
-        return when (discountType) {
-            "AMOUNT" -> AmountDiscountPolicy(
+        return when (DiscountType.valueOf(discountType)) {
+            DiscountType.AMOUNT -> AmountDiscountPolicy(
                 discountPolicyId = 0,
                 startDate = startDate,
                 endDate = endDate,
-                discountAmount = discountAmount!!,
+                discountAmount = requireNotNull(discountAmount) { "AMOUNT 정책은 discountAmount가 필수입니다" },
             )
-            "PERCENT" -> PercentDiscountPolicy(
+            DiscountType.PERCENT -> PercentDiscountPolicy(
                 discountPolicyId = 0,
                 startDate = startDate,
                 endDate = endDate,
-                discountPercent = discountPercent!!,
+                discountPercent = requireNotNull(discountPercent) { "PERCENT 정책은 discountPercent가 필수입니다" },
             )
-            else -> null
         }
     }
 
@@ -62,12 +62,7 @@ class PointProductRedisCacheRepository(
             quantity = quantity,
             price = price,
             displayOrder = displayOrder,
-            discountType = discountPolicy?.let {
-                when (it) {
-                    is AmountDiscountPolicy -> "AMOUNT"
-                    is PercentDiscountPolicy -> "PERCENT"
-                }
-            },
+            discountType = discountPolicy?.type?.name,
             discountAmount = (discountPolicy as? AmountDiscountPolicy)?.discountAmount,
             discountPercent = (discountPolicy as? PercentDiscountPolicy)?.discountPercent,
             discountStartDate = discountPolicy?.startDate?.toString(),

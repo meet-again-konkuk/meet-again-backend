@@ -7,6 +7,8 @@ sealed class DiscountPolicy(
     val startDate: LocalDate,
     val endDate: LocalDate,
 ) {
+    abstract val type: DiscountType
+
     fun isActive(now: LocalDate): Boolean {
         return !now.isBefore(startDate) && !now.isAfter(endDate)
     }
