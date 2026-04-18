@@ -1,10 +1,14 @@
 package com.konkuk.ma.domain.point.dao
 
+import com.konkuk.ma.domain.point.domain.discount.DiscountType
+import com.konkuk.ma.domain.point.entity.AmountDiscountPolicyEntity
 import com.konkuk.ma.domain.point.entity.DiscountPolicyEntity
+import com.konkuk.ma.domain.point.entity.PercentDiscountPolicyEntity
 import com.konkuk.ma.domain.point.entity.table.AmountDiscountPolicyTable
 import com.konkuk.ma.domain.point.entity.table.DiscountPolicyTable
 import com.konkuk.ma.domain.point.entity.table.PercentDiscountPolicyTable
 import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
@@ -19,15 +23,26 @@ class DiscountPolicyQueryDao {
             .join(PercentDiscountPolicyTable, JoinType.LEFT, DiscountPolicyTable.id, PercentDiscountPolicyTable.id)
             .selectAll()
             .where { (DiscountPolicyTable.id inList ids) and (DiscountPolicyTable.deleted eq false) }
-            .map { row ->
-                DiscountPolicyEntity(
-                    id = row[DiscountPolicyTable.id].value,
-                    policyType = row[DiscountPolicyTable.policyType],
-                    startDate = row[DiscountPolicyTable.startDate],
-                    endDate = row[DiscountPolicyTable.endDate],
-                    discountAmount = row.getOrNull(AmountDiscountPolicyTable.discountAmount),
-                    discountPercent = row.getOrNull(PercentDiscountPolicyTable.discountPercent),
-                )
-            }
+            .map { it.toEntity() }
+    }
+
+    private fun ResultRow.toEntity(): DiscountPolicyEntity {
+        val id = this[DiscountPolicyTable.id].value
+        val startDate = this[DiscountPolicyTable.startDate]
+        val endDate = this[DiscountPolicyTable.endDate]
+        return when (DiscountType.valueOf(this[DiscountPolicyTable.policyType])) {
+            DiscountType.AMOUNT -> AmountDiscountPolicyEntity(
+                id = id,
+                startDate = startDate,
+                endDate = endDate,
+                discountAmount = this[AmountDiscountPolicyTable.discountAmount],
+            )
+            DiscountType.PERCENT -> PercentDiscountPolicyEntity(
+                id = id,
+                startDate = startDate,
+                endDate = endDate,
+                discountPercent = this[PercentDiscountPolicyTable.discountPercent],
+            )
+        }
     }
 }
