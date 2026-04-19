@@ -10,16 +10,16 @@ class PointProductWithDiscount(
     val pointProduct: PointProduct,
     val discountPolicy: DiscountPolicy?,
 ) {
-    fun isDiscountActive(now: LocalDate): Boolean {
+    fun isDiscountActive(now: LocalDate = LocalDate.now()): Boolean {
         return discountPolicy?.isActive(now) == true
     }
 
-    fun discountedPrice(now: LocalDate): Money {
+    fun discountedPrice(now: LocalDate = LocalDate.now()): Money {
         if (!isDiscountActive(now)) return pointProduct.price
         return discountPolicy!!.calculateDiscountedPrice(pointProduct.price)
     }
 
-    fun discountRate(now: LocalDate): BigDecimal {
+    fun discountRate(now: LocalDate = LocalDate.now()): BigDecimal {
         if (!isDiscountActive(now)) return BigDecimal.ZERO
         val price = pointProduct.price
         val discounted = discountedPrice(now)
