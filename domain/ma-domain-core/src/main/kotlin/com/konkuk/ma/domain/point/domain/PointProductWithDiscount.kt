@@ -17,5 +17,12 @@ class PointProductWithDiscount(
         return discountPolicy!!.calculateDiscountedPrice(pointProduct.price)
     }
 
+    fun discountRate(now: LocalDate): Int {
+        if (!isDiscountActive(now)) return 0
+        val price = pointProduct.price
+        if (price == 0) return 0
+        return (price - discountedPrice(now)) * 100 / price
+    }
+
     fun discountType(): DiscountType? = discountPolicy?.type
 }

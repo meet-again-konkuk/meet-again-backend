@@ -20,7 +20,10 @@ fun price(fieldName: String = "price") =
     fieldName responseType NUMBER means "가격 (원)" example "1000"
 
 fun discountedPrice(fieldName: String = "discountedPrice") =
-    fieldName responseType NUMBER means "할인 적용 가격 (원, 할인 비활성 시 null)" example "800"
+    fieldName responseType NUMBER means "최종 가격 (원, 할인 비활성 시 원가)" example "800"
+
+fun discountRate(fieldName: String = "discountRate") =
+    fieldName responseType NUMBER means "할인율 (%, 할인 비활성 시 0)" example "20"
 
 fun discountType(fieldName: String = "discountType") =
     fieldName responseType STRING means "할인 유형 (AMOUNT, PERCENT, 없으면 null)" example "AMOUNT"

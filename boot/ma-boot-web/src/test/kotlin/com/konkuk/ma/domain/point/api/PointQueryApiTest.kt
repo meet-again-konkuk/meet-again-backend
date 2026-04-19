@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.discountRate
 import com.konkuk.ma.vocabulary.discountType
 import com.konkuk.ma.vocabulary.discountedPrice
 import com.konkuk.ma.vocabulary.isDiscountActive
@@ -81,6 +82,7 @@ class PointQueryApiTest(
                     quantity("[].quantity"),
                     price("[].price"),
                     discountedPrice("[].discountedPrice"),
+                    discountRate("[].discountRate"),
                     discountType("[].discountType") isOptional true,
                     isDiscountActive("[].isDiscountActive"),
                 ),
