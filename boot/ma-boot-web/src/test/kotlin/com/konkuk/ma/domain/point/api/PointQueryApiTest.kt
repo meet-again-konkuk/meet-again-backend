@@ -80,7 +80,7 @@ class PointQueryApiTest(
                     pointProductName("[].name"),
                     quantity("[].quantity"),
                     price("[].price"),
-                    discountedPrice("[].discountedPrice") isOptional true,
+                    discountedPrice("[].discountedPrice"),
                     discountType("[].discountType") isOptional true,
                     isDiscountActive("[].isDiscountActive"),
                 ),

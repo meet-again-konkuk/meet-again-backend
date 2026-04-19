@@ -8,7 +8,7 @@ class PointProductResponse(
     val name: String,
     val quantity: Int,
     val price: Int,
-    val discountedPrice: Int?,
+    val discountedPrice: Int,
     val discountType: String?,
     val isDiscountActive: Boolean,
 ) {
@@ -20,7 +20,7 @@ class PointProductResponse(
                 name = product.pointProduct.name,
                 quantity = product.pointProduct.quantity,
                 price = product.pointProduct.price,
-                discountedPrice = product.discountedPriceOrNull(now),
+                discountedPrice = product.discountedPrice(now),
                 discountType = product.discountType()?.name,
                 isDiscountActive = product.isDiscountActive(now),
             )

@@ -17,10 +17,5 @@ class PointProductWithDiscount(
         return discountPolicy!!.calculateDiscountedPrice(pointProduct.price)
     }
 
-    fun discountedPriceOrNull(now: LocalDate): Int? {
-        if (!isDiscountActive(now)) return null
-        return discountPolicy!!.calculateDiscountedPrice(pointProduct.price)
-    }
-
     fun discountType(): DiscountType? = discountPolicy?.type
 }
