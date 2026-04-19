@@ -11,10 +11,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class DiscountPolicyQueryDao(
-    factories: List<DiscountPolicyEntityFactory>,
+    private val factories: List<DiscountPolicyEntityFactory>,
 ) {
-    private val factoryByType: Map<DiscountType, DiscountPolicyEntityFactory> = factories.associateBy { it.type }
-
     fun find(ids: Set<Long>): List<DiscountPolicyEntity> {
         if (ids.isEmpty()) return emptyList()
 
@@ -23,14 +21,14 @@ class DiscountPolicyQueryDao(
             .where { (DiscountPolicyTable.id inList ids) and (DiscountPolicyTable.deleted eq false) }
             .map { row ->
                 val type = DiscountType.valueOf(row[DiscountPolicyTable.policyType])
-                val factory = factoryByType[type]
+                val factory = factories.find { it.type == type }
                     ?: error("등록되지 않은 할인 정책 타입: $type")
                 factory.createFrom(row)
             }
     }
 
     private fun buildJoinedSource(): ColumnSet {
-        return factoryByType.values.fold(DiscountPolicyTable as ColumnSet) { acc, factory ->
+        return factories.fold(DiscountPolicyTable as ColumnSet) { acc, factory ->
             acc.join(factory.childTable, JoinType.LEFT, DiscountPolicyTable.id, factory.childTable.id)
         }
     }
