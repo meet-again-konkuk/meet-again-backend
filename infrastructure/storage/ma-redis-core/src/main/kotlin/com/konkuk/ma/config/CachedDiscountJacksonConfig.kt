@@ -24,6 +24,6 @@ class CachedDiscountJacksonConfig {
         }
     }
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     private interface CachedDiscountTypeInfoMixin
 }

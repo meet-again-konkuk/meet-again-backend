@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
@@ -9,6 +10,7 @@ import java.time.LocalDate
 import kotlin.reflect.full.createInstance
 
 sealed class CachedDiscount {
+    @get:JsonIgnore
     abstract val type: DiscountType
     abstract fun toDomain(): DiscountPolicy
     abstract fun fromDomain(policy: DiscountPolicy): CachedDiscount
