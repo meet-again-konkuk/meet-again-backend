@@ -54,5 +54,6 @@ object RowEntityMapper {
         quantity = row[PointProductTable.quantity],
         price = row[PointProductTable.price],
         displayOrder = row[PointProductTable.displayOrder],
+        discountPolicyId = row[PointProductTable.discountPolicyId],
     )
 }
