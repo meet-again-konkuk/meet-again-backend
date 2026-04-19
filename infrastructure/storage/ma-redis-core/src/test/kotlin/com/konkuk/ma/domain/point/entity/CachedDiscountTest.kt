@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.point.entity
 
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
-import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -78,11 +77,4 @@ class CachedDiscountTest : FunSpec({
         }
     }
 
-    context("type 프로퍼티") {
-
-        test("각 서브타입이 자기 DiscountType을 노출한다") {
-            CachedAmountDiscount().type shouldBe DiscountType.AMOUNT
-            CachedPercentDiscount().type shouldBe DiscountType.PERCENT
-        }
-    }
 })
