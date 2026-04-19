@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.domain
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class PointProductWithDiscount(
@@ -18,8 +19,8 @@ class PointProductWithDiscount(
         return discountPolicy!!.calculateDiscountedPrice(pointProduct.price)
     }
 
-    fun discountRate(now: LocalDate): Int {
-        if (!isDiscountActive(now)) return 0
+    fun discountRate(now: LocalDate): BigDecimal {
+        if (!isDiscountActive(now)) return BigDecimal.ZERO
         val price = pointProduct.price
         val discounted = discountedPrice(now)
         return (price - discounted).percentageOf(price)

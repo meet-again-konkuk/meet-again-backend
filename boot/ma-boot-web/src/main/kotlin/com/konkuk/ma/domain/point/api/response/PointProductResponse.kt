@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.point.api.response
 
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class PointProductResponse(
@@ -9,7 +10,7 @@ class PointProductResponse(
     val quantity: Int,
     val price: Int,
     val discountedPrice: Int,
-    val discountRate: Int,
+    val discountRate: BigDecimal,
     val discountType: String?,
     val isDiscountActive: Boolean,
 ) {
