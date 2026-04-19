@@ -47,4 +47,19 @@ class MoneyTest : FunSpec({
             Money.wons(1000) shouldBe Money.wons(1000)
         }
     }
+
+    context("percentageOf") {
+        test("base의 몇 %인지 정수로 반환한다") {
+            Money.wons(300).percentageOf(Money.wons(1000)) shouldBe 30
+        }
+        test("소수점 이하는 버림") {
+            Money.wons(333).percentageOf(Money.wons(1000)) shouldBe 33
+        }
+        test("base가 0이면 0") {
+            Money.wons(100).percentageOf(Money.ZERO) shouldBe 0
+        }
+        test("자신이 base와 같으면 100") {
+            Money.wons(500).percentageOf(Money.wons(500)) shouldBe 100
+        }
+    }
 })
