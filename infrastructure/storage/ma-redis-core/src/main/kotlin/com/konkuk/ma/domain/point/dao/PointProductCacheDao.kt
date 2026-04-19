@@ -22,16 +22,3 @@ class PointProductCacheDao(
         jsonRedisTemplate.set(CACHE_KEY, products, CACHE_TTL_HOURS, TimeUnit.HOURS)
     }
 }
-
-data class CachedPointProduct(
-    val pointProductId: Long = 0,
-    val name: String = "",
-    val quantity: Int = 0,
-    val price: Int = 0,
-    val displayOrder: Int = 0,
-    val discountType: String? = null,
-    val discountAmount: Int? = null,
-    val discountPercent: Int? = null,
-    val discountStartDate: String? = null,
-    val discountEndDate: String? = null,
-)
