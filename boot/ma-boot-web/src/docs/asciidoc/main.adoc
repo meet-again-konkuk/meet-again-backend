@@ -98,6 +98,21 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/exclude-matching-result.html[매칭 결과 제외/해제 API,window=_blank]
 
+[[matching-result-claim]]
+=== 매칭 결과 Claim
+
+* link:matching/claim-matching-result.html[매칭 결과 Claim API,window=_blank]
+
+[[claimer]]
+== Claimer (X 요청자)
+
+나를 X로 지목한 요청자 관련 API 입니다.
+
+[[claimer-find-my]]
+=== 나를 Claim한 요청자 목록 조회
+
+* link:claimer/find-my-claimers.html[나를 Claim한 요청자 목록 조회 API,window=_blank]
+
 [[community]]
 == 커뮤니티
 
@@ -152,6 +167,16 @@ Meet Again 서비스 Backend API 문서
 === 포인트 상품 목록 조회
 
 * link:point/find-products.html[포인트 상품 목록 조회 API,window=_blank]
+
+[[xroom]]
+== X룸
+
+X룸 도메인과 관련된 API 입니다.
+
+[[xroom-create]]
+=== X룸 생성
+
+* link:xroom/create-xroom.html[X룸 생성 API,window=_blank]
 
 [[support]]
 == 고객지원

@@ -15,6 +15,7 @@ class MatchingResultResponse(
     val remainingDays: Long,
     val matchRate: Int,
     val isWithdrawn: Boolean,
+    val claimed: Boolean,
 ) {
     companion object {
         fun from(result: MatchingResultWithProfile): MatchingResultResponse {
@@ -27,6 +28,7 @@ class MatchingResultResponse(
                 remainingDays = result.matchingResult.getRemainingDays(),
                 matchRate = result.matchingResult.matchRate,
                 isWithdrawn = result.isWithdrawn,
+                claimed = result.matchingResult.claimed,
             )
         }
     }

@@ -1,8 +1,9 @@
 package com.konkuk.ma.domain.matching.domain
 
 import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.InvalidStateException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
@@ -113,6 +114,25 @@ class MatchingResultTest : FunSpec({
             matchingResult.include()
 
             matchingResult.excluded shouldBe false
+        }
+    }
+
+    context("claim") {
+
+        test("claim 호출 시 claimed가 true가 된다") {
+            val matchingResult = MatchingResultFixture.create()
+
+            matchingResult.claim()
+
+            matchingResult.claimed shouldBe true
+        }
+
+        test("이미 claimed된 상태에서 claim하면 예외가 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimed = true)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.claim()
+            }
         }
     }
 

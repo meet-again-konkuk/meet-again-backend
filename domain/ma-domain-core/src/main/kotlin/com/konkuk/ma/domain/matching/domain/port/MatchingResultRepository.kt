@@ -13,6 +13,8 @@ interface MatchingResultRepository {
     fun find(email: Email, excluded: Boolean = false): List<MatchingResult>
     fun findOne(matchingResultId: Long): MatchingResult
     fun updateExcluded(matchingResult: MatchingResult)
+    fun updateClaimed(matchingResult: MatchingResult)
+    fun findClaimedByTarget(email: Email): List<MatchingResult>
     fun exists(targetInfoId: Long): Boolean
     fun delete(targetInfoId: Long, email: Email)
 }

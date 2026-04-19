@@ -38,19 +38,11 @@ fun targetGender(fieldName: String = "targetGender") =
 fun targetRegion(fieldName: String = "region") =
     fieldName responseType STRING means "지역" example "SEOUL"
 
-// --- 매칭 결과 관련 필드 ---
+// --- 매칭 결과 고유 필드 ---
+// 회원 프로필 관련 필드(이름, 닉네임, 프로필 이미지, 탈퇴 여부, 회원 ID)는 MemberVocabulary의 generic 함수를 path와 함께 호출하여 재사용한다
 
 fun matchingResultId(fieldName: String = "matchingResults[].matchingResultId") =
     fieldName responseType STRING means "매칭 결과 ID (인코딩)" example "abc123"
-
-fun matchingTargetName(fieldName: String = "matchingResults[].targetName") =
-    fieldName responseType STRING means "매칭된 상대의 이름" example "김만남"
-
-fun matchingTargetNickname(fieldName: String = "matchingResults[].targetNickname") =
-    fieldName responseType STRING means "매칭된 상대의 닉네임" example "테스트닉네임"
-
-fun profileImageUrl(fieldName: String = "matchingResults[].profileImageUrl") =
-    fieldName responseType STRING means "매칭된 상대의 프로필 이미지 URL" example "https://example.com/image.jpg"
 
 fun remainingDays(fieldName: String = "matchingResults[].remainingDays") =
     fieldName responseType NUMBER means "매칭 결과 노출 잔여일" example "25"
@@ -58,37 +50,19 @@ fun remainingDays(fieldName: String = "matchingResults[].remainingDays") =
 fun matchRate(fieldName: String = "matchingResults[].matchRate") =
     fieldName responseType NUMBER means "매칭률 (%)" example "75"
 
-fun targetMemberId(fieldName: String = "matchingResults[].targetMemberId") =
-    fieldName responseType STRING means "매칭된 상대의 회원 ID (인코딩, 탈퇴 시 null)" example "abc123"
+fun claimed(fieldName: String = "matchingResults[].claimed") =
+    fieldName responseType BOOLEAN means "claim 여부" example "false"
 
-fun isWithdrawn(fieldName: String = "matchingResults[].isWithdrawn") =
-    fieldName responseType BOOLEAN means "탈퇴 회원 여부" example "false"
-
-// --- 매칭 결과 상세 필드 ---
+// --- 매칭 결과 상세 고유 필드 ---
 
 fun detailMatchingResultId(fieldName: String = "matchingResultId") =
     fieldName responseType STRING means "매칭 결과 ID (인코딩)" example "abc123"
-
-fun detailTargetMemberId(fieldName: String = "targetMemberId") =
-    fieldName responseType STRING means "매칭된 상대의 회원 ID (인코딩, 탈퇴 시 null)" example "abc123"
-
-fun detailTargetName(fieldName: String = "targetName") =
-    fieldName responseType STRING means "매칭된 상대의 이름" example "김만남"
-
-fun detailTargetNickname(fieldName: String = "targetNickname") =
-    fieldName responseType STRING means "매칭된 상대의 닉네임" example "테스트닉네임"
-
-fun detailProfileImageUrl(fieldName: String = "profileImageUrl") =
-    fieldName responseType STRING means "매칭된 상대의 프로필 이미지 URL" example "https://example.com/image.jpg"
 
 fun detailRemainingDays(fieldName: String = "remainingDays") =
     fieldName responseType NUMBER means "매칭 결과 노출 잔여일" example "25"
 
 fun detailMatchRate(fieldName: String = "matchRate") =
     fieldName responseType NUMBER means "매칭률 (%)" example "75"
-
-fun detailIsWithdrawn(fieldName: String = "isWithdrawn") =
-    fieldName responseType BOOLEAN means "탈퇴 회원 여부" example "false"
 
 fun middleNumberMatched(fieldName: String = "middleNumberMatched") =
     fieldName responseType BOOLEAN means "전화번호 중간자리 일치 여부" example "true"
@@ -113,3 +87,8 @@ fun resultExcludedParam(fieldName: String = "excluded") =
 
 fun matchingResultIdPath(fieldName: String = "matchingResultId") =
     fieldName requestParam "매칭 결과 ID (인코딩)"
+
+// --- Claimer(나를 X로 신청한 요청자) 고유 필드 ---
+
+fun hasXroom(fieldName: String = "claimers[].hasXroom") =
+    fieldName responseType BOOLEAN means "해당 TargetInfo로 X룸을 만들었는지 여부" example "true"

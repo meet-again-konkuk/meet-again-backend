@@ -30,6 +30,12 @@ class MatchingResultQueryDao {
             .any()
     }
 
+    fun findClaimedByTarget(email: String): List<MatchingResultEntity> {
+        return MatchingResultTable
+            .activeRows { (MatchingResultTable.targetEmail eq email) and (MatchingResultTable.claimed eq true) }
+            .map { row -> MatchingResultEntity.from(row) }
+    }
+
     fun findOne(id: Long): MatchingResultEntity? {
         return MatchingResultTable
             .activeRows { MatchingResultTable.id eq id }

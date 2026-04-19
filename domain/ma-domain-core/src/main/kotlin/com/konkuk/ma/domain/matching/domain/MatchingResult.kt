@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.common.domain.date.remainingDays
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult.Companion.SHOWING_EXPIRY_DAYS
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityType
+import com.konkuk.ma.exception.InvalidStateException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -26,8 +27,11 @@ class MatchingResult(
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
     excluded: Boolean,
+    claimed: Boolean = false,
 ) : HasMatchingKey {
     var excluded: Boolean = excluded
+        private set
+    var claimed: Boolean = claimed
         private set
     val matchRate: Int by lazy {
         MatchRateCalculator(
@@ -61,5 +65,16 @@ class MatchingResult(
 
     fun include() {
         excluded = false
+    }
+
+    fun claim() {
+        validateNotClaimed()
+        claimed = true
+    }
+
+    fun validateNotClaimed() {
+        if (claimed) {
+            throw InvalidStateException(MatchingResult::class, id, "이미 claim된 매칭 결과입니다.")
+        }
     }
 }
