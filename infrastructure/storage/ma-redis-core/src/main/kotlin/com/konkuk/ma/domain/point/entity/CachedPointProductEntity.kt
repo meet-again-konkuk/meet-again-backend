@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
+import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 
 data class CachedPointProductEntity(
@@ -39,7 +40,7 @@ data class CachedPointProductEntity(
             )
         }
 
-        private fun toCachedDiscount(policy: com.konkuk.ma.domain.point.domain.discount.DiscountPolicy?): CachedDiscount? {
+        private fun toCachedDiscount(policy: DiscountPolicy?): CachedDiscount? {
             return when (policy) {
                 null -> null
                 is AmountDiscountPolicy -> CachedAmountDiscount(
