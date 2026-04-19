@@ -3,10 +3,12 @@ package com.konkuk.ma.domain.point.entity
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
+import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 import java.time.LocalDate
 
 sealed class CachedDiscount {
+    abstract val type: DiscountType
     abstract fun toDomain(): DiscountPolicy
 }
 
@@ -15,6 +17,8 @@ data class CachedAmountDiscount(
     val endDate: String = "",
     val discountAmount: Int = 0,
 ) : CachedDiscount() {
+    override val type: DiscountType = DiscountType.AMOUNT
+
     override fun toDomain(): DiscountPolicy {
         return AmountDiscountPolicy(
             discountPolicyId = 0,
@@ -30,6 +34,8 @@ data class CachedPercentDiscount(
     val endDate: String = "",
     val discountPercent: Int = 0,
 ) : CachedDiscount() {
+    override val type: DiscountType = DiscountType.PERCENT
+
     override fun toDomain(): DiscountPolicy {
         return PercentDiscountPolicy(
             discountPolicyId = 0,
