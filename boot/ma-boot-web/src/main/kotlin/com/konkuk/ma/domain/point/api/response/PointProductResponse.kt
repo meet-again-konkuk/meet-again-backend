@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.point.api.response
 
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
-import java.math.RoundingMode
 
 class PointProductResponse(
     val pointProductId: Long,
@@ -21,7 +20,7 @@ class PointProductResponse(
                 quantity = product.pointProduct.quantity,
                 price = product.pointProduct.price.toInt(),
                 discountedPrice = product.discountedPrice().toInt(),
-                discountRate = product.discountRate().setScale(0, RoundingMode.HALF_UP).toInt(),
+                discountRate = product.discountRate(),
                 discountType = product.discountType()?.name,
                 isDiscountActive = product.isDiscountActive(),
             )

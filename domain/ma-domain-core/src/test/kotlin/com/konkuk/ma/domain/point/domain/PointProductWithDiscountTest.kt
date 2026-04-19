@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.point.domain
 
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
-import java.math.BigDecimal
 import com.konkuk.ma.domain.point.fixture.DiscountPolicyFixture
 import com.konkuk.ma.domain.point.fixture.PointProductFixture
 import io.kotest.core.spec.style.FunSpec
@@ -62,7 +61,7 @@ class PointProductWithDiscountTest : FunSpec({
         test("할인 정책이 없으면 0을 반환한다") {
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), null)
 
-            product.discountRate(now) shouldBe BigDecimal.ZERO
+            product.discountRate(now) shouldBe 0
         }
 
         test("비활성 할인 정책이면 0을 반환한다") {
@@ -73,7 +72,7 @@ class PointProductWithDiscountTest : FunSpec({
             )
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
-            product.discountRate(now) shouldBe BigDecimal.ZERO
+            product.discountRate(now) shouldBe 0
         }
 
         test("AmountDiscountPolicy 적용 시 할인율을 계산한다") {
@@ -84,7 +83,7 @@ class PointProductWithDiscountTest : FunSpec({
             )
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
-            product.discountRate(now) shouldBe BigDecimal("30.00")
+            product.discountRate(now) shouldBe 30
         }
 
         test("PercentDiscountPolicy 적용 시 해당 비율을 반환한다") {
@@ -95,7 +94,7 @@ class PointProductWithDiscountTest : FunSpec({
             )
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
-            product.discountRate(now) shouldBe BigDecimal("20.00")
+            product.discountRate(now) shouldBe 20
         }
     }
 
