@@ -20,7 +20,7 @@ class PointProductResponse(
                 quantity = product.pointProduct.quantity,
                 price = product.pointProduct.price.toInt(),
                 discountedPrice = product.discountedPrice().toInt(),
-                discountRate = product.discountRate(),
+                discountRate = product.discountRate().toInt(),
                 discountType = product.discountType()?.name,
                 isDiscountActive = product.isDiscountActive(),
             )
