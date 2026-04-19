@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.point.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.PointQueryService
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
@@ -38,7 +39,7 @@ class PointQueryApiTest(
                     pointProductId = 1L,
                     name = "인연 10개",
                     quantity = 10,
-                    price = 1000,
+                    price = Money.wons(1000),
                     displayOrder = 1,
                     discountPolicyId = 1L,
                 ),
@@ -46,7 +47,7 @@ class PointQueryApiTest(
                     discountPolicyId = 1L,
                     startDate = LocalDate.now().minusDays(1),
                     endDate = LocalDate.now().plusDays(30),
-                    discountAmount = 200,
+                    discountAmount = Money.wons(200),
                 ),
             ),
             PointProductWithDiscount(
@@ -54,7 +55,7 @@ class PointQueryApiTest(
                     pointProductId = 2L,
                     name = "인연 30개",
                     quantity = 30,
-                    price = 2500,
+                    price = Money.wons(2500),
                     displayOrder = 2,
                 ),
                 discountPolicy = null,
@@ -64,7 +65,7 @@ class PointQueryApiTest(
                     pointProductId = 3L,
                     name = "인연 50개",
                     quantity = 50,
-                    price = 4000,
+                    price = Money.wons(4000),
                     displayOrder = 3,
                 ),
                 discountPolicy = null,

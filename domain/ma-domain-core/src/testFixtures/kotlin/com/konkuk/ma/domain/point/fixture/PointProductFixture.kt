@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.fixture
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 
 object PointProductFixture {
@@ -15,7 +16,7 @@ object PointProductFixture {
             pointProductId = pointProductId,
             name = name,
             quantity = quantity,
-            price = price,
+            price = Money.wons(price),
             displayOrder = displayOrder,
             discountPolicyId = discountPolicyId,
         )

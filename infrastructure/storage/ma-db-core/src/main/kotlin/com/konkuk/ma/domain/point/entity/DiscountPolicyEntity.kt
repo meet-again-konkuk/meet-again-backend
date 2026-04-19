@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.entity
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
@@ -24,7 +25,7 @@ class AmountDiscountPolicyEntity(
             discountPolicyId = id,
             startDate = startDate,
             endDate = endDate,
-            discountAmount = discountAmount,
+            discountAmount = Money.wons(discountAmount),
         )
     }
 }

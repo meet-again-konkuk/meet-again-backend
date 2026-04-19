@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.entity
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 
 class PointProductEntity(
@@ -15,7 +16,7 @@ class PointProductEntity(
             pointProductId = id,
             name = name,
             quantity = quantity,
-            price = price,
+            price = Money.wons(price),
             displayOrder = displayOrder,
             discountPolicyId = discountPolicyId,
         )

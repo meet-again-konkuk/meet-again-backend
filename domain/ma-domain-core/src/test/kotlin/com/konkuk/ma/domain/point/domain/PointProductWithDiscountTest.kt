@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.domain
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import com.konkuk.ma.domain.point.fixture.DiscountPolicyFixture
 import com.konkuk.ma.domain.point.fixture.PointProductFixture
@@ -18,7 +19,7 @@ class PointProductWithDiscountTest : FunSpec({
         test("할인 정책이 없으면 원래 가격을 반환한다") {
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), null)
 
-            product.discountedPrice(now) shouldBe 1000
+            product.discountedPrice(now) shouldBe Money.wons(1000)
         }
 
         test("활성 할인 정책이 있으면 할인된 가격을 반환한다") {
@@ -29,7 +30,7 @@ class PointProductWithDiscountTest : FunSpec({
             )
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
-            product.discountedPrice(now) shouldBe 700
+            product.discountedPrice(now) shouldBe Money.wons(700)
         }
 
         test("비활성 할인 정책이면 원래 가격을 반환한다") {
@@ -40,7 +41,7 @@ class PointProductWithDiscountTest : FunSpec({
             )
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
-            product.discountedPrice(now) shouldBe 1000
+            product.discountedPrice(now) shouldBe Money.wons(1000)
         }
 
         test("비율 할인이 적용된 가격을 반환한다") {
@@ -51,7 +52,7 @@ class PointProductWithDiscountTest : FunSpec({
             )
             val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
 
-            product.discountedPrice(now) shouldBe 800
+            product.discountedPrice(now) shouldBe Money.wons(800)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.domain.discount
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.fixture.DiscountPolicyFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
@@ -64,13 +65,13 @@ class DiscountPolicyTest : FunSpec({
         test("고정 금액을 할인한다") {
             val policy = DiscountPolicyFixture.createAmount(discountAmount = 500)
 
-            policy.calculateDiscountedPrice(1000) shouldBe 500
+            policy.calculateDiscountedPrice(Money.wons(1000)) shouldBe Money.wons(500)
         }
 
         test("할인 금액이 가격보다 크면 0을 반환한다") {
             val policy = DiscountPolicyFixture.createAmount(discountAmount = 1500)
 
-            policy.calculateDiscountedPrice(1000) shouldBe 0
+            policy.calculateDiscountedPrice(Money.wons(1000)) shouldBe Money.ZERO
         }
     }
 
@@ -79,19 +80,19 @@ class DiscountPolicyTest : FunSpec({
         test("비율로 할인한다") {
             val policy = DiscountPolicyFixture.createPercent(discountPercent = 10)
 
-            policy.calculateDiscountedPrice(1000) shouldBe 900
+            policy.calculateDiscountedPrice(Money.wons(1000)) shouldBe Money.wons(900)
         }
 
         test("100% 할인이면 0을 반환한다") {
             val policy = DiscountPolicyFixture.createPercent(discountPercent = 100)
 
-            policy.calculateDiscountedPrice(1000) shouldBe 0
+            policy.calculateDiscountedPrice(Money.wons(1000)) shouldBe Money.ZERO
         }
 
         test("0% 할인이면 원래 가격을 반환한다") {
             val policy = DiscountPolicyFixture.createPercent(discountPercent = 0)
 
-            policy.calculateDiscountedPrice(1000) shouldBe 1000
+            policy.calculateDiscountedPrice(Money.wons(1000)) shouldBe Money.wons(1000)
         }
     }
 })

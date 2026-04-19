@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.domain
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import java.time.LocalDate
@@ -12,7 +13,7 @@ class PointProductWithDiscount(
         return discountPolicy?.isActive(now) == true
     }
 
-    fun discountedPrice(now: LocalDate): Int {
+    fun discountedPrice(now: LocalDate): Money {
         if (!isDiscountActive(now)) return pointProduct.price
         return discountPolicy!!.calculateDiscountedPrice(pointProduct.price)
     }
@@ -20,8 +21,9 @@ class PointProductWithDiscount(
     fun discountRate(now: LocalDate): Int {
         if (!isDiscountActive(now)) return 0
         val price = pointProduct.price
-        if (price == 0) return 0
-        return (price - discountedPrice(now)) * 100 / price
+        if (price.isZero()) return 0
+        val discounted = discountedPrice(now)
+        return ((price - discounted).toLong() * 100 / price.toLong()).toInt()
     }
 
     fun discountType(): DiscountType? = discountPolicy?.type

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.domain.discount
 
+import com.konkuk.ma.domain.common.domain.Money
 import java.time.LocalDate
 
 sealed class DiscountPolicy(
@@ -13,5 +14,5 @@ sealed class DiscountPolicy(
         return !now.isBefore(startDate) && !now.isAfter(endDate)
     }
 
-    abstract fun calculateDiscountedPrice(price: Int): Int
+    abstract fun calculateDiscountedPrice(price: Money): Money
 }

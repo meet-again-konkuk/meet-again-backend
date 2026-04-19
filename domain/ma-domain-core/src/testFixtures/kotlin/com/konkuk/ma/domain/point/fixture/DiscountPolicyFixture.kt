@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.fixture
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 import java.time.LocalDate
@@ -15,7 +16,7 @@ object DiscountPolicyFixture {
             discountPolicyId = discountPolicyId,
             startDate = startDate,
             endDate = endDate,
-            discountAmount = discountAmount,
+            discountAmount = Money.wons(discountAmount),
         )
     }
 

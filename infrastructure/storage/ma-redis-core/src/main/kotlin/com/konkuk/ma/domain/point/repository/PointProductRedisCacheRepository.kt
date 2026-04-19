@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.repository
 
+import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.dao.CachedPointProduct
 import com.konkuk.ma.domain.point.dao.PointProductCacheDao
 import com.konkuk.ma.domain.point.domain.PointProduct
@@ -31,7 +32,7 @@ class PointProductRedisCacheRepository(
             pointProductId = pointProductId,
             name = name,
             quantity = quantity,
-            price = price,
+            price = Money.wons(price),
             displayOrder = displayOrder,
             discountPolicyId = policy?.discountPolicyId,
         )
@@ -47,7 +48,9 @@ class PointProductRedisCacheRepository(
                 discountPolicyId = 0,
                 startDate = startDate,
                 endDate = endDate,
-                discountAmount = requireNotNull(discountAmount) { "AMOUNT 정책은 discountAmount가 필수입니다" },
+                discountAmount = Money.wons(
+                    requireNotNull(discountAmount) { "AMOUNT 정책은 discountAmount가 필수입니다" }
+                ),
             )
             DiscountType.PERCENT -> PercentDiscountPolicy(
                 discountPolicyId = 0,
@@ -64,10 +67,10 @@ class PointProductRedisCacheRepository(
             pointProductId = pointProduct.pointProductId,
             name = pointProduct.name,
             quantity = pointProduct.quantity,
-            price = pointProduct.price,
+            price = pointProduct.price.toInt(),
             displayOrder = pointProduct.displayOrder,
             discountType = policy?.type?.name,
-            discountAmount = (policy as? AmountDiscountPolicy)?.discountAmount,
+            discountAmount = (policy as? AmountDiscountPolicy)?.discountAmount?.toInt(),
             discountPercent = (policy as? PercentDiscountPolicy)?.discountPercent,
             discountStartDate = policy?.startDate?.toString(),
             discountEndDate = policy?.endDate?.toString(),
