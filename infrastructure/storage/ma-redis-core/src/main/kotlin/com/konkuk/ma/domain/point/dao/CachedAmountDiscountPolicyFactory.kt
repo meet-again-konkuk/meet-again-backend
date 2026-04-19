@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
+import com.konkuk.ma.domain.point.entity.CachedPointProductEntity
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -11,7 +12,7 @@ import java.time.LocalDate
 class CachedAmountDiscountPolicyFactory : CachedDiscountPolicyFactory {
     override val type: DiscountType = DiscountType.AMOUNT
 
-    override fun create(cached: CachedPointProduct): DiscountPolicy {
+    override fun create(cached: CachedPointProductEntity): DiscountPolicy {
         return AmountDiscountPolicy(
             discountPolicyId = 0,
             startDate = LocalDate.parse(requireNotNull(cached.discountStartDate)),
@@ -22,7 +23,7 @@ class CachedAmountDiscountPolicyFactory : CachedDiscountPolicyFactory {
         )
     }
 
-    override fun serialize(policy: DiscountPolicy, base: CachedPointProduct): CachedPointProduct {
+    override fun serialize(policy: DiscountPolicy, base: CachedPointProductEntity): CachedPointProductEntity {
         policy as AmountDiscountPolicy
         return base.copy(
             discountType = type.name,

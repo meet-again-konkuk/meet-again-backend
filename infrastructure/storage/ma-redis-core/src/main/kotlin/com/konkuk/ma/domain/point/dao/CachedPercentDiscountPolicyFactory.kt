@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.dao
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
+import com.konkuk.ma.domain.point.entity.CachedPointProductEntity
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
@@ -10,7 +11,7 @@ import java.time.LocalDate
 class CachedPercentDiscountPolicyFactory : CachedDiscountPolicyFactory {
     override val type: DiscountType = DiscountType.PERCENT
 
-    override fun create(cached: CachedPointProduct): DiscountPolicy {
+    override fun create(cached: CachedPointProductEntity): DiscountPolicy {
         return PercentDiscountPolicy(
             discountPolicyId = 0,
             startDate = LocalDate.parse(requireNotNull(cached.discountStartDate)),
@@ -19,7 +20,7 @@ class CachedPercentDiscountPolicyFactory : CachedDiscountPolicyFactory {
         )
     }
 
-    override fun serialize(policy: DiscountPolicy, base: CachedPointProduct): CachedPointProduct {
+    override fun serialize(policy: DiscountPolicy, base: CachedPointProductEntity): CachedPointProductEntity {
         policy as PercentDiscountPolicy
         return base.copy(
             discountType = type.name,

@@ -1,11 +1,11 @@
-package com.konkuk.ma.domain.point.dao
+package com.konkuk.ma.domain.point.entity
 
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 
-data class CachedPointProduct(
+data class CachedPointProductEntity(
     val pointProductId: Long = 0,
     val name: String = "",
     val quantity: Int = 0,
@@ -30,8 +30,8 @@ data class CachedPointProduct(
     }
 
     companion object {
-        fun ofProduct(product: PointProduct): CachedPointProduct {
-            return CachedPointProduct(
+        fun ofProduct(product: PointProduct): CachedPointProductEntity {
+            return CachedPointProductEntity(
                 pointProductId = product.pointProductId,
                 name = product.name,
                 quantity = product.quantity,
