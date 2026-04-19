@@ -7,4 +7,6 @@ interface CachedDiscountPolicyFactory {
     val type: DiscountType
 
     fun create(cached: CachedPointProduct): DiscountPolicy
+
+    fun serialize(policy: DiscountPolicy, base: CachedPointProduct): CachedPointProduct
 }

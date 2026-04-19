@@ -22,14 +22,23 @@ class PointProductRedisCacheRepository(
     }
 
     override fun save(products: List<PointProductWithDiscount>) {
-        pointProductCacheDao.save(products.map { CachedPointProduct.from(it) })
+        pointProductCacheDao.save(products.map { toCached(it) })
     }
 
     private fun resolvePolicy(cached: CachedPointProduct): DiscountPolicy? {
         val typeStr = cached.discountType ?: return null
-        val type = DiscountType.valueOf(typeStr)
-        val factory = discountPolicyFactories.find { it.type == type }
-            ?: error("등록되지 않은 할인 정책 타입: $type")
+        val factory = findFactory(DiscountType.valueOf(typeStr))
         return factory.create(cached)
+    }
+
+    private fun toCached(product: PointProductWithDiscount): CachedPointProduct {
+        val base = CachedPointProduct.ofProduct(product.pointProduct)
+        val policy = product.discountPolicy ?: return base
+        return findFactory(policy.type).serialize(policy, base)
+    }
+
+    private fun findFactory(type: DiscountType): CachedDiscountPolicyFactory {
+        return discountPolicyFactories.find { it.type == type }
+            ?: error("등록되지 않은 할인 정책 타입: $type")
     }
 }

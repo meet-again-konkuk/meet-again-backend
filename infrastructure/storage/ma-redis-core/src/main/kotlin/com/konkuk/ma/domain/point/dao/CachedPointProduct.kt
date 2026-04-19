@@ -3,9 +3,7 @@ package com.konkuk.ma.domain.point.dao
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
-import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
-import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 
 data class CachedPointProduct(
     val pointProductId: Long = 0,
@@ -32,25 +30,13 @@ data class CachedPointProduct(
     }
 
     companion object {
-        fun from(product: PointProductWithDiscount): CachedPointProduct {
-            val policy = product.discountPolicy
+        fun ofProduct(product: PointProduct): CachedPointProduct {
             return CachedPointProduct(
-                pointProductId = product.pointProduct.pointProductId,
-                name = product.pointProduct.name,
-                quantity = product.pointProduct.quantity,
-                price = product.pointProduct.price.toInt(),
-                displayOrder = product.pointProduct.displayOrder,
-                discountType = policy?.type?.name,
-                discountAmount = when (policy) {
-                    is AmountDiscountPolicy -> policy.discountAmount.toInt()
-                    is PercentDiscountPolicy, null -> null
-                },
-                discountPercent = when (policy) {
-                    is PercentDiscountPolicy -> policy.discountPercent
-                    is AmountDiscountPolicy, null -> null
-                },
-                discountStartDate = policy?.startDate?.toString(),
-                discountEndDate = policy?.endDate?.toString(),
+                pointProductId = product.pointProductId,
+                name = product.name,
+                quantity = product.quantity,
+                price = product.price.toInt(),
+                displayOrder = product.displayOrder,
             )
         }
     }

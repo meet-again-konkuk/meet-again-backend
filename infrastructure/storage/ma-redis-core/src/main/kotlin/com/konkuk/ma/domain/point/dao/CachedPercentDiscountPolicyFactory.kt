@@ -18,4 +18,14 @@ class CachedPercentDiscountPolicyFactory : CachedDiscountPolicyFactory {
             discountPercent = requireNotNull(cached.discountPercent) { "PERCENT 정책은 discountPercent가 필수입니다" },
         )
     }
+
+    override fun serialize(policy: DiscountPolicy, base: CachedPointProduct): CachedPointProduct {
+        policy as PercentDiscountPolicy
+        return base.copy(
+            discountType = type.name,
+            discountPercent = policy.discountPercent,
+            discountStartDate = policy.startDate.toString(),
+            discountEndDate = policy.endDate.toString(),
+        )
+    }
 }

@@ -21,4 +21,14 @@ class CachedAmountDiscountPolicyFactory : CachedDiscountPolicyFactory {
             ),
         )
     }
+
+    override fun serialize(policy: DiscountPolicy, base: CachedPointProduct): CachedPointProduct {
+        policy as AmountDiscountPolicy
+        return base.copy(
+            discountType = type.name,
+            discountAmount = policy.discountAmount.toInt(),
+            discountStartDate = policy.startDate.toString(),
+            discountEndDate = policy.endDate.toString(),
+        )
+    }
 }
