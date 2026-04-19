@@ -3,9 +3,6 @@ package com.konkuk.ma.domain.point.entity
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
-import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
-import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
-import com.konkuk.ma.domain.point.domain.discount.PercentDiscountPolicy
 
 data class CachedPointProductEntity(
     val pointProductId: Long = 0,
@@ -36,24 +33,8 @@ data class CachedPointProductEntity(
                 quantity = product.pointProduct.quantity,
                 price = product.pointProduct.price.toInt(),
                 displayOrder = product.pointProduct.displayOrder,
-                discount = toCachedDiscount(product.discountPolicy),
+                discount = product.discountPolicy?.let(CachedDiscount::fromPolicy),
             )
-        }
-
-        private fun toCachedDiscount(policy: DiscountPolicy?): CachedDiscount? {
-            return when (policy) {
-                null -> null
-                is AmountDiscountPolicy -> CachedAmountDiscount(
-                    startDate = policy.startDate.toString(),
-                    endDate = policy.endDate.toString(),
-                    discountAmount = policy.discountAmount.toInt(),
-                )
-                is PercentDiscountPolicy -> CachedPercentDiscount(
-                    startDate = policy.startDate.toString(),
-                    endDate = policy.endDate.toString(),
-                    discountPercent = policy.discountPercent,
-                )
-            }
         }
     }
 }
