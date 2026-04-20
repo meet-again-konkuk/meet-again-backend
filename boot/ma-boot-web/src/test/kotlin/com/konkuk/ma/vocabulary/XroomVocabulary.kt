@@ -11,3 +11,6 @@ fun xroomId(fieldName: String = "xroomId") =
 
 fun targetInfoIdParam(fieldName: String = "targetInfoId") =
     fieldName requestParam "찾는 사람 정보 ID (인코딩)"
+
+fun xroomIdPath(fieldName: String = "xroomId") =
+    fieldName requestParam "X룸 ID (인코딩)"

@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= X룸 블록 영상 교체 API
+
+== 영상 1개 교체
+
+VIDEO 블록의 특정 영상 1개를 새 파일로 교체한다. `orderIndex`는 유지되며 URL만 갱신된다.
+
+=== 요청
+
+include::{snippets}/xroom-block/replace-video/http-request.adoc[]
+
+=== Path 파라미터
+
+include::{snippets}/xroom-block/replace-video/path-parameters.adoc[]
+
+=== 요청 파트
+
+include::{snippets}/xroom-block/replace-video/request-parts.adoc[]
+
+=== 응답
+
+include::{snippets}/xroom-block/replace-video/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/xroom-block/replace-video/response-fields.adoc[]

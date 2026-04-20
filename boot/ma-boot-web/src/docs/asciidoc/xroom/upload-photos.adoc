@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= X룸 블록 사진 업로드 API
+
+== 사진 일괄 업로드 (1회)
+
+PHOTO 블록의 사진 파일을 일괄 업로드한다. `item`이 정의한 `maxPhotoCount`와 정확히 일치하는 장수를 한 번에 업로드해야 하며, 이미 업로드된 블록에 재호출하면 409 Conflict를 반환한다.
+
+=== 요청
+
+include::{snippets}/xroom-block/upload-photos/http-request.adoc[]
+
+=== Path 파라미터
+
+include::{snippets}/xroom-block/upload-photos/path-parameters.adoc[]
+
+=== 요청 파트
+
+include::{snippets}/xroom-block/upload-photos/request-parts.adoc[]
+
+=== 응답
+
+include::{snippets}/xroom-block/upload-photos/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/xroom-block/upload-photos/response-fields.adoc[]

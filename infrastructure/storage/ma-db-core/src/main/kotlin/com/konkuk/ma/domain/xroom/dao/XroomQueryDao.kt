@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.xroom.dao
 
+import com.konkuk.ma.domain.xroom.entity.XroomEntity
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import org.springframework.stereotype.Component
 
@@ -18,5 +19,13 @@ class XroomQueryDao {
             .activeRows { XroomTable.targetInfoId inList targetInfoIds }
             .map { it[XroomTable.targetInfoId] }
             .toSet()
+    }
+
+    fun findOne(xroomId: Long): XroomEntity? {
+        return XroomTable
+            .activeRows { XroomTable.id eq xroomId }
+            .limit(1)
+            .firstOrNull()
+            ?.let { XroomEntity.from(it) }
     }
 }

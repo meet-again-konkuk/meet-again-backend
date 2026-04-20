@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= MUSIC 블록 생성 API
+
+== MUSIC 블록 생성
+
+지정한 X룸에 MUSIC 타입 블록을 생성한다. 음원 URL과 곡 메타(title, artist)를 함께 저장한다.
+
+=== 요청
+
+include::{snippets}/xroom-block/create-music-block/http-request.adoc[]
+
+=== Path 파라미터
+
+include::{snippets}/xroom-block/create-music-block/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/xroom-block/create-music-block/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/xroom-block/create-music-block/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/xroom-block/create-music-block/response-fields.adoc[]

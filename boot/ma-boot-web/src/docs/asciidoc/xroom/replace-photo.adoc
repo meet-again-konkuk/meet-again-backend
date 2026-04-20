@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= X룸 블록 사진 교체 API
+
+== 사진 1장 교체
+
+PHOTO 블록의 특정 사진 1장을 새 파일로 교체한다. `orderIndex`는 유지되며 URL만 갱신된다.
+
+=== 요청
+
+include::{snippets}/xroom-block/replace-photo/http-request.adoc[]
+
+=== Path 파라미터
+
+include::{snippets}/xroom-block/replace-photo/path-parameters.adoc[]
+
+=== 요청 파트
+
+include::{snippets}/xroom-block/replace-photo/request-parts.adoc[]
+
+=== 응답
+
+include::{snippets}/xroom-block/replace-photo/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/xroom-block/replace-photo/response-fields.adoc[]

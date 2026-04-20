@@ -14,6 +14,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.57.0")
     testImplementation("org.jetbrains.exposed:exposed-java-time:0.57.0")
+    testImplementation(testFixtures(project(":domain:ma-domain-core")))
     testRuntimeOnly("com.h2database:h2")
 
     testFixturesApi("org.springframework.boot:spring-boot-starter-test")

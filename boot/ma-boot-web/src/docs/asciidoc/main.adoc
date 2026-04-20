@@ -178,6 +178,56 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/create-xroom.html[X룸 생성 API,window=_blank]
 
+[[xroom-block-create-photo]]
+=== PHOTO 블록 생성
+
+* link:xroom/create-photo-block.html[PHOTO 블록 생성 API,window=_blank]
+
+[[xroom-block-create-short-text]]
+=== SHORT_TEXT 블록 생성
+
+* link:xroom/create-short-text-block.html[SHORT_TEXT 블록 생성 API,window=_blank]
+
+[[xroom-block-create-long-text]]
+=== LONG_TEXT 블록 생성
+
+* link:xroom/create-long-text-block.html[LONG_TEXT 블록 생성 API,window=_blank]
+
+[[xroom-block-create-music]]
+=== MUSIC 블록 생성
+
+* link:xroom/create-music-block.html[MUSIC 블록 생성 API,window=_blank]
+
+[[xroom-block-create-dday]]
+=== DDAY 블록 생성
+
+* link:xroom/create-dday-block.html[DDAY 블록 생성 API,window=_blank]
+
+[[xroom-block-create-video]]
+=== VIDEO 블록 생성
+
+* link:xroom/create-video-block.html[VIDEO 블록 생성 API,window=_blank]
+
+[[xroom-block-upload-photos]]
+=== X룸 블록 사진 업로드
+
+* link:xroom/upload-photos.html[X룸 블록 사진 업로드 API,window=_blank]
+
+[[xroom-block-upload-videos]]
+=== X룸 블록 영상 업로드
+
+* link:xroom/upload-videos.html[X룸 블록 영상 업로드 API,window=_blank]
+
+[[xroom-block-replace-photo]]
+=== X룸 블록 사진 교체
+
+* link:xroom/replace-photo.html[X룸 블록 사진 교체 API,window=_blank]
+
+[[xroom-block-replace-video]]
+=== X룸 블록 영상 교체
+
+* link:xroom/replace-video.html[X룸 블록 영상 교체 API,window=_blank]
+
 [[support]]
 == 고객지원
 
