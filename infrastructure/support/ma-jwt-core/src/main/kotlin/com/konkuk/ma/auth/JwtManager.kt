@@ -97,17 +97,17 @@ class JwtManager(
                 .parseClaimsJws(token)
                 .body
         } catch (e: ExpiredJwtException) {
-            throw AuthTokenException(token, JwtExceptionType.EXPIRED, e, LogLevel.INFO, this::getClaimsFromToken)
+            throw AuthTokenException(token, JwtExceptionType.EXPIRED, e, LogLevel.INFO)
         } catch (e: MalformedJwtException) {
-            throw AuthTokenException(token, JwtExceptionType.MALFORMED, e, LogLevel.ERROR, this::getClaimsFromToken)
+            throw AuthTokenException(token, JwtExceptionType.MALFORMED, e, LogLevel.ERROR)
         } catch (e: UnsupportedJwtException) {
-            throw AuthTokenException(token, JwtExceptionType.UNSUPPORTED, e, LogLevel.ERROR, this::getClaimsFromToken)
+            throw AuthTokenException(token, JwtExceptionType.UNSUPPORTED, e, LogLevel.ERROR)
         } catch (e: SignatureException) {
-            throw AuthTokenException(token, JwtExceptionType.SIGNATURE, e, LogLevel.ERROR, this::getClaimsFromToken)
+            throw AuthTokenException(token, JwtExceptionType.SIGNATURE, e, LogLevel.ERROR)
         } catch (e: IllegalArgumentException) {
-            throw AuthTokenException(token, JwtExceptionType.ILLEGAL_ARGUMENT, e, LogLevel.ERROR, this::getClaimsFromToken)
+            throw AuthTokenException(token, JwtExceptionType.ILLEGAL_ARGUMENT, e, LogLevel.ERROR)
         } catch (e: JwtException) {
-            throw AuthTokenException(token, JwtExceptionType.ETC, e, LogLevel.ERROR, this::getClaimsFromToken)
+            throw AuthTokenException(token, JwtExceptionType.ETC, e, LogLevel.ERROR)
         }
     }
 } 

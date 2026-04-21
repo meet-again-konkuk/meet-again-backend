@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.dao
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.konkuk.ma.config.JsonRedisTemplate
 import com.konkuk.ma.domain.point.entity.CachedPointProductEntity
 import org.springframework.stereotype.Component
@@ -12,14 +11,19 @@ class PointProductCacheDao(
 ) {
     companion object {
         private const val CACHE_KEY = "point-products:all"
-        private const val CACHE_TTL_HOURS = 24L
+        private const val CACHE_TTL_DAYS = 7L
     }
 
     fun findOrNull(): List<CachedPointProductEntity>? {
-        return jsonRedisTemplate.get(CACHE_KEY, object : TypeReference<List<CachedPointProductEntity>>() {})
+        return jsonRedisTemplate.hvalsOrNull(CACHE_KEY, CachedPointProductEntity::class.java)
+    }
+
+    fun findOneOrNull(pointProductId: Long): CachedPointProductEntity? {
+        return jsonRedisTemplate.hget(CACHE_KEY, pointProductId.toString(), CachedPointProductEntity::class.java)
     }
 
     fun save(products: List<CachedPointProductEntity>) {
-        jsonRedisTemplate.set(CACHE_KEY, products, CACHE_TTL_HOURS, TimeUnit.HOURS)
+        val fields = products.associate { it.pointProductId.toString() to it }
+        jsonRedisTemplate.replaceHash(CACHE_KEY, fields, CACHE_TTL_DAYS, TimeUnit.DAYS)
     }
 }

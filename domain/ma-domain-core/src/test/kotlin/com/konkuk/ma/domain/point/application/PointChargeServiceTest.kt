@@ -4,16 +4,15 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.PointChargeValidator
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
+import com.konkuk.ma.domain.point.domain.PointProductWithDiscountFinder
 import com.konkuk.ma.domain.point.domain.balance.MemberPoint
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.payment.PaymentApproval
 import com.konkuk.ma.domain.point.domain.payment.PaymentApprovalRequest
-import com.konkuk.ma.domain.point.domain.payment.PaymentApprover
 import com.konkuk.ma.domain.point.domain.payment.PaymentApproverRouter
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
-import com.konkuk.ma.domain.point.domain.port.DiscountPolicyQueryRepository
 import com.konkuk.ma.domain.point.domain.port.MemberPointRepository
-import com.konkuk.ma.domain.point.domain.port.PointProductQueryRepository
 import com.konkuk.ma.domain.point.domain.port.PointTransactionRepository
 import com.konkuk.ma.domain.point.domain.transaction.NewPointTransaction
 import com.konkuk.ma.domain.point.exception.PaymentApprovalFailedException
@@ -31,20 +30,17 @@ import java.time.LocalDateTime
 
 class PointChargeServiceTest : FunSpec({
 
-    val pointProductQueryRepository = mockk<PointProductQueryRepository>()
-    val discountPolicyQueryRepository = mockk<DiscountPolicyQueryRepository>()
+    val productFinder = mockk<PointProductWithDiscountFinder>()
+    val pointChargeValidator = mockk<PointChargeValidator>(relaxUnitFun = true)
+    val paymentApproverRouter = mockk<PaymentApproverRouter>()
     val memberPointRepository = mockk<MemberPointRepository>()
     val pointTransactionRepository = mockk<PointTransactionRepository>()
-    val paymentApproverRouter = mockk<PaymentApproverRouter>()
-    val pointChargeValidator = mockk<PointChargeValidator>(relaxUnitFun = true)
-    val approver = mockk<PaymentApprover>()
     val service = PointChargeService(
-        pointProductQueryRepository,
-        discountPolicyQueryRepository,
+        productFinder,
+        pointChargeValidator,
+        paymentApproverRouter,
         memberPointRepository,
         pointTransactionRepository,
-        paymentApproverRouter,
-        pointChargeValidator,
     )
 
     beforeEach {
@@ -73,6 +69,7 @@ class PointChargeServiceTest : FunSpec({
         test("할인이 없는 정상 흐름에서 잔액을 충전하고 거래 이력을 저장한 뒤 결과를 반환한다") {
             // Given
             val product = PointProductFixture.create(pointProductId = 1L, quantity = 30, price = 2000)
+            val productWithDiscount = PointProductWithDiscount(product, null)
             val command = createCommand(pointProductId = product.pointProductId, expectedPrice = product.price.toInt())
             val existingMemberPoint = MemberPoint(
                 id = 10L,
@@ -86,9 +83,8 @@ class PointChargeServiceTest : FunSpec({
                 paymentMethod = command.paymentMethod,
             )
 
-            every { pointProductQueryRepository.findOne(product.pointProductId) } returns product
-            every { paymentApproverRouter.resolve(command.paymentMethod) } returns approver
-            every { approver.approve(any()) } returns approval
+            every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
+            every { paymentApproverRouter.approve(command.paymentMethod, any()) } returns approval
             every { memberPointRepository.findOneOrInitial(command.ownerEmail) } returns existingMemberPoint
             every { memberPointRepository.save(any()) } returns existingMemberPoint.id!!
             every { pointTransactionRepository.save(any()) } returns 100L
@@ -119,6 +115,7 @@ class PointChargeServiceTest : FunSpec({
         test("기존 MemberPoint가 없으면 초기 잔액에서 충전한 후 save 시 신규 insert 된다") {
             // Given
             val product = PointProductFixture.create(pointProductId = 1L, quantity = 10, price = 1000)
+            val productWithDiscount = PointProductWithDiscount(product, null)
             val command = createCommand(pointProductId = product.pointProductId, expectedPrice = product.price.toInt())
             val initial = MemberPoint.initial(command.ownerEmail)
             val approval = PaymentApproval(
@@ -128,9 +125,8 @@ class PointChargeServiceTest : FunSpec({
                 paymentMethod = command.paymentMethod,
             )
 
-            every { pointProductQueryRepository.findOne(product.pointProductId) } returns product
-            every { paymentApproverRouter.resolve(command.paymentMethod) } returns approver
-            every { approver.approve(any()) } returns approval
+            every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
+            every { paymentApproverRouter.approve(command.paymentMethod, any()) } returns approval
             every { memberPointRepository.findOneOrInitial(command.ownerEmail) } returns initial
             every { memberPointRepository.save(any()) } returns 11L
             every { pointTransactionRepository.save(any()) } returns 101L
@@ -152,6 +148,7 @@ class PointChargeServiceTest : FunSpec({
                 price = 1000,
                 discountPolicyId = discountPolicy.discountPolicyId,
             )
+            val productWithDiscount = PointProductWithDiscount(product, discountPolicy)
             val discountedPrice = Money.wons(product.price.toInt() - 300)
             val command = createCommand(pointProductId = product.pointProductId, expectedPrice = discountedPrice.toInt())
             val approval = PaymentApproval(
@@ -161,10 +158,8 @@ class PointChargeServiceTest : FunSpec({
                 paymentMethod = command.paymentMethod,
             )
 
-            every { pointProductQueryRepository.findOne(product.pointProductId) } returns product
-            every { discountPolicyQueryRepository.findOneOrNull(discountPolicy.discountPolicyId) } returns discountPolicy
-            every { paymentApproverRouter.resolve(command.paymentMethod) } returns approver
-            every { approver.approve(any()) } returns approval
+            every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
+            every { paymentApproverRouter.approve(command.paymentMethod, any()) } returns approval
             every { memberPointRepository.findOneOrInitial(command.ownerEmail) } returns MemberPoint.initial(command.ownerEmail)
             every { memberPointRepository.save(any()) } returns 1L
             every { pointTransactionRepository.save(any()) } returns 1L
@@ -176,7 +171,7 @@ class PointChargeServiceTest : FunSpec({
             result.paidAmount shouldBe discountedPrice
 
             val approvalRequestSlot = slot<PaymentApprovalRequest>()
-            verify { approver.approve(capture(approvalRequestSlot)) }
+            verify { paymentApproverRouter.approve(command.paymentMethod, capture(approvalRequestSlot)) }
             approvalRequestSlot.captured.amount shouldBe discountedPrice
 
             val savedTransactionSlot = slot<NewPointTransaction>()
@@ -187,9 +182,10 @@ class PointChargeServiceTest : FunSpec({
         test("검증 실패 시 PG 승인을 호출하지 않고 예외를 전파한다") {
             // Given
             val product = PointProductFixture.create(pointProductId = 1L, price = 1000)
+            val productWithDiscount = PointProductWithDiscount(product, null)
             val command = createCommand(pointProductId = product.pointProductId, expectedPrice = 500)
 
-            every { pointProductQueryRepository.findOne(product.pointProductId) } returns product
+            every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
             every { pointChargeValidator.validate(command, product.price) } throws
                 com.konkuk.ma.exception.InvalidStateException(PointChargeService::class, 500, "가격 불일치")
 
@@ -197,7 +193,7 @@ class PointChargeServiceTest : FunSpec({
             shouldThrow<com.konkuk.ma.exception.InvalidStateException> {
                 service.charge(command)
             }
-            verify(exactly = 0) { paymentApproverRouter.resolve(any()) }
+            verify(exactly = 0) { paymentApproverRouter.approve(any(), any()) }
             verify(exactly = 0) { memberPointRepository.save(any()) }
             verify(exactly = 0) { pointTransactionRepository.save(any()) }
         }
@@ -205,15 +201,15 @@ class PointChargeServiceTest : FunSpec({
         test("PG 승인이 실패하면 PaymentApprovalFailedException이 전파되고 잔액과 이력이 저장되지 않는다") {
             // Given
             val product = PointProductFixture.create(pointProductId = 1L, quantity = 10, price = 1000)
+            val productWithDiscount = PointProductWithDiscount(product, null)
             val command = createCommand(
                 pointProductId = product.pointProductId,
                 expectedPrice = product.price.toInt(),
                 paymentToken = "FAIL-token",
             )
 
-            every { pointProductQueryRepository.findOne(product.pointProductId) } returns product
-            every { paymentApproverRouter.resolve(command.paymentMethod) } returns approver
-            every { approver.approve(any()) } throws PaymentApprovalFailedException(
+            every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
+            every { paymentApproverRouter.approve(command.paymentMethod, any()) } throws PaymentApprovalFailedException(
                 paymentToken = command.paymentToken,
                 reason = "Mock 결제 승인이 FAIL 토큰으로 거부되었습니다.",
             )

@@ -7,7 +7,11 @@ import org.springframework.stereotype.Component
 class PaymentApproverRouter(
     private val approvers: List<PaymentApprover>,
 ) {
-    fun resolve(method: PaymentMethod): PaymentApprover {
+    fun approve(method: PaymentMethod, request: PaymentApprovalRequest): PaymentApproval {
+        return resolve(method).approve(request)
+    }
+
+    private fun resolve(method: PaymentMethod): PaymentApprover {
         return approvers.find { it.supports(method) }
             ?: throw InvalidStateException(
                 PaymentApproverRouter::class,
