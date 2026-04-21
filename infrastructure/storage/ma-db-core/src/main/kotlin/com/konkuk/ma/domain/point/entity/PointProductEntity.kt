@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.point.entity
 
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
+import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 
 class PointProductEntity(
     val id: Long,
@@ -15,7 +16,7 @@ class PointProductEntity(
         return PointProduct(
             pointProductId = id,
             name = name,
-            quantity = quantity,
+            quantity = PointQuantity(quantity),
             price = Money.wons(price),
             displayOrder = displayOrder,
             discountPolicyId = discountPolicyId,

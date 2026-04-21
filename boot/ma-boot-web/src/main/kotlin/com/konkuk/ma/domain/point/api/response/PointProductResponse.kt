@@ -17,7 +17,7 @@ class PointProductResponse(
             return PointProductResponse(
                 pointProductId = product.pointProduct.pointProductId,
                 name = product.pointProduct.name,
-                quantity = product.pointProduct.quantity,
+                quantity = product.pointProduct.quantity.toInt(),
                 price = product.pointProduct.price.toInt(),
                 discountedPrice = product.discountedPrice().toInt(),
                 discountRate = product.discountRate().toInt(),

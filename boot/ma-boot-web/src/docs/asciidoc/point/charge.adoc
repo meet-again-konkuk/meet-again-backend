@@ -1,0 +1,77 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 인연 충전 API
+
+회원이 인연 상품을 구매하여 자신의 인연 잔액을 적립한다.
+
+== 기본 동작 (할인 없는 상품)
+
+`expectedPrice`는 클라이언트가 화면에서 본 최종 결제 예상 금액이다. 서버가 재계산한 금액과 불일치하면 충전이 거부된다.
+`idempotencyKey`는 클라이언트가 생성한 UUID로, 동일 키의 재요청은 409로 거부되어 중복 결제를 방지한다.
+
+=== 요청
+
+include::{snippets}/point/charge/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/point/charge/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/point/charge/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/point/charge/response-fields.adoc[]
+
+== 할인 적용 상품 충전
+
+할인 정책이 활성화된 상품을 충전할 때의 응답 예시.
+
+=== 요청
+
+include::{snippets}/point/charge-discounted/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/point/charge-discounted/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/point/charge-discounted/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/point/charge-discounted/response-fields.adoc[]
+
+== 실패 응답
+
+=== 멱등키 중복 (409)
+
+동일한 `idempotencyKey`로 이전에 이미 충전 거래가 생성된 경우.
+
+include::{snippets}/point/charge-duplicated-idempotency-key/http-response.adoc[]
+
+=== 가격 불일치 (400)
+
+클라이언트가 보낸 `expectedPrice`와 서버가 재계산한 금액이 다른 경우.
+
+include::{snippets}/point/charge-price-mismatch/http-response.adoc[]
+
+=== 포인트 상품 미존재 (404)
+
+요청한 `pointProductId`에 해당하는 상품이 없는 경우.
+
+include::{snippets}/point/charge-product-not-found/http-response.adoc[]
+
+=== PG 결제 승인 실패 (402)
+
+PG사의 승인 처리가 실패한 경우. Mock 환경에서는 `paymentToken`이 `FAIL`로 시작하면 이 응답을 반환한다.
+
+include::{snippets}/point/charge-payment-approval-failed/http-response.adoc[]

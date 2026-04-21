@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.PointQueryService
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
+import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
@@ -38,7 +39,7 @@ class PointQueryApiTest(
                 pointProduct = PointProduct(
                     pointProductId = 1L,
                     name = "인연 10개",
-                    quantity = 10,
+                    quantity = PointQuantity(10),
                     price = Money.wons(1000),
                     displayOrder = 1,
                     discountPolicyId = 1L,
@@ -54,7 +55,7 @@ class PointQueryApiTest(
                 pointProduct = PointProduct(
                     pointProductId = 2L,
                     name = "인연 30개",
-                    quantity = 30,
+                    quantity = PointQuantity(30),
                     price = Money.wons(2500),
                     displayOrder = 2,
                 ),
@@ -64,7 +65,7 @@ class PointQueryApiTest(
                 pointProduct = PointProduct(
                     pointProductId = 3L,
                     name = "인연 50개",
-                    quantity = 50,
+                    quantity = PointQuantity(50),
                     price = Money.wons(4000),
                     displayOrder = 3,
                 ),

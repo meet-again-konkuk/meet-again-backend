@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.entity
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
+import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.discount.AmountDiscountPolicy
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -24,7 +25,7 @@ class CachedPointProductEntityTest : FunSpec({
                 pointProduct = PointProduct(
                     pointProductId = 1L,
                     name = "인연 10개",
-                    quantity = 10,
+                    quantity = PointQuantity(10),
                     price = Money.wons(1000),
                     displayOrder = 1,
                     discountPolicyId = 10L,
@@ -45,7 +46,7 @@ class CachedPointProductEntityTest : FunSpec({
                 pointProduct = PointProduct(
                     pointProductId = 2L,
                     name = "인연 30개",
-                    quantity = 30,
+                    quantity = PointQuantity(30),
                     price = Money.wons(2500),
                     displayOrder = 2,
                 ),
