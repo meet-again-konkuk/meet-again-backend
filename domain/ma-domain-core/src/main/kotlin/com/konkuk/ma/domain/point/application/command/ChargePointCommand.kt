@@ -8,7 +8,7 @@ class ChargePointCommand(
     val pointProductId: Long,
     val paymentMethod: PaymentMethod,
     val paymentToken: String,
-    val expectedPrice: Int,
+    val orderPointPrice: Int,
     val idempotencyKey: String,
 ) {
     val ownerEmail: Email = Email(email)

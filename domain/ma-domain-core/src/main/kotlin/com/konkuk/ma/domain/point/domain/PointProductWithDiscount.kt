@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.discount.DiscountPolicy
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
+import com.konkuk.ma.exception.InvalidStateException
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
@@ -35,4 +36,16 @@ class PointProductWithDiscount(
     }
 
     fun discountType(): DiscountType? = discountPolicy?.type
+
+    fun verifyOrderPrice(orderPointPrice: Int, now: LocalDate = LocalDate.now()) {
+        val pointPrice = discountedPrice(now)
+        val orderPrice = Money.wons(orderPointPrice)
+        if (orderPrice != pointPrice) {
+            throw InvalidStateException(
+                PointProductWithDiscount::class,
+                orderPointPrice,
+                "주문 가격($orderPrice)과 상품 가격($pointPrice)이 다릅니다.",
+            )
+        }
+    }
 }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component
 class PaymentApproverRouter(
     private val approvers: List<PaymentApprover>,
 ) {
-    fun approve(method: PaymentMethod, request: PaymentApprovalRequest): PaymentApproval {
-        return resolve(method).approve(request)
+    fun approve(method: PaymentMethod, order: PaymentOrder): PaymentApproval {
+        return resolve(method).approve(order)
     }
 
     private fun resolve(method: PaymentMethod): PaymentApprover {

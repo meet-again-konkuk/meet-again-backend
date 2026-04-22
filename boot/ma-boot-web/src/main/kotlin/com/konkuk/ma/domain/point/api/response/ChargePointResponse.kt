@@ -5,8 +5,8 @@ import com.konkuk.ma.domain.point.application.result.ChargeResult
 import com.konkuk.ma.support.id.EncryptId
 
 class ChargePointResponse(
-    @EncryptId(ObfuscationType.POINT_TRANSACTION)
-    val pointTransactionId: Long,
+    @EncryptId(ObfuscationType.POINT_HISTORY)
+    val pointHistoryId: Long,
     val balance: Int,
     val chargedQuantity: Int,
     val paidAmount: Int,
@@ -15,7 +15,7 @@ class ChargePointResponse(
     companion object {
         fun from(result: ChargeResult): ChargePointResponse {
             return ChargePointResponse(
-                pointTransactionId = result.pointTransactionId,
+                pointHistoryId = result.pointHistoryId,
                 balance = result.balance.toInt(),
                 chargedQuantity = result.chargedQuantity.toInt(),
                 paidAmount = result.paidAmount.toInt(),

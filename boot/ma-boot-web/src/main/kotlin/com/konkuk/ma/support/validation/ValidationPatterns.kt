@@ -38,6 +38,6 @@ object ValidationMessages {
     const val POINT_PRODUCT_ID_REQUIRED = "인연 상품 ID는 필수입니다."
     const val PAYMENT_METHOD_REQUIRED = "결제수단은 필수입니다."
     const val PAYMENT_TOKEN_REQUIRED = "결제 토큰은 필수입니다."
-    const val EXPECTED_PRICE_INVALID = "예상 결제 금액은 0원 이상이어야 합니다."
+    const val ORDER_POINT_PRICE_INVALID = "주문 금액은 0원 이상이어야 합니다."
     const val IDEMPOTENCY_KEY_REQUIRED = "멱등키는 필수입니다."
 }

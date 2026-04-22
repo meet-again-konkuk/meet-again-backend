@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 
 class PaymentApproverRouterTest : FunSpec({
 
-    fun createRequest(method: PaymentMethod = PaymentMethod.CARD) = PaymentApprovalRequest(
+    fun createOrder(method: PaymentMethod = PaymentMethod.CARD) = PaymentOrder(
         paymentMethod = method,
         paymentToken = "token-1",
         amount = Money.wons(1000),
@@ -33,19 +33,19 @@ class PaymentApproverRouterTest : FunSpec({
             // Given
             val cardApprover = mockk<PaymentApprover>()
             val kakaoApprover = mockk<PaymentApprover>()
-            val request = createRequest(PaymentMethod.CARD)
+            val order = createOrder(PaymentMethod.CARD)
             val approval = createApproval(PaymentMethod.CARD)
             every { cardApprover.supports(PaymentMethod.CARD) } returns true
             every { kakaoApprover.supports(PaymentMethod.CARD) } returns false
-            every { cardApprover.approve(request) } returns approval
+            every { cardApprover.approve(order) } returns approval
             val router = PaymentApproverRouter(listOf(cardApprover, kakaoApprover))
 
             // When
-            val result = router.approve(PaymentMethod.CARD, request)
+            val result = router.approve(PaymentMethod.CARD, order)
 
             // Then
             result shouldBe approval
-            verify { cardApprover.approve(request) }
+            verify { cardApprover.approve(order) }
             verify(exactly = 0) { kakaoApprover.approve(any()) }
         }
 
@@ -53,14 +53,14 @@ class PaymentApproverRouterTest : FunSpec({
             // Given
             val firstApprover = mockk<PaymentApprover>()
             val secondApprover = mockk<PaymentApprover>()
-            val request = createRequest(PaymentMethod.KAKAO_PAY)
+            val order = createOrder(PaymentMethod.KAKAO_PAY)
             val approval = createApproval(PaymentMethod.KAKAO_PAY)
             every { firstApprover.supports(PaymentMethod.KAKAO_PAY) } returns true
-            every { firstApprover.approve(request) } returns approval
+            every { firstApprover.approve(order) } returns approval
             val router = PaymentApproverRouter(listOf(firstApprover, secondApprover))
 
             // When
-            val result = router.approve(PaymentMethod.KAKAO_PAY, request)
+            val result = router.approve(PaymentMethod.KAKAO_PAY, order)
 
             // Then
             result shouldBe approval
@@ -75,7 +75,7 @@ class PaymentApproverRouterTest : FunSpec({
 
             // When & Then
             shouldThrow<InvalidStateException> {
-                router.approve(PaymentMethod.CARD, createRequest())
+                router.approve(PaymentMethod.CARD, createOrder())
             }
         }
 
@@ -83,7 +83,7 @@ class PaymentApproverRouterTest : FunSpec({
             val router = PaymentApproverRouter(emptyList())
 
             shouldThrow<InvalidStateException> {
-                router.approve(PaymentMethod.CARD, createRequest())
+                router.approve(PaymentMethod.CARD, createOrder())
             }
         }
     }

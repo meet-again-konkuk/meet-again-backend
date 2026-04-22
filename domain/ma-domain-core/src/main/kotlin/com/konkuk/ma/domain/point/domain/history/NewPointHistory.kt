@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.point.domain.transaction
+package com.konkuk.ma.domain.point.domain.history
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
@@ -8,10 +8,10 @@ import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.payment.PaymentApproval
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 
-class NewPointTransaction(
+class NewPointHistory(
     val ownerEmail: Email,
     val pointProductId: Long?,
-    val transactionType: PointTransactionType,
+    val historyType: PointHistoryType,
     val quantity: PointQuantity,
     val paidAmount: Money,
     val paymentMethod: PaymentMethod?,
@@ -23,11 +23,11 @@ class NewPointTransaction(
             command: ChargePointCommand,
             productWithDiscount: PointProductWithDiscount,
             approval: PaymentApproval,
-        ): NewPointTransaction {
-            return NewPointTransaction(
+        ): NewPointHistory {
+            return NewPointHistory(
                 ownerEmail = command.ownerEmail,
                 pointProductId = productWithDiscount.productId(),
-                transactionType = PointTransactionType.CHARGE,
+                historyType = PointHistoryType.CHARGE,
                 quantity = productWithDiscount.chargeQuantity(),
                 paidAmount = approval.approvedAmount,
                 paymentMethod = command.paymentMethod,

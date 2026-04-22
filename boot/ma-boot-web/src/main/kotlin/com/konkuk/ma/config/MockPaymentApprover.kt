@@ -1,9 +1,9 @@
 package com.konkuk.ma.config
 
 import com.konkuk.ma.domain.point.domain.payment.PaymentApproval
-import com.konkuk.ma.domain.point.domain.payment.PaymentApprovalRequest
 import com.konkuk.ma.domain.point.domain.payment.PaymentApprover
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
+import com.konkuk.ma.domain.point.domain.payment.PaymentOrder
 import com.konkuk.ma.domain.point.exception.PaymentApprovalFailedException
 import com.konkuk.ma.logger
 import java.time.LocalDateTime
@@ -16,18 +16,18 @@ import org.springframework.stereotype.Component
 class MockPaymentApprover : PaymentApprover {
     override fun supports(method: PaymentMethod): Boolean = true
 
-    override fun approve(request: PaymentApprovalRequest): PaymentApproval {
-        if (request.paymentToken.startsWith(FAIL_TOKEN_PREFIX)) {
+    override fun approve(order: PaymentOrder): PaymentApproval {
+        if (order.paymentToken.startsWith(FAIL_TOKEN_PREFIX)) {
             throw PaymentApprovalFailedException(
-                paymentToken = request.paymentToken,
+                paymentToken = order.paymentToken,
                 reason = "Mock 결제 승인이 FAIL 토큰으로 거부되었습니다.",
             )
         }
         return PaymentApproval(
             approvalNumber = "$APPROVAL_PREFIX${UUID.randomUUID()}",
-            approvedAmount = request.amount,
+            approvedAmount = order.amount,
             approvedAt = LocalDateTime.now(),
-            paymentMethod = request.paymentMethod,
+            paymentMethod = order.paymentMethod,
         )
     }
 

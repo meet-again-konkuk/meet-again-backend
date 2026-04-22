@@ -11,7 +11,7 @@
 
 == 기본 동작 (할인 없는 상품)
 
-`expectedPrice`는 클라이언트가 화면에서 본 최종 결제 예상 금액이다. 서버가 재계산한 금액과 불일치하면 충전이 거부된다.
+`orderPointPrice`는 클라이언트가 화면에서 본 최종 결제 예상 금액이다. 서버가 재계산한 상품 가격과 불일치하면 충전이 거부된다.
 `idempotencyKey`는 클라이언트가 생성한 UUID로, 동일 키의 재요청은 409로 거부되어 중복 결제를 방지한다.
 
 === 요청
@@ -60,7 +60,7 @@ include::{snippets}/point/charge-duplicated-idempotency-key/http-response.adoc[]
 
 === 가격 불일치 (400)
 
-클라이언트가 보낸 `expectedPrice`와 서버가 재계산한 금액이 다른 경우.
+클라이언트가 보낸 `orderPointPrice`와 서버가 재계산한 상품 가격이 다른 경우.
 
 include::{snippets}/point/charge-price-mismatch/http-response.adoc[]
 

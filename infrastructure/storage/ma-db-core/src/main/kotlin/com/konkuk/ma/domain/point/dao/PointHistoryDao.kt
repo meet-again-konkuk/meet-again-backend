@@ -1,19 +1,19 @@
 package com.konkuk.ma.domain.point.dao
 
-import com.konkuk.ma.domain.point.entity.PointTransactionEntity
-import com.konkuk.ma.domain.point.entity.table.PointTransactionTable
+import com.konkuk.ma.domain.point.entity.PointHistoryEntity
+import com.konkuk.ma.domain.point.entity.table.PointHistoryTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
 @Component
-class PointTransactionDao {
-    fun save(entity: PointTransactionEntity): Long {
-        return PointTransactionTable.insertAndGetId {
+class PointHistoryDao {
+    fun save(entity: PointHistoryEntity): Long {
+        return PointHistoryTable.insertAndGetId {
             it[ownerEmail] = entity.ownerEmail
             it[pointProductId] = entity.pointProductId
-            it[transactionType] = entity.transactionType
+            it[historyType] = entity.historyType
             it[quantity] = entity.quantity
             it[paidAmount] = entity.paidAmount
             it[paymentMethod] = entity.paymentMethod
@@ -24,15 +24,15 @@ class PointTransactionDao {
         }.value
     }
 
-    fun findOneOrNull(idempotencyKey: String): PointTransactionEntity? {
-        return PointTransactionTable
+    fun findOneOrNull(idempotencyKey: String): PointHistoryEntity? {
+        return PointHistoryTable
             .selectAll()
             .where {
-                (PointTransactionTable.idempotencyKey eq idempotencyKey) and
-                    (PointTransactionTable.deleted eq false)
+                (PointHistoryTable.idempotencyKey eq idempotencyKey) and
+                    (PointHistoryTable.deleted eq false)
             }
             .limit(1)
             .firstOrNull()
-            ?.let { PointTransactionEntity.from(it) }
+            ?.let { PointHistoryEntity.from(it) }
     }
 }

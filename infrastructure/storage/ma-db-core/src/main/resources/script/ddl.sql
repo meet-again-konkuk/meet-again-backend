@@ -368,15 +368,15 @@ CREATE TABLE MEMBER_POINTS
     UNIQUE INDEX idx_member_point_owner_email (OWNER_EMAIL)
 );
 
--- POINT TRANSACTIONS
-CREATE TABLE POINT_TRANSACTIONS
+-- POINT HISTORIES
+CREATE TABLE POINT_HISTORIES
 (
-    POINT_TRANSACTION_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+    POINT_HISTORY_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    -- PointTransactionTable 특화 컬럼들
+    -- PointHistoryTable 특화 컬럼들
     OWNER_EMAIL          VARCHAR(255) NOT NULL,
     POINT_PRODUCT_ID     BIGINT       NULL,
-    TRANSACTION_TYPE     VARCHAR(16)  NOT NULL,
+    HISTORY_TYPE         VARCHAR(16)  NOT NULL,
     QUANTITY             INT          NOT NULL,
     PAID_AMOUNT          INT          NOT NULL,
     PAYMENT_METHOD       VARCHAR(32)  NULL,
@@ -393,6 +393,6 @@ CREATE TABLE POINT_TRANSACTIONS
     DELETED_BY           VARCHAR(255) NULL,
 
     -- 인덱스
-    UNIQUE INDEX idx_point_transaction_idempotency_key (IDEMPOTENCY_KEY),
-    INDEX idx_point_transaction_owner_email (OWNER_EMAIL)
+    UNIQUE INDEX idx_point_history_idempotency_key (IDEMPOTENCY_KEY),
+    INDEX idx_point_history_owner_email (OWNER_EMAIL)
 );

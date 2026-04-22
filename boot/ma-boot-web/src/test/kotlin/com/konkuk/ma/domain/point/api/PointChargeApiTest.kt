@@ -3,8 +3,6 @@ package com.konkuk.ma.domain.point.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.common.domain.Money
-import com.konkuk.ma.domain.common.domain.id.ObfuscationType
-import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.point.application.PointChargeService
 import com.konkuk.ma.domain.point.application.result.ChargeResult
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
@@ -22,12 +20,12 @@ import com.konkuk.ma.vocabulary.approvalNumber
 import com.konkuk.ma.vocabulary.balance
 import com.konkuk.ma.vocabulary.chargePointProductId
 import com.konkuk.ma.vocabulary.chargedQuantity
-import com.konkuk.ma.vocabulary.expectedPrice
+import com.konkuk.ma.vocabulary.orderPointPrice
 import com.konkuk.ma.vocabulary.idempotencyKey
 import com.konkuk.ma.vocabulary.paidAmount
 import com.konkuk.ma.vocabulary.paymentMethod
 import com.konkuk.ma.vocabulary.paymentToken
-import com.konkuk.ma.vocabulary.pointTransactionId
+import com.konkuk.ma.vocabulary.pointHistoryId
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -39,24 +37,21 @@ import org.springframework.test.web.servlet.MockMvc
 class PointChargeApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    private val idObfuscator: IdObfuscator,
     @MockkBean private val pointChargeService: PointChargeService,
 ) : FunSpec({
-
-    val encodedProductId = idObfuscator.encode(ObfuscationType.POINT_PRODUCT, 1L)
 
     test("인연 충전 API 문서화 - 할인 없는 상품") {
         // Given
         val request = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
             "paymentToken" to "pg_token_abc123",
-            "expectedPrice" to 2500,
+            "orderPointPrice" to 2500,
             "idempotencyKey" to "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         )
 
         every { pointChargeService.charge(any()) } returns ChargeResult(
-            pointTransactionId = 100L,
+            pointHistoryId = 100L,
             balance = PointQuantity(30),
             chargedQuantity = PointQuantity(30),
             paidAmount = Money.wons(2500),
@@ -74,11 +69,11 @@ class PointChargeApiTest(
                     chargePointProductId(),
                     paymentMethod(),
                     paymentToken(),
-                    expectedPrice(),
+                    orderPointPrice(),
                     idempotencyKey(),
                 ),
                 responseBody(
-                    pointTransactionId(),
+                    pointHistoryId(),
                     balance(),
                     chargedQuantity(),
                     paidAmount(),
@@ -90,15 +85,15 @@ class PointChargeApiTest(
     test("인연 충전 API 문서화 - 할인 적용 상품") {
         // Given
         val request = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.KAKAO_PAY.name,
             "paymentToken" to "pg_token_kakao_xyz",
-            "expectedPrice" to 800,
+            "orderPointPrice" to 800,
             "idempotencyKey" to "11111111-2222-3333-4444-555555555555",
         )
 
         every { pointChargeService.charge(any()) } returns ChargeResult(
-            pointTransactionId = 100L,
+            pointHistoryId = 100L,
             balance = PointQuantity(10),
             chargedQuantity = PointQuantity(10),
             paidAmount = Money.wons(800),
@@ -116,11 +111,11 @@ class PointChargeApiTest(
                     chargePointProductId(),
                     paymentMethod(),
                     paymentToken(),
-                    expectedPrice() means "할인 적용된 최종 결제 예상 금액 (원)",
+                    orderPointPrice() means "할인 적용된 최종 결제 예상 금액 (원)",
                     idempotencyKey(),
                 ),
                 responseBody(
-                    pointTransactionId(),
+                    pointHistoryId(),
                     balance(),
                     chargedQuantity(),
                     paidAmount() means "서버 재계산된 실제 결제 금액 (할인 적용)",
@@ -132,15 +127,15 @@ class PointChargeApiTest(
     test("멱등키가 중복되면 409를 반환한다") {
         // Given
         val request = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
             "paymentToken" to "pg_token_dup",
-            "expectedPrice" to 2500,
+            "orderPointPrice" to 2500,
             "idempotencyKey" to "duplicated-idempotency-key",
         )
 
         every { pointChargeService.charge(any()) } throws DuplicateException(
-            EntityType.POINT_TRANSACTION,
+            EntityType.POINT_HISTORY,
             "idempotencyKey",
             "duplicated-idempotency-key",
         )
@@ -153,20 +148,20 @@ class PointChargeApiTest(
             .andDocument("point/charge-duplicated-idempotency-key")
     }
 
-    test("expectedPrice와 서버 계산 금액이 다르면 400을 반환한다") {
+    test("orderPointPrice와 서버 계산 금액이 다르면 400을 반환한다") {
         // Given
         val request = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
             "paymentToken" to "pg_token_mismatch",
-            "expectedPrice" to 999,
+            "orderPointPrice" to 999,
             "idempotencyKey" to "price-mismatch-key",
         )
 
         every { pointChargeService.charge(any()) } throws InvalidStateException(
             PointChargeApiTest::class,
             999,
-            "클라이언트가 기대한 가격(999)과 서버 계산 가격(1000)이 다릅니다.",
+            "주문 가격(999원)과 상품 가격(1000원)이 다릅니다.",
         )
 
         // When & Then
@@ -180,10 +175,10 @@ class PointChargeApiTest(
     test("PointProduct가 존재하지 않으면 404를 반환한다") {
         // Given
         val request = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
             "paymentToken" to "pg_token_notfound",
-            "expectedPrice" to 2500,
+            "orderPointPrice" to 2500,
             "idempotencyKey" to "product-not-found-key",
         )
 
@@ -203,10 +198,10 @@ class PointChargeApiTest(
     test("PG 결제 승인에 실패하면 402를 반환한다") {
         // Given
         val request = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
             "paymentToken" to "FAIL_token_example",
-            "expectedPrice" to 2500,
+            "orderPointPrice" to 2500,
             "idempotencyKey" to "payment-fail-key",
         )
 
@@ -225,10 +220,10 @@ class PointChargeApiTest(
 
     context("인연 충전 - 유효성 검증 실패") {
         val validRequest = mapOf(
-            "pointProductId" to encodedProductId,
+            "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
             "paymentToken" to "pg_token_abc123",
-            "expectedPrice" to 2500,
+            "orderPointPrice" to 2500,
             "idempotencyKey" to "valid-idempotency-key",
         )
 
@@ -248,8 +243,8 @@ class PointChargeApiTest(
             }.andExpect { status { isBadRequest() } }
         }
 
-        test("expectedPrice가 음수이면 400을 반환한다") {
-            val request = validRequest + ("expectedPrice" to -1)
+        test("orderPointPrice가 음수이면 400을 반환한다") {
+            val request = validRequest + ("orderPointPrice" to -1)
 
             mockMvc.postJson("/api/points") {
                 content = mapper.writeValueAsString(request)
