@@ -8,4 +8,7 @@ enum class EntityType(val entityName: String, val keyName: String) {
     COMMUNITY_COMMENT("CommunityComment", "id"),
     TARGET_INFO("TargetInfo", "id"),
     XROOM("Xroom", "id"),
+    POINT_PRODUCT("PointProduct", "id"),
+    POINT_HISTORY("PointHistory", "idempotencyKey"),
+    MEMBER_POINT("MemberPoint", "email"),
 }

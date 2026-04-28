@@ -12,4 +12,8 @@ class DiscountPolicyCoreRepository(
     override fun find(ids: Set<Long>): List<DiscountPolicy> {
         return discountPolicyQueryDao.find(ids).map { it.toDomain() }
     }
+
+    override fun findOneOrNull(id: Long): DiscountPolicy? {
+        return discountPolicyQueryDao.findOneOrNull(id)?.toDomain()
+    }
 }

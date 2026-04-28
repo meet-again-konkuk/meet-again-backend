@@ -15,6 +15,10 @@ class PointProductRedisCacheRepository(
         return pointProductCacheDao.findOrNull()?.map { it.toDomain() }
     }
 
+    override fun findOneOrNull(pointProductId: Long): PointProductWithDiscount? {
+        return pointProductCacheDao.findOneOrNull(pointProductId)?.toDomain()
+    }
+
     override fun save(products: List<PointProductWithDiscount>) {
         pointProductCacheDao.save(products.map { CachedPointProductEntity.from(it) })
     }

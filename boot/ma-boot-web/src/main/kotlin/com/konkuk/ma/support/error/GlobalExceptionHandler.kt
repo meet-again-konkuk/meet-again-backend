@@ -1,6 +1,7 @@
 package com.konkuk.ma.support.error
 
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
+import com.konkuk.ma.domain.point.exception.PaymentApprovalFailedException
 import com.konkuk.ma.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.exception.InvalidValueException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
@@ -39,6 +40,12 @@ class GlobalExceptionHandler {
     fun handleUnauthorizedException(e: BusinessException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.UNAUTHORIZED)
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
+    }
+
+    @ExceptionHandler(PaymentApprovalFailedException::class)
+    fun handlePaymentApprovalFailedException(e: PaymentApprovalFailedException): ResponseEntity<ApiError> {
+        val error = ApiError(ErrorCode.PAYMENT_APPROVAL_FAILED)
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(error)
     }
 
     @ExceptionHandler(AccessDeniedException::class)

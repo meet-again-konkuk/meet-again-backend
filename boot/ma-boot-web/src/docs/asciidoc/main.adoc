@@ -168,6 +168,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:point/find-products.html[포인트 상품 목록 조회 API,window=_blank]
 
+[[point-charge]]
+=== 인연 충전
+
+* link:point/charge.html[인연 충전 API,window=_blank]
+
 [[xroom]]
 == X룸
 

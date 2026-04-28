@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.entity
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.PointProduct
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
+import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 
 data class CachedPointProductEntity(
     val pointProductId: Long = 0,
@@ -17,7 +18,7 @@ data class CachedPointProductEntity(
         val product = PointProduct(
             pointProductId = pointProductId,
             name = name,
-            quantity = quantity,
+            quantity = PointQuantity(quantity),
             price = Money.wons(price),
             displayOrder = displayOrder,
             discountPolicyId = policy?.discountPolicyId,
@@ -30,7 +31,7 @@ data class CachedPointProductEntity(
             return CachedPointProductEntity(
                 pointProductId = product.pointProduct.pointProductId,
                 name = product.pointProduct.name,
-                quantity = product.pointProduct.quantity,
+                quantity = product.pointProduct.quantity.toInt(),
                 price = product.pointProduct.price.toInt(),
                 displayOrder = product.pointProduct.displayOrder,
                 discount = product.discountPolicy?.let(CachedDiscount::fromPolicy),

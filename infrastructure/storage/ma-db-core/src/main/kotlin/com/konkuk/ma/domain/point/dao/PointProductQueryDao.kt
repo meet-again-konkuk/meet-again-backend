@@ -15,4 +15,12 @@ class PointProductQueryDao {
             .orderBy(PointProductTable.displayOrder to SortOrder.ASC)
             .map { RowEntityMapper.toPointProductEntity(it) }
     }
+
+    fun findOneOrNull(id: Long): PointProductEntity? {
+        return PointProductTable
+            .activeRows { PointProductTable.id eq id }
+            .limit(1)
+            .firstOrNull()
+            ?.let { RowEntityMapper.toPointProductEntity(it) }
+    }
 }

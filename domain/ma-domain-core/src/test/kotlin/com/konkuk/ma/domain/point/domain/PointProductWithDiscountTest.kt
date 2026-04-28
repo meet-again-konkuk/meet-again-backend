@@ -4,6 +4,8 @@ import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.discount.DiscountType
 import com.konkuk.ma.domain.point.fixture.DiscountPolicyFixture
 import com.konkuk.ma.domain.point.fixture.PointProductFixture
+import com.konkuk.ma.exception.InvalidStateException
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -128,6 +130,47 @@ class PointProductWithDiscountTest : FunSpec({
 
             product.isDiscountActive(now).shouldBeTrue()
             product.discountType() shouldBe DiscountType.PERCENT
+        }
+    }
+
+    context("verifyOrderPrice") {
+
+        test("주문 가격이 상품 가격과 일치하면 예외 없이 통과한다") {
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), null)
+
+            product.verifyOrderPrice(1000, now)
+        }
+
+        test("주문 가격이 상품 가격과 다르면 InvalidStateException이 발생한다") {
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), null)
+
+            shouldThrow<InvalidStateException> {
+                product.verifyOrderPrice(999, now)
+            }
+        }
+
+        test("활성 할인이 적용된 가격과 주문 가격이 일치하면 통과한다") {
+            val policy = DiscountPolicyFixture.createAmount(
+                startDate = now.minusDays(1),
+                endDate = now.plusDays(1),
+                discountAmount = 300,
+            )
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
+
+            product.verifyOrderPrice(700, now)
+        }
+
+        test("할인이 반영된 가격이 아닌 원가로 주문하면 InvalidStateException이 발생한다") {
+            val policy = DiscountPolicyFixture.createAmount(
+                startDate = now.minusDays(1),
+                endDate = now.plusDays(1),
+                discountAmount = 300,
+            )
+            val product = PointProductWithDiscount(PointProductFixture.create(price = 1000), policy)
+
+            shouldThrow<InvalidStateException> {
+                product.verifyOrderPrice(1000, now)
+            }
         }
     }
 })

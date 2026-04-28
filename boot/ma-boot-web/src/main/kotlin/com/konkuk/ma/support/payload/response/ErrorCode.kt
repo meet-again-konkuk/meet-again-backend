@@ -14,6 +14,9 @@ enum class ErrorCode(val status: Int, val message: String) {
     // 401
     UNAUTHORIZED(401, "Unauthorized"),
 
+    // 402
+    PAYMENT_APPROVAL_FAILED(402, "Payment Approval Failed"),
+
     // 403
     ACCESS_DENIED(403, "Access is Denied"),
 
