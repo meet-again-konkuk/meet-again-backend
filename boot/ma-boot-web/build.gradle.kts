@@ -26,6 +26,7 @@ dependencies {
 	runtimeOnly(project(":infrastructure:storage:ma-redis-core"))
 	runtimeOnly(project(":infrastructure:support:ma-file-storage"))
 	runtimeOnly(project(":infrastructure:support:ma-id-obfuscator"))
+	runtimeOnly(project(":infrastructure:support:ma-payment-core"))
 	testImplementation(project(":infrastructure:support:ma-jwt-core"))
 	testImplementation(project(":infrastructure:support:ma-id-obfuscator"))
 	testImplementation(testFixtures(project(":infrastructure:storage:ma-db-core")))

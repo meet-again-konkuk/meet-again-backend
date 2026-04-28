@@ -1,4 +1,4 @@
-package com.konkuk.ma.config
+package com.konkuk.ma.payment.mock
 
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
