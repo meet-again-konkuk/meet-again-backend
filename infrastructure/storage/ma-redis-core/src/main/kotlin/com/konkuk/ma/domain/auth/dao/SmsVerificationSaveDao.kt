@@ -15,7 +15,7 @@ class SmsVerificationSaveDao(
     }
 
     fun save(smsVerification: SmsVerification) {
-        redisTemplate.opsForValue().set(smsVerification.phoneNumber, smsVerification.verificationCode.toString(), SMS_VERIFICATION_EXPIRE_MINUTE, TimeUnit.MINUTES)
+        redisTemplate.opsForValue().set(smsVerification.phoneNumber, smsVerification.verificationCode.value, SMS_VERIFICATION_EXPIRE_MINUTE, TimeUnit.MINUTES)
     }
 
     fun save(phoneNumber: String) {

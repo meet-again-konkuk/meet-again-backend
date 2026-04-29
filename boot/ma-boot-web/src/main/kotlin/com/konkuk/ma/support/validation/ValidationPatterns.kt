@@ -7,6 +7,7 @@ object ValidationPatterns {
     const val PHONE_NUMBER = "^010\\d{7,8}$"
     const val PHONE_NUMBER_11 = "^010\\d{8}$"
     const val FOUR_DIGIT = "^\\d{4}$"
+    const val VERIFICATION_CODE = "^\\d{6}$"
 }
 
 object ValidationMessages {
@@ -16,6 +17,7 @@ object ValidationMessages {
     const val PHONE_NUMBER_INVALID = "유효하지 않은 휴대폰 번호 형식입니다."
     const val FOUR_DIGIT_MIDDLE_INVALID = "전화번호 중간자리는 4자리 숫자여야 합니다."
     const val FOUR_DIGIT_LAST_INVALID = "전화번호 뒷자리는 4자리 숫자여야 합니다."
+    const val VERIFICATION_CODE_INVALID = "인증 코드는 6자리 숫자여야 합니다."
     const val EMAIL_REQUIRED = "이메일은 필수입니다."
     const val EMAIL_INVALID = "유효하지 않은 이메일 형식입니다."
     const val PASSWORD_REQUIRED = "비밀번호는 필수입니다."

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.auth.dao
 
+import com.konkuk.ma.domain.auth.domain.VerificationCode
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
 
@@ -7,11 +8,11 @@ import org.springframework.stereotype.Component
 class SmsVerificationFindDao(
     private val redisTemplate: RedisTemplate<String, Any>
 ) {
-    fun findOne(phoneNumber: String): Int? {
+    fun findOne(phoneNumber: String): VerificationCode? {
         return redisTemplate.opsForValue()
             .get(phoneNumber)
             ?.toString()
-            ?.toInt()
+            ?.let { VerificationCode(it) }
     }
 
     fun getConfirmed(phoneNumber: String): Boolean {

@@ -3,7 +3,7 @@ package com.konkuk.ma.domain.auth.api.response
 class SmsVerificationConfirmResponse(
     val phoneNumber: String,
 
-    val verificationCode: Int,
+    val verificationCode: String,
 
     val verified: Boolean
 )

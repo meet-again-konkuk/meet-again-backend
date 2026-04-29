@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component
 class SmsVerifier(
     private val smsRepository: SmsRepository
 ) {
-    fun verify(phoneNumber: String, inputVerificationCode: Int): Boolean {
-        val verificationCode = smsRepository.findOrNull(phoneNumber)
-        val verified = inputVerificationCode == verificationCode
+    fun verify(phoneNumber: String, inputVerificationCode: String): Boolean {
+        val storedCode = smsRepository.findOrNull(phoneNumber)
+        val verified = storedCode?.value == inputVerificationCode
         if (verified) {
             smsRepository.confirmVerificationCode(phoneNumber)
         }
