@@ -1,7 +1,6 @@
 package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.extension.BOOLEAN
-import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 
@@ -14,7 +13,7 @@ fun refreshToken(fieldName: String = "refreshToken") =
     fieldName responseType STRING means "리프레시 토큰" example "eyJhbGciOi..."
 
 fun verificationCode(fieldName: String = "verificationCode") =
-    fieldName responseType NUMBER means "인증 코드" example "123456"
+    fieldName responseType STRING means "인증 코드" example "123456"
 
 fun verified(fieldName: String = "verified") =
     fieldName responseType BOOLEAN means "인증 성공 여부" example "true"

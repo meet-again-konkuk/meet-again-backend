@@ -18,9 +18,9 @@ class SmsVerifierTest : FunSpec({
         test("인증 코드가 일치하면 true를 반환하고 confirmVerificationCode를 호출한다") {
             // Given
             val phoneNumber = "01012345678"
-            val verificationCode = 123456
+            val verificationCode = "123456"
 
-            every { smsRepository.findOrNull(phoneNumber) } returns verificationCode
+            every { smsRepository.findOrNull(phoneNumber) } returns VerificationCode(verificationCode)
             every { smsRepository.confirmVerificationCode(phoneNumber) } returns Unit
 
             // When
@@ -34,10 +34,10 @@ class SmsVerifierTest : FunSpec({
         test("인증 코드가 불일치하면 false를 반환한다") {
             // Given
             val phoneNumber = "01012345678"
-            val storedCode = 123456
-            val wrongCode = 999999
+            val storedCode = "123456"
+            val wrongCode = "999999"
 
-            every { smsRepository.findOrNull(phoneNumber) } returns storedCode
+            every { smsRepository.findOrNull(phoneNumber) } returns VerificationCode(storedCode)
 
             // When
             val result = smsVerifier.verify(phoneNumber, wrongCode)
@@ -46,10 +46,25 @@ class SmsVerifierTest : FunSpec({
             result.shouldBeFalse()
         }
 
+        test("0으로 시작하는 인증 코드도 정상 검증된다") {
+            // Given
+            val phoneNumber = "01012345678"
+            val verificationCode = "012345"
+
+            every { smsRepository.findOrNull(phoneNumber) } returns VerificationCode(verificationCode)
+            every { smsRepository.confirmVerificationCode(phoneNumber) } returns Unit
+
+            // When
+            val result = smsVerifier.verify(phoneNumber, verificationCode)
+
+            // Then
+            result.shouldBeTrue()
+        }
+
         test("저장된 인증 코드가 없으면 false를 반환한다") {
             // Given
             val phoneNumber = "01012345678"
-            val inputCode = 123456
+            val inputCode = "123456"
 
             every { smsRepository.findOrNull(phoneNumber) } returns null
 

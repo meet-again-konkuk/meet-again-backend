@@ -1,6 +1,8 @@
 package com.konkuk.ma.domain.auth.application
 
+import com.konkuk.ma.domain.auth.domain.SmsVerification
 import com.konkuk.ma.domain.auth.domain.SmsVerifier
+import com.konkuk.ma.domain.auth.domain.VerificationCode
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.auth.domain.port.SmsSender
 import org.springframework.stereotype.Service
@@ -16,11 +18,12 @@ class SmsVerificationService(
     private val smsVerifier: SmsVerifier
 ) {
     fun sendSmsVerificationCode(phoneNumber: String) {
-        val smsVerification = smsSender.sendSmsVerificationCode(phoneNumber)
-        smsRepository.save(smsVerification)
+        val code = VerificationCode.random()
+        smsSender.send(phoneNumber, code)
+        smsRepository.save(SmsVerification(phoneNumber, code))
     }
 
-    fun confirmVerificationCode(phoneNumber: String, memberVerificationCode: Int): Boolean {
+    fun confirmVerificationCode(phoneNumber: String, memberVerificationCode: String): Boolean {
         return smsVerifier.verify(phoneNumber, memberVerificationCode)
     }
 }
