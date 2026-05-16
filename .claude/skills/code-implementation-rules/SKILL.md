@@ -129,7 +129,7 @@ Bean Validation의 `message`, `regexp`는 하드코딩 금지. `ValidationMessag
 
 - URL은 **명사(리소스)**, 행위는 **HTTP 메서드**로 표현. URL에 동사 금지
 - 리소스명은 **복수형**, **kebab-case** 사용
-- 계층 관계는 URL 경로로 표현하되 **2단계까지만** 중첩
+- 계층 관계는 URL 경로로 표현
 - 필터링/정렬/페이징은 쿼리 파라미터로
 - POST → 201 Created, GET → 200 OK, PATCH → 200 OK, DELETE → 200/204
 

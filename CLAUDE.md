@@ -79,6 +79,7 @@ object TargetInfoTable : LongIdTable("target_info") {
 
 - `clean-code` — Robert C. Martin의 Clean Code 원칙 (네이밍, 함수, 주석, 포매팅, 에러 핸들링)
 - `code-implementation-rules` — 이 프로젝트의 OOP 원칙과 구현 패턴 (도메인 행위 부여, 원시값 포장, 일급 컬렉션, 포트 규칙)
+- `clean-architecture` — 멀티 모듈 헥사고날 구조 (모듈/패키지 위치, 레이어 책임, 의존 방향)
 
 ## OOP Principles
 
