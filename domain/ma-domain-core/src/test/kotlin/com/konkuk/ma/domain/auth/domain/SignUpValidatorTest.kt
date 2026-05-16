@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.auth.domain
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingMemberException
 import com.konkuk.ma.domain.member.fixture.NewMemberFixture
 import com.konkuk.ma.exception.DuplicateException
 import io.kotest.assertions.throwables.shouldThrow
@@ -23,7 +24,10 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsPending(newMember.email) } returns false
             every { memberQueryRepository.exists(newMember.email) } returns false
+            every { memberQueryRepository.existsPending(newMember.phoneNumber) } returns false
+            every { memberQueryRepository.exists(newMember.phoneNumber) } returns false
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns true
 
             // When & Then
@@ -47,6 +51,7 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsPending(newMember.email) } returns false
             every { memberQueryRepository.exists(newMember.email) } returns true
 
             // When & Then
@@ -55,12 +60,43 @@ class SignUpValidatorTest : FunSpec({
             }.message shouldBe "이미 사용중인 email입니다."
         }
 
+        test("탈퇴 진행 중인 이메일이면 WithdrawalPendingMemberException이 발생한다") {
+            // Given
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsPending(newMember.email) } returns true
+
+            // When & Then
+            shouldThrow<WithdrawalPendingMemberException> {
+                signUpValidator.validate(newMember)
+            }
+        }
+
+        test("탈퇴 진행 중인 전화번호면 WithdrawalPendingMemberException이 발생한다") {
+            // Given
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsPending(newMember.email) } returns false
+            every { memberQueryRepository.exists(newMember.email) } returns false
+            every { memberQueryRepository.existsPending(newMember.phoneNumber) } returns true
+
+            // When & Then
+            shouldThrow<WithdrawalPendingMemberException> {
+                signUpValidator.validate(newMember)
+            }
+        }
+
         test("SMS 인증이 완료되지 않으면 예외가 발생한다") {
             // Given
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.existsPending(newMember.email) } returns false
             every { memberQueryRepository.exists(newMember.email) } returns false
+            every { memberQueryRepository.existsPending(newMember.phoneNumber) } returns false
+            every { memberQueryRepository.exists(newMember.phoneNumber) } returns false
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
 
             // When & Then
@@ -74,6 +110,7 @@ class SignUpValidatorTest : FunSpec({
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns true
+            every { memberQueryRepository.existsPending(newMember.email) } returns false
             every { memberQueryRepository.exists(newMember.email) } returns true
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
 

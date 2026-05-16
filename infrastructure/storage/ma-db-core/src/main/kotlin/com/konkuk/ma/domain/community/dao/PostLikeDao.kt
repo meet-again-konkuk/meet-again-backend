@@ -24,4 +24,8 @@ class PostLikeDao {
                 (PostLikeTable.memberEmail eq memberEmail)
         }
     }
+
+    fun deleteByMember(memberEmail: String) {
+        PostLikeTable.deleteWhere { PostLikeTable.memberEmail eq memberEmail }
+    }
 }

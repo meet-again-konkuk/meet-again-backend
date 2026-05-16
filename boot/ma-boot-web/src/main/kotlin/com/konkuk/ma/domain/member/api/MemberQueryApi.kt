@@ -18,7 +18,7 @@ class MemberQueryApi(
 ) {
     @PostMapping("/nickname/exists")
     fun checkDuplicatedNickname(@Validated @RequestBody request: DuplicatedNicknameRequest): CheckDuplicatedNicknameResponse {
-        val duplicated = memberQueryService.checkDuplicatedNickname(request.nickname)
+        val duplicated = memberQueryService.isDuplicatedNickname(request.nickname)
         return CheckDuplicatedNicknameResponse(
             nickname = request.nickname,
             duplicated = duplicated
@@ -27,7 +27,7 @@ class MemberQueryApi(
 
     @PostMapping("/email/exists")
     fun checkDuplicatedEmail(@Validated @RequestBody request: DuplicatedEmailRequest): CheckDuplicatedEmailResponse {
-        val duplicated = memberQueryService.checkDuplicatedEmail(request.email)
+        val duplicated = memberQueryService.isDuplicatedEmail(request.email)
         return CheckDuplicatedEmailResponse(
             email = request.email,
             duplicated = duplicated

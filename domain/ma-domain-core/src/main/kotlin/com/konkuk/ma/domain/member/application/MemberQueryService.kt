@@ -10,11 +10,16 @@ import org.springframework.transaction.annotation.Transactional
 class MemberQueryService(
     private val memberQueryRepository: MemberQueryRepository
 ) {
-    fun checkDuplicatedNickname(nickname: String): Boolean {
+    fun isDuplicatedNickname(nickname: String): Boolean {
         return memberQueryRepository.existsByNickname(nickname)
     }
 
-    fun checkDuplicatedEmail(email: String): Boolean {
+    fun isDuplicatedEmail(email: String): Boolean {
         return memberQueryRepository.exists(Email(email))
+    }
+
+    fun isWithdrawalRequested(email: String): Boolean {
+        val member = memberQueryRepository.findOneOrNull(Email(email)) ?: return false
+        return member.isWithdrawalRequested()
     }
 }

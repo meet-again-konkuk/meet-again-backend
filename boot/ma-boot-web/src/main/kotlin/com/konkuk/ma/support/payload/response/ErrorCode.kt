@@ -19,12 +19,16 @@ enum class ErrorCode(val status: Int, val message: String) {
 
     // 403
     ACCESS_DENIED(403, "Access is Denied"),
+    WITHDRAWAL_PENDING(403, "Withdrawal is in progress for this account"),
 
     // 404
     ENTITY_NOT_FOUND(404, "Entity Not Found"),
 
     // 409
     ENTITY_DUPLICATION(409, "Entity Duplication"),
+
+    // 410
+    WITHDRAWAL_EXPIRED(410, "Withdrawal grace period has expired"),
 
     // 500
     INTERNAL_SERVER_ERROR(500, "Server Error"),

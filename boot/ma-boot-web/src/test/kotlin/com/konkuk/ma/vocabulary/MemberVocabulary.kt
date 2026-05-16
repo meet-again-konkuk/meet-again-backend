@@ -1,6 +1,7 @@
 package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.extension.BOOLEAN
+import com.konkuk.ma.extension.DATETIME
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 
@@ -20,3 +21,6 @@ fun profileImageUrl(fieldName: String) =
 
 fun isWithdrawn(fieldName: String) =
     fieldName responseType BOOLEAN means "탈퇴 여부" example "false"
+
+fun cancelledAt(fieldName: String = "cancelledAt") =
+    fieldName responseType DATETIME means "탈퇴 신청 복구 시각" example "2026-05-08T10:30:00"

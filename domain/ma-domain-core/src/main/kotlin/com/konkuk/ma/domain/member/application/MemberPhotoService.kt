@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.member.application
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotoCleaner
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoProcessor
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
@@ -12,20 +13,18 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class MemberPhotoService(
     private val memberPhotoProcessor: MemberPhotoProcessor,
-    private val memberPhotoRepository: MemberPhotoRepository
+    private val memberPhotoRepository: MemberPhotoRepository,
+    private val memberPhotoCleaner: MemberPhotoCleaner
 ) {
     fun upload(email: String, photoFile: PhotoFile) {
         val memberEmail = Email(email)
-        delete(email)
+        memberPhotoCleaner.clean(memberEmail)
         val processed = memberPhotoProcessor.process(memberEmail, photoFile)
         val newPhoto = NewPhoto.create(memberEmail, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
         memberPhotoRepository.save(newPhoto)
     }
 
     fun delete(email: String) {
-        val memberEmail = Email(email)
-        val existing = memberPhotoRepository.findOne(memberEmail) ?: return
-        memberPhotoProcessor.deleteFiles(existing)
-        memberPhotoRepository.delete(memberEmail)
+        memberPhotoCleaner.clean(Email(email))
     }
 }

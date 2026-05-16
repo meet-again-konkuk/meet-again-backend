@@ -25,4 +25,8 @@ class MemberPointCoreRepository(
         }
         return memberPointDao.insert(entity)
     }
+
+    override fun delete(ownerEmail: Email) {
+        memberPointDao.delete(ownerEmail.value)
+    }
 }

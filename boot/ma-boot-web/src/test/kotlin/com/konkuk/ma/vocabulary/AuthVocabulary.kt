@@ -1,6 +1,7 @@
 package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.extension.BOOLEAN
+import com.konkuk.ma.extension.DATETIME
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 
@@ -32,3 +33,12 @@ fun highSchool(fieldName: String = "highSchool") =
 
 fun university(fieldName: String = "university") =
     fieldName responseType STRING means "대학교" example "테스트대학교"
+
+fun loginStatus(fieldName: String = "status") =
+    fieldName responseType STRING means "로그인 상태 (ACTIVE / WITHDRAWAL_PENDING)" example "ACTIVE"
+
+fun withdrawalRequestedAt(fieldName: String = "withdrawalRequestedAt") =
+    fieldName responseType DATETIME means "탈퇴 신청 시각 (pending 상태일 때만)" example "2026-05-01T10:30:00"
+
+fun withdrawalExpiresAt(fieldName: String = "withdrawalExpiresAt") =
+    fieldName responseType DATETIME means "탈퇴 유예 만료 시각 (pending 상태일 때만)" example "2026-05-08T10:30:00"

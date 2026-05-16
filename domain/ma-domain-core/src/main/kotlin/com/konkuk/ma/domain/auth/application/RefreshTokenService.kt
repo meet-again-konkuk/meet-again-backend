@@ -30,8 +30,11 @@ class RefreshTokenService(
         val accessToken = tokenManager.generateAccessToken(email)
         val newRefreshToken = refreshTokenGenerator.generate(refreshToken.email)
         val member = memberQueryRepository.findOne(email)
-        return LoginInfo(
-            email, member.nickname, accessToken, newRefreshToken
+        return LoginInfo.Active(
+            email = email,
+            nickname = member.nickname,
+            accessToken = accessToken,
+            refreshToken = newRefreshToken
         )
     }
 }

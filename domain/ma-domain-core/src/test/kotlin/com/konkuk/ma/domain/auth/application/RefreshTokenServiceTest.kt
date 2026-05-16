@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.auth.application
 
+import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.RefreshTokenGenerator
 import com.konkuk.ma.domain.auth.domain.RefreshTokenValidator
 import com.konkuk.ma.domain.auth.domain.port.RefreshTokenRepository
@@ -11,6 +12,7 @@ import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -59,6 +61,7 @@ class RefreshTokenServiceTest : FunSpec({
             val result = service.refreshToken(inputToken)
 
             // Then
+            result.shouldBeInstanceOf<LoginInfo.Active>()
             result.email shouldBe refreshToken.email
             result.nickname shouldBe member.nickname
             result.accessToken shouldBe newAccessToken

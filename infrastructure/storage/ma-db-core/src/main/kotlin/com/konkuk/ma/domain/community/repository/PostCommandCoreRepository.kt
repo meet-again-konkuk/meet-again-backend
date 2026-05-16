@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.dao.PostCommandDao
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
@@ -19,5 +20,9 @@ class PostCommandCoreRepository(
 
     override fun decreaseLikes(postId: Long): Int {
         return postCommandDao.decreaseLikes(postId)
+    }
+
+    override fun anonymizeAuthor(oldEmail: Email, newEmail: Email) {
+        postCommandDao.anonymizeAuthor(oldEmail.value, newEmail.value)
     }
 }

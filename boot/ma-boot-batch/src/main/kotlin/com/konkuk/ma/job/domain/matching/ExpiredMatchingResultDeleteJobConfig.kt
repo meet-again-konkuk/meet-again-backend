@@ -35,7 +35,7 @@ class ExpiredMatchingResultDeleteJobConfig(
     @Bean
     fun expiredMatchingResultDeleteTasklet(): Tasklet {
         return Tasklet { _, _ ->
-            matchingResultRepository.deleteExpiredMatchingResults(dateJobParameter.inputDate)
+            matchingResultRepository.deleteExpired(dateJobParameter.inputDate)
             RepeatStatus.FINISHED
         }
     }

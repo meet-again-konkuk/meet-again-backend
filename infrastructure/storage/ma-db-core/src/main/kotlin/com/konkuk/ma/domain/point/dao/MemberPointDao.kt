@@ -34,4 +34,8 @@ class MemberPointDao {
             it[balance] = newBalance
         }
     }
+
+    fun delete(ownerEmail: String) {
+        MemberPointTable.softDelete({ MemberPointTable.ownerEmail eq ownerEmail }, ownerEmail)
+    }
 }

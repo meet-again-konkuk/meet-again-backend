@@ -4,14 +4,15 @@ import com.konkuk.ma.domain.common.domain.Email
 
 class Members(val data: List<Member>) {
 
-    private val nicknameByEmail: Map<Email, String> by lazy {
-        data.associate { it.email to it.nickname }
+    private val memberByEmail: Map<Email, Member> by lazy {
+        data.associateBy { it.email }
     }
 
-    fun findOne(email: Email): Member? = data.find { it.email == email }
+    fun findOne(email: Email): Member? = memberByEmail[email]
 
     fun findNickname(email: Email): String {
-        return nicknameByEmail[email] ?: UNKNOWN_NICKNAME
+        val member = memberByEmail[email] ?: return UNKNOWN_NICKNAME
+        return WithdrawnNicknameMasker.mask(member)
     }
 
     companion object {

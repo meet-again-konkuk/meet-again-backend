@@ -29,7 +29,7 @@ class MemberQueryApiTest(
         val nickname = "테스트닉네임"
 
         // When & Then
-        every { memberQueryService.checkDuplicatedNickname(nickname) } returns false
+        every { memberQueryService.isDuplicatedNickname(nickname) } returns false
 
         mockMvc.postJson("/api/members/nickname/exists")
         { content = """{"nickname":"$nickname"}""" }
@@ -70,7 +70,7 @@ class MemberQueryApiTest(
         val email = "test@example.com"
 
         // When & Then
-        every { memberQueryService.checkDuplicatedEmail(email) } returns false
+        every { memberQueryService.isDuplicatedEmail(email) } returns false
 
         mockMvc.postJson("/api/members/email/exists")
         { content = """{"email":"$email"}""" }

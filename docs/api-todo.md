@@ -22,6 +22,8 @@
 | POST | /api/members/email/exists | 이메일 중복 확인 |
 | POST | /api/members/photos | 프로필 사진 업로드 |
 | DELETE | /api/members/photos | 프로필 사진 삭제 |
+| POST | /api/members/me/withdrawal | 회원 탈퇴 신청 (7일 유예) |
+| DELETE | /api/members/me/withdrawal | 회원 탈퇴 신청 복구 |
 
 ### 매칭
 
@@ -217,10 +219,7 @@ X룸 안에 배치하는 콘텐츠 단위. 각 블록은 위치/크기/회전 �
 
 ### 회원 탈퇴
 
-- **인증**: 필요
-
-**참고사항**:
-- 비밀번호 확인 추가 필요할 수 있음
+작업할 내용 없음.
 
 ### 로그아웃
 

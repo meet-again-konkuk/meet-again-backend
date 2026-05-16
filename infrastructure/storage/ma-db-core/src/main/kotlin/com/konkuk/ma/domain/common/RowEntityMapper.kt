@@ -24,7 +24,8 @@ object RowEntityMapper {
         region = enumValueOf(row[MemberTable.region]),
         birthDate = row[MemberTable.birthDate],
         highSchool = row[MemberTable.highSchool],
-        university = row[MemberTable.university]
+        university = row[MemberTable.university],
+        withdrawalRequestedAt = row[MemberTable.withdrawalRequestedAt]
     )
 
     fun toRefreshTokenEntity(row: ResultRow) = RefreshTokenEntity(

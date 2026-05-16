@@ -1,9 +1,10 @@
 package com.konkuk.ma.domain.auth.application
 
 import com.konkuk.ma.domain.auth.application.command.LoginCommand
+import com.konkuk.ma.domain.auth.domain.AuthTokenIssuer
+import com.konkuk.ma.domain.auth.domain.AuthTokens
+import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.PasswordVerifier
-import com.konkuk.ma.domain.auth.domain.RefreshTokenGenerator
-import com.konkuk.ma.domain.auth.domain.port.TokenManager
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.auth.fixture.RefreshTokenFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
@@ -12,6 +13,7 @@ import com.konkuk.ma.exception.EntityNotFoundException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -20,13 +22,11 @@ class LoginServiceTest : FunSpec({
 
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val passwordVerifier = mockk<PasswordVerifier>()
-    val tokenManager = mockk<TokenManager>()
-    val refreshTokenGenerator = mockk<RefreshTokenGenerator>()
+    val authTokenIssuer = mockk<AuthTokenIssuer>()
     val service = LoginService(
         memberQueryRepository,
         passwordVerifier,
-        tokenManager,
-        refreshTokenGenerator,
+        authTokenIssuer,
     )
 
     beforeEach {
@@ -41,16 +41,17 @@ class LoginServiceTest : FunSpec({
             val loginCommand = LoginCommand(member.email.value, "input-password")
             val accessToken = "test-access-token"
             val refreshToken = RefreshTokenFixture.create(email = member.email.value)
+            val authTokens = AuthTokens(accessToken, refreshToken)
 
             every { memberQueryRepository.findOne(loginCommand.email) } returns member
             every { passwordVerifier.verify(loginCommand.password, member) } returns Unit
-            every { tokenManager.generateAccessToken(member.email) } returns accessToken
-            every { refreshTokenGenerator.generate(member.email) } returns refreshToken
+            every { authTokenIssuer.issueFor(member.email) } returns authTokens
 
             // When
             val result = service.login(loginCommand)
 
             // Then
+            result.shouldBeInstanceOf<LoginInfo.Active>()
             result.email shouldBe member.email
             result.nickname shouldBe member.nickname
             result.accessToken shouldBe accessToken

@@ -3,8 +3,10 @@ package com.konkuk.ma.domain.auth.domain
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingMemberException
 import com.konkuk.ma.exception.DuplicateException
 import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Component
@@ -17,6 +19,7 @@ class SignUpValidator(
     fun validate(newMember: NewMember) {
         checkDuplicatedNickname(newMember.nickname)
         checkDuplicatedEmail(newMember.email)
+        checkDuplicatedPhoneNumber(newMember.phoneNumber)
         checkSmsVerification(newMember.phoneNumber.fullNumber)
     }
 
@@ -27,8 +30,20 @@ class SignUpValidator(
     }
 
     private fun checkDuplicatedEmail(email: Email) {
+        if (memberQueryRepository.existsPending(email)) {
+            throw WithdrawalPendingMemberException("email", email.value)
+        }
         if (memberQueryRepository.exists(email)) {
             throw DuplicateException(EntityType.MEMBER, "email", email.value)
+        }
+    }
+
+    private fun checkDuplicatedPhoneNumber(phoneNumber: PhoneNumber) {
+        if (memberQueryRepository.existsPending(phoneNumber)) {
+            throw WithdrawalPendingMemberException("phoneNumber", phoneNumber.fullNumber)
+        }
+        if (memberQueryRepository.exists(phoneNumber)) {
+            throw DuplicateException(EntityType.MEMBER, "phoneNumber", phoneNumber.fullNumber)
         }
     }
 

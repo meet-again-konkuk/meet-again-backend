@@ -45,4 +45,11 @@ class PostCommandDao {
             .limit(1)
             .first()[PostTable.likes]
     }
+
+    fun anonymizeAuthor(oldEmail: String, newEmail: String) {
+        PostTable.update({ PostTable.authorEmail eq oldEmail }) {
+            it[authorEmail] = newEmail
+            it[lastModifiedBy] = newEmail
+        }
+    }
 }

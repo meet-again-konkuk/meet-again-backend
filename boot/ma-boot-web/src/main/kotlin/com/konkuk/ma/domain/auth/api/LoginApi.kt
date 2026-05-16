@@ -17,6 +17,6 @@ class LoginApi(
     @PostMapping("/login")
     fun login(@Valid @RequestBody request: LoginRequest): LoginResponse {
         val loginInfo = loginService.login(request.toCommand())
-        return LoginResponse(loginInfo)
+        return LoginResponse.from(loginInfo)
     }
 }

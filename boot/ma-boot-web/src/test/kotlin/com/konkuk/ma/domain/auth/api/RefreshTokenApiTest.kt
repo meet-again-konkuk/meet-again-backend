@@ -12,8 +12,11 @@ import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.accessToken
 import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.loginStatus
 import com.konkuk.ma.vocabulary.nickname
 import com.konkuk.ma.vocabulary.refreshToken
+import com.konkuk.ma.vocabulary.withdrawalExpiresAt
+import com.konkuk.ma.vocabulary.withdrawalRequestedAt
 import com.konkuk.ma.domain.common.domain.Email
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
@@ -33,7 +36,7 @@ class RefreshTokenApiTest(
 
     test("리프레시 토큰 재발급 API 문서화") {
         val request = RefreshTokenRequest(refreshToken = "old-refresh-token")
-        val loginInfo = LoginInfo(
+        val loginInfo = LoginInfo.Active(
             email = Email("user@example.com"),
             nickname = "tester",
             accessToken = "new-access-token",
@@ -51,10 +54,13 @@ class RefreshTokenApiTest(
                     refreshToken() means "기존 리프레시 토큰",
                 ),
                 responseBody(
+                    loginStatus(),
                     email(),
                     nickname(),
                     accessToken() means "새 액세스 토큰",
                     refreshToken() means "새 리프레시 토큰",
+                    withdrawalRequestedAt(),
+                    withdrawalExpiresAt(),
                 )
             )
     }

@@ -69,4 +69,16 @@ class EmailTest : FunSpec({
             Email("user@example.com") shouldBe Email("user@example.com")
         }
     }
+
+    context("withdrawn") {
+
+        test("탈퇴 회원 이메일을 회원 ID로 생성한다") {
+            val email = Email.withdrawn(123L)
+            email.value shouldBe "withdrawn_123@deleted.local"
+        }
+
+        test("탈퇴 회원 이메일은 정규식 검증을 통과한다") {
+            Email.withdrawn(456L)
+        }
+    }
 })

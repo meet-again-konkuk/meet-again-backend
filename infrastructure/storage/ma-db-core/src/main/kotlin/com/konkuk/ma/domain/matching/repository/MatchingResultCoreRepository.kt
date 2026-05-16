@@ -25,11 +25,11 @@ class MatchingResultCoreRepository(
             .map { it.toDomain() }
     }
 
-    override fun deleteExpiredMatchingResults(baseDate: LocalDate): Int {
+    override fun deleteExpired(baseDate: LocalDate): Int {
         return matchingResultCommandDao.deleteExpired(baseDate)
     }
 
-    override fun deleteExcludedExpiredMatchingResults(baseDate: LocalDate): Int {
+    override fun deleteExcludedExpired(baseDate: LocalDate): Int {
         return matchingResultCommandDao.deleteExcludedExpired(baseDate)
     }
 
@@ -63,5 +63,9 @@ class MatchingResultCoreRepository(
 
     override fun delete(targetInfoId: Long, email: Email) {
         matchingResultCommandDao.delete(targetInfoId, email.value)
+    }
+
+    override fun deleteByMember(email: Email) {
+        matchingResultCommandDao.deleteByMember(email.value)
     }
 }

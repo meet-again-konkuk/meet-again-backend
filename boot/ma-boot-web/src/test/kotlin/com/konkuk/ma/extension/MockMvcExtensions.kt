@@ -91,13 +91,19 @@ fun MockMvc.deleteJson(
     val builder = JsonRequestBuilder().apply(setup)
     if (urlVariables.isNotEmpty()) {
         val requestBuilder = RestDocumentationRequestBuilders.delete(uri, *urlVariables)
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
         builder.headers.forEach { (name, value) -> requestBuilder.header(name, value) }
+        if (builder.content != null) requestBuilder.content(builder.content!!)
         return performDsl(requestBuilder)
     }
     return this.delete(uri) {
+        contentType = MediaType.APPLICATION_JSON
         accept = MediaType.APPLICATION_JSON
         builder.headers.forEach { (name, value) -> header(name, value) }
+        if (builder.content != null) {
+            content = builder.content!!
+        }
     }
 }
 

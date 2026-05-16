@@ -8,8 +8,8 @@ import java.time.LocalDate
 interface MatchingResultRepository {
     fun saveAll(matchingResults: List<NewMatchingResult>)
     fun findExistingMatchingResults(targetInfoIds: List<Long>): List<MatchingResult>
-    fun deleteExpiredMatchingResults(baseDate: LocalDate): Int
-    fun deleteExcludedExpiredMatchingResults(baseDate: LocalDate): Int
+    fun deleteExpired(baseDate: LocalDate): Int
+    fun deleteExcludedExpired(baseDate: LocalDate): Int
     fun find(email: Email, excluded: Boolean = false): List<MatchingResult>
     fun findOne(matchingResultId: Long): MatchingResult
     fun updateExcluded(matchingResult: MatchingResult)
@@ -17,4 +17,5 @@ interface MatchingResultRepository {
     fun findClaimedByTarget(email: Email): List<MatchingResult>
     fun exists(targetInfoId: Long): Boolean
     fun delete(targetInfoId: Long, email: Email)
+    fun deleteByMember(email: Email)
 }

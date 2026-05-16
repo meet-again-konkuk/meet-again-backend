@@ -36,7 +36,7 @@ class ExcludedMatchingResultDeleteJobConfig(
     fun excludedMatchingResultDeleteTasklet(): Tasklet {
         return Tasklet { _, _ ->
             val cutoffDate = dateJobParameter.inputDate.minusYears(EXCLUDED_RETENTION_YEARS)
-            matchingResultRepository.deleteExcludedExpiredMatchingResults(cutoffDate)
+            matchingResultRepository.deleteExcludedExpired(cutoffDate)
             RepeatStatus.FINISHED
         }
     }

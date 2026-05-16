@@ -17,4 +17,8 @@ class PostLikeCoreRepository(
     override fun delete(postId: Long, memberEmail: Email) {
         postLikeDao.delete(postId, memberEmail.value)
     }
+
+    override fun deleteByMember(memberEmail: Email) {
+        postLikeDao.deleteByMember(memberEmail.value)
+    }
 }

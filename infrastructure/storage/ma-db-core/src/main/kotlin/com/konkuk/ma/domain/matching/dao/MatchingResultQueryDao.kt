@@ -2,6 +2,8 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.domain.matching.entity.MatchingResultEntity
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
+import com.konkuk.ma.domain.member.entity.table.MemberTable
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.intLiteral
@@ -13,13 +15,26 @@ class MatchingResultQueryDao {
     fun find(targetInfoIds: List<Long>): List<MatchingResultEntity> {
         if (targetInfoIds.isEmpty()) return emptyList()
         return MatchingResultTable
-            .activeRows { MatchingResultTable.targetInfoId inList targetInfoIds }
+            .join(MemberTable, JoinType.INNER, MatchingResultTable.targetEmail, MemberTable.email)
+            .selectAll()
+            .where {
+                (MatchingResultTable.deleted eq false) and
+                    (MatchingResultTable.targetInfoId inList targetInfoIds) and
+                    MemberTable.withdrawalRequestedAt.isNull()
+            }
             .map { row -> MatchingResultEntity.from(row) }
     }
 
     fun find(email: String, excluded: Boolean = false): List<MatchingResultEntity> {
         return MatchingResultTable
-            .activeRows { (MatchingResultTable.registerEmail eq email) and (MatchingResultTable.excluded eq excluded) }
+            .join(MemberTable, JoinType.INNER, MatchingResultTable.targetEmail, MemberTable.email)
+            .selectAll()
+            .where {
+                (MatchingResultTable.deleted eq false) and
+                    (MatchingResultTable.registerEmail eq email) and
+                    (MatchingResultTable.excluded eq excluded) and
+                    MemberTable.withdrawalRequestedAt.isNull()
+            }
             .map { row -> MatchingResultEntity.from(row) }
     }
 
@@ -32,7 +47,14 @@ class MatchingResultQueryDao {
 
     fun findClaimedByTarget(email: String): List<MatchingResultEntity> {
         return MatchingResultTable
-            .activeRows { (MatchingResultTable.targetEmail eq email) and (MatchingResultTable.claimed eq true) }
+            .join(MemberTable, JoinType.INNER, MatchingResultTable.registerEmail, MemberTable.email)
+            .selectAll()
+            .where {
+                (MatchingResultTable.deleted eq false) and
+                    (MatchingResultTable.targetEmail eq email) and
+                    (MatchingResultTable.claimed eq true) and
+                    MemberTable.withdrawalRequestedAt.isNull()
+            }
             .map { row -> MatchingResultEntity.from(row) }
     }
 

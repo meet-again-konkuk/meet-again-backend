@@ -17,6 +17,6 @@ class RefreshTokenApi(
     @PostMapping("/refresh-token")
     fun refresh(@Valid @RequestBody request: RefreshTokenRequest): LoginResponse {
         val loginInfo = refreshTokenService.refreshToken(request.refreshToken)
-        return LoginResponse(loginInfo)
+        return LoginResponse.from(loginInfo)
     }
 }
