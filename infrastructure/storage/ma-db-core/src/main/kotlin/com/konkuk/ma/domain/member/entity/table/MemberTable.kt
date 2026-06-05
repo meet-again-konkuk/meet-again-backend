@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.member.entity.table
 
 import com.konkuk.ma.domain.common.entity.table.BaseTable
 import org.jetbrains.exposed.sql.javatime.date
+import org.jetbrains.exposed.sql.javatime.datetime
 
 object MemberTable : BaseTable("MEMBERS", "MEMBER_ID") {
     val email = varchar("EMAIL", 255).uniqueIndex()
@@ -16,4 +17,6 @@ object MemberTable : BaseTable("MEMBERS", "MEMBER_ID") {
     val university = varchar("UNIVERSITY", 255).nullable()
 
     val profileImageUrl = varchar("PROFILE_IMAGE_URL", 255).nullable()
+
+    val withdrawalRequestedAt = datetime("WITHDRAWAL_REQUESTED_AT").nullable().index()
 }
