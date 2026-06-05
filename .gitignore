@@ -45,6 +45,10 @@ out/
 .claude/agent-memory/
 .claude/settings.local.json
 
+### Codex ###
+AGENTS.md
+.codex/
+
 ### bkit ###
 .bkit/
 
