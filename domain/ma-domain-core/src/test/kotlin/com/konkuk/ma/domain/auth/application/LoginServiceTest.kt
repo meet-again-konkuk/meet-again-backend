@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.auth.fixture.RefreshTokenFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
 import com.konkuk.ma.exception.EntityNotFoundException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -15,6 +16,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDateTime
 
 class LoginServiceTest : FunSpec({
 
@@ -83,6 +85,21 @@ class LoginServiceTest : FunSpec({
             shouldThrow<PasswordMismatchException> {
                 service.login(loginCommand)
             }.message shouldBe "비밀번호가 올바르지 않습니다."
+        }
+
+        test("탈퇴 신청 상태의 회원이 로그인하면 WithdrawalPendingLoginException이 발생한다") {
+            // Given
+            val member = MemberFixture.create()
+            member.requestWithdrawal(LocalDateTime.now())
+            val loginCommand = LoginCommand(member.email.value, "input-password")
+
+            every { memberQueryRepository.findOne(loginCommand.email) } returns member
+            every { passwordVerifier.verify(loginCommand.password, member) } returns Unit
+
+            // When & Then
+            shouldThrow<WithdrawalPendingLoginException> {
+                service.login(loginCommand)
+            }
         }
     }
 })

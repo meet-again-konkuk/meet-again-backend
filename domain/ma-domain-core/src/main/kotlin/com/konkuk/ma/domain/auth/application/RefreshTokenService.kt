@@ -27,9 +27,12 @@ class RefreshTokenService(
         val email = Email(tokenManager.getEmailFromToken(inputRefreshToken))
         val refreshToken = refreshTokenRepository.findOne(email)
         refreshTokenValidator.validate(refreshToken)
+        val member = memberQueryRepository.findOne(email)
+        member.verifyLogin()
+
         val accessToken = tokenManager.generateAccessToken(email)
         val newRefreshToken = refreshTokenGenerator.generate(refreshToken.email)
-        val member = memberQueryRepository.findOne(email)
+
         return LoginInfo(
             email, member.nickname, accessToken, newRefreshToken
         )

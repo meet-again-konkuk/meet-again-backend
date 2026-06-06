@@ -4,11 +4,9 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
-import com.konkuk.ma.domain.member.domain.policy.WithdrawalGraceWindow
-import com.konkuk.ma.domain.member.domain.policy.WithdrawalPolicy
 import com.konkuk.ma.domain.member.exception.AlreadyWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
-import com.konkuk.ma.domain.member.exception.WithdrawalExpiredException
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -83,35 +81,19 @@ class Member(
         return now
     }
 
-    fun cancelWithdrawal(now: LocalDateTime = LocalDateTime.now()) {
+    fun cancelWithdrawal() {
         if (withdrawalRequestedAt == null) {
             throw NotWithdrawalRequestedException(email)
-        }
-        if (isWithdrawalExpired(now)) {
-            throw WithdrawalExpiredException(email)
         }
         withdrawalRequestedAt = null
     }
 
-    fun isActive(): Boolean = withdrawalRequestedAt == null
-
-    fun isWithdrawalRequested(): Boolean = withdrawalRequestedAt != null
-
-    fun isWithdrawalPending(now: LocalDateTime): Boolean {
-        val requestedAt = withdrawalRequestedAt ?: return false
-        return !WithdrawalPolicy.isExpired(requestedAt, now)
+    fun verifyLogin() {
+        if (isWithdrawalRequested()) {
+            throw WithdrawalPendingLoginException(email)
+        }
     }
 
-    fun isWithdrawalExpired(now: LocalDateTime): Boolean {
-        val requestedAt = withdrawalRequestedAt ?: return false
-        return WithdrawalPolicy.isExpired(requestedAt, now)
-    }
-
-    fun withdrawalGraceWindowOrNull(now: LocalDateTime): WithdrawalGraceWindow? {
-        val requestedAt = withdrawalRequestedAt ?: return null
-        val expiresAt = WithdrawalPolicy.expiresAt(requestedAt)
-        if (!now.isBefore(expiresAt)) return null
-        return WithdrawalGraceWindow(requestedAt, expiresAt)
-    }
+    private fun isWithdrawalRequested(): Boolean = withdrawalRequestedAt != null
 }
 

@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
 import com.konkuk.ma.domain.auth.fixture.RefreshTokenFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -51,9 +52,9 @@ class RefreshTokenServiceTest : FunSpec({
             every { tokenManager.getEmailFromToken(inputToken) } returns refreshToken.email.value
             every { refreshTokenRepository.findOne(refreshToken.email) } returns refreshToken
             every { refreshTokenValidator.validate(refreshToken) } returns Unit
+            every { memberQueryRepository.findOne(refreshToken.email) } returns member
             every { tokenManager.generateAccessToken(refreshToken.email) } returns newAccessToken
             every { refreshTokenGenerator.generate(refreshToken.email) } returns newRefreshToken
-            every { memberQueryRepository.findOne(refreshToken.email) } returns member
 
             // When
             val result = service.refreshToken(inputToken)
@@ -81,6 +82,24 @@ class RefreshTokenServiceTest : FunSpec({
             shouldThrow<RefreshTokenExpiredException> {
                 service.refreshToken(inputToken)
             }.message shouldBe "Refresh token이 만료되었습니다."
+        }
+
+        test("탈퇴 신청 상태의 회원이 토큰을 갱신하면 WithdrawalPendingLoginException이 발생한다") {
+            // Given
+            val refreshToken = RefreshTokenFixture.create()
+            val member = MemberFixture.create(email = refreshToken.email.value)
+            member.requestWithdrawal(LocalDateTime.now())
+            val inputToken = "input-refresh-token"
+
+            every { tokenManager.getEmailFromToken(inputToken) } returns refreshToken.email.value
+            every { refreshTokenRepository.findOne(refreshToken.email) } returns refreshToken
+            every { refreshTokenValidator.validate(refreshToken) } returns Unit
+            every { memberQueryRepository.findOne(refreshToken.email) } returns member
+
+            // When & Then
+            shouldThrow<WithdrawalPendingLoginException> {
+                service.refreshToken(inputToken)
+            }
         }
     }
 })

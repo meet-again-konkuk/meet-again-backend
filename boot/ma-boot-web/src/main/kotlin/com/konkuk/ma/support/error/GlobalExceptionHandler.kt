@@ -6,7 +6,7 @@ import com.konkuk.ma.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.exception.InvalidValueException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
-import com.konkuk.ma.domain.member.exception.WithdrawalExpiredException
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.BusinessException
@@ -55,10 +55,10 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error)
     }
 
-    @ExceptionHandler(WithdrawalExpiredException::class)
-    fun handleWithdrawalExpiredException(e: WithdrawalExpiredException): ResponseEntity<ApiError> {
-        val error = ApiError(ErrorCode.WITHDRAWAL_EXPIRED)
-        return ResponseEntity.status(HttpStatus.GONE).body(error)
+    @ExceptionHandler(WithdrawalPendingLoginException::class)
+    fun handleWithdrawalPendingLoginException(e: WithdrawalPendingLoginException): ResponseEntity<ApiError> {
+        val error = ApiError(ErrorCode.WITHDRAWAL_PENDING)
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error)
     }
 
     @ExceptionHandler(

@@ -1,11 +1,13 @@
 package com.konkuk.ma.domain.auth.application
 
-import com.konkuk.ma.domain.auth.domain.AuthTokenIssuer
-import com.konkuk.ma.domain.auth.domain.AuthTokens
-import com.konkuk.ma.domain.auth.domain.RefreshToken
+import com.konkuk.ma.domain.auth.application.command.WithdrawalCancelCommand
+import com.konkuk.ma.domain.auth.domain.PasswordVerifier
+import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
@@ -20,32 +22,52 @@ class WithdrawalCancelServiceTest : FunSpec({
 
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val memberCommandRepository = mockk<MemberCommandRepository>()
-    val authTokenIssuer = mockk<AuthTokenIssuer>()
-    val service = WithdrawalCancelService(memberQueryRepository, memberCommandRepository, authTokenIssuer)
+    val passwordVerifier = mockk<PasswordVerifier>()
+    val service = WithdrawalCancelService(memberQueryRepository, memberCommandRepository, passwordVerifier)
 
     beforeEach { clearAllMocks() }
 
     context("cancel") {
 
-        test("신청 상태에서 호출하면 Member 복구 + 새 토큰 발급한 결과를 반환한다") {
+        test("신청 상태에서 비밀번호가 일치하면 회원을 복구한다") {
             val member = MemberFixture.create()
             member.requestWithdrawal(LocalDateTime.now())
-            val accessToken = "new-access"
-            val refreshToken = RefreshToken(member.email, LocalDateTime.now().plusDays(7), "new-refresh")
-            val authTokens = AuthTokens(accessToken, refreshToken)
+            val command = WithdrawalCancelCommand(member.email.value, "input-password")
 
-            every { memberQueryRepository.findOne(member.email) } returns member
+            every { memberQueryRepository.findOne(command.email) } returns member
+            every { passwordVerifier.verify(command.password, member) } just runs
             every { memberCommandRepository.cancelWithdrawal(member.email) } just runs
-            every { authTokenIssuer.issueFor(member.email) } returns authTokens
 
-            val result = service.cancel(member.email.value)
+            service.cancel(command)
 
-            result.loginInfo.email shouldBe member.email
-            result.loginInfo.nickname shouldBe member.nickname
-            result.loginInfo.accessToken shouldBe accessToken
-            result.loginInfo.refreshToken shouldBe refreshToken
             member.withdrawalRequestedAt shouldBe null
             verify { memberCommandRepository.cancelWithdrawal(member.email) }
+        }
+
+        test("비밀번호가 일치하지 않으면 PasswordMismatchException이 발생한다") {
+            val member = MemberFixture.create()
+            member.requestWithdrawal(LocalDateTime.now())
+            val command = WithdrawalCancelCommand(member.email.value, "wrong-password")
+
+            every { memberQueryRepository.findOne(command.email) } returns member
+            every { passwordVerifier.verify(command.password, member) } throws PasswordMismatchException(member.email)
+
+            shouldThrow<PasswordMismatchException> {
+                service.cancel(command)
+            }
+            verify(exactly = 0) { memberCommandRepository.cancelWithdrawal(any()) }
+        }
+
+        test("탈퇴 신청 상태가 아니면 NotWithdrawalRequestedException이 발생한다") {
+            val member = MemberFixture.create()
+            val command = WithdrawalCancelCommand(member.email.value, "input-password")
+
+            every { memberQueryRepository.findOne(command.email) } returns member
+            every { passwordVerifier.verify(command.password, member) } just runs
+
+            shouldThrow<NotWithdrawalRequestedException> {
+                service.cancel(command)
+            }
         }
     }
 })
