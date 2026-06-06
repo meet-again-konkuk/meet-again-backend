@@ -38,6 +38,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:member/member-enum.html[회원 Enum API,window=_blank]
 
+[[member-withdrawal]]
+=== 회원 탈퇴 / 복구
+
+* link:member/member-withdrawal.html[회원 탈퇴 API,window=_blank]
+
 [[auth]]
 == 인증
 

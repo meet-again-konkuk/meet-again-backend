@@ -1,13 +1,17 @@
 package com.konkuk.ma.domain.member.dao
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class MemberCommandDao {
-    
+
     fun save(newMember: NewMember): Long {
         return MemberTable.insertAndGetId {
             it[email] = newMember.email.value
@@ -24,4 +28,18 @@ class MemberCommandDao {
             it[lastModifiedBy] = newMember.email.value
         }.value
     }
-} 
+
+    fun requestWithdrawal(email: Email, requestedAt: LocalDateTime) {
+        MemberTable.update({ MemberTable.email eq email.value }) {
+            it[withdrawalRequestedAt] = requestedAt
+            it[lastModifiedBy] = email.value
+        }
+    }
+
+    fun cancelWithdrawal(email: Email) {
+        MemberTable.update({ MemberTable.email eq email.value }) {
+            it[withdrawalRequestedAt] = null
+            it[lastModifiedBy] = email.value
+        }
+    }
+}

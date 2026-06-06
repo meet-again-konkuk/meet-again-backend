@@ -26,6 +26,9 @@ enum class ErrorCode(val status: Int, val message: String) {
     // 409
     ENTITY_DUPLICATION(409, "Entity Duplication"),
 
+    // 410
+    WITHDRAWAL_EXPIRED(410, "Withdrawal grace period has expired"),
+
     // 500
     INTERNAL_SERVER_ERROR(500, "Server Error"),
 }
