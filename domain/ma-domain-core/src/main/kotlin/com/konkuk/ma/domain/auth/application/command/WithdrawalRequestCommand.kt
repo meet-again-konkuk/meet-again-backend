@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.member.application.command
+package com.konkuk.ma.domain.auth.application.command
 
 import com.konkuk.ma.domain.common.domain.Email
 

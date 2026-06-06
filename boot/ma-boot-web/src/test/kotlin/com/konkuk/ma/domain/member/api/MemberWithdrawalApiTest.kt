@@ -2,12 +2,13 @@ package com.konkuk.ma.domain.member.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.auth.application.WithdrawalCancelService
+import com.konkuk.ma.domain.auth.application.WithdrawalService
+import com.konkuk.ma.domain.auth.application.result.WithdrawalCancelResult
 import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.api.request.WithdrawalRequest
-import com.konkuk.ma.domain.member.application.MemberWithdrawalCancelService
-import com.konkuk.ma.domain.member.application.MemberWithdrawalService
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.postJson
@@ -33,13 +34,13 @@ import org.springframework.test.web.servlet.MockMvc
 class MemberWithdrawalApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    @MockkBean private val memberWithdrawalService: MemberWithdrawalService,
-    @MockkBean private val memberWithdrawalCancelService: MemberWithdrawalCancelService
+    @MockkBean private val withdrawalService: WithdrawalService,
+    @MockkBean private val withdrawalCancelService: WithdrawalCancelService
 ) : FunSpec({
 
     test("회원 탈퇴 신청 API 문서화") {
         val request = WithdrawalRequest(password = "password1")
-        every { memberWithdrawalService.requestWithdrawal(any()) } just runs
+        every { withdrawalService.requestWithdrawal(any()) } just runs
 
         mockMvc.postJson("/api/members/me/withdrawal") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isNoContent() } }
@@ -66,10 +67,8 @@ class MemberWithdrawalApiTest(
             accessToken = "new-access",
             refreshToken = RefreshToken(email, LocalDateTime.now().plusDays(7), "new-refresh")
         )
-        val result = com.konkuk.ma.domain.member.application.result.WithdrawalCancelResult(
-            loginInfo, LocalDateTime.now()
-        )
-        every { memberWithdrawalCancelService.cancel(any()) } returns result
+        val result = WithdrawalCancelResult(loginInfo, LocalDateTime.now())
+        every { withdrawalCancelService.cancel(any()) } returns result
 
         mockMvc.deleteJson("/api/members/me/withdrawal")
             .andExpect { status { isOk() } }

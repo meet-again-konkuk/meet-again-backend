@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.member.application.result
+package com.konkuk.ma.domain.auth.application.result
 
 import com.konkuk.ma.domain.auth.domain.LoginInfo
 import java.time.LocalDateTime

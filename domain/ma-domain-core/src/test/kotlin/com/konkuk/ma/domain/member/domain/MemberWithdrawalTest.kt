@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.policy.WithdrawalPolicy
 import com.konkuk.ma.domain.member.exception.AlreadyWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
+import com.konkuk.ma.domain.member.exception.WithdrawalExpiredException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -50,6 +51,16 @@ class MemberWithdrawalTest : FunSpec({
 
             shouldThrow<NotWithdrawalRequestedException> {
                 member.cancelWithdrawal()
+            }
+        }
+
+        test("유예 기간이 만료된 뒤 호출하면 WithdrawalExpiredException을 던진다") {
+            val member = MemberFixture.create()
+            val requestedAt = LocalDateTime.of(2026, 5, 1, 10, 0)
+            member.requestWithdrawal(requestedAt)
+
+            shouldThrow<WithdrawalExpiredException> {
+                member.cancelWithdrawal(requestedAt.plusDays(WithdrawalPolicy.GRACE_PERIOD_DAYS))
             }
         }
     }

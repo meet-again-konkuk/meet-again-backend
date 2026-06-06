@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.member.api.response
 
-import com.konkuk.ma.domain.member.application.result.WithdrawalCancelResult
+import com.konkuk.ma.domain.auth.application.result.WithdrawalCancelResult
 import java.time.LocalDateTime
 
 class WithdrawalCancelResponse(

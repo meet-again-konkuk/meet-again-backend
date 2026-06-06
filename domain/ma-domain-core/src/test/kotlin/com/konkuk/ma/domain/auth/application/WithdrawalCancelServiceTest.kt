@@ -1,10 +1,9 @@
-package com.konkuk.ma.domain.member.application
+package com.konkuk.ma.domain.auth.application
 
 import com.konkuk.ma.domain.auth.domain.AuthTokenIssuer
 import com.konkuk.ma.domain.auth.domain.AuthTokens
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
-import com.konkuk.ma.domain.member.domain.MemberWithdrawalCancelValidator
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import io.kotest.core.spec.style.FunSpec
@@ -17,21 +16,18 @@ import io.mockk.runs
 import io.mockk.verify
 import java.time.LocalDateTime
 
-class MemberWithdrawalCancelServiceTest : FunSpec({
+class WithdrawalCancelServiceTest : FunSpec({
 
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val memberCommandRepository = mockk<MemberCommandRepository>()
-    val cancelValidator = mockk<MemberWithdrawalCancelValidator>()
     val authTokenIssuer = mockk<AuthTokenIssuer>()
-    val service = MemberWithdrawalCancelService(
-        memberQueryRepository, memberCommandRepository, cancelValidator, authTokenIssuer
-    )
+    val service = WithdrawalCancelService(memberQueryRepository, memberCommandRepository, authTokenIssuer)
 
     beforeEach { clearAllMocks() }
 
     context("cancel") {
 
-        test("검증 통과 시 Member 복구 + 새 토큰 발급한 결과를 반환한다") {
+        test("신청 상태에서 호출하면 Member 복구 + 새 토큰 발급한 결과를 반환한다") {
             val member = MemberFixture.create()
             member.requestWithdrawal(LocalDateTime.now())
             val accessToken = "new-access"
@@ -39,7 +35,6 @@ class MemberWithdrawalCancelServiceTest : FunSpec({
             val authTokens = AuthTokens(accessToken, refreshToken)
 
             every { memberQueryRepository.findOne(member.email) } returns member
-            every { cancelValidator.validate(member, any()) } just runs
             every { memberCommandRepository.cancelWithdrawal(member.email) } just runs
             every { authTokenIssuer.issueFor(member.email) } returns authTokens
 

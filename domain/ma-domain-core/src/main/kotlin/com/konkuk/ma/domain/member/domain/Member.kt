@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.member.domain.policy.WithdrawalGraceWindow
 import com.konkuk.ma.domain.member.domain.policy.WithdrawalPolicy
 import com.konkuk.ma.domain.member.exception.AlreadyWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
+import com.konkuk.ma.domain.member.exception.WithdrawalExpiredException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -82,9 +83,12 @@ class Member(
         return now
     }
 
-    fun cancelWithdrawal() {
+    fun cancelWithdrawal(now: LocalDateTime = LocalDateTime.now()) {
         if (withdrawalRequestedAt == null) {
             throw NotWithdrawalRequestedException(email)
+        }
+        if (isWithdrawalExpired(now)) {
+            throw WithdrawalExpiredException(email)
         }
         withdrawalRequestedAt = null
     }

@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.member.api.request
 
-import com.konkuk.ma.domain.member.application.command.WithdrawalRequestCommand
+import com.konkuk.ma.domain.auth.application.command.WithdrawalRequestCommand
 import com.konkuk.ma.support.validation.ValidationMessages
 import jakarta.validation.constraints.NotBlank
 
