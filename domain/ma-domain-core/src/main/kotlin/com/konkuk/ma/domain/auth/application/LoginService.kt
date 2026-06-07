@@ -20,15 +20,16 @@ class LoginService(
     fun login(loginCommand: LoginCommand): LoginInfo {
         val member = memberQueryRepository.findOne(loginCommand.email)
         passwordVerifier.verify(loginCommand.password, member)
+        member.verifyLogin()
 
         val accessToken = tokenManager.generateAccessToken(member.email)
         val refreshToken = refreshTokenGenerator.generate(member.email)
 
         return LoginInfo(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
             email = member.email,
-            nickname = member.nickname
+            nickname = member.nickname,
+            accessToken = accessToken,
+            refreshToken = refreshToken
         )
     }
 }

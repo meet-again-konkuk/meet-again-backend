@@ -1,0 +1,42 @@
+= 회원 탈퇴 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 회원 탈퇴 신청 API
+
+회원 탈퇴를 신청합니다. 신청 시점부터 7일 유예 기간이 시작되며, 유예 기간이 지나면 배치가 데이터를 영구 삭제(익명화)합니다.
+삭제되기 전까지는 복구 API로 취소할 수 있습니다. 인증이 필요하고, 보안을 위해 비밀번호 재확인이 필요합니다.
+
+=== 요청
+
+include::{snippets}/member-withdrawal-request/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/member-withdrawal-request/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/member-withdrawal-request/http-response.adoc[]
+
+== 회원 탈퇴 복구 API
+
+탈퇴 신청을 취소하고 활성 상태로 복구합니다. 데이터가 삭제(익명화)되기 전이면 유예 기간이 지났더라도 복구할 수 있습니다.
+복구(재활성화)만 수행하며 토큰을 발급하지 않습니다. 복구 후 로그인 API로 토큰을 발급받습니다.
+탈퇴 신청 상태에서는 로그인이 차단되므로 비인증(public) 엔드포인트이며, 이메일과 비밀번호로 본인을 확인합니다.
+
+=== 요청
+
+include::{snippets}/member-withdrawal-cancel/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/member-withdrawal-cancel/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/member-withdrawal-cancel/http-response.adoc[]

@@ -1,0 +1,38 @@
+package com.konkuk.ma.domain.member.api
+
+import com.konkuk.ma.domain.auth.application.WithdrawalCancelService
+import com.konkuk.ma.domain.auth.application.WithdrawalService
+import com.konkuk.ma.domain.member.api.request.WithdrawalCancelRequest
+import com.konkuk.ma.domain.member.api.request.WithdrawalRequest
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/members/withdrawal")
+class MemberWithdrawalApi(
+    private val withdrawalService: WithdrawalService,
+    private val withdrawalCancelService: WithdrawalCancelService
+) {
+    @PostMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun requestWithdrawal(
+        @AuthenticationPrincipal email: String,
+        @Valid @RequestBody request: WithdrawalRequest
+    ) {
+        withdrawalService.requestWithdrawal(request.toCommand(email))
+    }
+
+    @PostMapping("/cancellation")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun cancelWithdrawal(
+        @Valid @RequestBody request: WithdrawalCancelRequest
+    ) {
+        withdrawalCancelService.cancel(request.toCommand())
+    }
+}

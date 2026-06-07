@@ -34,6 +34,7 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/members/nickname/exists").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/members/email/exists").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/members/withdrawal/cancellation").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/members/regions").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/points").authenticated()
                     .requestMatchers("/actuator/**").permitAll()
