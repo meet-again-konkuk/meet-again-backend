@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.member.repository
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.dao.MemberQueryDao
 import com.konkuk.ma.domain.member.domain.Member
+import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
@@ -18,6 +19,10 @@ class MemberQueryCoreRepository(
 
     override fun exists(email: Email): Boolean {
         return memberQueryDao.existsByEmail(email.value)
+    }
+
+    override fun exists(phoneNumber: PhoneNumber): Boolean {
+        return memberQueryDao.existsByPhoneNumber(phoneNumber.fullNumber)
     }
 
     override fun findOne(email: Email): Member {

@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.auth.domain
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.exception.DuplicateException
@@ -17,6 +18,7 @@ class SignUpValidator(
     fun validate(newMember: NewMember) {
         checkDuplicatedNickname(newMember.nickname)
         checkDuplicatedEmail(newMember.email)
+        checkDuplicatedPhoneNumber(newMember.phoneNumber)
         checkSmsVerification(newMember.phoneNumber.fullNumber)
     }
 
@@ -29,6 +31,12 @@ class SignUpValidator(
     private fun checkDuplicatedEmail(email: Email) {
         if (memberQueryRepository.exists(email)) {
             throw DuplicateException(EntityType.MEMBER, "email", email.value)
+        }
+    }
+
+    private fun checkDuplicatedPhoneNumber(phoneNumber: PhoneNumber) {
+        if (memberQueryRepository.exists(phoneNumber)) {
+            throw DuplicateException(EntityType.MEMBER, "phoneNumber", phoneNumber.fullNumber)
         }
     }
 

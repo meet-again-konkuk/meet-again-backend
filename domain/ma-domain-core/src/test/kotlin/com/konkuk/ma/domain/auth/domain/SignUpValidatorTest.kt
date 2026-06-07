@@ -24,6 +24,7 @@ class SignUpValidatorTest : FunSpec({
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
             every { memberQueryRepository.exists(newMember.email) } returns false
+            every { memberQueryRepository.exists(newMember.phoneNumber) } returns false
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns true
 
             // When & Then
@@ -55,12 +56,27 @@ class SignUpValidatorTest : FunSpec({
             }.message shouldBe "이미 사용중인 email입니다."
         }
 
+        test("중복된 전화번호가 있으면 예외가 발생한다") {
+            // Given
+            val newMember = NewMemberFixture.create()
+
+            every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
+            every { memberQueryRepository.exists(newMember.email) } returns false
+            every { memberQueryRepository.exists(newMember.phoneNumber) } returns true
+
+            // When & Then
+            shouldThrow<DuplicateException> {
+                signUpValidator.validate(newMember)
+            }.message shouldBe "이미 사용중인 phoneNumber입니다."
+        }
+
         test("SMS 인증이 완료되지 않으면 예외가 발생한다") {
             // Given
             val newMember = NewMemberFixture.create()
 
             every { memberQueryRepository.existsByNickname(newMember.nickname) } returns false
             every { memberQueryRepository.exists(newMember.email) } returns false
+            every { memberQueryRepository.exists(newMember.phoneNumber) } returns false
             every { smsRepository.getConfirmed(newMember.phoneNumber.fullNumber) } returns false
 
             // When & Then

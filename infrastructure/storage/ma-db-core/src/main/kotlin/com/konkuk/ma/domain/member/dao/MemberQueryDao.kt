@@ -27,6 +27,14 @@ class MemberQueryDao {
             .any()
     }
 
+    fun existsByPhoneNumber(phoneNumber: String): Boolean {
+        return MemberTable.select(intLiteral(1))
+            .where {
+                (MemberTable.deleted eq false) and (MemberTable.phoneNumber eq phoneNumber)
+            }.limit(1)
+            .any()
+    }
+
     fun findOne(email: String): MemberEntity? {
         return MemberTable
             .activeRows { MemberTable.email eq email }
