@@ -21,14 +21,15 @@ class MemberQueryDaoTest(
 
     private fun insertMember(
         email: String = "test@example.com",
-        nickname: String = "testNickname"
+        nickname: String = "testNickname",
+        phoneNumber: String = "01012345678"
     ) {
         MemberTable.insert {
             it[MemberTable.email] = email
             it[password] = "password123"
             it[MemberTable.nickname] = nickname
             it[gender] = "MALE"
-            it[phoneNumber] = "01012345678"
+            it[MemberTable.phoneNumber] = phoneNumber
             it[name] = "김테스트"
             it[birthDate] = LocalDate.of(1990, 1, 1)
             it[region] = "SEOUL"
@@ -120,6 +121,29 @@ class MemberQueryDaoTest(
 
             // When
             val result = memberQueryDao.existsByEmail(email)
+
+            // Then
+            result shouldBe false
+        }
+
+        test("existsByPhoneNumber - 전화번호가 존재하는 경우 true를 반환한다") {
+            // Given
+            val phoneNumber = "01099998888"
+            insertMember(phoneNumber = phoneNumber)
+
+            // When
+            val result = memberQueryDao.existsByPhoneNumber(phoneNumber)
+
+            // Then
+            result shouldBe true
+        }
+
+        test("existsByPhoneNumber - 전화번호가 존재하지 않는 경우 false를 반환한다") {
+            // Given
+            val phoneNumber = "01000000000"
+
+            // When
+            val result = memberQueryDao.existsByPhoneNumber(phoneNumber)
 
             // Then
             result shouldBe false
