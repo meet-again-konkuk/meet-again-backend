@@ -3,12 +3,14 @@ package com.konkuk.ma.domain.member.domain
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.exception.AlreadyWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
 
-class MemberWithdrawalTest : FunSpec({
+class MemberTest : FunSpec({
 
     context("requestWithdrawal") {
 
@@ -48,6 +50,26 @@ class MemberWithdrawalTest : FunSpec({
 
             shouldThrow<NotWithdrawalRequestedException> {
                 member.cancelWithdrawal()
+            }
+        }
+    }
+
+    context("verifyLogin") {
+
+        test("활성 회원이면 통과한다") {
+            val member = MemberFixture.create()
+
+            shouldNotThrowAny {
+                member.verifyLogin()
+            }
+        }
+
+        test("탈퇴 신청 상태면 WithdrawalPendingLoginException을 던진다") {
+            val member = MemberFixture.create()
+            member.requestWithdrawal(LocalDateTime.now())
+
+            shouldThrow<WithdrawalPendingLoginException> {
+                member.verifyLogin()
             }
         }
     }
