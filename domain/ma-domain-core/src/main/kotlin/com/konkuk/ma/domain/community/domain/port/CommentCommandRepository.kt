@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain.port
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.NewComment
 
 interface CommentCommandRepository {
@@ -7,4 +8,5 @@ interface CommentCommandRepository {
     fun increaseLikes(commentId: Long): Int
     fun decreaseLikes(commentId: Long): Int
     fun delete(commentId: Long)
+    fun anonymizeAuthor(authorEmail: Email, withdrawnEmail: Email)
 }

@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.support.dao
 import com.konkuk.ma.domain.support.domain.NewInquiry
 import com.konkuk.ma.domain.support.entity.table.InquiryTable
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,5 +16,12 @@ class InquiryCommandDao {
             it[createdBy] = newInquiry.authorEmail.value
             it[lastModifiedBy] = newInquiry.authorEmail.value
         }.value
+    }
+
+    fun anonymizeAuthor(oldEmail: String, newEmail: String) {
+        InquiryTable.update({ InquiryTable.authorEmail eq oldEmail }) {
+            it[authorEmail] = newEmail
+            it[lastModifiedBy] = newEmail
+        }
     }
 }

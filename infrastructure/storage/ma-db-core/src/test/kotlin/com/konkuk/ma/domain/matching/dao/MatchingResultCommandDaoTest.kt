@@ -183,6 +183,42 @@ class MatchingResultCommandDaoTest(
                 deletedCount shouldBe 0
             }
         }
+
+        context("deleteByMember") {
+
+            test("회원이 register인 매칭을 soft delete 한다") {
+                // Given
+                insertMatchingResult()
+
+                // When
+                matchingResultCommandDao.deleteByMember("register@example.com")
+
+                // Then
+                MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe true
+            }
+
+            test("회원이 target인 매칭을 soft delete 한다") {
+                // Given
+                insertMatchingResult()
+
+                // When
+                matchingResultCommandDao.deleteByMember("target@example.com")
+
+                // Then
+                MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe true
+            }
+
+            test("매칭과 무관한 회원이면 삭제하지 않는다") {
+                // Given
+                insertMatchingResult()
+
+                // When
+                matchingResultCommandDao.deleteByMember("other@example.com")
+
+                // Then
+                MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
+            }
+        }
     }
 
     private fun insertTestMember(email: String) {

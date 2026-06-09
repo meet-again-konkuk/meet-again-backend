@@ -12,5 +12,8 @@ data class Email(val value: String) {
 
     companion object {
         private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+        private const val WITHDRAWN_FORMAT = "withdrawn_%d@deleted.local"
+
+        fun withdrawn(memberId: Long): Email = Email(WITHDRAWN_FORMAT.format(memberId))
     }
 }

@@ -9,4 +9,5 @@ interface TargetInfoCommandRepository {
     fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long
     fun update(id: Long, email: Email, updateTargetInfo: UpdateTargetInfo)
     fun delete(id: Long, email: Email)
+    fun delete(email: Email)
 }

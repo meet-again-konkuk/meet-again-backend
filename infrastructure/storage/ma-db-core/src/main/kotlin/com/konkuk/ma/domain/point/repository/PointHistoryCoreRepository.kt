@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.point.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.point.dao.PointHistoryDao
 import com.konkuk.ma.domain.point.domain.history.NewPointHistory
 import com.konkuk.ma.domain.point.domain.history.PointHistory
@@ -17,5 +18,9 @@ class PointHistoryCoreRepository(
 
     override fun findOneOrNull(idempotencyKey: String): PointHistory? {
         return pointHistoryDao.findOneOrNull(idempotencyKey)?.toDomain()
+    }
+
+    override fun anonymizeOwner(ownerEmail: Email, withdrawnEmail: Email) {
+        pointHistoryDao.anonymizeOwner(ownerEmail.value, withdrawnEmail.value)
     }
 }

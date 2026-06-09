@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.dao.CommentCommandDao
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
@@ -23,5 +24,9 @@ class CommentCommandCoreRepository(
 
     override fun delete(commentId: Long) {
         commentCommandDao.delete(commentId)
+    }
+
+    override fun anonymizeAuthor(authorEmail: Email, withdrawnEmail: Email) {
+        commentCommandDao.anonymizeAuthor(authorEmail.value, withdrawnEmail.value)
     }
 }

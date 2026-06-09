@@ -25,4 +25,8 @@ class CommentLikeDao {
                 (CommentLikeTable.memberEmail eq memberEmail)
         }
     }
+
+    fun deleteByMember(memberEmail: String) {
+        CommentLikeTable.deleteWhere { CommentLikeTable.memberEmail eq memberEmail }
+    }
 }

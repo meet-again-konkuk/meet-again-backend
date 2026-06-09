@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
+import com.konkuk.ma.domain.member.domain.policy.WithdrawnSentinel
 import com.konkuk.ma.domain.member.exception.AlreadyWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
@@ -92,6 +93,23 @@ class Member(
         if (isWithdrawalRequested()) {
             throw WithdrawalPendingLoginException(email)
         }
+    }
+
+    fun anonymize(): Member {
+        return Member(
+            id = id,
+            email = Email.withdrawn(id),
+            password = WithdrawnSentinel.PASSWORD,
+            nickname = WithdrawnSentinel.nickname(id),
+            gender = gender,
+            phoneNumber = PhoneNumber(WithdrawnSentinel.PHONE_NUMBER),
+            name = WithdrawnSentinel.NAME,
+            region = WithdrawnSentinel.REGION,
+            birthDate = WithdrawnSentinel.BIRTH_DATE,
+            highSchool = null,
+            university = null,
+            withdrawalRequestedAt = withdrawalRequestedAt,
+        )
     }
 
     private fun isWithdrawalRequested(): Boolean = withdrawalRequestedAt != null

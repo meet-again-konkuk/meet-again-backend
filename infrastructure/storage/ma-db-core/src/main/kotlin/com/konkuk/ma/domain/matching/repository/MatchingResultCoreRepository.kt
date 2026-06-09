@@ -64,4 +64,8 @@ class MatchingResultCoreRepository(
     override fun delete(targetInfoId: Long, email: Email) {
         matchingResultCommandDao.delete(targetInfoId, email.value)
     }
+
+    override fun deleteByMember(email: Email) {
+        matchingResultCommandDao.deleteByMember(email.value)
+    }
 }

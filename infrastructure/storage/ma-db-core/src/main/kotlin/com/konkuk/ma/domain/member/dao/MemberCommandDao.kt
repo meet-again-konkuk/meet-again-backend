@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -40,6 +41,23 @@ class MemberCommandDao {
         MemberTable.update({ MemberTable.email eq email.value }) {
             it[withdrawalRequestedAt] = null
             it[lastModifiedBy] = email.value
+        }
+    }
+
+    fun anonymizeAndSoftDelete(currentEmail: Email, anonymized: MemberEntity) {
+        MemberTable.update({ MemberTable.email eq currentEmail.value }) {
+            it[email] = anonymized.email
+            it[password] = anonymized.password
+            it[nickname] = anonymized.nickname
+            it[name] = anonymized.name
+            it[phoneNumber] = anonymized.phoneNumber
+            it[birthDate] = anonymized.birthDate
+            it[region] = anonymized.region.name
+            it[highSchool] = anonymized.highSchool
+            it[university] = anonymized.university
+            it[profileImageUrl] = null
+            it[deleted] = true
+            it[lastModifiedBy] = anonymized.email
         }
     }
 }

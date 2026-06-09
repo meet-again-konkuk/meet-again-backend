@@ -50,4 +50,11 @@ class CommentCommandDao {
             .limit(1)
             .first()[CommentTable.likes]
     }
+
+    fun anonymizeAuthor(oldEmail: String, newEmail: String) {
+        CommentTable.update({ CommentTable.authorEmail eq oldEmail }) {
+            it[authorEmail] = newEmail
+            it[lastModifiedBy] = newEmail
+        }
+    }
 }

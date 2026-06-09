@@ -17,4 +17,5 @@ interface MatchingResultRepository {
     fun findClaimedByTarget(email: Email): List<MatchingResult>
     fun exists(targetInfoId: Long): Boolean
     fun delete(targetInfoId: Long, email: Email)
+    fun deleteByMember(email: Email)
 }

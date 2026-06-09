@@ -17,4 +17,8 @@ class CommentLikeCoreRepository(
     override fun delete(commentId: Long, memberEmail: Email) {
         commentLikeDao.delete(commentId, memberEmail.value)
     }
+
+    override fun deleteByMember(memberEmail: Email) {
+        commentLikeDao.deleteByMember(memberEmail.value)
+    }
 }
