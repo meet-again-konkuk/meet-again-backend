@@ -10,8 +10,10 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.update
 import org.springframework.test.context.ContextConfiguration
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ContextConfiguration(classes = [TestDatabaseConfig::class, TargetInfoQueryDao::class])
 @DatabaseTest
@@ -106,6 +108,21 @@ class TargetInfoQueryDaoTest(
                 result[0].id shouldBe result.minOf { it.id }
                 result[2].id shouldBe result.maxOf { it.id }
             }
+
+            test("탈퇴 신청한 등록 회원의 타겟은 제외되고 활성 회원의 타겟만 조회된다") {
+                // Given
+                insertMember("active@example.com")
+                insertTargetInfo(registerEmail = "active@example.com", name = "활성타겟")
+                insertTargetInfo(registerEmail = "test@example.com", name = "탈퇴타겟")
+                markWithdrawalPending("test@example.com")
+
+                // When
+                val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 10)
+
+                // Then
+                result shouldHaveSize 1
+                result[0].name shouldBe "활성타겟"
+            }
         }
     }
 
@@ -113,12 +130,18 @@ class TargetInfoQueryDaoTest(
         MemberTable.insert {
             it[MemberTable.email] = email
             it[password] = "password123"
-            it[nickname] = "nickname"
+            it[nickname] = "nickname_$email"
             it[gender] = "MALE"
             it[phoneNumber] = "01012345678"
             it[MemberTable.name] = "테스트"
             it[birthDate] = LocalDate.of(1990, 1, 1)
             it[region] = "SEOUL"
+        }
+    }
+
+    private fun markWithdrawalPending(email: String) {
+        MemberTable.update({ MemberTable.email eq email }) {
+            it[withdrawalRequestedAt] = LocalDateTime.now()
         }
     }
 
