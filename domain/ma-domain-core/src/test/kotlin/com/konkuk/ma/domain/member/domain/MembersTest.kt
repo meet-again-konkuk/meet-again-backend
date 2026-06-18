@@ -58,6 +58,57 @@ class MembersTest : FunSpec({
         }
     }
 
+    context("findOne(id)") {
+
+        test("id로 회원을 찾으면 해당 회원을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findOne(member.id)
+
+            // Then
+            result shouldBe member
+        }
+
+        test("여러 회원 중 id로 정확한 회원을 찾는다") {
+            // Given
+            val member1 = MemberFixture.create(id = 1L, email = "a@example.com")
+            val member2 = MemberFixture.create(id = 2L, email = "b@example.com")
+            val members = Members(listOf(member1, member2))
+
+            // When
+            val result = members.findOne(member2.id)
+
+            // Then
+            result shouldBe member2
+        }
+
+        test("존재하지 않는 id이면 null을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findOne(999L)
+
+            // Then
+            result shouldBe null
+        }
+
+        test("빈 목록에서 조회하면 null을 반환한다") {
+            // Given
+            val members = Members(emptyList())
+
+            // When
+            val result = members.findOne(1L)
+
+            // Then
+            result shouldBe null
+        }
+    }
+
     context("findNickname") {
 
         test("이메일로 닉네임을 찾으면 해당 닉네임을 반환한다") {

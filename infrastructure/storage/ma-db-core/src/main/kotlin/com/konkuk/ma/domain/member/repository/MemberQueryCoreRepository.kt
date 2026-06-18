@@ -30,6 +30,11 @@ class MemberQueryCoreRepository(
             ?: throw EntityNotFoundException(EntityType.MEMBER, email.value)
     }
 
+    override fun findOne(id: Long): Member {
+        return memberQueryDao.findOne(id)?.toDomain()
+            ?: throw EntityNotFoundException(EntityType.MEMBER, id.toString())
+    }
+
     override fun findByNames(names: Set<String>): List<Member> {
         return memberQueryDao.findByNames(names)
             .map { it.toDomain() }
@@ -37,6 +42,11 @@ class MemberQueryCoreRepository(
 
     override fun findByEmails(emails: Set<Email>): List<Member> {
         return memberQueryDao.findByEmails(emails.map { it.value }.toSet())
+            .map { it.toDomain() }
+    }
+
+    override fun findByIds(ids: Set<Long>): List<Member> {
+        return memberQueryDao.findByIds(ids)
             .map { it.toDomain() }
     }
 }
