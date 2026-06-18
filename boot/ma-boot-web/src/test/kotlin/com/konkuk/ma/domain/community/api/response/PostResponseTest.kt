@@ -14,8 +14,9 @@ class PostResponseTest : FunSpec({
 
         test("PostWithAuthor 도메인 객체를 PostResponse로 변환한다") {
             val postWithAuthor = PostWithAuthor(
-                post = PostFixture.create(category = PostCategory.SUCCESS_STORY, likes = 5),
+                post = PostFixture.create(category = PostCategory.SUCCESS_STORY),
                 nickname = "작성자",
+                likeCount = 5,
             )
 
             val response = PostResponse.from(postWithAuthor)
@@ -25,13 +26,14 @@ class PostResponseTest : FunSpec({
             response.category shouldBe postWithAuthor.post.category.name
             response.title shouldBe postWithAuthor.post.title
             response.content shouldBe postWithAuthor.post.content
-            response.likes shouldBe postWithAuthor.post.likes
+            response.likes shouldBe postWithAuthor.likeCount
         }
 
         test("timeAgo는 TimeAgoCalculator 결과를 사용한다") {
             val postWithAuthor = PostWithAuthor(
                 post = PostFixture.create(createdDate = LocalDateTime.now().minusMinutes(30)),
                 nickname = "작성자",
+                likeCount = 0,
             )
 
             val response = PostResponse.from(postWithAuthor)

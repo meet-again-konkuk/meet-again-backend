@@ -13,6 +13,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.springframework.test.context.ContextConfiguration
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ContextConfiguration(classes = [TestDatabaseConfig::class, MemberQueryDao::class])
 @DatabaseTest
@@ -26,7 +27,8 @@ class MemberQueryDaoTest(
         email: String = "test@example.com",
         nickname: String = "testNickname",
         phoneNumber: String = "01012345678",
-        deleted: Boolean = false
+        deleted: Boolean = false,
+        withdrawalRequestedAt: LocalDateTime? = null
     ): Long {
         return MemberTable.insertAndGetId {
             it[MemberTable.email] = email
@@ -38,6 +40,7 @@ class MemberQueryDaoTest(
             it[birthDate] = LocalDate.of(1990, 1, 1)
             it[region] = "SEOUL"
             it[MemberTable.deleted] = deleted
+            it[MemberTable.withdrawalRequestedAt] = withdrawalRequestedAt
         }.value
     }
 
@@ -226,6 +229,59 @@ class MemberQueryDaoTest(
 
             // Then
             result shouldHaveSize 0
+        }
+
+        context("findExpiredWithdrawalRequests") {
+
+            val cutoff = LocalDateTime.of(2026, 6, 1, 0, 0)
+
+            test("컷오프 이전에 탈퇴 신청한 회원을 반환한다") {
+                // Given
+                insertMember(email = "expired@example.com", nickname = "n1", withdrawalRequestedAt = cutoff.minusDays(1))
+
+                // When
+                val result = memberQueryDao.findExpiredWithdrawalRequests(cutoff, null, 10)
+
+                // Then
+                result shouldHaveSize 1
+                result[0].email shouldBe "expired@example.com"
+            }
+
+            test("컷오프 이후(유예 중) 신청 회원은 제외한다") {
+                // Given
+                insertMember(email = "pending@example.com", nickname = "n2", withdrawalRequestedAt = cutoff.plusDays(1))
+
+                // When
+                val result = memberQueryDao.findExpiredWithdrawalRequests(cutoff, null, 10)
+
+                // Then
+                result shouldHaveSize 0
+            }
+
+            test("탈퇴 신청하지 않은 회원은 제외한다") {
+                // Given
+                insertMember(email = "active@example.com", nickname = "n3", withdrawalRequestedAt = null)
+
+                // When
+                val result = memberQueryDao.findExpiredWithdrawalRequests(cutoff, null, 10)
+
+                // Then
+                result shouldHaveSize 0
+            }
+
+            test("cursorId 이후의 회원만 반환한다") {
+                // Given
+                insertMember(email = "a@example.com", nickname = "na", withdrawalRequestedAt = cutoff.minusDays(1))
+                insertMember(email = "b@example.com", nickname = "nb", withdrawalRequestedAt = cutoff.minusDays(1))
+                val all = memberQueryDao.findExpiredWithdrawalRequests(cutoff, null, 10)
+                all shouldHaveSize 2
+
+                // When
+                val afterCursor = memberQueryDao.findExpiredWithdrawalRequests(cutoff, all.first().id, 10)
+
+                // Then
+                afterCursor.map { it.id } shouldBe all.drop(1).map { it.id }
+            }
         }
     }
 }

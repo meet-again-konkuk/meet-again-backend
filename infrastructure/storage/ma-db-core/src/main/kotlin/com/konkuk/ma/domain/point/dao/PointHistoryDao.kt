@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.point.entity.table.PointHistoryTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 
 @Component
@@ -34,5 +35,18 @@ class PointHistoryDao {
             .limit(1)
             .firstOrNull()
             ?.let { PointHistoryEntity.from(it) }
+    }
+
+    fun find(ownerEmail: String): List<PointHistoryEntity> {
+        return PointHistoryTable
+            .activeRows { PointHistoryTable.ownerEmail eq ownerEmail }
+            .map { PointHistoryEntity.from(it) }
+    }
+
+    fun anonymizeOwner(oldEmail: String, newEmail: String) {
+        PointHistoryTable.update({ PointHistoryTable.ownerEmail eq oldEmail }) {
+            it[ownerEmail] = newEmail
+            it[lastModifiedBy] = newEmail
+        }
     }
 }

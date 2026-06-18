@@ -25,6 +25,10 @@ This skill contains the project-specific test patterns, Spec style selection cri
 
 ## Project-Specific Conventions (MUST FOLLOW)
 
+- **🚫 Service 클래스는 단위 테스트 코드를 작성하지 않는다 — 통합 테스트 코드로 대체한다.**
+  - `application` 계층의 Service 클래스는 Mockk로 협력 객체를 모킹한 단위 테스트를 작성하지 않는다. 대신 **API 엔드포인트부터 DB까지 관통하는 E2E 통합 테스트(`@SpringBootTest` + 실제 H2, `boot/.../integration/` 패턴)**로 해당 동작을 커버한다. Service만 실제 어댑터와 와이어링한 중간 레벨 통합 테스트가 아니라, **실제 HTTP 요청으로 컨트롤러→Service→도메인→인프라→DB 전 계층을 검증**한다.
+  - 이유: Service의 가치는 여러 협력 객체(레포지토리·쿼리 등)를 오케스트레이션하는 데 있는데, 모킹 단위 테스트는 그 실제 연동·쿼리 정합성을 검증하지 못해 "통과해도 운영에서 깨지는" 사각지대를 만든다. 통합 테스트가 그 정합성을 직접 검증한다.
+  - 따라서 Service에 대한 검증 요청을 받으면, `*ServiceTest`(모킹 단위 테스트)를 만들지 말고 통합 테스트로 작성한다. 단위 테스트는 도메인 모델/Value Object/유틸 등 협력자 없이 결정적으로 검증 가능한 대상에 한정한다.
 - **Testing Framework**: KoTest spec styles (BehaviorSpec, StringSpec, DescribeSpec, etc.)
 - **Mocking**: Use **Mockk** (NOT Mockito)
 - **API Tests**: Extend common test configuration with `@BaseApiTest` and generate REST Docs snippets
@@ -34,23 +38,25 @@ This skill contains the project-specific test patterns, Spec style selection cri
 ## Test Writing Guidelines
 
 ### Spec Style Selection
-- Use **BehaviorSpec** (`Given`, `When`, `Then`) for service/business logic tests — this is the preferred default
+- Use **BehaviorSpec** (`Given`, `When`, `Then`) for domain/business logic 단위 테스트 — this is the preferred default. (**단, Service(application 계층)는 단위 테스트를 작성하지 않고 통합 테스트로 대체한다** — 위 MUST FOLLOW 규칙 참조)
 - Use **DescribeSpec** (`describe`, `context`, `it`) for utility/helper class tests
 - Use **StringSpec** for simple, flat test cases
 - For API controller tests, follow the existing `@BaseApiTest` pattern with REST Docs
 
 ### Structure
+> 아래는 단위 테스트 대상(도메인/VO/유틸)의 구조 예시다. **Service 계층에는 이 모킹 단위 테스트를 적용하지 않고 통합 테스트로 대체한다.**
+
 ```kotlin
-class SomeServiceTest : BehaviorSpec({
+class SomeDomainPolicyTest : BehaviorSpec({
     val mockRepository = mockk<SomeRepository>()
-    val service = SomeService(mockRepository)
+    val sut = SomeDomainPolicy(mockRepository)
 
     Given("어떤 상황이 주어졌을 때") {
         val input = "test"
         every { mockRepository.findByName(input) } returns someResult
 
         When("특정 동작을 수행하면") {
-            val result = service.doSomething(input)
+            val result = sut.doSomething(input)
 
             Then("기대하는 결과가 반환된다") {
                 result shouldBe expectedValue
@@ -68,7 +74,7 @@ class SomeServiceTest : BehaviorSpec({
 - Use `relaxed = true` sparingly and only when appropriate
 
 ### Test Quality Checklist
-- [ ] All public methods are tested
+- [ ] All public methods are tested (**Service 계층 제외 — 통합 테스트로 대체**)
 - [ ] Happy path covered
 - [ ] Edge cases covered (null, empty, boundary values)
 - [ ] Error/exception scenarios covered
@@ -96,6 +102,7 @@ class SomeControllerTest : BehaviorSpec({
 
 ## Important Rules
 
+- **NEVER write mock-based unit tests for Service (application 계층) classes — cover them with integration tests instead.** (Service 클래스는 단위 테스트 코드를 작성하지 않고 통합 테스트 코드로 대체한다.)
 - NEVER use JUnit annotations (`@Test`, `@BeforeEach`, etc.) — use KoTest lifecycle hooks instead
 - NEVER use Mockito — always use Mockk
 - NEVER use JPA/Hibernate patterns — this project uses Exposed ORM

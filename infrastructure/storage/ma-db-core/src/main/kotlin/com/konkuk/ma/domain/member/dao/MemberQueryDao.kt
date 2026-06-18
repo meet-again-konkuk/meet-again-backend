@@ -5,9 +5,11 @@ import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 
 
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.intLiteral
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class MemberQueryDao {
@@ -69,6 +71,18 @@ class MemberQueryDao {
         if (names.isEmpty()) return emptyList()
         return MemberTable
             .activeRows { MemberTable.name inList names }
+            .map { RowEntityMapper.toMemberEntity(it) }
+    }
+
+    fun findExpiredWithdrawalRequests(expiredBefore: LocalDateTime, cursorId: Long?, pageSize: Int): List<MemberEntity> {
+        return MemberTable
+            .activeRows {
+                val baseCondition = MemberTable.withdrawalRequestedAt.isNotNull() and
+                    (MemberTable.withdrawalRequestedAt lessEq expiredBefore)
+                if (cursorId == null) baseCondition else baseCondition and (MemberTable.id greater cursorId)
+            }
+            .orderBy(MemberTable.id to SortOrder.ASC)
+            .limit(pageSize)
             .map { RowEntityMapper.toMemberEntity(it) }
     }
 }

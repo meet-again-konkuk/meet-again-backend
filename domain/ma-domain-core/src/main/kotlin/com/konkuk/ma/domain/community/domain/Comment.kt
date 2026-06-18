@@ -12,7 +12,6 @@ class Comment(
     val authorEmail: Email,
     val content: String,
     val parentCommentId: Long? = null,
-    val likes: Int = 0,
     val createdDate: LocalDateTime = LocalDateTime.now(),
     val deleted: Boolean = false,
 ) {

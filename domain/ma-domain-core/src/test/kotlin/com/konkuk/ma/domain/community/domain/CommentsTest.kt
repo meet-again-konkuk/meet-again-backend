@@ -81,7 +81,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members)
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 1
@@ -111,7 +111,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members)
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 1
@@ -129,7 +129,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members)
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 1
@@ -150,7 +150,7 @@ class CommentsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = comments.groupByRootComment(members)
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 1
@@ -164,7 +164,7 @@ class CommentsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = comments.groupByRootComment(members)
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 0
@@ -196,7 +196,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members)
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 2

@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class MemberQueryCoreRepository(
@@ -47,6 +48,11 @@ class MemberQueryCoreRepository(
 
     override fun findByIds(ids: Set<Long>): List<Member> {
         return memberQueryDao.findByIds(ids)
+            .map { it.toDomain() }
+    }
+
+    override fun findExpiredWithdrawalRequests(expiredBefore: LocalDateTime, cursorId: Long?, pageSize: Int): List<Member> {
+        return memberQueryDao.findExpiredWithdrawalRequests(expiredBefore, cursorId, pageSize)
             .map { it.toDomain() }
     }
 }

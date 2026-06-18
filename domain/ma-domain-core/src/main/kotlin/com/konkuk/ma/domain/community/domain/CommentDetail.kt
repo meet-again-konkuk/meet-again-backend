@@ -7,16 +7,21 @@ class CommentDetail(
     val rootComment: Comment,
     val replies: Replies,
 ) {
-    fun combineWithAuthor(members: Members): CommentWithAuthor {
+    fun combineWithAuthor(members: Members, likeCounts: LikeCounts): CommentWithAuthor {
         return CommentWithAuthor(
             comment = rootComment,
             nickname = members.findNickname(rootComment.authorEmail),
-            replies = replies.combineWithAuthors(members),
+            likeCount = likeCounts.countOf(rootComment.id),
+            replies = replies.combineWithAuthors(members, likeCounts),
             remainingReplyCount = 0,
         )
     }
 
     fun extractAuthorEmails(): Set<Email> {
         return replies.extractAuthorEmails() + rootComment.authorEmail
+    }
+
+    fun extractIds(): List<Long> {
+        return replies.extractIds() + rootComment.id
     }
 }

@@ -61,4 +61,17 @@ class MatchingResultCommandDao {
     fun delete(targetInfoId: Long, email: String) {
         MatchingResultTable.softDelete({ MatchingResultTable.targetInfoId eq targetInfoId }, email)
     }
+
+    fun deleteByRegister(email: String) {
+        MatchingResultTable.softDelete({ MatchingResultTable.registerEmail eq email }, email)
+    }
+
+    fun anonymizeTarget(targetEmail: String, withdrawnEmail: String) {
+        MatchingResultTable.update({
+            (MatchingResultTable.targetEmail eq targetEmail) and (MatchingResultTable.deleted eq false)
+        }) {
+            it[MatchingResultTable.targetEmail] = withdrawnEmail
+            it[lastModifiedBy] = withdrawnEmail
+        }
+    }
 }

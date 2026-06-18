@@ -39,6 +39,12 @@ class PostQueryDao {
             ?.let { PostEntity.from(it) }
     }
 
+    fun find(authorEmail: String): List<PostEntity> {
+        return PostTable
+            .activeRows { PostTable.authorEmail eq authorEmail }
+            .map { PostEntity.from(it) }
+    }
+
     fun exists(id: Long): Boolean {
         return PostTable.select(intLiteral(1))
             .where { (PostTable.deleted eq false) and (PostTable.id eq id) }

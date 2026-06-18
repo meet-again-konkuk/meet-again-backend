@@ -16,4 +16,8 @@ class XroomCommandDao {
             it[lastModifiedBy] = newXroom.ownerEmail.value
         }.value
     }
+
+    fun delete(ownerEmail: String) {
+        XroomTable.softDelete({ XroomTable.ownerEmail eq ownerEmail }, ownerEmail)
+    }
 }

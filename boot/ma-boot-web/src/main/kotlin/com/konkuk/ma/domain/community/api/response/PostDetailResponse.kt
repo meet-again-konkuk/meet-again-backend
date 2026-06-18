@@ -22,7 +22,7 @@ class PostDetailResponse(
                 category = post.category.name,
                 title = post.title,
                 content = post.content,
-                likes = post.likes,
+                likes = postDetail.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
                 comments = postDetail.comments.map { CommentResponse.from(it) },
             )

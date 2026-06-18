@@ -7,5 +7,4 @@ object PostTable : BaseTable("COMMUNITY_POSTS", "COMMUNITY_POST_ID") {
     val category = varchar("CATEGORY", 32)
     val title = varchar("TITLE", 100)
     val content = text("CONTENT")
-    val likes = integer("LIKES").clientDefault { 0 }
 }

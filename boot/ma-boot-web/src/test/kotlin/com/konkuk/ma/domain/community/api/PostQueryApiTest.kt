@@ -42,6 +42,7 @@ class PostQueryApiTest(
         val postWithAuthor = PostWithAuthor(
             post = PostFixture.create(category = PostCategory.CHEER),
             nickname = "테스트닉네임",
+            likeCount = 5,
         )
         val cursorResult = CursorResult(
             data = listOf(postWithAuthor),

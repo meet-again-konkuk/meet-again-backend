@@ -19,35 +19,16 @@ class CommentCommandDao {
         }.value
     }
 
-    fun increaseLikes(commentId: Long): Int {
-        CommentTable.update({ CommentTable.id eq commentId }) {
-            with(org.jetbrains.exposed.sql.SqlExpressionBuilder) {
-                it[likes] = likes + 1
-            }
-        }
-        return findLikeCount(commentId)
-    }
-
-    fun decreaseLikes(commentId: Long): Int {
-        CommentTable.update({ CommentTable.id eq commentId }) {
-            with(org.jetbrains.exposed.sql.SqlExpressionBuilder) {
-                it[likes] = likes - 1
-            }
-        }
-        return findLikeCount(commentId)
-    }
-
     fun delete(id: Long) {
         CommentTable.update({ CommentTable.id eq id }) {
             it[deleted] = true
         }
     }
 
-    private fun findLikeCount(commentId: Long): Int {
-        return CommentTable
-            .select(CommentTable.likes)
-            .where { CommentTable.id eq commentId }
-            .limit(1)
-            .first()[CommentTable.likes]
+    fun anonymizeAuthor(oldEmail: String, newEmail: String) {
+        CommentTable.update({ CommentTable.authorEmail eq oldEmail }) {
+            it[authorEmail] = newEmail
+            it[lastModifiedBy] = newEmail
+        }
     }
 }

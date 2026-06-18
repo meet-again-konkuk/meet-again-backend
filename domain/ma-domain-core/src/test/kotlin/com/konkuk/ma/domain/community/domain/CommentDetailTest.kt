@@ -75,7 +75,7 @@ class CommentDetailTest : FunSpec({
             val members = Members(listOf(rootMember, reply1Member, reply2Member))
 
             // When
-            val result = commentDetail.combineWithAuthor(members)
+            val result = commentDetail.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.comment shouldBe rootComment
@@ -95,7 +95,7 @@ class CommentDetailTest : FunSpec({
             val members = Members(listOf(rootMember))
 
             // When
-            val result = commentDetail.combineWithAuthor(members)
+            val result = commentDetail.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.comment shouldBe rootComment
@@ -111,7 +111,7 @@ class CommentDetailTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = commentDetail.combineWithAuthor(members)
+            val result = commentDetail.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.nickname shouldBe "알 수 없음"

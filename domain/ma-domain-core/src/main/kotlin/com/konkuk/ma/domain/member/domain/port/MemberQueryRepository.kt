@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.member.domain.port
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.PhoneNumber
+import java.time.LocalDateTime
 
 interface MemberQueryRepository {
     fun existsByNickname(nickname: String): Boolean
@@ -13,4 +14,5 @@ interface MemberQueryRepository {
     fun findByNames(names: Set<String>): List<Member>
     fun findByEmails(emails: Set<Email>): List<Member>
     fun findByIds(ids: Set<Long>): List<Member>
+    fun findExpiredWithdrawalRequests(expiredBefore: LocalDateTime, cursorId: Long?, pageSize: Int): List<Member>
 }
