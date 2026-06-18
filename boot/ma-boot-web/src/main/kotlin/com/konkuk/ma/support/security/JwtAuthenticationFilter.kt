@@ -34,19 +34,15 @@ class JwtAuthenticationFilter(
         }
         val jwt = authHeader.substring(BEARER_PREFIX.length)
         try {
-            authenticate(jwt, request)
+            val memberId = tokenManager.getMemberIdFromToken(jwt)
+            val authentication = UsernamePasswordAuthenticationToken(memberId, null, emptyList<SimpleGrantedAuthority>())
+            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+            SecurityContextHolder.getContext().authentication = authentication
         } catch (e: AuthTokenException) {
             handleAuthTokenException(e, response)
             return
         }
         filterChain.doFilter(request, response)
-    }
-
-    private fun authenticate(jwt: String, request: HttpServletRequest) {
-        val memberId = tokenManager.getMemberIdFromToken(jwt)
-        val authentication = UsernamePasswordAuthenticationToken(memberId, null, emptyList<SimpleGrantedAuthority>())
-        authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-        SecurityContextHolder.getContext().authentication = authentication
     }
 
     private fun handleAuthTokenException(e: AuthTokenException, response: HttpServletResponse) {

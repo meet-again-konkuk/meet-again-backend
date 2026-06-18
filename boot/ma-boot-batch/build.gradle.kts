@@ -16,3 +16,4 @@ dependencies {
     testImplementation("org.jetbrains.exposed:exposed-java-time:0.57.0")
     testRuntimeOnly("com.h2database:h2")
 }
+
