@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.domain.community.api.response.PostLikeResponse
 import com.konkuk.ma.domain.community.application.PostLikeService
+import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,7 +20,7 @@ class PostLikeApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun like(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable postId: Long,
     ): PostLikeResponse {
         val result = postLikeService.like(postId, memberInfo.email)
@@ -29,7 +29,7 @@ class PostLikeApi(
 
     @DeleteMapping
     fun unlike(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable postId: Long,
     ): PostLikeResponse {
         val result = postLikeService.unlike(postId, memberInfo.email)

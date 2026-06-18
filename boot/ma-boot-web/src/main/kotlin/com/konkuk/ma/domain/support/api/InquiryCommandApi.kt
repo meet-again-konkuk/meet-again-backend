@@ -3,10 +3,10 @@ package com.konkuk.ma.domain.support.api
 import com.konkuk.ma.domain.support.api.request.NewInquiryRequest
 import com.konkuk.ma.domain.support.api.response.NewInquiryResponse
 import com.konkuk.ma.domain.support.application.InquiryCommandService
+import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,7 +21,7 @@ class InquiryCommandApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: NewInquiryRequest,
     ): NewInquiryResponse {
         val inquiryId = inquiryCommandService.create(request.toNewInquiry(memberInfo.email))

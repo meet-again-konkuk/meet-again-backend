@@ -2,12 +2,9 @@ package com.konkuk.ma.support.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
-import com.konkuk.ma.domain.matching.fixture.MemberFixture
-import com.konkuk.ma.domain.member.application.MemberQueryService
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.every
 import io.mockk.mockk
 import jakarta.servlet.FilterChain
@@ -18,9 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 class JwtAuthenticationFilterTest : FunSpec({
 
     val tokenManager = mockk<TokenManager>()
-    val memberQueryService = mockk<MemberQueryService>()
     val mapper = mockk<ObjectMapper>()
-    val filter = JwtAuthenticationFilter(tokenManager, memberQueryService, mapper)
+    val filter = JwtAuthenticationFilter(tokenManager, mapper)
 
     beforeTest {
         SecurityContextHolder.clearContext()
@@ -42,12 +38,11 @@ class JwtAuthenticationFilterTest : FunSpec({
             chainCalled.shouldBeTrue()
         }
 
-        test("유효한 토큰이면 회원을 조회해 MemberInfo를 principal로 세팅하고 체인을 통과한다") {
+        test("유효한 토큰이면 memberId를 principal로 세팅하고 체인을 통과한다") {
             // Given
             val jwt = "valid-jwt-token"
-            val member = MemberFixture.create(id = 42L, email = "user@example.com", nickname = "tester")
-            every { tokenManager.getMemberIdFromToken(jwt) } returns member.id
-            every { memberQueryService.findOne(member.id) } returns member
+            val memberId = 42L
+            every { tokenManager.getMemberIdFromToken(jwt) } returns memberId
 
             val request = MockHttpServletRequest().apply {
                 addHeader("Authorization", "Bearer $jwt")
@@ -62,10 +57,7 @@ class JwtAuthenticationFilterTest : FunSpec({
             // Then
             chainCalled.shouldBeTrue()
             val principal = SecurityContextHolder.getContext().authentication.principal
-            principal.shouldBeInstanceOf<MemberInfo>()
-            principal.id shouldBe member.id
-            principal.email shouldBe member.email.value
-            principal.nickname shouldBe member.nickname
+            principal shouldBe memberId
         }
     }
 })

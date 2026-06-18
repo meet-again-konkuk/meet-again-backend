@@ -1,13 +1,12 @@
 package com.konkuk.ma.support.security
 
+import com.konkuk.ma.config.MemberQueryServiceTestConfig
 import com.konkuk.ma.config.SecurityConfig
 import com.konkuk.ma.support.id.TestIdObfuscatorConfig
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import com.konkuk.ma.exception.BusinessException
 import com.konkuk.ma.domain.auth.exception.JwtExceptionType
-import com.konkuk.ma.domain.matching.fixture.MemberFixture
-import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -20,13 +19,11 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @WebMvcTest(TestProtectedController::class)
-@Import(SecurityConfig::class, JwtAuthenticationFilter::class, RoutingAwareEntryPoint::class, TestIdObfuscatorConfig::class)
+@Import(SecurityConfig::class, JwtAuthenticationFilter::class, RoutingAwareEntryPoint::class, TestIdObfuscatorConfig::class, MemberQueryServiceTestConfig::class)
 class JwtAuthenticationFilterSecurityTest(
     private val mockMvc: MockMvc,
 
     @MockkBean private val tokenManager: TokenManager,
-
-    @MockkBean private val memberQueryService: MemberQueryService
 
 ) : FunSpec({
 
@@ -37,9 +34,7 @@ class JwtAuthenticationFilterSecurityTest(
 
     test("유효한 토큰이면 정상 인증되고 200 OK") {
         val token = "valid-jwt"
-        val member = MemberFixture.create(id = 42L, email = "user@example.com")
-        every { tokenManager.getMemberIdFromToken(token) } returns member.id
-        every { memberQueryService.findOne(member.id) } returns member
+        every { tokenManager.getMemberIdFromToken(token) } returns 42L
 
         mockMvc.get("/protected") {
             header("Authorization", "Bearer $token")

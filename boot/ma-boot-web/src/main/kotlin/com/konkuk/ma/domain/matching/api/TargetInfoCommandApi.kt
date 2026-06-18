@@ -7,10 +7,10 @@ import com.konkuk.ma.domain.matching.api.response.NewTargetInfoResponse
 import com.konkuk.ma.domain.matching.api.response.TargetInfoResponse
 import com.konkuk.ma.domain.matching.application.TargetInfoCommandService
 import com.konkuk.ma.support.id.DecryptId
+import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,7 +28,7 @@ class TargetInfoCommandApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun save(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: NewTargetInfoRequest
     ): NewTargetInfoResponse {
         val newTargetInfo = request.toNewTargetInfo(memberInfo.email)
@@ -38,7 +38,7 @@ class TargetInfoCommandApi(
 
     @PutMapping("/{targetInfoId}")
     fun update(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
         @Valid @RequestBody request: UpdateTargetInfoRequest
     ): TargetInfoResponse {
@@ -49,7 +49,7 @@ class TargetInfoCommandApi(
     @DeleteMapping("/{targetInfoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ) {
         targetInfoCommandService.delete(targetInfoId, memberInfo.email)

@@ -3,7 +3,6 @@ package com.konkuk.ma.support.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
-import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.konkuk.ma.support.payload.response.ApiError
 import com.konkuk.ma.support.payload.response.ErrorCode
 import jakarta.servlet.FilterChain
@@ -20,8 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val tokenManager: TokenManager,
 
-    private val memberQueryService: MemberQueryService,
-
     private val mapper: ObjectMapper
 ) : OncePerRequestFilter() {
     companion object {
@@ -37,30 +34,27 @@ class JwtAuthenticationFilter(
         }
         val jwt = authHeader.substring(BEARER_PREFIX.length)
         try {
-            val memberId = tokenManager.getMemberIdFromToken(jwt)
-            val member = memberQueryService.findOne(memberId)
-            val memberInfo = MemberInfo.from(member)
-            val authentication = UsernamePasswordAuthenticationToken(memberInfo, null, emptyList<SimpleGrantedAuthority>())
-            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-            SecurityContextHolder.getContext().authentication = authentication
-            filterChain.doFilter(request, response)
+            authenticate(jwt, request)
         } catch (e: AuthTokenException) {
-            if (e.isExpired()) {
-                writeApiError(response, ErrorCode.EXPIRED_TOKEN, HttpServletResponse.SC_UNAUTHORIZED)
-                return
-            }
-            if (e.isMalformed()) {
-                writeApiError(response, ErrorCode.MALFORMED_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
-                return
-            }
-            if (e.isInvalid()) {
-                writeApiError(response, ErrorCode.INVALID_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
-                return
-            }
-            if (e.isOtherError()) {
-                writeApiError(response, ErrorCode.OTHER_TOKEN_ERROR, HttpServletResponse.SC_BAD_REQUEST)
+            handleAuthTokenException(e, response)
+            return
+        }
+        filterChain.doFilter(request, response)
+    }
 
-            }
+    private fun authenticate(jwt: String, request: HttpServletRequest) {
+        val memberId = tokenManager.getMemberIdFromToken(jwt)
+        val authentication = UsernamePasswordAuthenticationToken(memberId, null, emptyList<SimpleGrantedAuthority>())
+        authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+        SecurityContextHolder.getContext().authentication = authentication
+    }
+
+    private fun handleAuthTokenException(e: AuthTokenException, response: HttpServletResponse) {
+        when {
+            e.isExpired() -> writeApiError(response, ErrorCode.EXPIRED_TOKEN, HttpServletResponse.SC_UNAUTHORIZED)
+            e.isMalformed() -> writeApiError(response, ErrorCode.MALFORMED_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
+            e.isInvalid() -> writeApiError(response, ErrorCode.INVALID_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
+            e.isOtherError() -> writeApiError(response, ErrorCode.OTHER_TOKEN_ERROR, HttpServletResponse.SC_BAD_REQUEST)
         }
     }
 

@@ -4,10 +4,10 @@ import com.konkuk.ma.domain.auth.application.WithdrawalCancelService
 import com.konkuk.ma.domain.auth.application.WithdrawalService
 import com.konkuk.ma.domain.member.api.request.WithdrawalCancelRequest
 import com.konkuk.ma.domain.member.api.request.WithdrawalRequest
+import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,7 +23,7 @@ class MemberWithdrawalApi(
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun requestWithdrawal(
-        @AuthenticationPrincipal memberInfo: MemberInfo,
+        @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: WithdrawalRequest
     ) {
         withdrawalService.requestWithdrawal(request.toCommand(memberInfo.email))
