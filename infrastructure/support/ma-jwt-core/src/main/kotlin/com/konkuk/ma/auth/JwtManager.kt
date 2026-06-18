@@ -2,11 +2,9 @@ package com.konkuk.ma.auth
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
 import com.konkuk.ma.domain.auth.exception.JwtExceptionType
 import com.konkuk.ma.exception.BusinessException.LogLevel
-import com.konkuk.ma.logger
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
@@ -36,17 +34,15 @@ class JwtManager(
 
     private val key: SecretKey = Keys.hmacShaKeyFor(secretKey.toByteArray())
 
-    override fun generateAccessToken(email: Email): String {
-        logger.info { "Generating access token for email: ${email.value}" }
-        val generated = generateJwt(email.value, accessTokenExpiration)
+    override fun generateAccessToken(memberId: Long): String {
+        val generated = generateJwt(memberId, accessTokenExpiration)
         return generated.token
     }
 
-    override fun generateRefreshToken(email: Email): RefreshToken {
-        logger.info { "Generating refresh token for email: ${email.value}" }
-        val generated = generateJwt(email.value, refreshTokenExpiration)
+    override fun generateRefreshToken(memberId: Long): RefreshToken {
+        val generated = generateJwt(memberId, refreshTokenExpiration)
         return RefreshToken(
-            email = email,
+            memberId = memberId,
             expirationDate = generated.expiry,
             token = generated.token
         )
@@ -57,7 +53,7 @@ class JwtManager(
         val expiry: LocalDateTime
     )
 
-    private fun generateJwt(email: String, expirationMs: Long): GeneratedJwt {
+    private fun generateJwt(memberId: Long, expirationMs: Long): GeneratedJwt {
         val zone = ZoneId.systemDefault()
         val now = LocalDateTime.now()
         val expiry = now.plus(Duration.ofMillis(expirationMs))
@@ -65,14 +61,13 @@ class JwtManager(
         val issuedDate = Date.from(now.atZone(zone).toInstant())
         val expiryDate = Date.from(expiry.atZone(zone).toInstant())
 
-        val token = generateToken(email, issuedDate, expiryDate)
-        logger.info { "generated token: $token, email: $email" }
+        val token = generateToken(memberId, issuedDate, expiryDate)
         return GeneratedJwt(token = token, expiry = expiry)
     }
 
-    private fun generateToken(email: String, issuedAt: Date, expiryDate: Date): String {
+    private fun generateToken(memberId: Long, issuedAt: Date, expiryDate: Date): String {
         return Jwts.builder()
-            .setSubject(email)
+            .setSubject(memberId.toString())
             .setIssuedAt(issuedAt)
             .setExpiration(expiryDate)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -84,9 +79,9 @@ class JwtManager(
         return true
     }
 
-    override fun getEmailFromToken(token: String): String {
+    override fun getMemberIdFromToken(token: String): Long {
         val claims = getClaimsFromToken(token)
-        return claims.subject
+        return claims.subject.toLong()
     }
 
     private fun getClaimsFromToken(token: String): Claims {

@@ -3,6 +3,7 @@ package com.konkuk.ma.support.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.domain.port.TokenManager
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
+import com.konkuk.ma.domain.member.application.MemberQueryService
 import com.konkuk.ma.support.payload.response.ApiError
 import com.konkuk.ma.support.payload.response.ErrorCode
 import jakarta.servlet.FilterChain
@@ -19,6 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val tokenManager: TokenManager,
 
+    private val memberQueryService: MemberQueryService,
+
     private val mapper: ObjectMapper
 ) : OncePerRequestFilter() {
     companion object {
@@ -34,8 +37,10 @@ class JwtAuthenticationFilter(
         }
         val jwt = authHeader.substring(BEARER_PREFIX.length)
         try {
-            val email = tokenManager.getEmailFromToken(jwt)
-            val authentication = UsernamePasswordAuthenticationToken(email, null, emptyList<SimpleGrantedAuthority>())
+            val memberId = tokenManager.getMemberIdFromToken(jwt)
+            val member = memberQueryService.findOne(memberId)
+            val memberInfo = MemberInfo.from(member)
+            val authentication = UsernamePasswordAuthenticationToken(memberInfo, null, emptyList<SimpleGrantedAuthority>())
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication
             filterChain.doFilter(request, response)

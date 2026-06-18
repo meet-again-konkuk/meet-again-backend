@@ -29,7 +29,7 @@ object RowEntityMapper {
     )
 
     fun toRefreshTokenEntity(row: ResultRow) = RefreshTokenEntity(
-        email = row[RefreshTokenTable.email],
+        memberId = row[RefreshTokenTable.memberId],
         expirationDate = row[RefreshTokenTable.expirationDate],
         token = row[RefreshTokenTable.token],
     )

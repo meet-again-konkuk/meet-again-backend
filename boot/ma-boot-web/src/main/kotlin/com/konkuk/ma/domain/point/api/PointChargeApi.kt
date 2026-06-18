@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.point.api
 import com.konkuk.ma.domain.point.api.request.ChargePointRequest
 import com.konkuk.ma.domain.point.api.response.ChargePointResponse
 import com.konkuk.ma.domain.point.application.PointChargeService
+import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -20,10 +21,10 @@ class PointChargeApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun charge(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @Valid @RequestBody request: ChargePointRequest,
     ): ChargePointResponse {
-        val command = request.toCommand(email)
+        val command = request.toCommand(memberInfo.email)
         val result = pointChargeService.charge(command)
         return ChargePointResponse.from(result)
     }

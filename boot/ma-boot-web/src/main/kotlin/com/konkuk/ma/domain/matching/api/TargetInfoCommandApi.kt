@@ -7,6 +7,7 @@ import com.konkuk.ma.domain.matching.api.response.NewTargetInfoResponse
 import com.konkuk.ma.domain.matching.api.response.TargetInfoResponse
 import com.konkuk.ma.domain.matching.application.TargetInfoCommandService
 import com.konkuk.ma.support.id.DecryptId
+import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -27,30 +28,30 @@ class TargetInfoCommandApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun save(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @Valid @RequestBody request: NewTargetInfoRequest
     ): NewTargetInfoResponse {
-        val newTargetInfo = request.toNewTargetInfo(email)
+        val newTargetInfo = request.toNewTargetInfo(memberInfo.email)
         val targetInfoId = targetInfoCommandService.register(newTargetInfo)
-        return NewTargetInfoResponse(targetInfoId = targetInfoId, registerEmail = email)
+        return NewTargetInfoResponse(targetInfoId = targetInfoId, registerEmail = memberInfo.email)
     }
 
     @PutMapping("/{targetInfoId}")
     fun update(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
         @Valid @RequestBody request: UpdateTargetInfoRequest
     ): TargetInfoResponse {
-        val updated = targetInfoCommandService.update(targetInfoId, email, request.toUpdateTargetInfo())
+        val updated = targetInfoCommandService.update(targetInfoId, memberInfo.email, request.toUpdateTargetInfo())
         return TargetInfoResponse.from(updated)
     }
 
     @DeleteMapping("/{targetInfoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ) {
-        targetInfoCommandService.delete(targetInfoId, email)
+        targetInfoCommandService.delete(targetInfoId, memberInfo.email)
     }
 }

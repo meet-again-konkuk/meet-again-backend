@@ -34,14 +34,14 @@ class RefreshTokenValidatorTest : FunSpec({
                 expirationDate = LocalDateTime.now().minusDays(1),
             )
 
-            every { refreshTokenRepository.delete(refreshToken.email) } returns Unit
+            every { refreshTokenRepository.delete(refreshToken.memberId) } returns Unit
 
             // When & Then
             shouldThrow<RefreshTokenExpiredException> {
                 refreshTokenValidator.validate(refreshToken)
             }.message shouldBe "Refresh token이 만료되었습니다."
 
-            verify { refreshTokenRepository.delete(refreshToken.email) }
+            verify { refreshTokenRepository.delete(refreshToken.memberId) }
         }
     }
 })

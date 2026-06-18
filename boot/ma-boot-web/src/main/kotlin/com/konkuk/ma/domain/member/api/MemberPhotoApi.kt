@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.member.api
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.member.api.response.MemberPhotoResponse
 import com.konkuk.ma.domain.member.application.MemberPhotoService
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -22,19 +23,19 @@ class MemberPhotoApi(
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
     fun uploadPhoto(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @RequestPart("photo") photo: MultipartFile
     ): MemberPhotoResponse {
         val photoFile = PhotoFile.create(photo.originalFilename, photo.size, photo.bytes)
-        memberPhotoService.upload(email, photoFile)
+        memberPhotoService.upload(memberInfo.email, photoFile)
         return MemberPhotoResponse.uploaded()
     }
 
     @DeleteMapping
     fun deletePhoto(
-        @AuthenticationPrincipal email: String
+        @AuthenticationPrincipal memberInfo: MemberInfo
     ): MemberPhotoResponse {
-        memberPhotoService.delete(email)
+        memberPhotoService.delete(memberInfo.email)
         return MemberPhotoResponse.deleted()
     }
 }

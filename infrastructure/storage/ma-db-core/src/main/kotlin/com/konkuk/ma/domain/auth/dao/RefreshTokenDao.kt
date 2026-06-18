@@ -16,23 +16,23 @@ import org.springframework.stereotype.Component
 class RefreshTokenDao {
     fun save(refreshToken: RefreshToken) {
         RefreshTokenTable.insert {
-            it[email] = refreshToken.email.value
+            it[memberId] = refreshToken.memberId
             it[token] = refreshToken.token
             it[expirationDate] = refreshToken.expirationDate
-            it[createdBy] = refreshToken.email.value
-            it[lastModifiedBy] = refreshToken.email.value
+            it[createdBy] = refreshToken.memberId.toString()
+            it[lastModifiedBy] = refreshToken.memberId.toString()
         }
     }
 
-    fun delete(email: String) {
+    fun delete(memberId: Long) {
         RefreshTokenTable.deleteWhere {
-            RefreshTokenTable.email eq email
+            RefreshTokenTable.memberId eq memberId
         }
     }
 
-    fun findOne(email: String): RefreshTokenEntity? {
+    fun findOne(memberId: Long): RefreshTokenEntity? {
         return RefreshTokenTable.selectAll()
-            .where { RefreshTokenTable.email eq email }
+            .where { RefreshTokenTable.memberId eq memberId }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toRefreshTokenEntity(it) }

@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.community.api
 import com.konkuk.ma.domain.community.api.request.NewCommentRequest
 import com.konkuk.ma.domain.community.api.response.NewCommentResponse
 import com.konkuk.ma.domain.community.application.CommentCommandService
+import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -22,20 +23,20 @@ class CommentCommandApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @PathVariable postId: Long,
         @Valid @RequestBody request: NewCommentRequest,
     ): NewCommentResponse {
-        val commentId = commentCommandService.create(request.toNewComment(email, postId))
+        val commentId = commentCommandService.create(request.toNewComment(memberInfo.email, postId))
         return NewCommentResponse(commentId = commentId)
     }
 
     @DeleteMapping("/{commentId}")
     fun delete(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
     ) {
-        commentCommandService.delete(commentId, email)
+        commentCommandService.delete(commentId, memberInfo.email)
     }
 }

@@ -12,7 +12,8 @@ import org.springframework.context.annotation.Import
     SecurityConfig::class,
     RoutingAwareEntryPoint::class,
     JwtManager::class,
-    TestIdObfuscatorConfig::class
+    TestIdObfuscatorConfig::class,
+    MemberQueryServiceTestConfig::class
 )
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs

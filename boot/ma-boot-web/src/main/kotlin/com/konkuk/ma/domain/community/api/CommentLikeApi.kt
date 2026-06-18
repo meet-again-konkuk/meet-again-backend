@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.domain.community.api.response.CommentLikeResponse
 import com.konkuk.ma.domain.community.application.CommentLikeService
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.http.HttpStatus
@@ -19,19 +20,19 @@ class CommentLikeApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun like(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @PathVariable commentId: Long,
     ): CommentLikeResponse {
-        val result = commentLikeService.like(commentId, email)
+        val result = commentLikeService.like(commentId, memberInfo.email)
         return CommentLikeResponse.from(result)
     }
 
     @DeleteMapping
     fun unlike(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @PathVariable commentId: Long,
     ): CommentLikeResponse {
-        val result = commentLikeService.unlike(commentId, email)
+        val result = commentLikeService.unlike(commentId, memberInfo.email)
         return CommentLikeResponse.from(result)
     }
 }

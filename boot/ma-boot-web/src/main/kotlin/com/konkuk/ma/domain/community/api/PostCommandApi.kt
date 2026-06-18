@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.community.api
 import com.konkuk.ma.domain.community.api.request.NewPostRequest
 import com.konkuk.ma.domain.community.api.response.NewPostResponse
 import com.konkuk.ma.domain.community.application.PostCommandService
+import com.konkuk.ma.support.security.MemberInfo
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -20,10 +21,10 @@ class PostCommandApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(
-        @AuthenticationPrincipal email: String,
+        @AuthenticationPrincipal memberInfo: MemberInfo,
         @Valid @RequestBody request: NewPostRequest,
     ): NewPostResponse {
-        val postId = postCommandService.create(request.toNewPost(email))
+        val postId = postCommandService.create(request.toNewPost(memberInfo.email))
         return NewPostResponse(postId = postId)
     }
 }

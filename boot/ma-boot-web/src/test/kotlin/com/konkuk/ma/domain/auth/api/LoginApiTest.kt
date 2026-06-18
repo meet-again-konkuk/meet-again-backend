@@ -38,7 +38,7 @@ class LoginApiTest(
             email = Email(request.email),
             nickname = "tester",
             accessToken = "access-token",
-            refreshToken = RefreshToken(Email("user@example.com"), LocalDateTime.now().plusDays(7), "refresh-token")
+            refreshToken = RefreshToken(memberId = 1L, LocalDateTime.now().plusDays(7), "refresh-token")
         )
         every { loginService.login(match { it.email == Email(request.email) && it.password == request.password }) } returns loginInfo
 
