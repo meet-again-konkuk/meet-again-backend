@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.repository
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.common.domain.page.CursorResult
 import com.konkuk.ma.domain.community.dao.PostQueryDao
@@ -19,6 +20,10 @@ class PostQueryCoreRepository(
             .map { it.toDomain() }
 
         return CursorResult.of(posts, cursorCondition.size) { it.id }
+    }
+
+    override fun find(authorEmail: Email): List<Post> {
+        return postQueryDao.find(authorEmail.value).map { it.toDomain() }
     }
 
     override fun findOne(id: Long): Post {

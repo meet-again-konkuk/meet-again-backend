@@ -65,7 +65,11 @@ class MatchingResultCoreRepository(
         matchingResultCommandDao.delete(targetInfoId, email.value)
     }
 
-    override fun deleteByMember(email: Email) {
-        matchingResultCommandDao.deleteByMember(email.value)
+    override fun deleteByRegister(email: Email) {
+        matchingResultCommandDao.deleteByRegister(email.value)
+    }
+
+    override fun anonymizeTarget(targetEmail: Email, withdrawnEmail: Email) {
+        matchingResultCommandDao.anonymizeTarget(targetEmail.value, withdrawnEmail.value)
     }
 }

@@ -19,7 +19,7 @@ class CommentResponse(
                 id = comment.id,
                 nickname = commentWithAuthor.nickname,
                 content = comment.displayContent(),
-                likes = comment.likes,
+                likes = commentWithAuthor.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(comment.createdDate),
                 replies = commentWithAuthor.replies.map { ReplyResponse.from(it) },
                 remainingReplyCount = commentWithAuthor.remainingReplyCount,

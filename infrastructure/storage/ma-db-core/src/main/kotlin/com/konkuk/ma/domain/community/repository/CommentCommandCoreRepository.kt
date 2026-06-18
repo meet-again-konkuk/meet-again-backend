@@ -14,14 +14,6 @@ class CommentCommandCoreRepository(
         return commentCommandDao.save(newComment)
     }
 
-    override fun increaseLikes(commentId: Long): Int {
-        return commentCommandDao.increaseLikes(commentId)
-    }
-
-    override fun decreaseLikes(commentId: Long): Int {
-        return commentCommandDao.decreaseLikes(commentId)
-    }
-
     override fun delete(commentId: Long) {
         commentCommandDao.delete(commentId)
     }

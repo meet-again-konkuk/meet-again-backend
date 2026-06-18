@@ -37,6 +37,12 @@ class PointHistoryDao {
             ?.let { PointHistoryEntity.from(it) }
     }
 
+    fun find(ownerEmail: String): List<PointHistoryEntity> {
+        return PointHistoryTable
+            .activeRows { PointHistoryTable.ownerEmail eq ownerEmail }
+            .map { PointHistoryEntity.from(it) }
+    }
+
     fun anonymizeOwner(oldEmail: String, newEmail: String) {
         PointHistoryTable.update({ PointHistoryTable.ownerEmail eq oldEmail }) {
             it[ownerEmail] = newEmail

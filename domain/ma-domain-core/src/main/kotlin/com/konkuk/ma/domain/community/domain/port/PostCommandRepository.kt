@@ -5,7 +5,5 @@ import com.konkuk.ma.domain.community.domain.NewPost
 
 interface PostCommandRepository {
     fun save(newPost: NewPost): Long
-    fun increaseLikes(postId: Long): Int
-    fun decreaseLikes(postId: Long): Int
     fun anonymizeAuthor(authorEmail: Email, withdrawnEmail: Email)
 }

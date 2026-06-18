@@ -5,23 +5,32 @@ import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import org.springframework.batch.item.ItemReader
 import java.time.LocalDateTime
 
-class ExpiredWithdrawalMemberItemReader(
+open class ExpiredWithdrawalMemberItemReader(
     private val memberQueryRepository: MemberQueryRepository,
     private val expiredBefore: LocalDateTime,
     private val pageSize: Int
-) : ItemReader<List<Member>> {
+) : ItemReader<Member> {
 
+    private val buffer: ArrayDeque<Member> = ArrayDeque()
     private var cursorId: Long? = null
     private var exhausted: Boolean = false
 
-    override fun read(): List<Member>? {
-        if (exhausted) return null
+    override fun read(): Member? {
+        if (buffer.isEmpty() && !fetchNextPage()) {
+            return null
+        }
+        return buffer.removeFirst()
+    }
+
+    private fun fetchNextPage(): Boolean {
+        if (exhausted) return false
         val members = memberQueryRepository.findExpiredWithdrawalRequests(expiredBefore, cursorId, pageSize)
         if (members.isEmpty()) {
             exhausted = true
-            return null
+            return false
         }
         cursorId = members.last().id
-        return members
+        buffer.addAll(members)
+        return true
     }
 }

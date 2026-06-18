@@ -95,10 +95,14 @@ class Member(
         }
     }
 
+    fun withdrawnEmail(): Email = Email.withdrawn(id)
+
+    fun maskedPhoneNumber(): String = phoneNumber.masked()
+
     fun anonymize(): Member {
         return Member(
             id = id,
-            email = Email.withdrawn(id),
+            email = withdrawnEmail(),
             password = WithdrawnSentinel.PASSWORD,
             nickname = WithdrawnSentinel.nickname(id),
             gender = gender,

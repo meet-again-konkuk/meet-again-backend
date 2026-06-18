@@ -1,0 +1,7 @@
+spring:
+  main:
+    # 배치는 공유 도메인 모듈(ma-domain-core)의 모든 빈을 스캔하지만,
+    # 잡이 실제로 쓰는 빈만 인스턴스화하면 충분하다. lazy 초기화로
+    # web 전용 application 서비스(및 그들이 의존하는 Redis/JWT/crypto/SMS 인프라)는
+    # 생성되지 않으므로, 불필요한 인프라 의존이나 스캔 제외 없이도 부팅된다.
+    lazy-initialization: true

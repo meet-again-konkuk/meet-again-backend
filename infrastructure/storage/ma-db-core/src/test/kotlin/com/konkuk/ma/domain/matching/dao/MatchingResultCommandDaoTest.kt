@@ -184,28 +184,28 @@ class MatchingResultCommandDaoTest(
             }
         }
 
-        context("deleteByMember") {
+        context("deleteByRegister") {
 
             test("회원이 register인 매칭을 soft delete 한다") {
                 // Given
                 insertMatchingResult()
 
                 // When
-                matchingResultCommandDao.deleteByMember("register@example.com")
+                matchingResultCommandDao.deleteByRegister("register@example.com")
 
                 // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe true
             }
 
-            test("회원이 target인 매칭을 soft delete 한다") {
+            test("회원이 target일 뿐이면 삭제하지 않는다") {
                 // Given
                 insertMatchingResult()
 
                 // When
-                matchingResultCommandDao.deleteByMember("target@example.com")
+                matchingResultCommandDao.deleteByRegister("target@example.com")
 
                 // Then
-                MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe true
+                MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
             }
 
             test("매칭과 무관한 회원이면 삭제하지 않는다") {
@@ -213,10 +213,48 @@ class MatchingResultCommandDaoTest(
                 insertMatchingResult()
 
                 // When
-                matchingResultCommandDao.deleteByMember("other@example.com")
+                matchingResultCommandDao.deleteByRegister("other@example.com")
 
                 // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
+            }
+        }
+
+        context("anonymizeTarget") {
+
+            test("회원이 target인 매칭의 targetEmail을 익명 이메일로 교체한다") {
+                // Given
+                insertMatchingResult()
+                insertTestMember("withdrawn_1@deleted.local")
+
+                // When
+                matchingResultCommandDao.anonymizeTarget("target@example.com", "withdrawn_1@deleted.local")
+
+                // Then
+                MatchingResultTable.selectAll().first()[MatchingResultTable.targetEmail] shouldBe "withdrawn_1@deleted.local"
+            }
+
+            test("회원이 register일 뿐이면 targetEmail을 바꾸지 않는다") {
+                // Given
+                insertMatchingResult()
+
+                // When
+                matchingResultCommandDao.anonymizeTarget("register@example.com", "withdrawn_1@deleted.local")
+
+                // Then
+                MatchingResultTable.selectAll().first()[MatchingResultTable.targetEmail] shouldBe "target@example.com"
+            }
+
+            test("이미 삭제된 매칭은 익명화하지 않는다") {
+                // Given
+                insertMatchingResult()
+                matchingResultCommandDao.deleteByRegister("register@example.com")
+
+                // When
+                matchingResultCommandDao.anonymizeTarget("target@example.com", "withdrawn_1@deleted.local")
+
+                // Then
+                MatchingResultTable.selectAll().first()[MatchingResultTable.targetEmail] shouldBe "target@example.com"
             }
         }
     }

@@ -9,5 +9,7 @@ interface PointHistoryRepository {
 
     fun findOneOrNull(idempotencyKey: String): PointHistory?
 
+    fun find(ownerEmail: Email): List<PointHistory>
+
     fun anonymizeOwner(ownerEmail: Email, withdrawnEmail: Email)
 }

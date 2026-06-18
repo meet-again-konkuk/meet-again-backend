@@ -9,7 +9,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 
@@ -63,10 +62,16 @@ class MatchingResultCommandDao {
         MatchingResultTable.softDelete({ MatchingResultTable.targetInfoId eq targetInfoId }, email)
     }
 
-    fun deleteByMember(email: String) {
-        MatchingResultTable.softDelete(
-            { (MatchingResultTable.registerEmail eq email) or (MatchingResultTable.targetEmail eq email) },
-            email
-        )
+    fun deleteByRegister(email: String) {
+        MatchingResultTable.softDelete({ MatchingResultTable.registerEmail eq email }, email)
+    }
+
+    fun anonymizeTarget(targetEmail: String, withdrawnEmail: String) {
+        MatchingResultTable.update({
+            (MatchingResultTable.targetEmail eq targetEmail) and (MatchingResultTable.deleted eq false)
+        }) {
+            it[MatchingResultTable.targetEmail] = withdrawnEmail
+            it[lastModifiedBy] = withdrawnEmail
+        }
     }
 }

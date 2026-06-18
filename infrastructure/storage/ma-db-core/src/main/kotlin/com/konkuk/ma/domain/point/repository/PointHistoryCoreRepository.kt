@@ -20,6 +20,10 @@ class PointHistoryCoreRepository(
         return pointHistoryDao.findOneOrNull(idempotencyKey)?.toDomain()
     }
 
+    override fun find(ownerEmail: Email): List<PointHistory> {
+        return pointHistoryDao.find(ownerEmail.value).map { it.toDomain() }
+    }
+
     override fun anonymizeOwner(ownerEmail: Email, withdrawnEmail: Email) {
         pointHistoryDao.anonymizeOwner(ownerEmail.value, withdrawnEmail.value)
     }

@@ -1,0 +1,19 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: "jdbc:h2:mem:batchtestdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=SET REFERENTIAL_INTEGRITY FALSE"
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  batch:
+    jdbc:
+      initialize-schema: always
+
+exposed:
+  generate-ddl: true
+
+backup:
+  local:
+    base-path: ${java.io.tmpdir}/meet-again-batch-test/backups

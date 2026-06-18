@@ -42,10 +42,12 @@ class CommentQueryApiTest(
         val reply = ReplyWithAuthor(
             comment = CommentFixture.create(id = 2L, parentCommentId = 1L, content = "감사합니다!"),
             nickname = "대댓글작성자",
+            likeCount = 1,
         )
         val commentWithAuthor = CommentWithAuthor(
-            comment = CommentFixture.create(id = 1L, content = "좋은 글이네요!", likes = 2),
+            comment = CommentFixture.create(id = 1L, content = "좋은 글이네요!"),
             nickname = "댓글작성자",
+            likeCount = 2,
             replies = listOf(reply),
             remainingReplyCount = 0,
         )

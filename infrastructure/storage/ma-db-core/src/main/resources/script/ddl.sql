@@ -151,7 +151,6 @@ CREATE TABLE COMMUNITY_POSTS
     CATEGORY           VARCHAR(32)   NOT NULL,
     TITLE              VARCHAR(100)  NOT NULL,
     CONTENT            TEXT          NOT NULL,
-    LIKES              INT           DEFAULT 0,
 
     -- BaseTable 공통 컬럼들
     CREATED_DATE       DATETIME      DEFAULT CURRENT_TIMESTAMP,
@@ -186,8 +185,6 @@ CREATE TABLE COMMUNITY_COMMENTS
     DELETED              BOOLEAN       DEFAULT FALSE,
     DELETED_DATE       DATETIME     NULL,
     DELETED_BY         VARCHAR(255) NULL,
-
-    LIKES                INT           DEFAULT 0,
 
     -- 인덱스
     INDEX idx_community_comment_post_id (POST_ID),

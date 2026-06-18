@@ -9,11 +9,16 @@ class Posts(val data: List<Post>) {
         return data.map { it.authorEmail }.toSet()
     }
 
-    fun combineWithAuthors(members: Members): List<PostWithAuthor> {
+    fun extractIds(): List<Long> {
+        return data.map { it.id }
+    }
+
+    fun combineWithAuthors(members: Members, likeCounts: LikeCounts): List<PostWithAuthor> {
         return data.map { post ->
             PostWithAuthor(
                 post = post,
                 nickname = members.findNickname(post.authorEmail),
+                likeCount = likeCounts.countOf(post.id),
             )
         }
     }

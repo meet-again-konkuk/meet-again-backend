@@ -21,7 +21,7 @@ class PostResponse(
                 category = post.category.name,
                 title = post.title,
                 content = post.content,
-                likes = post.likes,
+                likes = postWithAuthor.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
             )
         }

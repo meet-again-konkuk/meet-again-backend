@@ -68,7 +68,7 @@ class PostsTest : FunSpec({
             )
 
             // When
-            val result = posts.combineWithAuthors(members)
+            val result = posts.combineWithAuthors(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 2
@@ -85,7 +85,7 @@ class PostsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = posts.combineWithAuthors(members)
+            val result = posts.combineWithAuthors(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 1
@@ -98,7 +98,7 @@ class PostsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = posts.combineWithAuthors(members)
+            val result = posts.combineWithAuthors(members, LikeCounts.from(emptyMap()))
 
             // Then
             result shouldHaveSize 0
