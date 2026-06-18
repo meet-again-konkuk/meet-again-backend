@@ -148,5 +148,19 @@ class PhoneNumberTest : FunSpec({
             phoneNumber.formatted shouldBe "010-9876-5432"
         }
     }
+
+    context("masked 테스트") {
+        test("masked는 중간 4자리를 마스킹한 형식을 반환한다") {
+            val phoneNumber = PhoneNumber("01012345678")
+
+            phoneNumber.masked() shouldBe "010-****-5678"
+        }
+
+        test("masked는 끝 4자리는 보존한다") {
+            val phoneNumber = PhoneNumber("010-9876-5432")
+
+            phoneNumber.masked() shouldBe "010-****-5432"
+        }
+    }
 })
 

@@ -13,6 +13,7 @@ abstract class AbstractJobConfig {
 
     companion object {
         const val CHUNK_SIZE_1: Int = 1
+        const val CHUNK_SIZE_20: Int = 20
         const val CHUNK_SIZE_100: Int = 100
         const val CHUNK_SIZE_1000: Int = 1000
     }

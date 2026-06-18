@@ -35,3 +35,13 @@
   - 복구 엔드포인트는 **비인증(public)** 이며 email+password로 본인 확인.
   - 복구 API는 **토큰을 발급하지 않음** → 복구 후 반드시 로그인 API를 다시 호출해야 토큰 획득.
   - 유예 기간(7일)이 지났어도 **데이터 삭제(배치) 전이면 복구 가능**. 이미 삭제됐으면 cancellation도 실패하므로 일반 로그인 실패와 동일하게 처리.
+
+### 2. 탈퇴 회원이 타겟인 매칭 결과 — "탈퇴한 회원" 표기
+
+- **상황**: 탈퇴 유예 만료 후 익명화 배치가 실행되면, 탈퇴 회원이 **상대방의 매칭 목록에 타겟으로 남아있는 행은 삭제하지 않고 유지**한다. (탈퇴 회원 본인이 등록한(register) 매칭 행만 삭제) 회원은 익명화(soft delete)되어 프로필 조회 대상에서 빠진다.
+- **트리거 API**: `GET /api/matching-results` (내 매칭 목록 조회). 타겟이 탈퇴 회원인 행은 다음과 같이 내려간다:
+  - **`isWithdrawn = true`**
+  - `targetMemberId = null`, `targetName = null`, `targetNickname = null`, `profileImageUrl = null`
+  - 매칭 항목 자체(`matchingResultId`, `remainingDays`, `matchRate`, `claimed`, 매칭 조건 등)는 **그대로 존재** → 목록에서 사라지지 않음.
+- **요구 동작**: 응답의 **`isWithdrawn === true`** 이면 **"탈퇴한 회원"**(또는 동등 placeholder)으로 렌더. 이름/닉네임/프로필 이미지 자리를 placeholder로 처리하고, `targetMemberId`가 null이므로 프로필 상세 진입(클릭)은 비활성화.
+- **참고**: 서버는 `isWithdrawn` 플래그 + null 프로필 필드만 내려주고, 표기 문구·placeholder는 프론트에서 처리하기로 결정. 게시글·댓글의 "탈퇴한 사용자" 표기와 동일한 UX 컨셉.

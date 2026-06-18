@@ -14,7 +14,23 @@ class CommentLikeCoreRepository(
         return commentLikeDao.save(commentLike.commentId, commentLike.memberEmail.value)
     }
 
+    override fun find(memberEmail: Email): List<CommentLike> {
+        return commentLikeDao.find(memberEmail.value).map { it.toDomain() }
+    }
+
+    override fun count(commentId: Long): Int {
+        return commentLikeDao.count(commentId)
+    }
+
+    override fun count(commentIds: List<Long>): Map<Long, Int> {
+        return commentLikeDao.count(commentIds)
+    }
+
     override fun delete(commentId: Long, memberEmail: Email) {
         commentLikeDao.delete(commentId, memberEmail.value)
+    }
+
+    override fun deleteByMember(memberEmail: Email) {
+        commentLikeDao.deleteByMember(memberEmail.value)
     }
 }

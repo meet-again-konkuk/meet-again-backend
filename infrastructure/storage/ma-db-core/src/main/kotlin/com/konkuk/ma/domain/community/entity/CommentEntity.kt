@@ -12,7 +12,6 @@ class CommentEntity(
     val authorEmail: String,
     val content: String,
     val parentCommentId: Long?,
-    val likes: Int,
     val createdDate: LocalDateTime,
     val deleted: Boolean,
 ) {
@@ -23,7 +22,6 @@ class CommentEntity(
             authorEmail = Email(authorEmail),
             content = content,
             parentCommentId = parentCommentId,
-            likes = likes,
             createdDate = createdDate,
             deleted = deleted,
         )
@@ -37,7 +35,6 @@ class CommentEntity(
                 authorEmail = row[CommentTable.authorEmail],
                 content = row[CommentTable.content],
                 parentCommentId = row[CommentTable.parentCommentId],
-                likes = row[CommentTable.likes],
                 createdDate = row[CommentTable.createdDate],
                 deleted = row[CommentTable.deleted],
             )

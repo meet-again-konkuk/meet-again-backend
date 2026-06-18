@@ -69,4 +69,11 @@ class EmailTest : FunSpec({
             Email("user@example.com") shouldBe Email("user@example.com")
         }
     }
+
+    context("withdrawn") {
+
+        test("회원 id로 익명화 이메일을 생성한다") {
+            Email.withdrawn(42L) shouldBe Email("withdrawn_42@deleted.local")
+        }
+    }
 })

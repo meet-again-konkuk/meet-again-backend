@@ -12,7 +12,6 @@ object PostFixture {
         category: PostCategory = PostCategory.SUCCESS_STORY,
         title: String = "테스트 게시글",
         content: String = "테스트 내용입니다.",
-        likes: Int = 0,
         createdDate: LocalDateTime = LocalDateTime.now(),
     ): Post {
         return Post(
@@ -21,7 +20,6 @@ object PostFixture {
             category = category,
             title = title,
             content = content,
-            likes = likes,
             createdDate = createdDate,
         )
     }

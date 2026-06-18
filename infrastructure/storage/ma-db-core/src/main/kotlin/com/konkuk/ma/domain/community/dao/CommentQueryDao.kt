@@ -24,6 +24,13 @@ class CommentQueryDao {
             .map { row -> CommentEntity.from(row) }
     }
 
+    fun find(authorEmail: String): List<CommentEntity> {
+        return CommentTable
+            .activeRows { CommentTable.authorEmail eq authorEmail }
+            .orderBy(CommentTable.id to SortOrder.ASC)
+            .map { row -> CommentEntity.from(row) }
+    }
+
     fun findReplies(parentCommentId: Long): List<CommentEntity> {
         return CommentTable
             .selectAll()

@@ -42,4 +42,8 @@ class TargetInfoCommandDao {
     fun delete(id: Long, email: String) {
         TargetInfoTable.softDelete({ TargetInfoTable.id eq id }, email)
     }
+
+    fun delete(email: String) {
+        TargetInfoTable.softDelete({ TargetInfoTable.registerEmail eq email }, email)
+    }
 }

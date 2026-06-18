@@ -24,7 +24,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
 
             // When
-            val result = grouped.combineWithAuthor(members)
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.comment shouldBe parent
@@ -52,7 +52,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
 
             // When
-            val result = grouped.combineWithAuthor(members)
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.nickname shouldBe "부모작성자"
@@ -74,7 +74,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
 
             // When
-            val result = grouped.combineWithAuthor(members)
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.remainingReplyCount shouldBe 5
@@ -92,7 +92,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = grouped.combineWithAuthor(members)
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
 
             // Then
             result.nickname shouldBe "알 수 없음"

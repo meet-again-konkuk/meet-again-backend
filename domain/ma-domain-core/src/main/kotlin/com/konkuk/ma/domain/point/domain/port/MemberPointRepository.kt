@@ -7,4 +7,6 @@ interface MemberPointRepository {
     fun findOneOrInitial(ownerEmail: Email): MemberPoint
 
     fun save(memberPoint: MemberPoint): Long
+
+    fun delete(ownerEmail: Email)
 }

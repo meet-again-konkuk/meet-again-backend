@@ -11,7 +11,6 @@ object CommentFixture {
         authorEmail: String = "commenter@example.com",
         content: String = "테스트 댓글 내용입니다.",
         parentCommentId: Long? = null,
-        likes: Int = 0,
         createdDate: LocalDateTime = LocalDateTime.now(),
         deleted: Boolean = false,
     ): Comment {
@@ -21,7 +20,6 @@ object CommentFixture {
             authorEmail = Email(authorEmail),
             content = content,
             parentCommentId = parentCommentId,
-            likes = likes,
             createdDate = createdDate,
             deleted = deleted,
         )

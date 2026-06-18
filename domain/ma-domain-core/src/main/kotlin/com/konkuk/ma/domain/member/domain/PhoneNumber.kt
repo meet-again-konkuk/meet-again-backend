@@ -11,6 +11,8 @@ class PhoneNumber(
     val formatted: String get() = "$firstNumber-$middleNumber-$lastNumber"
     val fullNumber: String get() = "$firstNumber$middleNumber$lastNumber"
 
+    fun masked(): String = "$firstNumber-$MASKED_MIDDLE-$lastNumber"
+
     init {
         val normalized = phoneNumber.filterNot { it == '-' || it.isWhitespace() }
         if (normalized.length < 10) throw InvalidValueException(PhoneNumber::class, phoneNumber, "전화번호는 최소 10자리여야 합니다.")
@@ -23,5 +25,6 @@ class PhoneNumber(
 
     companion object {
         private const val ALLOWED_PREFIX = "010"
+        private const val MASKED_MIDDLE = "****"
     }
 }

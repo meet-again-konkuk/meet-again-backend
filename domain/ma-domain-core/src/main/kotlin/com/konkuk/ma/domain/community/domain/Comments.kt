@@ -9,10 +9,14 @@ class Comments(val data: List<Comment>) {
         return data.map { it.authorEmail }.toSet()
     }
 
-    fun groupByRootComment(members: Members): List<CommentWithAuthor> {
+    fun extractIds(): List<Long> {
+        return data.map { it.id }
+    }
+
+    fun groupByRootComment(members: Members, likeCounts: LikeCounts): List<CommentWithAuthor> {
         val rootComments = RootComments(data.filter { !it.hasParent() })
         val replies = Replies(data.filter { it.hasParent() })
         val commentsWithPreviewReplies = CommentsWithPreviewReplies(rootComments.groupWith(replies))
-        return commentsWithPreviewReplies.combineWithAuthors(members)
+        return commentsWithPreviewReplies.combineWithAuthors(members, likeCounts)
     }
 }

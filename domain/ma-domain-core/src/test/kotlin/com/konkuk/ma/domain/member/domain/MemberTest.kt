@@ -1,6 +1,8 @@
 package com.konkuk.ma.domain.member.domain
 
+import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
+import com.konkuk.ma.domain.member.domain.policy.WithdrawnSentinel
 import com.konkuk.ma.domain.member.exception.AlreadyWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.NotWithdrawalRequestedException
 import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
@@ -71,6 +73,32 @@ class MemberTest : FunSpec({
             shouldThrow<WithdrawalPendingLoginException> {
                 member.verifyLogin()
             }
+        }
+    }
+
+    context("anonymize") {
+
+        test("개인정보를 sentinel 값으로 치환하고 탈퇴 신청 시각은 보존한다") {
+            val requestedAt = LocalDateTime.of(2026, 5, 1, 10, 0)
+            val member = MemberFixture.create(
+                id = 42L,
+                gender = Gender.FEMALE,
+                highSchool = "건국고",
+                university = "건국대",
+            )
+            member.requestWithdrawal(requestedAt)
+
+            val anonymized = member.anonymize()
+
+            anonymized.id shouldBe 42L
+            anonymized.email shouldBe Email.withdrawn(42L)
+            anonymized.nickname shouldBe WithdrawnSentinel.nickname(42L)
+            anonymized.name shouldBe WithdrawnSentinel.NAME
+            anonymized.password shouldBe WithdrawnSentinel.PASSWORD
+            anonymized.highSchool shouldBe null
+            anonymized.university shouldBe null
+            anonymized.gender shouldBe Gender.FEMALE
+            anonymized.withdrawalRequestedAt shouldBe requestedAt
         }
     }
 })
