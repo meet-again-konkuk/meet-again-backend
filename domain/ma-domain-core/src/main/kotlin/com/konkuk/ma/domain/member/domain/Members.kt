@@ -10,6 +10,8 @@ class Members(val data: List<Member>) {
 
     fun findOne(email: Email): Member? = data.find { it.email == email }
 
+    fun findOne(id: Long): Member? = data.find { it.id == id }
+
     fun findNickname(email: Email): String {
         return nicknameByEmail[email] ?: UNKNOWN_NICKNAME
     }
