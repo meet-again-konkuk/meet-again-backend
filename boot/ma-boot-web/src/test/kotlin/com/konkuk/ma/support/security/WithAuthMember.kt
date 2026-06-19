@@ -6,5 +6,5 @@ import org.springframework.security.test.context.support.WithSecurityContext
 @Retention
 @WithSecurityContext(factory = WithAuthMemberSecurityContextFactory::class)
 annotation class WithAuthMember(
-    val email: String = "holeman@naver.com"
+    val id: Long = 1L
 )

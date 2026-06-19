@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.auth.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.auth.domain.LoginInfo
 import com.konkuk.ma.domain.auth.domain.RefreshTokenGenerator
 import com.konkuk.ma.domain.auth.domain.RefreshTokenValidator
@@ -24,17 +23,17 @@ class RefreshTokenService(
     private val memberQueryRepository: MemberQueryRepository
 ) {
     fun refreshToken(inputRefreshToken: String): LoginInfo {
-        val email = Email(tokenManager.getEmailFromToken(inputRefreshToken))
-        val refreshToken = refreshTokenRepository.findOne(email)
+        val memberId = tokenManager.getMemberIdFromToken(inputRefreshToken)
+        val refreshToken = refreshTokenRepository.findOne(memberId)
         refreshTokenValidator.validate(refreshToken)
-        val member = memberQueryRepository.findOne(email)
+        val member = memberQueryRepository.findOne(memberId)
         member.verifyLogin()
 
-        val accessToken = tokenManager.generateAccessToken(email)
-        val newRefreshToken = refreshTokenGenerator.generate(refreshToken.email)
+        val accessToken = tokenManager.generateAccessToken(memberId)
+        val newRefreshToken = refreshTokenGenerator.generate(memberId)
 
         return LoginInfo(
-            email, member.nickname, accessToken, newRefreshToken
+            member.email, member.nickname, accessToken, newRefreshToken
         )
     }
 }

@@ -45,7 +45,7 @@ class MemberDataCleaner(
     }
 
     private fun cleanAuth(member: Member) {
-        refreshTokenRepository.delete(member.email)
+        refreshTokenRepository.delete(member.id)
     }
 
     private fun cleanMatching(member: Member) {

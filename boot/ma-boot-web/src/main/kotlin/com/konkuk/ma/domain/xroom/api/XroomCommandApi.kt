@@ -4,8 +4,9 @@ import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.xroom.api.response.CreateXroomResponse
 import com.konkuk.ma.domain.xroom.application.XroomCommandService
 import com.konkuk.ma.support.id.DecryptId
+import com.konkuk.ma.support.security.LoginMember
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -20,10 +21,10 @@ class XroomCommandApi(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(
-        @AuthenticationPrincipal email: String,
+        @LoginMember memberInfo: MemberInfo,
         @RequestParam @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ): CreateXroomResponse {
-        val xroomId = xroomCommandService.create(targetInfoId, email)
+        val xroomId = xroomCommandService.create(targetInfoId, memberInfo.email)
         return CreateXroomResponse(xroomId = xroomId)
     }
 }

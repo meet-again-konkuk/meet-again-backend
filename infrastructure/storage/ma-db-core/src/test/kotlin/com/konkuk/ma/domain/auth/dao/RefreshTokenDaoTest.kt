@@ -4,14 +4,10 @@ import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.exception.EntityNotFoundException
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.string.shouldContain
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -47,41 +43,41 @@ class RefreshTokenDaoTest(
                 // Then
                 RefreshTokenTable.selectAll().count() shouldBe 1
                 val row = RefreshTokenTable.selectAll().first()
-                row[RefreshTokenTable.email] shouldBe refreshToken.email.value
+                row[RefreshTokenTable.memberId] shouldBe refreshToken.memberId
                 row[RefreshTokenTable.token] shouldBe refreshToken.token
             }
         }
 
         context("delete") {
 
-            test("해당 이메일의 RefreshToken을 삭제한다") {
+            test("해당 회원의 RefreshToken을 삭제한다") {
                 // Given
-                val email = "user@example.com"
-                insertRefreshToken(email = email)
+                val memberId = 1L
+                insertRefreshToken(memberId = memberId)
 
                 // When
-                refreshTokenDao.delete(email)
+                refreshTokenDao.delete(memberId)
 
                 // Then
                 RefreshTokenTable.selectAll().count() shouldBe 0
             }
 
-            test("다른 이메일의 RefreshToken은 삭제하지 않는다") {
+            test("다른 회원의 RefreshToken은 삭제하지 않는다") {
                 // Given
-                insertRefreshToken(email = "user1@example.com")
-                insertRefreshToken(email = "user2@example.com")
+                insertRefreshToken(memberId = 1L)
+                insertRefreshToken(memberId = 2L)
 
                 // When
-                refreshTokenDao.delete("user1@example.com")
+                refreshTokenDao.delete(1L)
 
                 // Then
                 RefreshTokenTable.selectAll().count() shouldBe 1
-                RefreshTokenTable.selectAll().first()[RefreshTokenTable.email] shouldBe "user2@example.com"
+                RefreshTokenTable.selectAll().first()[RefreshTokenTable.memberId] shouldBe 2L
             }
 
-            test("존재하지 않는 이메일로 삭제해도 예외가 발생하지 않는다") {
+            test("존재하지 않는 회원으로 삭제해도 예외가 발생하지 않는다") {
                 // When
-                refreshTokenDao.delete("nobody@example.com")
+                refreshTokenDao.delete(999L)
 
                 // Then
                 RefreshTokenTable.selectAll().count() shouldBe 0
@@ -90,24 +86,24 @@ class RefreshTokenDaoTest(
 
         context("findOne") {
 
-            test("이메일로 RefreshToken을 조회한다") {
+            test("회원 식별자로 RefreshToken을 조회한다") {
                 // Given
-                val email = "user@example.com"
+                val memberId = 1L
                 val token = "test-token-value"
-                insertRefreshToken(email = email, token = token)
+                insertRefreshToken(memberId = memberId, token = token)
 
                 // When
-                val result = refreshTokenDao.findOne(email)
+                val result = refreshTokenDao.findOne(memberId)
 
                 // Then
                 result shouldNotBe null
-                result!!.email shouldBe email
+                result!!.memberId shouldBe memberId
                 result.token shouldBe token
             }
 
-            test("존재하지 않는 이메일로 조회하면 null을 반환한다") {
+            test("존재하지 않는 회원으로 조회하면 null을 반환한다") {
                 // When
-                val result = refreshTokenDao.findOne("nobody@example.com")
+                val result = refreshTokenDao.findOne(999L)
 
                 // Then
                 result shouldBe null
@@ -116,22 +112,22 @@ class RefreshTokenDaoTest(
     }
 
     private fun createRefreshToken(
-        email: String = "user@example.com",
+        memberId: Long = 1L,
         token: String = "test-token-value",
     ): RefreshToken {
         return RefreshToken(
-            email = Email(email),
+            memberId = memberId,
             expirationDate = LocalDateTime.now().plusDays(7),
             token = token
         )
     }
 
     private fun insertRefreshToken(
-        email: String = "user@example.com",
+        memberId: Long = 1L,
         token: String = "test-token-value",
     ) {
         RefreshTokenTable.insert {
-            it[RefreshTokenTable.email] = email
+            it[RefreshTokenTable.memberId] = memberId
             it[RefreshTokenTable.token] = token
             it[expirationDate] = LocalDateTime.now().plusDays(7)
         }

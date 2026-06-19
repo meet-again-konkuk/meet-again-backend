@@ -2,7 +2,6 @@ package com.konkuk.ma.auth
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.exception.AuthTokenException
-import com.konkuk.ma.domain.common.domain.Email
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import io.kotest.assertions.throwables.shouldThrow
@@ -21,21 +20,21 @@ class JwtGeneratorTest : FunSpec({
 
     context("generateAccessToken") {
 
-        test("액세스 토큰은 생성되고 유효하며, 이메일(subject)이 일치한다") {
+        test("액세스 토큰은 생성되고 유효하며, 회원 식별자(subject)가 일치한다") {
             // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
                 refreshTokenExpiration = 30_000L
             )
-            val email = "user@example.com"
+            val memberId = 42L
 
             // When
-            val token = generator.generateAccessToken(Email(email))
+            val token = generator.generateAccessToken(memberId)
 
             // Then
             generator.validateToken(token).shouldBeTrue()
-            generator.getEmailFromToken(token) shouldBe email
+            generator.getMemberIdFromToken(token) shouldBe memberId
         }
     }
 
@@ -51,7 +50,7 @@ class JwtGeneratorTest : FunSpec({
 
             // When
             val before = LocalDateTime.now()
-            val refresh: RefreshToken = generator.generateRefreshToken(Email("user@example.com"))
+            val refresh: RefreshToken = generator.generateRefreshToken(42L)
 
             // Then
             refresh.token shouldNotBe null
@@ -70,7 +69,7 @@ class JwtGeneratorTest : FunSpec({
             )
 
             // When
-            val refresh = generator.generateRefreshToken(Email("user@example.com"))
+            val refresh = generator.generateRefreshToken(42L)
 
             // Then
             val parser = Jwts.parserBuilder()
@@ -82,14 +81,14 @@ class JwtGeneratorTest : FunSpec({
             jwtExpInstant.epochSecond shouldBe refreshExpInstant.epochSecond
         }
 
-        test("만료된 리프레시 토큰은 이메일 추출 시 예외가 발생하고 isExpired() 메소드는 true를 리턴한다.") {
+        test("만료된 리프레시 토큰은 회원 식별자 추출 시 예외가 발생하고 isExpired() 메소드는 true를 리턴한다.") {
             // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
                 refreshTokenExpiration = 500L
             )
-            val refresh = generator.generateRefreshToken(Email("user@example.com"))
+            val refresh = generator.generateRefreshToken(42L)
 
             // When
             // 만료 시간을 충분히 초과하여 대기
@@ -114,18 +113,17 @@ class JwtGeneratorTest : FunSpec({
 
             // When & Then
             shouldThrow<AuthTokenException> { generator.validateToken(invalidToken) }
-            shouldThrow<AuthTokenException> { generator.getEmailFromToken(invalidToken) }
+            shouldThrow<AuthTokenException> { generator.getMemberIdFromToken(invalidToken) }
         }
 
-        test("만료된 토큰은 검증에 실패하고, 이메일 추출 시 예외가 발생한다") {
+        test("만료된 토큰은 검증에 실패하고, 회원 식별자 추출 시 예외가 발생한다") {
             // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 50L,
                 refreshTokenExpiration = 10_000L
             )
-            val email = "user@example.com"
-            val token = generator.generateAccessToken(Email(email))
+            val token = generator.generateAccessToken(42L)
 
             // When
             // 경계 시간 문제 방지를 위해 만료 시간을 충분히 초과하여 대기
@@ -133,7 +131,7 @@ class JwtGeneratorTest : FunSpec({
 
             // Then
             shouldThrow<AuthTokenException> { generator.validateToken(token) }
-            shouldThrow<AuthTokenException> { generator.getEmailFromToken(token) }
+            shouldThrow<AuthTokenException> { generator.getMemberIdFromToken(token) }
         }
     }
 })

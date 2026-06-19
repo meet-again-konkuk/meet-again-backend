@@ -4,7 +4,8 @@ import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.matching.api.response.TargetInfoResponse
 import com.konkuk.ma.domain.matching.application.TargetInfoQueryService
 import com.konkuk.ma.support.id.DecryptId
-import org.springframework.security.core.annotation.AuthenticationPrincipal
+import com.konkuk.ma.support.security.LoginMember
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,18 +18,18 @@ class TargetInfoQueryApi(
 ) {
     @GetMapping
     fun findMyTargetInfos(
-        @AuthenticationPrincipal email: String,
+        @LoginMember memberInfo: MemberInfo,
     ): List<TargetInfoResponse> {
-        return targetInfoQueryService.find(email)
+        return targetInfoQueryService.find(memberInfo.email)
             .map { TargetInfoResponse.from(it) }
     }
 
     @GetMapping("/{targetInfoId}")
     fun findTargetInfoDetail(
-        @AuthenticationPrincipal email: String,
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ): TargetInfoResponse {
-        val targetInfo = targetInfoQueryService.findDetail(targetInfoId, email)
+        val targetInfo = targetInfoQueryService.findDetail(targetInfoId, memberInfo.email)
         return TargetInfoResponse.from(targetInfo)
     }
 }

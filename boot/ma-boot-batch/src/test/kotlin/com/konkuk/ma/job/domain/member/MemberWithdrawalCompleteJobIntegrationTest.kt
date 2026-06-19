@@ -142,10 +142,10 @@ class MemberWithdrawalCompleteJobIntegrationTest(
     }
 
     test("하드 삭제 대상(좋아요·리프레시토큰)을 물리 삭제한다") {
-        insertExpiredMember()
+        val memberId = insertExpiredMember()
         transaction {
             RefreshTokenTable.insert {
-                it[email] = withdrawingEmail
+                it[RefreshTokenTable.memberId] = memberId
                 it[expirationDate] = LocalDateTime.now().plusDays(7)
                 it[token] = "refresh-token"
             }
@@ -156,7 +156,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         runCleanupJob(3L) shouldBe BatchStatus.COMPLETED
 
         transaction {
-            RefreshTokenTable.selectAll().where { RefreshTokenTable.email eq withdrawingEmail }.count() shouldBe 0L
+            RefreshTokenTable.selectAll().where { RefreshTokenTable.memberId eq memberId }.count() shouldBe 0L
             PostLikeTable.selectAll().where { PostLikeTable.memberEmail eq withdrawingEmail }.count() shouldBe 0L
             CommentLikeTable.selectAll().where { CommentLikeTable.memberEmail eq withdrawingEmail }.count() shouldBe 0L
         }
@@ -228,7 +228,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         val memberId = insertMember(email, notExpiredAt)
         transaction {
             RefreshTokenTable.insert {
-                it[RefreshTokenTable.email] = email
+                it[RefreshTokenTable.memberId] = memberId
                 it[expirationDate] = LocalDateTime.now().plusDays(7)
                 it[token] = "refresh-token"
             }
@@ -240,7 +240,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             val member = MemberTable.selectAll().where { MemberTable.id eq memberId }.single()
             member[MemberTable.email] shouldBe email
             member[MemberTable.deleted] shouldBe false
-            RefreshTokenTable.selectAll().where { RefreshTokenTable.email eq email }.count() shouldBe 1L
+            RefreshTokenTable.selectAll().where { RefreshTokenTable.memberId eq memberId }.count() shouldBe 1L
         }
         backupFileExists(memberId) shouldBe false
     }

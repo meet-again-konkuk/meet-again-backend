@@ -9,8 +9,7 @@ import org.springframework.security.test.context.support.WithSecurityContextFact
 class WithAuthMemberSecurityContextFactory : WithSecurityContextFactory<WithAuthMember> {
     override fun createSecurityContext(annotation: WithAuthMember): SecurityContext {
         val context = SecurityContextHolder.getContext()
-        context.authentication = UsernamePasswordAuthenticationToken(annotation.email, null, emptyList<SimpleGrantedAuthority>())
+        context.authentication = UsernamePasswordAuthenticationToken(annotation.id, null, emptyList<SimpleGrantedAuthority>())
         return context
     }
-
 }

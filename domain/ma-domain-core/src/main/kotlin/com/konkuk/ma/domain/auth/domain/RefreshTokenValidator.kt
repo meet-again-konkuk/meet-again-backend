@@ -10,8 +10,8 @@ class RefreshTokenValidator(
 ) {
     fun validate(refreshToken: RefreshToken) {
         if (refreshToken.isExpired()) {
-            refreshTokenRepository.delete(refreshToken.email)
-            throw RefreshTokenExpiredException(refreshToken.email, refreshToken.expirationDate.toString())
+            refreshTokenRepository.delete(refreshToken.memberId)
+            throw RefreshTokenExpiredException(refreshToken.memberId, refreshToken.expirationDate.toString())
         }
     }
 }

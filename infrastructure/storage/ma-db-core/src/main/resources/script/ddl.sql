@@ -34,7 +34,7 @@ CREATE TABLE REFRESH_TOKENS
     REFRESH_TOKEN_ID   BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     -- RefreshToken 특화 컬럼들
-    EMAIL              VARCHAR(255) NOT NULL,
+    MEMBER_ID          BIGINT       NOT NULL,
     TOKEN              VARCHAR(1024) NOT NULL,
     EXPIRATION_DATE    DATETIME     NOT NULL,
 
@@ -49,7 +49,7 @@ CREATE TABLE REFRESH_TOKENS
 
     -- 인덱스
     UNIQUE INDEX idx_refresh_token_token (TOKEN),
-    INDEX idx_refresh_token_email (EMAIL)
+    UNIQUE INDEX idx_refresh_token_member_id (MEMBER_ID)
 );
 
 -- TARGET INFOS

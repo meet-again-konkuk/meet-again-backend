@@ -2,7 +2,8 @@ package com.konkuk.ma.domain.matching.api
 
 import com.konkuk.ma.domain.matching.api.response.ClaimersResponse
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
-import org.springframework.security.core.annotation.AuthenticationPrincipal
+import com.konkuk.ma.support.security.LoginMember
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -14,9 +15,9 @@ class ClaimerQueryApi(
 ) {
     @GetMapping("/me")
     fun findMyClaimers(
-        @AuthenticationPrincipal email: String,
+        @LoginMember memberInfo: MemberInfo,
     ): ClaimersResponse {
-        val profiles = matchingResultQueryService.findClaimedBy(email)
+        val profiles = matchingResultQueryService.findClaimedBy(memberInfo.email)
         return ClaimersResponse.from(profiles)
     }
 }

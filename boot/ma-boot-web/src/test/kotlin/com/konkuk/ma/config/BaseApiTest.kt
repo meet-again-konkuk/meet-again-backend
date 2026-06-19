@@ -2,6 +2,7 @@ package com.konkuk.ma.config
 
 import com.konkuk.ma.auth.JwtManager
 import com.konkuk.ma.support.id.TestIdObfuscatorConfig
+import com.konkuk.ma.support.security.LoginMemberArgumentResolver
 import com.konkuk.ma.support.security.RoutingAwareEntryPoint
 import com.konkuk.ma.support.security.WithAuthMember
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
@@ -12,7 +13,10 @@ import org.springframework.context.annotation.Import
     SecurityConfig::class,
     RoutingAwareEntryPoint::class,
     JwtManager::class,
-    TestIdObfuscatorConfig::class
+    TestIdObfuscatorConfig::class,
+    MemberQueryServiceTestConfig::class,
+    WebConfig::class,
+    LoginMemberArgumentResolver::class
 )
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs

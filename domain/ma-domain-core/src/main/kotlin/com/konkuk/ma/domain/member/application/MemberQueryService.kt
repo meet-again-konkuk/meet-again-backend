@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.member.application
 
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,5 +17,9 @@ class MemberQueryService(
 
     fun checkDuplicatedEmail(email: String): Boolean {
         return memberQueryRepository.exists(Email(email))
+    }
+
+    fun findOne(id: Long): Member {
+        return memberQueryRepository.findOne(id)
     }
 }

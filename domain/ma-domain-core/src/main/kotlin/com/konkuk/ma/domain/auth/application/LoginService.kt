@@ -22,8 +22,8 @@ class LoginService(
         passwordVerifier.verify(loginCommand.password, member)
         member.verifyLogin()
 
-        val accessToken = tokenManager.generateAccessToken(member.email)
-        val refreshToken = refreshTokenGenerator.generate(member.email)
+        val accessToken = tokenManager.generateAccessToken(member.id)
+        val refreshToken = refreshTokenGenerator.generate(member.id)
 
         return LoginInfo(
             email = member.email,

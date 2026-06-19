@@ -38,11 +38,11 @@ class JwtAuthenticationFilterTest : FunSpec({
             chainCalled.shouldBeTrue()
         }
 
-        test("유효한 토큰이면 이메일을 추출하고 체인을 통과한다") {
+        test("유효한 토큰이면 memberId를 principal로 세팅하고 체인을 통과한다") {
             // Given
             val jwt = "valid-jwt-token"
-            val email = "user@example.com"
-            every { tokenManager.getEmailFromToken(jwt) } returns email
+            val memberId = 42L
+            every { tokenManager.getMemberIdFromToken(jwt) } returns memberId
 
             val request = MockHttpServletRequest().apply {
                 addHeader("Authorization", "Bearer $jwt")
@@ -56,7 +56,8 @@ class JwtAuthenticationFilterTest : FunSpec({
 
             // Then
             chainCalled.shouldBeTrue()
-            SecurityContextHolder.getContext().authentication.principal shouldBe email
+            val principal = SecurityContextHolder.getContext().authentication.principal
+            principal shouldBe memberId
         }
     }
 })

@@ -34,28 +34,23 @@ class JwtAuthenticationFilter(
         }
         val jwt = authHeader.substring(BEARER_PREFIX.length)
         try {
-            val email = tokenManager.getEmailFromToken(jwt)
-            val authentication = UsernamePasswordAuthenticationToken(email, null, emptyList<SimpleGrantedAuthority>())
+            val memberId = tokenManager.getMemberIdFromToken(jwt)
+            val authentication = UsernamePasswordAuthenticationToken(memberId, null, emptyList<SimpleGrantedAuthority>())
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication
-            filterChain.doFilter(request, response)
         } catch (e: AuthTokenException) {
-            if (e.isExpired()) {
-                writeApiError(response, ErrorCode.EXPIRED_TOKEN, HttpServletResponse.SC_UNAUTHORIZED)
-                return
-            }
-            if (e.isMalformed()) {
-                writeApiError(response, ErrorCode.MALFORMED_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
-                return
-            }
-            if (e.isInvalid()) {
-                writeApiError(response, ErrorCode.INVALID_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
-                return
-            }
-            if (e.isOtherError()) {
-                writeApiError(response, ErrorCode.OTHER_TOKEN_ERROR, HttpServletResponse.SC_BAD_REQUEST)
+            handleAuthTokenException(e, response)
+            return
+        }
+        filterChain.doFilter(request, response)
+    }
 
-            }
+    private fun handleAuthTokenException(e: AuthTokenException, response: HttpServletResponse) {
+        when {
+            e.isExpired() -> writeApiError(response, ErrorCode.EXPIRED_TOKEN, HttpServletResponse.SC_UNAUTHORIZED)
+            e.isMalformed() -> writeApiError(response, ErrorCode.MALFORMED_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
+            e.isInvalid() -> writeApiError(response, ErrorCode.INVALID_TOKEN, HttpServletResponse.SC_BAD_REQUEST)
+            e.isOtherError() -> writeApiError(response, ErrorCode.OTHER_TOKEN_ERROR, HttpServletResponse.SC_BAD_REQUEST)
         }
     }
 

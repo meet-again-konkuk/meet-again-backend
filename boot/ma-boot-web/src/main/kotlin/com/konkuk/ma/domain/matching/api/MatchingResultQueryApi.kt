@@ -5,7 +5,8 @@ import com.konkuk.ma.domain.matching.api.response.MatchingResultDetailResponse
 import com.konkuk.ma.domain.matching.api.response.MatchingResultsResponse
 import com.konkuk.ma.domain.matching.application.MatchingResultQueryService
 import com.konkuk.ma.support.id.DecryptId
-import org.springframework.security.core.annotation.AuthenticationPrincipal
+import com.konkuk.ma.support.security.LoginMember
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,19 +20,19 @@ class MatchingResultQueryApi(
 ) {
     @GetMapping
     fun findMyMatchingResults(
-        @AuthenticationPrincipal email: String,
+        @LoginMember memberInfo: MemberInfo,
         @RequestParam(defaultValue = "false") excluded: Boolean,
     ): MatchingResultsResponse {
-        val results = matchingResultQueryService.find(email, excluded)
+        val results = matchingResultQueryService.find(memberInfo.email, excluded)
         return MatchingResultsResponse.from(results)
     }
 
     @GetMapping("/{matchingResultId}")
     fun findMatchingResultDetail(
-        @AuthenticationPrincipal email: String,
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ): MatchingResultDetailResponse {
-        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, email)
+        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, memberInfo.email)
         return MatchingResultDetailResponse.from(matchingResult)
     }
 }
