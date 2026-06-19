@@ -1,12 +1,11 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 
 class Comments(val data: List<Comment>) {
 
-    fun extractAuthorEmails(): Set<Email> {
-        return data.map { it.authorEmail }.toSet()
+    fun extractAuthorIds(): Set<Long> {
+        return data.map { it.authorId }.toSet()
     }
 
     fun extractIds(): List<Long> {

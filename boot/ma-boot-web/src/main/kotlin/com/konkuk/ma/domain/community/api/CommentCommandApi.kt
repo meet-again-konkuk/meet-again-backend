@@ -27,7 +27,7 @@ class CommentCommandApi(
         @PathVariable postId: Long,
         @Valid @RequestBody request: NewCommentRequest,
     ): NewCommentResponse {
-        val commentId = commentCommandService.create(request.toNewComment(memberInfo.email, postId))
+        val commentId = commentCommandService.create(request.toNewComment(memberInfo.id, postId))
         return NewCommentResponse(commentId = commentId)
     }
 
@@ -37,6 +37,6 @@ class CommentCommandApi(
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
     ) {
-        commentCommandService.delete(commentId, memberInfo.email)
+        commentCommandService.delete(commentId, memberInfo.id)
     }
 }

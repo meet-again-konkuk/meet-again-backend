@@ -24,7 +24,7 @@ class PostCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: NewPostRequest,
     ): NewPostResponse {
-        val postId = postCommandService.create(request.toNewPost(memberInfo.email))
+        val postId = postCommandService.create(request.toNewPost(memberInfo.id))
         return NewPostResponse(postId = postId)
     }
 }

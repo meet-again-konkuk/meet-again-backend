@@ -82,10 +82,10 @@ class PostLikeIntegrationTest(
         }
     }
 
-    fun insertPost(authorEmail: String = "author@example.com"): Long {
+    fun insertPost(authorId: Long = 1L): Long {
         return transaction {
             PostTable.insertAndGetId {
-                it[PostTable.authorEmail] = authorEmail
+                it[PostTable.authorId] = authorId
                 it[category] = "CHEER"
                 it[title] = "테스트 게시글"
                 it[content] = "내용"

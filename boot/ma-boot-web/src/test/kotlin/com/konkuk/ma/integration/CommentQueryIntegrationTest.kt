@@ -96,10 +96,10 @@ class CommentQueryIntegrationTest(
         return login(viewerEmail, viewerPassword)
     }
 
-    fun insertPost(authorEmail: String = "author@example.com"): Long {
+    fun insertPost(authorId: Long = 1L): Long {
         return transaction {
             PostTable.insertAndGetId {
-                it[PostTable.authorEmail] = authorEmail
+                it[PostTable.authorId] = authorId
                 it[category] = "CHEER"
                 it[title] = "테스트 게시글"
                 it[content] = "내용"
@@ -109,13 +109,13 @@ class CommentQueryIntegrationTest(
 
     fun insertComment(
         postId: Long,
-        authorEmail: String = "author@example.com",
+        authorId: Long = 1L,
         parentCommentId: Long? = null,
     ): Long {
         return transaction {
             CommentTable.insertAndGetId {
                 it[CommentTable.postId] = postId
-                it[CommentTable.authorEmail] = authorEmail
+                it[CommentTable.authorId] = authorId
                 it[content] = "테스트 댓글"
                 it[CommentTable.parentCommentId] = parentCommentId
             }.value
@@ -127,7 +127,7 @@ class CommentQueryIntegrationTest(
             repeat(count) { i ->
                 CommentLikeTable.insert {
                     it[CommentLikeTable.commentId] = commentId
-                    it[memberEmail] = "comment-liker$commentId-$i@example.com"
+                    it[memberId] = commentId * 1000L + i
                 }
             }
         }

@@ -10,7 +10,7 @@ class CommentWithPreviewReplies(
     fun combineWithAuthor(members: Members, likeCounts: LikeCounts): CommentWithAuthor {
         return CommentWithAuthor(
             comment = parent,
-            nickname = members.findNickname(parent.authorEmail),
+            nickname = members.findNickname(parent.authorId),
             likeCount = likeCounts.countOf(parent.id),
             replies = previewReplies.combineWithAuthors(members, likeCounts),
             remainingReplyCount = remainingReplyCount,

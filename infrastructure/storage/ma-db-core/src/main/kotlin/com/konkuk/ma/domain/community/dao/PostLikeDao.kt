@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component
 
 @Component
 class PostLikeDao {
-    fun save(postId: Long, memberEmail: String): Long {
+    fun save(postId: Long, memberId: Long): Long {
         return PostLikeTable.insertAndGetId {
             it[PostLikeTable.postId] = postId
-            it[PostLikeTable.memberEmail] = memberEmail
-            it[createdBy] = memberEmail
-            it[lastModifiedBy] = memberEmail
+            it[PostLikeTable.memberId] = memberId
+            it[createdBy] = memberId.toString()
+            it[lastModifiedBy] = memberId.toString()
         }.value
     }
 
-    fun find(memberEmail: String): List<PostLikeEntity> {
+    fun find(memberId: Long): List<PostLikeEntity> {
         return PostLikeTable
-            .activeRows { PostLikeTable.memberEmail eq memberEmail }
+            .activeRows { PostLikeTable.memberId eq memberId }
             .map { PostLikeEntity.from(it) }
     }
 
@@ -46,14 +46,14 @@ class PostLikeDao {
             .associate { row -> row[PostLikeTable.postId] to row[likeCount].toInt() }
     }
 
-    fun delete(postId: Long, memberEmail: String) {
+    fun delete(postId: Long, memberId: Long) {
         PostLikeTable.deleteWhere {
             (PostLikeTable.postId eq postId) and
-                (PostLikeTable.memberEmail eq memberEmail)
+                (PostLikeTable.memberId eq memberId)
         }
     }
 
-    fun deleteByMember(memberEmail: String) {
-        PostLikeTable.deleteWhere { PostLikeTable.memberEmail eq memberEmail }
+    fun deleteByMember(memberId: Long) {
+        PostLikeTable.deleteWhere { PostLikeTable.memberId eq memberId }
     }
 }

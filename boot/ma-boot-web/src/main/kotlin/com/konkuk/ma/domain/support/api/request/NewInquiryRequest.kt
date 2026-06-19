@@ -14,9 +14,9 @@ class NewInquiryRequest(
     @field:Size(max = NewInquiry.MAX_CONTENT_LENGTH, message = ValidationMessages.INQUIRY_CONTENT_SIZE)
     val content: String,
 ) {
-    fun toNewInquiry(authorEmail: String): NewInquiry {
+    fun toNewInquiry(authorId: Long): NewInquiry {
         return NewInquiry(
-            authorEmail = authorEmail,
+            authorId = authorId,
             title = title,
             content = content,
         )

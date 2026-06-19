@@ -24,7 +24,7 @@ class InquiryCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: NewInquiryRequest,
     ): NewInquiryResponse {
-        val inquiryId = inquiryCommandService.create(request.toNewInquiry(memberInfo.email))
+        val inquiryId = inquiryCommandService.create(request.toNewInquiry(memberInfo.id))
         return NewInquiryResponse(inquiryId = inquiryId)
     }
 }

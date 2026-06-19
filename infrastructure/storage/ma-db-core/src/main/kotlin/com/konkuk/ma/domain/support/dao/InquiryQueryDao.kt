@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class InquiryQueryDao {
-    fun find(authorEmail: String): List<InquiryEntity> {
+    fun find(authorId: Long): List<InquiryEntity> {
         return InquiryTable
-            .activeRows { InquiryTable.authorEmail eq authorEmail }
+            .activeRows { InquiryTable.authorId eq authorId }
             .map { InquiryEntity.from(it) }
     }
 }

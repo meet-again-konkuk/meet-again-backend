@@ -1,16 +1,13 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.InvalidValueException
 
 class NewPost(
-    authorEmail: String,
+    val authorId: Long,
     val category: PostCategory,
     val title: String,
     val content: String,
 ) {
-    val authorEmail: Email = Email(authorEmail)
-
     init {
         validateTitle()
         validateContent()

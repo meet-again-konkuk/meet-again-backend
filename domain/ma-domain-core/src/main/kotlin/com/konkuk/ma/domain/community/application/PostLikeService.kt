@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.PostLike
 import com.konkuk.ma.domain.community.domain.PostLikeResult
 import com.konkuk.ma.domain.community.domain.port.PostLikeRepository
@@ -12,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional
 class PostLikeService(
     private val postLikeRepository: PostLikeRepository,
 ) {
-    fun like(postId: Long, memberEmail: String): PostLikeResult {
-        postLikeRepository.save(PostLike(postId = postId, memberEmail = Email(memberEmail)))
+    fun like(postId: Long, memberId: Long): PostLikeResult {
+        postLikeRepository.save(PostLike(postId = postId, memberId = memberId))
         return PostLikeResult.liked(postLikeRepository.count(postId))
     }
 
-    fun unlike(postId: Long, memberEmail: String): PostLikeResult {
-        postLikeRepository.delete(postId, Email(memberEmail))
+    fun unlike(postId: Long, memberId: Long): PostLikeResult {
+        postLikeRepository.delete(postId, memberId)
         return PostLikeResult.unliked(postLikeRepository.count(postId))
     }
 }

@@ -23,7 +23,7 @@ class PostLikeApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable postId: Long,
     ): PostLikeResponse {
-        val result = postLikeService.like(postId, memberInfo.email)
+        val result = postLikeService.like(postId, memberInfo.id)
         return PostLikeResponse.from(result)
     }
 
@@ -32,7 +32,7 @@ class PostLikeApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable postId: Long,
     ): PostLikeResponse {
-        val result = postLikeService.unlike(postId, memberInfo.email)
+        val result = postLikeService.unlike(postId, memberInfo.id)
         return PostLikeResponse.from(result)
     }
 }

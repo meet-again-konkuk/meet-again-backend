@@ -38,7 +38,7 @@ class PostCommandApiTest(
 
         every {
             postCommandService.create(match {
-                it.authorEmail == Email("holeman@naver.com") &&
+                it.authorId == 1L &&
                     it.category == PostCategory.CHEER &&
                     it.title == "안녕하세요" &&
                     it.content == "반갑습니다"

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.dao.PostLikeDao
 import com.konkuk.ma.domain.community.domain.PostLike
 import com.konkuk.ma.domain.community.domain.port.PostLikeRepository
@@ -11,11 +10,11 @@ class PostLikeCoreRepository(
     private val postLikeDao: PostLikeDao,
 ) : PostLikeRepository {
     override fun save(postLike: PostLike): Long {
-        return postLikeDao.save(postLike.postId, postLike.memberEmail.value)
+        return postLikeDao.save(postLike.postId, postLike.memberId)
     }
 
-    override fun find(memberEmail: Email): List<PostLike> {
-        return postLikeDao.find(memberEmail.value).map { it.toDomain() }
+    override fun find(memberId: Long): List<PostLike> {
+        return postLikeDao.find(memberId).map { it.toDomain() }
     }
 
     override fun count(postId: Long): Int {
@@ -26,11 +25,11 @@ class PostLikeCoreRepository(
         return postLikeDao.count(postIds)
     }
 
-    override fun delete(postId: Long, memberEmail: Email) {
-        postLikeDao.delete(postId, memberEmail.value)
+    override fun delete(postId: Long, memberId: Long) {
+        postLikeDao.delete(postId, memberId)
     }
 
-    override fun deleteByMember(memberEmail: Email) {
-        postLikeDao.deleteByMember(memberEmail.value)
+    override fun deleteByMember(memberId: Long) {
+        postLikeDao.deleteByMember(memberId)
     }
 }

@@ -3,7 +3,6 @@ package com.konkuk.ma.domain.community.application
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
 import com.konkuk.ma.exception.AccessDeniedException
@@ -77,7 +76,7 @@ class CommentCommandServiceTest : FunSpec({
             every { commentCommandRepository.delete(comment.id) } just runs
 
             // When
-            service.delete(comment.id, comment.authorEmail.value)
+            service.delete(comment.id, comment.authorId)
 
             // Then
             verify { commentCommandRepository.delete(comment.id) }
@@ -86,13 +85,13 @@ class CommentCommandServiceTest : FunSpec({
         test("소유권이 없는 댓글을 삭제하면 AccessDeniedException이 발생한다") {
             // Given
             val comment = CommentFixture.create()
-            val otherEmail = "other@example.com"
+            val otherMemberId = comment.authorId + 1
 
             every { commentQueryRepository.findOne(comment.id) } returns comment
 
             // When & Then
             shouldThrow<AccessDeniedException> {
-                service.delete(comment.id, otherEmail)
+                service.delete(comment.id, otherMemberId)
             }
         }
 
@@ -105,7 +104,7 @@ class CommentCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.delete(nonExistentId, "any@example.com")
+                service.delete(nonExistentId, 1L)
             }
         }
     }

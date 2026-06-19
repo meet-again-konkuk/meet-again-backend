@@ -23,7 +23,7 @@ class CommentLikeApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable commentId: Long,
     ): CommentLikeResponse {
-        val result = commentLikeService.like(commentId, memberInfo.email)
+        val result = commentLikeService.like(commentId, memberInfo.id)
         return CommentLikeResponse.from(result)
     }
 
@@ -32,7 +32,7 @@ class CommentLikeApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable commentId: Long,
     ): CommentLikeResponse {
-        val result = commentLikeService.unlike(commentId, memberInfo.email)
+        val result = commentLikeService.unlike(commentId, memberInfo.id)
         return CommentLikeResponse.from(result)
     }
 }

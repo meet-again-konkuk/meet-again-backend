@@ -111,38 +111,38 @@ class MembersTest : FunSpec({
 
     context("findNickname") {
 
-        test("이메일로 닉네임을 찾으면 해당 닉네임을 반환한다") {
+        test("id로 닉네임을 찾으면 해당 닉네임을 반환한다") {
             // Given
-            val member = MemberFixture.create(email = "user@example.com", nickname = "테스트닉네임")
+            val member = MemberFixture.create(id = 1L, nickname = "테스트닉네임")
             val members = Members(listOf(member))
 
             // When
-            val result = members.findNickname(member.email)
+            val result = members.findNickname(member.id)
 
             // Then
             result shouldBe member.nickname
         }
 
-        test("여러 회원 중 정확한 이메일의 닉네임을 반환한다") {
+        test("여러 회원 중 정확한 id의 닉네임을 반환한다") {
             // Given
-            val member1 = MemberFixture.create(email = "a@example.com", nickname = "닉네임A")
-            val member2 = MemberFixture.create(email = "b@example.com", nickname = "닉네임B")
+            val member1 = MemberFixture.create(id = 1L, nickname = "닉네임A")
+            val member2 = MemberFixture.create(id = 2L, nickname = "닉네임B")
             val members = Members(listOf(member1, member2))
 
             // When
-            val result = members.findNickname(member2.email)
+            val result = members.findNickname(member2.id)
 
             // Then
             result shouldBe member2.nickname
         }
 
-        test("존재하지 않는 이메일이면 '알 수 없음'을 반환한다") {
+        test("존재하지 않는 id이면 '알 수 없음'을 반환한다") {
             // Given
-            val member = MemberFixture.create(email = "existing@example.com")
+            val member = MemberFixture.create(id = 1L)
             val members = Members(listOf(member))
 
             // When
-            val result = members.findNickname(Email("notfound@example.com"))
+            val result = members.findNickname(999L)
 
             // Then
             result shouldBe "알 수 없음"
@@ -153,7 +153,7 @@ class MembersTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = members.findNickname(Email("any@example.com"))
+            val result = members.findNickname(1L)
 
             // Then
             result shouldBe "알 수 없음"

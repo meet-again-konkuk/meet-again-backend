@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.entity
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.Post
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.entity.table.PostTable
@@ -9,7 +8,7 @@ import java.time.LocalDateTime
 
 class PostEntity(
     val id: Long,
-    val authorEmail: String,
+    val authorId: Long,
     val category: PostCategory,
     val title: String,
     val content: String,
@@ -18,7 +17,7 @@ class PostEntity(
     fun toDomain(): Post {
         return Post(
             id = id,
-            authorEmail = Email(authorEmail),
+            authorId = authorId,
             category = category,
             title = title,
             content = content,
@@ -30,7 +29,7 @@ class PostEntity(
         fun from(row: ResultRow): PostEntity {
             return PostEntity(
                 id = row[PostTable.id].value,
-                authorEmail = row[PostTable.authorEmail],
+                authorId = row[PostTable.authorId],
                 category = PostCategory.valueOf(row[PostTable.category]),
                 title = row[PostTable.title],
                 content = row[PostTable.content],

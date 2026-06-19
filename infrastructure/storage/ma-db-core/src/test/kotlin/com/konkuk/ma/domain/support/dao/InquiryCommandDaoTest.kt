@@ -34,7 +34,7 @@ class InquiryCommandDaoTest(
             test("문의를 저장하고 생성된 ID를 반환한다") {
                 // Given
                 val newInquiry = NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "문의 제목",
                     content = "문의 내용입니다."
                 )
@@ -49,7 +49,7 @@ class InquiryCommandDaoTest(
             test("저장된 문의의 필드가 올바르게 저장된다") {
                 // Given
                 val newInquiry = NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "문의 제목",
                     content = "문의 내용입니다."
                 )
@@ -59,11 +59,11 @@ class InquiryCommandDaoTest(
 
                 // Then
                 val saved = InquiryTable.selectAll().first()
-                saved[InquiryTable.authorEmail] shouldBe newInquiry.authorEmail.value
+                saved[InquiryTable.authorId] shouldBe newInquiry.authorId
                 saved[InquiryTable.title] shouldBe newInquiry.title
                 saved[InquiryTable.content] shouldBe newInquiry.content
-                saved[InquiryTable.createdBy] shouldBe newInquiry.authorEmail.value
-                saved[InquiryTable.lastModifiedBy] shouldBe newInquiry.authorEmail.value
+                saved[InquiryTable.createdBy] shouldBe newInquiry.authorId.toString()
+                saved[InquiryTable.lastModifiedBy] shouldBe newInquiry.authorId.toString()
             }
         }
     }

@@ -190,13 +190,13 @@ class PostQueryDaoTest(
     }
 
     private fun insertPost(
-        authorEmail: String = "author@example.com",
+        authorId: Long = 1L,
         category: String = "CHEER",
         title: String = "테스트 게시글",
         content: String = "내용",
     ) {
         PostTable.insert {
-            it[PostTable.authorEmail] = authorEmail
+            it[PostTable.authorId] = authorId
             it[PostTable.category] = category
             it[PostTable.title] = title
             it[PostTable.content] = content

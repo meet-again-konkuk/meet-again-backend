@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.dao.CommentLikeDao
 import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
@@ -11,11 +10,11 @@ class CommentLikeCoreRepository(
     private val commentLikeDao: CommentLikeDao,
 ) : CommentLikeRepository {
     override fun save(commentLike: CommentLike): Long {
-        return commentLikeDao.save(commentLike.commentId, commentLike.memberEmail.value)
+        return commentLikeDao.save(commentLike.commentId, commentLike.memberId)
     }
 
-    override fun find(memberEmail: Email): List<CommentLike> {
-        return commentLikeDao.find(memberEmail.value).map { it.toDomain() }
+    override fun find(memberId: Long): List<CommentLike> {
+        return commentLikeDao.find(memberId).map { it.toDomain() }
     }
 
     override fun count(commentId: Long): Int {
@@ -26,11 +25,11 @@ class CommentLikeCoreRepository(
         return commentLikeDao.count(commentIds)
     }
 
-    override fun delete(commentId: Long, memberEmail: Email) {
-        commentLikeDao.delete(commentId, memberEmail.value)
+    override fun delete(commentId: Long, memberId: Long) {
+        commentLikeDao.delete(commentId, memberId)
     }
 
-    override fun deleteByMember(memberEmail: Email) {
-        commentLikeDao.deleteByMember(memberEmail.value)
+    override fun deleteByMember(memberId: Long) {
+        commentLikeDao.deleteByMember(memberId)
     }
 }
