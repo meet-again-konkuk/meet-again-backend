@@ -11,24 +11,17 @@ class CommentCommandDao {
     fun save(newComment: NewComment): Long {
         return CommentTable.insertAndGetId {
             it[postId] = newComment.postId
-            it[authorEmail] = newComment.authorEmail.value
+            it[authorId] = newComment.authorId
             it[content] = newComment.content
             it[parentCommentId] = newComment.parentCommentId
-            it[createdBy] = newComment.authorEmail.value
-            it[lastModifiedBy] = newComment.authorEmail.value
+            it[createdBy] = newComment.authorId.toString()
+            it[lastModifiedBy] = newComment.authorId.toString()
         }.value
     }
 
     fun delete(id: Long) {
         CommentTable.update({ CommentTable.id eq id }) {
             it[deleted] = true
-        }
-    }
-
-    fun anonymizeAuthor(oldEmail: String, newEmail: String) {
-        CommentTable.update({ CommentTable.authorEmail eq oldEmail }) {
-            it[authorEmail] = newEmail
-            it[lastModifiedBy] = newEmail
         }
     }
 }

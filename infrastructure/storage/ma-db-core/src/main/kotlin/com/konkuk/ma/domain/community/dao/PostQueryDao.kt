@@ -39,9 +39,9 @@ class PostQueryDao {
             ?.let { PostEntity.from(it) }
     }
 
-    fun find(authorEmail: String): List<PostEntity> {
+    fun findByAuthor(authorId: Long): List<PostEntity> {
         return PostTable
-            .activeRows { PostTable.authorEmail eq authorEmail }
+            .activeRows { PostTable.authorId eq authorId }
             .map { PostEntity.from(it) }
     }
 

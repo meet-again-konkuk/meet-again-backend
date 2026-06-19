@@ -24,9 +24,9 @@ class CommentQueryDao {
             .map { row -> CommentEntity.from(row) }
     }
 
-    fun find(authorEmail: String): List<CommentEntity> {
+    fun findByAuthor(authorId: Long): List<CommentEntity> {
         return CommentTable
-            .activeRows { CommentTable.authorEmail eq authorEmail }
+            .activeRows { CommentTable.authorId eq authorId }
             .orderBy(CommentTable.id to SortOrder.ASC)
             .map { row -> CommentEntity.from(row) }
     }

@@ -38,7 +38,7 @@ import org.springframework.test.context.ActiveProfiles
 /**
  * 회원 탈퇴 완료 배치(memberWithdrawalCompleteJob) E2E 통합 테스트.
  * 실제 Job 을 H2 DB 위에서 실행하여, 정리 동작을 "관심사(백업 / 회원 익명화 / 하드삭제 / soft삭제 /
- * 작성데이터 익명화 / 미만료 보호)별로 한 테스트씩" 검증한다.
+ * 작성데이터 보존 / 미만료 보호)별로 한 테스트씩" 검증한다.
  *
  * 운영 DDL 에는 FK 가 없으나 Exposed 가 생성하는 테스트 스키마에는 FK 가 생기므로,
  * H2 URL 의 INIT(SET REFERENTIAL_INTEGRITY FALSE)로 운영과 동일하게 FK 미적용 상태로 맞춘다.
@@ -149,16 +149,16 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 it[expirationDate] = LocalDateTime.now().plusDays(7)
                 it[token] = "refresh-token"
             }
-            PostLikeTable.insert { it[postId] = 1L; it[memberEmail] = withdrawingEmail }
-            CommentLikeTable.insert { it[commentId] = 1L; it[memberEmail] = withdrawingEmail }
+            PostLikeTable.insert { it[postId] = 1L; it[PostLikeTable.memberId] = memberId }
+            CommentLikeTable.insert { it[commentId] = 1L; it[CommentLikeTable.memberId] = memberId }
         }
 
         runCleanupJob(3L) shouldBe BatchStatus.COMPLETED
 
         transaction {
             RefreshTokenTable.selectAll().where { RefreshTokenTable.memberId eq memberId }.count() shouldBe 0L
-            PostLikeTable.selectAll().where { PostLikeTable.memberEmail eq withdrawingEmail }.count() shouldBe 0L
-            CommentLikeTable.selectAll().where { CommentLikeTable.memberEmail eq withdrawingEmail }.count() shouldBe 0L
+            PostLikeTable.selectAll().where { PostLikeTable.memberId eq memberId }.count() shouldBe 0L
+            CommentLikeTable.selectAll().where { CommentLikeTable.memberId eq memberId }.count() shouldBe 0L
         }
     }
 
@@ -192,12 +192,12 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         }
     }
 
-    test("작성·소유 데이터(글·댓글·문의·포인트이력)의 이메일을 익명화하고, 내가 타겟인 매칭은 그대로 둔다") {
+    test("작성 데이터(글·댓글·문의)는 authorId 그대로 보존하고, 포인트이력 이메일만 익명화하며, 내가 타겟인 매칭은 그대로 둔다") {
         val memberId = insertExpiredMember()
         transaction {
-            PostTable.insert { it[authorEmail] = withdrawingEmail; it[category] = "SUCCESS_STORY"; it[title] = "글"; it[content] = "내용" }
-            CommentTable.insert { it[postId] = 1L; it[authorEmail] = withdrawingEmail; it[content] = "댓글" }
-            InquiryTable.insert { it[authorEmail] = withdrawingEmail; it[title] = "문의"; it[content] = "내용" }
+            PostTable.insert { it[authorId] = memberId; it[category] = "SUCCESS_STORY"; it[title] = "글"; it[content] = "내용" }
+            CommentTable.insert { it[postId] = 1L; it[authorId] = memberId; it[content] = "댓글" }
+            InquiryTable.insert { it[authorId] = memberId; it[title] = "문의"; it[content] = "내용" }
             PointHistoryTable.insert {
                 it[ownerEmail] = withdrawingEmail
                 it[historyType] = "CHARGE"
@@ -213,9 +213,14 @@ class MemberWithdrawalCompleteJobIntegrationTest(
 
         val withdrawnEmail = "withdrawn_$memberId@deleted.local"
         transaction {
-            PostTable.selectAll().where { PostTable.authorEmail eq withdrawnEmail }.count() shouldBe 1L
-            CommentTable.selectAll().where { CommentTable.authorEmail eq withdrawnEmail }.count() shouldBe 1L
-            InquiryTable.selectAll().where { InquiryTable.authorEmail eq withdrawnEmail }.count() shouldBe 1L
+            // 글·댓글·문의는 authorId(비PII) 참조라 익명화하지 않고 행을 그대로 둔다 (soft delete 안 됨).
+            PostTable.selectAll().where { PostTable.authorId eq memberId }.single()
+                .let { it[PostTable.deleted] shouldBe false }
+            CommentTable.selectAll().where { CommentTable.authorId eq memberId }.single()
+                .let { it[CommentTable.deleted] shouldBe false }
+            InquiryTable.selectAll().where { InquiryTable.authorId eq memberId }.single()
+                .let { it[InquiryTable.deleted] shouldBe false }
+            // 포인트이력은 ownerEmail(PII)이라 익명화 대상.
             PointHistoryTable.selectAll().where { PointHistoryTable.ownerEmail eq withdrawnEmail }.count() shouldBe 1L
             val targetedMatch = MatchingResultTable.selectAll()
                 .where { MatchingResultTable.targetId eq memberId }.single()

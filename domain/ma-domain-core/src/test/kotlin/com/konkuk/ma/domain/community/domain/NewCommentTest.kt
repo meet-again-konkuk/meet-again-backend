@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
 import com.konkuk.ma.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
@@ -18,7 +17,7 @@ class NewCommentTest : FunSpec({
 
             newComment.content shouldBe "테스트 댓글 내용입니다."
             newComment.postId shouldBe 1L
-            newComment.authorEmail shouldBe Email("commenter@example.com")
+            newComment.authorId shouldBe 1L
         }
 
         test("내용이 500자인 경우 객체 생성에 성공한다") {

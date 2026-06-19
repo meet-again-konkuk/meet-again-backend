@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.dao.CommentQueryDao
 import com.konkuk.ma.domain.community.domain.Comment
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
@@ -21,8 +20,8 @@ class CommentQueryCoreRepository(
         return commentQueryDao.find(postId).map { it.toDomain() }
     }
 
-    override fun find(authorEmail: Email): List<Comment> {
-        return commentQueryDao.find(authorEmail.value).map { it.toDomain() }
+    override fun findByAuthor(authorId: Long): List<Comment> {
+        return commentQueryDao.findByAuthor(authorId).map { it.toDomain() }
     }
 
     override fun findReplies(parentCommentId: Long): List<Comment> {

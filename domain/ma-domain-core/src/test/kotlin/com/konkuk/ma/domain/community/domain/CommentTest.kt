@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
@@ -62,18 +61,18 @@ class CommentTest : FunSpec({
 
     context("validateOwnership") {
 
-        test("본인 이메일이면 예외 없이 통과한다") {
+        test("본인 memberId이면 예외 없이 통과한다") {
             val comment = CommentFixture.create()
 
-            comment.validateOwnership(comment.authorEmail)
+            comment.validateOwnership(comment.authorId)
         }
 
-        test("다른 이메일이면 AccessDeniedException이 발생한다") {
+        test("다른 memberId이면 AccessDeniedException이 발생한다") {
             val comment = CommentFixture.create()
-            val otherEmail = Email("other@example.com")
+            val otherMemberId = comment.authorId + 1
 
             shouldThrow<AccessDeniedException> {
-                comment.validateOwnership(otherEmail)
+                comment.validateOwnership(otherMemberId)
             }
         }
     }

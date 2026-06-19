@@ -83,10 +83,10 @@ class CommentLikeIntegrationTest(
         }
     }
 
-    fun insertPost(authorEmail: String = "author@example.com"): Long {
+    fun insertPost(authorId: Long = 1L): Long {
         return transaction {
             PostTable.insertAndGetId {
-                it[PostTable.authorEmail] = authorEmail
+                it[PostTable.authorId] = authorId
                 it[category] = "CHEER"
                 it[title] = "테스트 게시글"
                 it[content] = "내용"
@@ -94,11 +94,11 @@ class CommentLikeIntegrationTest(
         }
     }
 
-    fun insertComment(postId: Long, authorEmail: String = "author@example.com"): Long {
+    fun insertComment(postId: Long, authorId: Long = 1L): Long {
         return transaction {
             CommentTable.insertAndGetId {
                 it[CommentTable.postId] = postId
-                it[CommentTable.authorEmail] = authorEmail
+                it[CommentTable.authorId] = authorId
                 it[content] = "테스트 댓글"
             }.value
         }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.dao.PostCommandDao
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
@@ -12,9 +11,5 @@ class PostCommandCoreRepository(
 ) : PostCommandRepository {
     override fun save(newPost: NewPost): Long {
         return postCommandDao.save(newPost)
-    }
-
-    override fun anonymizeAuthor(authorEmail: Email, withdrawnEmail: Email) {
-        postCommandDao.anonymizeAuthor(authorEmail.value, withdrawnEmail.value)
     }
 }

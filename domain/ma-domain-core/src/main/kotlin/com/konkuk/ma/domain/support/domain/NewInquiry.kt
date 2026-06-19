@@ -1,15 +1,12 @@
 package com.konkuk.ma.domain.support.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.InvalidValueException
 
 class NewInquiry(
-    authorEmail: String,
+    val authorId: Long,
     val title: String,
     val content: String,
 ) {
-    val authorEmail: Email = Email(authorEmail)
-
     init {
         validateTitle()
         validateContent()

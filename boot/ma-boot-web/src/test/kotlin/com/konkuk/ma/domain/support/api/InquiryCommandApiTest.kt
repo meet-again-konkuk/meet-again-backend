@@ -35,7 +35,7 @@ class InquiryCommandApiTest(
 
         every {
             inquiryCommandService.create(match {
-                it.authorEmail == Email("holeman@naver.com") &&
+                it.authorId == 1L &&
                     it.title == "로그인이 안됩니다" &&
                     it.content == "비밀번호를 올바르게 입력해도 로그인이 되지 않습니다."
             })

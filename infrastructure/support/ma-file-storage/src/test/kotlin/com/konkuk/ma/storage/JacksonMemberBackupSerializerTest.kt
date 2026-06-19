@@ -52,11 +52,11 @@ class JacksonMemberBackupSerializerTest : FunSpec({
                     createdDate = LocalDateTime.now(),
                 ),
             ),
-            posts = listOf(PostFixture.create(authorEmail = email)),
-            comments = listOf(CommentFixture.create(authorEmail = email)),
-            postLikes = listOf(PostLikeFixture.create(memberEmail = email)),
-            commentLikes = listOf(CommentLikeFixture.create(memberEmail = email)),
-            inquiries = listOf(Inquiry(id = 1L, authorEmail = member.email, title = "문의 제목", content = "문의 내용")),
+            posts = listOf(PostFixture.create(authorId = member.id)),
+            comments = listOf(CommentFixture.create(authorId = member.id)),
+            postLikes = listOf(PostLikeFixture.create(memberId = member.id)),
+            commentLikes = listOf(CommentLikeFixture.create(memberId = member.id)),
+            inquiries = listOf(Inquiry(id = 1L, authorId = member.id, title = "문의 제목", content = "문의 내용")),
             xrooms = listOf(
                 Xroom(
                     id = 1L,

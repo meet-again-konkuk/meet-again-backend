@@ -37,7 +37,7 @@ class CommentLikeDaoTest(
 
             test("좋아요를 저장하고 ID를 반환한다") {
                 // When
-                val id = commentLikeDao.save(1L, "user@example.com")
+                val id = commentLikeDao.save(1L, 100L)
 
                 // Then
                 id shouldBeGreaterThan 0L
@@ -49,10 +49,10 @@ class CommentLikeDaoTest(
 
             test("좋아요를 삭제한다") {
                 // Given
-                commentLikeDao.save(1L, "user@example.com")
+                commentLikeDao.save(1L, 100L)
 
                 // When
-                commentLikeDao.delete(1L, "user@example.com")
+                commentLikeDao.delete(1L, 100L)
 
                 // Then
                 CommentLikeTable.selectAll().count() shouldBe 0
@@ -60,7 +60,7 @@ class CommentLikeDaoTest(
 
             test("존재하지 않는 좋아요 삭제 시 아무 일도 일어나지 않는다") {
                 // When
-                commentLikeDao.delete(999L, "nobody@example.com")
+                commentLikeDao.delete(999L, 999L)
 
                 // Then
                 CommentLikeTable.selectAll().count() shouldBe 0
@@ -71,9 +71,9 @@ class CommentLikeDaoTest(
 
             test("좋아요 N개가 저장된 댓글의 좋아요 수를 반환한다") {
                 // Given
-                commentLikeDao.save(1L, "user1@example.com")
-                commentLikeDao.save(1L, "user2@example.com")
-                commentLikeDao.save(1L, "user3@example.com")
+                commentLikeDao.save(1L, 101L)
+                commentLikeDao.save(1L, 102L)
+                commentLikeDao.save(1L, 103L)
 
                 // When
                 val count = commentLikeDao.count(1L)
@@ -92,8 +92,8 @@ class CommentLikeDaoTest(
 
             test("soft delete된 좋아요는 단건 집계에서 제외된다") {
                 // Given
-                commentLikeDao.save(1L, "user1@example.com")
-                insertDeletedLike(commentId = 1L, memberEmail = "deleted@example.com")
+                commentLikeDao.save(1L, 101L)
+                insertDeletedLike(commentId = 1L, memberId = 200L)
 
                 // When
                 val count = commentLikeDao.count(1L)
@@ -107,9 +107,9 @@ class CommentLikeDaoTest(
 
             test("여러 댓글의 좋아요 수를 한 번에 정확히 집계한다") {
                 // Given - 댓글마다 서로 다른 좋아요 수
-                commentLikeDao.save(1L, "user1@example.com")
-                commentLikeDao.save(1L, "user2@example.com")
-                commentLikeDao.save(2L, "user3@example.com")
+                commentLikeDao.save(1L, 101L)
+                commentLikeDao.save(1L, 102L)
+                commentLikeDao.save(2L, 103L)
 
                 // When
                 val counts = commentLikeDao.count(listOf(1L, 2L))
@@ -121,7 +121,7 @@ class CommentLikeDaoTest(
 
             test("좋아요가 0인 댓글은 결과 맵에 포함되지 않는다") {
                 // Given - 1번 댓글만 좋아요, 3번은 좋아요 없음
-                commentLikeDao.save(1L, "user1@example.com")
+                commentLikeDao.save(1L, 101L)
 
                 // When
                 val counts = commentLikeDao.count(listOf(1L, 3L))
@@ -133,7 +133,7 @@ class CommentLikeDaoTest(
 
             test("빈 ids를 입력하면 쿼리 없이 빈 맵을 반환한다") {
                 // Given - 좋아요 행이 존재해도
-                commentLikeDao.save(1L, "user1@example.com")
+                commentLikeDao.save(1L, 101L)
 
                 // When
                 val counts = commentLikeDao.count(emptyList())
@@ -144,9 +144,9 @@ class CommentLikeDaoTest(
 
             test("soft delete된 좋아요는 다건 집계에서 제외된다") {
                 // Given - 1번: 활성 1건 + 삭제 1건, 2번: 활성 1건
-                commentLikeDao.save(1L, "user1@example.com")
-                insertDeletedLike(commentId = 1L, memberEmail = "deleted@example.com")
-                commentLikeDao.save(2L, "user2@example.com")
+                commentLikeDao.save(1L, 101L)
+                insertDeletedLike(commentId = 1L, memberId = 200L)
+                commentLikeDao.save(2L, 102L)
 
                 // When
                 val counts = commentLikeDao.count(listOf(1L, 2L))
@@ -158,30 +158,30 @@ class CommentLikeDaoTest(
         }
     }
 
-    private fun insertPost(authorEmail: String = "author@example.com") {
+    private fun insertPost(authorId: Long = 1L) {
         PostTable.insert {
-            it[PostTable.authorEmail] = authorEmail
+            it[PostTable.authorId] = authorId
             it[category] = "CHEER"
             it[title] = "테스트 게시글"
             it[content] = "내용"
         }
     }
 
-    private fun insertComment(authorEmail: String = "author@example.com") {
+    private fun insertComment(authorId: Long = 2L) {
         CommentTable.insert {
             it[postId] = 1L
-            it[CommentTable.authorEmail] = authorEmail
+            it[CommentTable.authorId] = authorId
             it[content] = "테스트 댓글"
         }
     }
 
     private fun insertDeletedLike(
         commentId: Long,
-        memberEmail: String,
+        memberId: Long,
     ) {
         CommentLikeTable.insert {
             it[CommentLikeTable.commentId] = commentId
-            it[CommentLikeTable.memberEmail] = memberEmail
+            it[CommentLikeTable.memberId] = memberId
             it[deleted] = true
         }
     }

@@ -5,13 +5,13 @@ import com.konkuk.ma.domain.community.domain.PostCategory
 
 object NewPostFixture {
     fun create(
-        authorEmail: String = "author@example.com",
+        authorId: Long = 1L,
         category: PostCategory = PostCategory.SUCCESS_STORY,
         title: String = "테스트 게시글",
         content: String = "테스트 내용입니다.",
     ): NewPost {
         return NewPost(
-            authorEmail = authorEmail,
+            authorId = authorId,
             category = category,
             title = title,
             content = content,

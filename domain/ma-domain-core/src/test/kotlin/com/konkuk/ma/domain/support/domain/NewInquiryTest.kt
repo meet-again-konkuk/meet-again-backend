@@ -11,12 +11,12 @@ class NewInquiryTest : FunSpec({
 
         test("유효한 값으로 정상 생성한다") {
             val inquiry = NewInquiry(
-                authorEmail = "test@example.com",
+                authorId = 1L,
                 title = "문의 제목",
                 content = "문의 내용입니다.",
             )
 
-            inquiry.authorEmail.value shouldBe "test@example.com"
+            inquiry.authorId shouldBe 1L
             inquiry.title shouldBe "문의 제목"
             inquiry.content shouldBe "문의 내용입니다."
         }
@@ -25,7 +25,7 @@ class NewInquiryTest : FunSpec({
             val title = "가".repeat(NewInquiry.MAX_TITLE_LENGTH)
 
             val inquiry = NewInquiry(
-                authorEmail = "test@example.com",
+                authorId = 1L,
                 title = title,
                 content = "문의 내용",
             )
@@ -37,7 +37,7 @@ class NewInquiryTest : FunSpec({
             val content = "가".repeat(NewInquiry.MAX_CONTENT_LENGTH)
 
             val inquiry = NewInquiry(
-                authorEmail = "test@example.com",
+                authorId = 1L,
                 title = "문의 제목",
                 content = content,
             )
@@ -48,7 +48,7 @@ class NewInquiryTest : FunSpec({
         test("제목이 비어있으면 예외가 발생한다") {
             shouldThrow<InvalidValueException> {
                 NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "",
                     content = "문의 내용",
                 )
@@ -58,7 +58,7 @@ class NewInquiryTest : FunSpec({
         test("제목이 공백만 있으면 예외가 발생한다") {
             shouldThrow<InvalidValueException> {
                 NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "   ",
                     content = "문의 내용",
                 )
@@ -68,7 +68,7 @@ class NewInquiryTest : FunSpec({
         test("제목이 50자를 초과하면 예외가 발생한다") {
             shouldThrow<InvalidValueException> {
                 NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "가".repeat(NewInquiry.MAX_TITLE_LENGTH + 1),
                     content = "문의 내용",
                 )
@@ -78,7 +78,7 @@ class NewInquiryTest : FunSpec({
         test("내용이 비어있으면 예외가 발생한다") {
             shouldThrow<InvalidValueException> {
                 NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "문의 제목",
                     content = "",
                 )
@@ -88,7 +88,7 @@ class NewInquiryTest : FunSpec({
         test("내용이 공백만 있으면 예외가 발생한다") {
             shouldThrow<InvalidValueException> {
                 NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "문의 제목",
                     content = "   ",
                 )
@@ -98,19 +98,9 @@ class NewInquiryTest : FunSpec({
         test("내용이 500자를 초과하면 예외가 발생한다") {
             shouldThrow<InvalidValueException> {
                 NewInquiry(
-                    authorEmail = "test@example.com",
+                    authorId = 1L,
                     title = "문의 제목",
                     content = "가".repeat(NewInquiry.MAX_CONTENT_LENGTH + 1),
-                )
-            }
-        }
-
-        test("유효하지 않은 이메일이면 예외가 발생한다") {
-            shouldThrow<InvalidValueException> {
-                NewInquiry(
-                    authorEmail = "invalid-email",
-                    title = "문의 제목",
-                    content = "문의 내용",
                 )
             }
         }

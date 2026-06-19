@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 
 class CommentDetail(
@@ -10,15 +9,15 @@ class CommentDetail(
     fun combineWithAuthor(members: Members, likeCounts: LikeCounts): CommentWithAuthor {
         return CommentWithAuthor(
             comment = rootComment,
-            nickname = members.findNickname(rootComment.authorEmail),
+            nickname = members.findNickname(rootComment.authorId),
             likeCount = likeCounts.countOf(rootComment.id),
             replies = replies.combineWithAuthors(members, likeCounts),
             remainingReplyCount = 0,
         )
     }
 
-    fun extractAuthorEmails(): Set<Email> {
-        return replies.extractAuthorEmails() + rootComment.authorEmail
+    fun extractAuthorIds(): Set<Long> {
+        return replies.extractAuthorIds() + rootComment.authorId
     }
 
     fun extractIds(): List<Long> {

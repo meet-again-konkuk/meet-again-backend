@@ -1,12 +1,11 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 
 class Posts(val data: List<Post>) {
 
-    fun extractAuthorEmails(): Set<Email> {
-        return data.map { it.authorEmail }.toSet()
+    fun extractAuthorIds(): Set<Long> {
+        return data.map { it.authorId }.toSet()
     }
 
     fun extractIds(): List<Long> {
@@ -17,7 +16,7 @@ class Posts(val data: List<Post>) {
         return data.map { post ->
             PostWithAuthor(
                 post = post,
-                nickname = members.findNickname(post.authorEmail),
+                nickname = members.findNickname(post.authorId),
                 likeCount = likeCounts.countOf(post.id),
             )
         }

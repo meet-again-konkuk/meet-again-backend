@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.community.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.application.PostLikeService
 import com.konkuk.ma.domain.community.domain.PostLikeResult
 import com.konkuk.ma.extension.andDocument
@@ -27,7 +26,7 @@ class PostLikeApiTest(
 
     test("게시글 좋아요 추가 API 문서화") {
         // Given
-        every { postLikeService.like(1L, "holeman@naver.com") } returns
+        every { postLikeService.like(1L, 1L) } returns
             PostLikeResult(liked = true, likeCount = 3)
 
         // When & Then
@@ -47,7 +46,7 @@ class PostLikeApiTest(
 
     test("게시글 좋아요 취소 API 문서화") {
         // Given
-        every { postLikeService.unlike(1L, "holeman@naver.com") } returns
+        every { postLikeService.unlike(1L, 1L) } returns
             PostLikeResult(liked = false, likeCount = 2)
 
         // When & Then

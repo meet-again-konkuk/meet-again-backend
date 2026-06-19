@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component
 
 @Component
 class CommentLikeDao {
-    fun save(commentId: Long, memberEmail: String): Long {
+    fun save(commentId: Long, memberId: Long): Long {
         return CommentLikeTable.insertAndGetId {
             it[CommentLikeTable.commentId] = commentId
-            it[CommentLikeTable.memberEmail] = memberEmail
-            it[createdBy] = memberEmail
-            it[lastModifiedBy] = memberEmail
+            it[CommentLikeTable.memberId] = memberId
+            it[createdBy] = memberId.toString()
+            it[lastModifiedBy] = memberId.toString()
         }.value
     }
 
-    fun find(memberEmail: String): List<CommentLikeEntity> {
+    fun find(memberId: Long): List<CommentLikeEntity> {
         return CommentLikeTable
-            .activeRows { CommentLikeTable.memberEmail eq memberEmail }
+            .activeRows { CommentLikeTable.memberId eq memberId }
             .map { CommentLikeEntity.from(it) }
     }
 
@@ -46,14 +46,14 @@ class CommentLikeDao {
             .associate { row -> row[CommentLikeTable.commentId] to row[likeCount].toInt() }
     }
 
-    fun delete(commentId: Long, memberEmail: String) {
+    fun delete(commentId: Long, memberId: Long) {
         CommentLikeTable.deleteWhere {
             (CommentLikeTable.commentId eq commentId) and
-                (CommentLikeTable.memberEmail eq memberEmail)
+                (CommentLikeTable.memberId eq memberId)
         }
     }
 
-    fun deleteByMember(memberEmail: String) {
-        CommentLikeTable.deleteWhere { CommentLikeTable.memberEmail eq memberEmail }
+    fun deleteByMember(memberId: Long) {
+        CommentLikeTable.deleteWhere { CommentLikeTable.memberId eq memberId }
     }
 }

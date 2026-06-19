@@ -23,7 +23,7 @@ class CommentQueryService(
         rootComment.validateIsRootComment()
         val replies = Replies(commentQueryRepository.findReplies(commentId))
         val commentDetail = CommentDetail(rootComment, replies)
-        val members = Members(memberQueryRepository.findByEmails(commentDetail.extractAuthorEmails()))
+        val members = Members(memberQueryRepository.findByIds(commentDetail.extractAuthorIds()))
         val likeCounts = LikeCounts.from(commentLikeRepository.count(commentDetail.extractIds()))
 
         return commentDetail.combineWithAuthor(members, likeCounts)

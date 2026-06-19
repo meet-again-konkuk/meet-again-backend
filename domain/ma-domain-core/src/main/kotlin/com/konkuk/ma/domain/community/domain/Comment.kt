@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.EntityType
@@ -9,7 +8,7 @@ import java.time.LocalDateTime
 class Comment(
     val id: Long = 0L,
     val postId: Long,
-    val authorEmail: Email,
+    val authorId: Long,
     val content: String,
     val parentCommentId: Long? = null,
     val createdDate: LocalDateTime = LocalDateTime.now(),
@@ -28,9 +27,9 @@ class Comment(
         }
     }
 
-    fun validateOwnership(email: Email) {
-        if (authorEmail != email) {
-            throw AccessDeniedException(EntityType.COMMUNITY_COMMENT, authorEmail.value, email.value)
+    fun validateOwnership(memberId: Long) {
+        if (authorId != memberId) {
+            throw AccessDeniedException(EntityType.COMMUNITY_COMMENT, authorId.toString(), memberId.toString())
         }
     }
 

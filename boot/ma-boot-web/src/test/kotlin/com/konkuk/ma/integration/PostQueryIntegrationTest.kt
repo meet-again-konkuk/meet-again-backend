@@ -68,9 +68,9 @@ class PostQueryIntegrationTest(
         }
     }
 
-    fun insertMember(email: String, nickname: String = "작성자", rawPassword: String? = null) {
-        transaction {
-            MemberTable.insert {
+    fun insertMember(email: String, nickname: String = "작성자", rawPassword: String? = null): Long {
+        return transaction {
+            MemberTable.insertAndGetId {
                 it[MemberTable.email] = email
                 it[password] = if (rawPassword != null) passwordEncoder.encode(rawPassword) else "encoded"
                 it[MemberTable.nickname] = nickname
@@ -79,7 +79,7 @@ class PostQueryIntegrationTest(
                 it[name] = "김테스트"
                 it[birthDate] = LocalDate.of(1990, 1, 1)
                 it[region] = "SEOUL"
-            }
+            }.value
         }
     }
 
@@ -99,10 +99,10 @@ class PostQueryIntegrationTest(
         return login(viewerEmail, viewerPassword)
     }
 
-    fun insertPost(authorEmail: String = "author@example.com"): Long {
+    fun insertPost(authorId: Long): Long {
         return transaction {
             PostTable.insertAndGetId {
-                it[PostTable.authorEmail] = authorEmail
+                it[PostTable.authorId] = authorId
                 it[category] = "CHEER"
                 it[title] = "테스트 게시글"
                 it[content] = "내용"
@@ -110,11 +110,11 @@ class PostQueryIntegrationTest(
         }
     }
 
-    fun insertComment(postId: Long, authorEmail: String = "author@example.com"): Long {
+    fun insertComment(postId: Long, authorId: Long): Long {
         return transaction {
             CommentTable.insertAndGetId {
                 it[CommentTable.postId] = postId
-                it[CommentTable.authorEmail] = authorEmail
+                it[CommentTable.authorId] = authorId
                 it[content] = "테스트 댓글"
             }.value
         }
@@ -125,7 +125,7 @@ class PostQueryIntegrationTest(
             repeat(count) { i ->
                 PostLikeTable.insert {
                     it[PostLikeTable.postId] = postId
-                    it[memberEmail] = "post-liker$postId-$i@example.com"
+                    it[memberId] = postId * 1000L + i
                 }
             }
         }
@@ -136,7 +136,7 @@ class PostQueryIntegrationTest(
             repeat(count) { i ->
                 CommentLikeTable.insert {
                     it[CommentLikeTable.commentId] = commentId
-                    it[memberEmail] = "comment-liker$commentId-$i@example.com"
+                    it[memberId] = commentId * 1000L + i
                 }
             }
         }
@@ -151,10 +151,10 @@ class PostQueryIntegrationTest(
         test("각 게시글의 likes는 실제 좋아요 행 수와 일치한다 - 0개와 N개가 섞인 경우") {
             // Given - 조회자 로그인 + 작성자 회원 + 게시글 3개, 좋아요 수는 각각 0, 2, 5
             val accessToken = loginAsViewer()
-            insertMember(email = "author@example.com", nickname = "작성자")
-            val postWithZero = insertPost()
-            val postWithTwo = insertPost()
-            val postWithFive = insertPost()
+            val authorId = insertMember(email = "author@example.com", nickname = "작성자")
+            val postWithZero = insertPost(authorId)
+            val postWithTwo = insertPost(authorId)
+            val postWithFive = insertPost(authorId)
             addPostLikes(postWithTwo, 2)
             addPostLikes(postWithFive, 5)
 
@@ -175,8 +175,8 @@ class PostQueryIntegrationTest(
         test("좋아요가 하나도 없으면 모든 게시글의 likes는 0이다") {
             // Given
             val accessToken = loginAsViewer()
-            insertMember(email = "author@example.com")
-            val postId = insertPost()
+            val authorId = insertMember(email = "author@example.com")
+            val postId = insertPost(authorId)
 
             // When
             val result = mockMvc.getJson("/api/community/posts") {
@@ -194,9 +194,8 @@ class PostQueryIntegrationTest(
             // Given
             val accessToken = loginAsViewer()
             val nickname = "응원단장"
-            val authorEmail = "cheerleader@example.com"
-            insertMember(email = authorEmail, nickname = nickname)
-            val postId = insertPost(authorEmail = authorEmail)
+            val authorId = insertMember(email = "cheerleader@example.com", nickname = nickname)
+            val postId = insertPost(authorId = authorId)
 
             // When
             val result = mockMvc.getJson("/api/community/posts") {
@@ -216,12 +215,12 @@ class PostQueryIntegrationTest(
         test("상세 응답의 글 likes와 각 댓글 likes가 실제 좋아요 행 수와 일치한다") {
             // Given - 글 좋아요 3개, 댓글 2개에 각각 좋아요 1개/4개
             val accessToken = loginAsViewer()
-            insertMember(email = "author@example.com")
-            val postId = insertPost()
+            val authorId = insertMember(email = "author@example.com")
+            val postId = insertPost(authorId)
             addPostLikes(postId, 3)
 
-            val firstCommentId = insertComment(postId)
-            val secondCommentId = insertComment(postId)
+            val firstCommentId = insertComment(postId, authorId)
+            val secondCommentId = insertComment(postId, authorId)
             addCommentLikes(firstCommentId, 1)
             addCommentLikes(secondCommentId, 4)
 
@@ -247,9 +246,9 @@ class PostQueryIntegrationTest(
         test("좋아요가 0인 글과 댓글은 likes가 0이다") {
             // Given - 좋아요를 전혀 추가하지 않음
             val accessToken = loginAsViewer()
-            insertMember(email = "author@example.com")
-            val postId = insertPost()
-            val commentId = insertComment(postId)
+            val authorId = insertMember(email = "author@example.com")
+            val postId = insertPost(authorId)
+            val commentId = insertComment(postId, authorId)
 
             // When
             val result = mockMvc.getJson("/api/community/posts/{id}", postId) {

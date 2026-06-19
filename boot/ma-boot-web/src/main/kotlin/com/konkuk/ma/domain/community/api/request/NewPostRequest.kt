@@ -17,9 +17,9 @@ class NewPostRequest(
     @field:Size(max = NewPost.MAX_CONTENT_LENGTH, message = ValidationMessages.POST_CONTENT_SIZE)
     val content: String,
 ) {
-    fun toNewPost(authorEmail: String): NewPost {
+    fun toNewPost(authorId: Long): NewPost {
         return NewPost(
-            authorEmail = authorEmail,
+            authorId = authorId,
             category = category,
             title = title,
             content = content,

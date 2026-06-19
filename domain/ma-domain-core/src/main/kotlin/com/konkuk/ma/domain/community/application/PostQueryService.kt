@@ -29,7 +29,7 @@ class PostQueryService(
     fun find(category: PostCategory?, cursorCondition: CursorIdCondition): CursorResult<List<PostWithAuthor>> {
         val cursorResult = postQueryRepository.find(category, cursorCondition)
         val posts = Posts(cursorResult.data)
-        val members = Members(memberQueryRepository.findByEmails(posts.extractAuthorEmails()))
+        val members = Members(memberQueryRepository.findByIds(posts.extractAuthorIds()))
         val likeCounts = LikeCounts.from(postLikeRepository.count(posts.extractIds()))
 
         return CursorResult(
@@ -42,14 +42,14 @@ class PostQueryService(
     fun findDetail(id: Long): PostDetail {
         val post = postQueryRepository.findOne(id)
         val comments = Comments(commentQueryRepository.find(id))
-        val authorEmails = comments.extractAuthorEmails() + post.authorEmail
-        val members = Members(memberQueryRepository.findByEmails(authorEmails))
+        val authorIds = comments.extractAuthorIds() + post.authorId
+        val members = Members(memberQueryRepository.findByIds(authorIds))
         val postLikeCount = postLikeRepository.count(listOf(post.id))[post.id] ?: 0
         val commentLikeCounts = LikeCounts.from(commentLikeRepository.count(comments.extractIds()))
 
         return PostDetail(
             post = post,
-            nickname = members.findNickname(post.authorEmail),
+            nickname = members.findNickname(post.authorId),
             likeCount = postLikeCount,
             comments = comments.groupByRootComment(members, commentLikeCounts),
         )
