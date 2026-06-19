@@ -9,7 +9,6 @@ import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoCleaner
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
 import com.konkuk.ma.domain.point.domain.port.MemberPointRepository
-import com.konkuk.ma.domain.point.domain.port.PointHistoryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomCommandRepository
 import org.springframework.stereotype.Component
 
@@ -20,7 +19,6 @@ class MemberDataCleaner(
     private val targetInfoCommandRepository: TargetInfoCommandRepository,
     private val matchingResultRepository: MatchingResultRepository,
     private val memberPointRepository: MemberPointRepository,
-    private val pointHistoryRepository: PointHistoryRepository,
     private val postLikeRepository: PostLikeRepository,
     private val commentLikeRepository: CommentLikeRepository,
     private val xroomCommandRepository: XroomCommandRepository,
@@ -49,8 +47,8 @@ class MemberDataCleaner(
     }
 
     private fun cleanPoint(member: Member) {
-        memberPointRepository.delete(member.email)
-        pointHistoryRepository.anonymizeOwner(member.email, member.withdrawnEmail())
+        // 포인트는 ownerId(비PII)를 참조하므로 익명화 불필요 — 잔액만 삭제하고, 결제 이력은 ownerId로 보존한다.
+        memberPointRepository.delete(member.id)
     }
 
     private fun cleanCommunity(member: Member) {

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.PointChargeValidator
@@ -49,14 +48,14 @@ class PointChargeServiceTest : FunSpec({
     }
 
     fun createCommand(
-        email: String = "holeman@naver.com",
+        ownerId: Long = 1L,
         pointProductId: Long = 1L,
         paymentMethod: PaymentMethod = PaymentMethod.CARD,
         paymentToken: String = "token-1",
         orderPointPrice: Int = 1000,
         idempotencyKey: String = "idem-key-1",
     ) = ChargePointCommand(
-        email = email,
+        ownerId = ownerId,
         pointProductId = pointProductId,
         paymentMethod = paymentMethod,
         paymentToken = paymentToken,
@@ -73,7 +72,7 @@ class PointChargeServiceTest : FunSpec({
             val command = createCommand(pointProductId = product.pointProductId, orderPointPrice = product.price.toInt())
             val existingMemberPoint = MemberPoint(
                 id = 10L,
-                ownerEmail = command.ownerEmail,
+                ownerId = command.ownerId,
                 balance = PointQuantity(5),
             )
             val approval = PaymentApproval(
@@ -85,7 +84,7 @@ class PointChargeServiceTest : FunSpec({
 
             every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
             every { paymentApproverRouter.approve(command.paymentMethod, any()) } returns approval
-            every { memberPointRepository.findOneOrInitial(command.ownerEmail) } returns existingMemberPoint
+            every { memberPointRepository.findOneOrInitial(command.ownerId) } returns existingMemberPoint
             every { memberPointRepository.save(any()) } returns existingMemberPoint.id!!
             every { pointHistoryRepository.save(any()) } returns 100L
 
@@ -105,7 +104,7 @@ class PointChargeServiceTest : FunSpec({
 
             val savedHistorySlot = slot<NewPointHistory>()
             verify { pointHistoryRepository.save(capture(savedHistorySlot)) }
-            savedHistorySlot.captured.ownerEmail shouldBe command.ownerEmail
+            savedHistorySlot.captured.ownerId shouldBe command.ownerId
             savedHistorySlot.captured.paidAmount shouldBe product.price
             savedHistorySlot.captured.approvalNumber shouldBe approval.approvalNumber
             savedHistorySlot.captured.paymentMethod shouldBe command.paymentMethod
@@ -117,7 +116,7 @@ class PointChargeServiceTest : FunSpec({
             val product = PointProductFixture.create(pointProductId = 1L, quantity = 10, price = 1000)
             val productWithDiscount = PointProductWithDiscount(product, null)
             val command = createCommand(pointProductId = product.pointProductId, orderPointPrice = product.price.toInt())
-            val initial = MemberPoint.initial(command.ownerEmail)
+            val initial = MemberPoint.initial(command.ownerId)
             val approval = PaymentApproval(
                 approvalNumber = "MOCK-NEW",
                 approvedAmount = product.price,
@@ -127,7 +126,7 @@ class PointChargeServiceTest : FunSpec({
 
             every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
             every { paymentApproverRouter.approve(command.paymentMethod, any()) } returns approval
-            every { memberPointRepository.findOneOrInitial(command.ownerEmail) } returns initial
+            every { memberPointRepository.findOneOrInitial(command.ownerId) } returns initial
             every { memberPointRepository.save(any()) } returns 11L
             every { pointHistoryRepository.save(any()) } returns 101L
 
@@ -160,7 +159,7 @@ class PointChargeServiceTest : FunSpec({
 
             every { productFinder.findOne(product.pointProductId) } returns productWithDiscount
             every { paymentApproverRouter.approve(command.paymentMethod, any()) } returns approval
-            every { memberPointRepository.findOneOrInitial(command.ownerEmail) } returns MemberPoint.initial(command.ownerEmail)
+            every { memberPointRepository.findOneOrInitial(command.ownerId) } returns MemberPoint.initial(command.ownerId)
             every { memberPointRepository.save(any()) } returns 1L
             every { pointHistoryRepository.save(any()) } returns 1L
 
@@ -218,7 +217,7 @@ class PointChargeServiceTest : FunSpec({
             shouldThrow<PaymentApprovalFailedException> {
                 service.charge(command)
             }
-            verify(exactly = 0) { memberPointRepository.findOneOrInitial(any<Email>()) }
+            verify(exactly = 0) { memberPointRepository.findOneOrInitial(any<Long>()) }
             verify(exactly = 0) { memberPointRepository.save(any()) }
             verify(exactly = 0) { pointHistoryRepository.save(any()) }
         }

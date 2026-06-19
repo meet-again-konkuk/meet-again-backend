@@ -1,16 +1,14 @@
 package com.konkuk.ma.domain.point.domain.balance
 
-import com.konkuk.ma.domain.common.domain.Email
-
 class MemberPoint(
     val id: Long?,
-    val ownerEmail: Email,
+    val ownerId: Long,
     val balance: PointQuantity,
 ) {
     fun charge(quantity: PointQuantity): MemberPoint {
         return MemberPoint(
             id = id,
-            ownerEmail = ownerEmail,
+            ownerId = ownerId,
             balance = balance + quantity,
         )
     }
@@ -18,7 +16,7 @@ class MemberPoint(
     fun spend(quantity: PointQuantity): MemberPoint {
         return MemberPoint(
             id = id,
-            ownerEmail = ownerEmail,
+            ownerId = ownerId,
             balance = balance - quantity,
         )
     }
@@ -26,10 +24,10 @@ class MemberPoint(
     fun isPersisted(): Boolean = id != null
 
     companion object {
-        fun initial(ownerEmail: Email): MemberPoint {
+        fun initial(ownerId: Long): MemberPoint {
             return MemberPoint(
                 id = null,
-                ownerEmail = ownerEmail,
+                ownerId = ownerId,
                 balance = PointQuantity.ZERO,
             )
         }

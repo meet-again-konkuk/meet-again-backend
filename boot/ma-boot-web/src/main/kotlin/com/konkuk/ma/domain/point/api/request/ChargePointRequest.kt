@@ -23,9 +23,9 @@ class ChargePointRequest(
     @field:NotBlank(message = ValidationMessages.IDEMPOTENCY_KEY_REQUIRED)
     val idempotencyKey: String,
 ) {
-    fun toCommand(email: String): ChargePointCommand {
+    fun toCommand(memberId: Long): ChargePointCommand {
         return ChargePointCommand(
-            email = email,
+            ownerId = memberId,
             pointProductId = pointProductId,
             paymentMethod = paymentMethod,
             paymentToken = paymentToken,

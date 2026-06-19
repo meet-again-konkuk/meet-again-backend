@@ -166,7 +166,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         val memberId = insertExpiredMember()
         transaction {
             TargetInfoTable.insert { it[registerId] = memberId; it[name] = "홍길동"; it[targetGender] = "FEMALE" }
-            MemberPointTable.insert { it[ownerEmail] = withdrawingEmail; it[balance] = 500 }
+            MemberPointTable.insert { it[ownerId] = memberId; it[balance] = 500 }
             XroomTable.insert { it[ownerEmail] = withdrawingEmail; it[targetInfoId] = 1L; it[theme] = "CORK_BOARD" }
             MemberPhotoTable.insert {
                 it[memberEmail] = withdrawingEmail
@@ -181,7 +181,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         transaction {
             TargetInfoTable.selectAll().where { TargetInfoTable.registerId eq memberId }
                 .single()[TargetInfoTable.deleted] shouldBe true
-            MemberPointTable.selectAll().where { MemberPointTable.ownerEmail eq withdrawingEmail }
+            MemberPointTable.selectAll().where { MemberPointTable.ownerId eq memberId }
                 .single()[MemberPointTable.deleted] shouldBe true
             XroomTable.selectAll().where { XroomTable.ownerEmail eq withdrawingEmail }
                 .single()[XroomTable.deleted] shouldBe true
@@ -192,14 +192,14 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         }
     }
 
-    test("작성 데이터(글·댓글·문의)는 authorId 그대로 보존하고, 포인트이력 이메일만 익명화하며, 내가 타겟인 매칭은 그대로 둔다") {
+    test("작성 데이터(글·댓글·문의)와 포인트이력은 비PII 식별자(authorId·ownerId)로 보존하고, 내가 타겟인 매칭은 그대로 둔다") {
         val memberId = insertExpiredMember()
         transaction {
             PostTable.insert { it[authorId] = memberId; it[category] = "SUCCESS_STORY"; it[title] = "글"; it[content] = "내용" }
             CommentTable.insert { it[postId] = 1L; it[authorId] = memberId; it[content] = "댓글" }
             InquiryTable.insert { it[authorId] = memberId; it[title] = "문의"; it[content] = "내용" }
             PointHistoryTable.insert {
-                it[ownerEmail] = withdrawingEmail
+                it[ownerId] = memberId
                 it[historyType] = "CHARGE"
                 it[quantity] = 500
                 it[paidAmount] = 5000
@@ -211,7 +211,6 @@ class MemberWithdrawalCompleteJobIntegrationTest(
 
         runCleanupJob(5L) shouldBe BatchStatus.COMPLETED
 
-        val withdrawnEmail = "withdrawn_$memberId@deleted.local"
         transaction {
             // 글·댓글·문의는 authorId(비PII) 참조라 익명화하지 않고 행을 그대로 둔다 (soft delete 안 됨).
             PostTable.selectAll().where { PostTable.authorId eq memberId }.single()
@@ -220,8 +219,8 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 .let { it[CommentTable.deleted] shouldBe false }
             InquiryTable.selectAll().where { InquiryTable.authorId eq memberId }.single()
                 .let { it[InquiryTable.deleted] shouldBe false }
-            // 포인트이력은 ownerEmail(PII)이라 익명화 대상.
-            PointHistoryTable.selectAll().where { PointHistoryTable.ownerEmail eq withdrawnEmail }.count() shouldBe 1L
+            // 포인트이력도 ownerId(비PII) 참조라 익명화하지 않고 행을 그대로 둔다.
+            PointHistoryTable.selectAll().where { PointHistoryTable.ownerId eq memberId }.count() shouldBe 1L
             val targetedMatch = MatchingResultTable.selectAll()
                 .where { MatchingResultTable.targetId eq memberId }.single()
             targetedMatch[MatchingResultTable.deleted] shouldBe false

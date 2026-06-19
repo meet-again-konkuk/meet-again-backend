@@ -5,14 +5,13 @@ import com.konkuk.ma.domain.point.entity.table.PointHistoryTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
 
 @Component
 class PointHistoryDao {
     fun save(entity: PointHistoryEntity): Long {
         return PointHistoryTable.insertAndGetId {
-            it[ownerEmail] = entity.ownerEmail
+            it[ownerId] = entity.ownerId
             it[pointProductId] = entity.pointProductId
             it[historyType] = entity.historyType
             it[quantity] = entity.quantity
@@ -20,8 +19,8 @@ class PointHistoryDao {
             it[paymentMethod] = entity.paymentMethod
             it[idempotencyKey] = entity.idempotencyKey
             it[approvalNumber] = entity.approvalNumber
-            it[createdBy] = entity.ownerEmail
-            it[lastModifiedBy] = entity.ownerEmail
+            it[createdBy] = entity.ownerId.toString()
+            it[lastModifiedBy] = entity.ownerId.toString()
         }.value
     }
 
@@ -37,16 +36,9 @@ class PointHistoryDao {
             ?.let { PointHistoryEntity.from(it) }
     }
 
-    fun find(ownerEmail: String): List<PointHistoryEntity> {
+    fun find(ownerId: Long): List<PointHistoryEntity> {
         return PointHistoryTable
-            .activeRows { PointHistoryTable.ownerEmail eq ownerEmail }
+            .activeRows { PointHistoryTable.ownerId eq ownerId }
             .map { PointHistoryEntity.from(it) }
-    }
-
-    fun anonymizeOwner(oldEmail: String, newEmail: String) {
-        PointHistoryTable.update({ PointHistoryTable.ownerEmail eq oldEmail }) {
-            it[ownerEmail] = newEmail
-            it[lastModifiedBy] = newEmail
-        }
     }
 }

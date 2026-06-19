@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.domain.history
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
@@ -8,7 +7,7 @@ import java.time.LocalDateTime
 
 class PointHistory(
     val id: Long,
-    val ownerEmail: Email,
+    val ownerId: Long,
     val pointProductId: Long?,
     val historyType: PointHistoryType,
     val quantity: PointQuantity,

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
@@ -27,7 +26,7 @@ class PointChargeValidatorTest : FunSpec({
         orderPointPrice: Int = 1000,
     ): ChargePointCommand {
         return ChargePointCommand(
-            email = "holeman@naver.com",
+            ownerId = 1L,
             pointProductId = 1L,
             paymentMethod = PaymentMethod.CARD,
             paymentToken = "token-1",
@@ -46,7 +45,7 @@ class PointChargeValidatorTest : FunSpec({
     fun createExistingHistory(idempotencyKey: String): PointHistory {
         return PointHistory(
             id = 100L,
-            ownerEmail = Email("holeman@naver.com"),
+            ownerId = 1L,
             pointProductId = 1L,
             historyType = PointHistoryType.CHARGE,
             quantity = PointQuantity(10),

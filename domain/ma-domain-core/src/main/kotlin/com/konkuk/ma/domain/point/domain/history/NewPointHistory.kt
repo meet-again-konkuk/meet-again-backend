@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.domain.history
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
@@ -9,7 +8,7 @@ import com.konkuk.ma.domain.point.domain.payment.PaymentApproval
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 
 class NewPointHistory(
-    val ownerEmail: Email,
+    val ownerId: Long,
     val pointProductId: Long?,
     val historyType: PointHistoryType,
     val quantity: PointQuantity,
@@ -25,7 +24,7 @@ class NewPointHistory(
             approval: PaymentApproval,
         ): NewPointHistory {
             return NewPointHistory(
-                ownerEmail = command.ownerEmail,
+                ownerId = command.ownerId,
                 pointProductId = productWithDiscount.productId(),
                 historyType = PointHistoryType.CHARGE,
                 quantity = productWithDiscount.chargeQuantity(),

@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.point.repository
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.dao.PointHistoryDao
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
@@ -55,7 +54,7 @@ class PointHistoryCoreRepositoryTest(
                 // Then
                 savedId shouldNotBe 0L
                 val row = PointHistoryTable.selectAll().first()
-                row[PointHistoryTable.ownerEmail] shouldBe newHistory.ownerEmail.value
+                row[PointHistoryTable.ownerId] shouldBe newHistory.ownerId
                 row[PointHistoryTable.pointProductId] shouldBe newHistory.pointProductId
                 row[PointHistoryTable.historyType] shouldBe newHistory.historyType.name
                 row[PointHistoryTable.quantity] shouldBe newHistory.quantity.toInt()
@@ -91,7 +90,7 @@ class PointHistoryCoreRepositoryTest(
                 // Then
                 result shouldNotBe null
                 result!!.id shouldBe savedId
-                result.ownerEmail shouldBe newHistory.ownerEmail
+                result.ownerId shouldBe newHistory.ownerId
                 result.idempotencyKey shouldBe idempotencyKey
                 result.quantity shouldBe newHistory.quantity
                 result.paidAmount shouldBe newHistory.paidAmount
@@ -111,7 +110,7 @@ class PointHistoryCoreRepositoryTest(
     }
 
     private fun createNewCharge(
-        ownerEmail: Email = Email("holeman@naver.com"),
+        ownerId: Long = 1L,
         pointProductId: Long = 1L,
         quantity: PointQuantity = PointQuantity(10),
         paidAmount: Money = Money.wons(1000),
@@ -120,7 +119,7 @@ class PointHistoryCoreRepositoryTest(
         approvalNumber: String = "MOCK-APPROVAL",
     ): NewPointHistory {
         return NewPointHistory(
-            ownerEmail = ownerEmail,
+            ownerId = ownerId,
             pointProductId = pointProductId,
             historyType = PointHistoryType.CHARGE,
             quantity = quantity,

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.entity
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.history.NewPointHistory
@@ -13,7 +12,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 class PointHistoryEntity(
     val id: Long?,
-    val ownerEmail: String,
+    val ownerId: Long,
     val pointProductId: Long?,
     val historyType: String,
     val quantity: Int,
@@ -26,7 +25,7 @@ class PointHistoryEntity(
     fun toDomain(): PointHistory {
         return PointHistory(
             id = id!!,
-            ownerEmail = Email(ownerEmail),
+            ownerId = ownerId,
             pointProductId = pointProductId,
             historyType = PointHistoryType.valueOf(historyType),
             quantity = PointQuantity(quantity),
@@ -42,7 +41,7 @@ class PointHistoryEntity(
         fun from(row: ResultRow): PointHistoryEntity {
             return PointHistoryEntity(
                 id = row[PointHistoryTable.id].value,
-                ownerEmail = row[PointHistoryTable.ownerEmail],
+                ownerId = row[PointHistoryTable.ownerId],
                 pointProductId = row[PointHistoryTable.pointProductId],
                 historyType = row[PointHistoryTable.historyType],
                 quantity = row[PointHistoryTable.quantity],
@@ -57,7 +56,7 @@ class PointHistoryEntity(
         fun from(newHistory: NewPointHistory): PointHistoryEntity {
             return PointHistoryEntity(
                 id = null,
-                ownerEmail = newHistory.ownerEmail.value,
+                ownerId = newHistory.ownerId,
                 pointProductId = newHistory.pointProductId,
                 historyType = newHistory.historyType.name,
                 quantity = newHistory.quantity.toInt(),

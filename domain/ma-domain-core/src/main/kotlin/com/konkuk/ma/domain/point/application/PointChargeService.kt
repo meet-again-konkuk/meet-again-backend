@@ -29,7 +29,7 @@ class PointChargeService(
             command.paymentMethod,
             PaymentOrder.of(command, product),
         )
-        val memberPoint = memberPointRepository.findOneOrInitial(command.ownerEmail)
+        val memberPoint = memberPointRepository.findOneOrInitial(command.ownerId)
             .charge(product.chargeQuantity())
         memberPointRepository.save(memberPoint)
         val pointHistoryId = pointHistoryRepository.save(

@@ -24,7 +24,7 @@ class PointChargeApi(
         @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: ChargePointRequest,
     ): ChargePointResponse {
-        val command = request.toCommand(memberInfo.email)
+        val command = request.toCommand(memberInfo.id)
         val result = pointChargeService.charge(command)
         return ChargePointResponse.from(result)
     }
