@@ -6,9 +6,9 @@ import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.javatime.datetime
 
 object MatchingResultTable : BaseTable("MATCHING_RESULTS", "MATCHING_RESULT_ID") {
-    val registerEmail = varchar("REGISTER_EMAIL", 255).references(MemberTable.email)
+    val registerId = long("REGISTER_ID").references(MemberTable.id)
     val targetInfoId = long("TARGET_INFO_ID").references(TargetInfoTable.id)
-    val targetEmail = varchar("TARGET_EMAIL", 255).references(MemberTable.email)
+    val targetId = long("TARGET_ID").references(MemberTable.id)
     val middleNumberMatched = bool("MIDDLE_NUMBER_MATCHED")
     val lastNumberMatched = bool("LAST_NUMBER_MATCHED")
     val yearMatched = bool("YEAR_MATCHED")

@@ -20,7 +20,7 @@ class MatchingResultCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.exclude(matchingResultId, memberInfo.email)
+        matchingResultCommandService.exclude(matchingResultId, memberInfo.id)
     }
 
     @PatchMapping("/{matchingResultId}/include")
@@ -28,7 +28,7 @@ class MatchingResultCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.include(matchingResultId, memberInfo.email)
+        matchingResultCommandService.include(matchingResultId, memberInfo.id)
     }
 
     @PatchMapping("/{matchingResultId}/claim")
@@ -36,6 +36,6 @@ class MatchingResultCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ) {
-        matchingResultCommandService.claim(matchingResultId, memberInfo.email)
+        matchingResultCommandService.claim(matchingResultId, memberInfo.id)
     }
 }

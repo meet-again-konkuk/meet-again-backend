@@ -27,7 +27,6 @@ import com.konkuk.ma.vocabulary.targetInfoId
 import com.konkuk.ma.vocabulary.targetName
 import com.konkuk.ma.vocabulary.targetRegion
 import com.konkuk.ma.vocabulary.year
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.ninjasquad.springmockk.MockkBean
@@ -64,7 +63,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == Email("holeman@naver.com") &&
+                    it.registerId == 1L &&
                     it.targetName == "김만남" &&
                     it.middleNumber?.value == "1234" &&
                     it.lastNumber?.value == "5678" &&
@@ -120,7 +119,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == Email("holeman@naver.com") &&
+                    it.registerId == 1L &&
                     it.targetName == "이재회" &&
                     it.middleNumber == null &&
                     it.lastNumber == null &&
@@ -196,10 +195,10 @@ class TargetInfoCommandApiTest(
         )
 
         every {
-            targetInfoCommandService.update(id, "holeman@naver.com", any<UpdateTargetInfo>())
+            targetInfoCommandService.update(id, 1L, any<UpdateTargetInfo>())
         } returns TargetInfo(
             targetInfoId = id,
-            registerEmail = Email("holeman@naver.com"),
+            registerId = 1L,
             targetName = "박수정",
             targetGender = Gender.FEMALE,
             middleNumber = FourDigit("4321"),
@@ -244,7 +243,7 @@ class TargetInfoCommandApiTest(
         val id = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
 
-        justRun { targetInfoCommandService.delete(id, "holeman@naver.com") }
+        justRun { targetInfoCommandService.delete(id, 1L) }
 
         // When & Then
         mockMvc.deleteJson("/api/target-infos/$encodedId")

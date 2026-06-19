@@ -49,9 +49,10 @@ class MemberDataCleaner(
     }
 
     private fun cleanMatching(member: Member) {
-        targetInfoCommandRepository.delete(member.email)
-        matchingResultRepository.deleteByRegister(member.email)
-        matchingResultRepository.anonymizeTarget(member.email, member.withdrawnEmail())
+        // 매칭은 memberId(비PII)를 참조하므로 익명화 불필요 — 등록자 본인 데이터만 삭제한다.
+        // 내가 타인의 target으로 잡힌 매칭 결과(targetId=내 id)는 그대로 두며, 조회 시 소프트삭제된 회원이 제외돼 withdrawn으로 표시된다.
+        targetInfoCommandRepository.delete(member.id)
+        matchingResultRepository.deleteByRegister(member.id)
     }
 
     private fun cleanPoint(member: Member) {

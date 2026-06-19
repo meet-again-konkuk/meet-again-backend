@@ -12,6 +12,8 @@ class Members(val data: List<Member>) {
 
     fun findOne(id: Long): Member? = data.find { it.id == id }
 
+    fun extractEmails(): Set<Email> = data.map { it.email }.toSet()
+
     fun findNickname(email: Email): String {
         return nicknameByEmail[email] ?: UNKNOWN_NICKNAME
     }

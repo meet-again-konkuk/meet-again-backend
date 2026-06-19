@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.fixture
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import java.time.LocalDate
@@ -9,9 +8,9 @@ import java.time.LocalDateTime
 object MatchingResultFixture {
     fun create(
         id: Long = 1L,
-        registerEmail: String = "register@example.com",
+        registerId: Long = 1L,
         targetInfoId: Long = 1L,
-        targetEmail: String = "target@example.com",
+        targetId: Long = 2L,
         middleNumberMatched: Boolean = true,
         lastNumberMatched: Boolean = true,
         yearMatched: Boolean = true,
@@ -25,9 +24,9 @@ object MatchingResultFixture {
     ): MatchingResult {
         return MatchingResult(
             id = id,
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetInfoId = targetInfoId,
-            targetEmail = Email(targetEmail),
+            targetId = targetId,
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,
@@ -44,9 +43,9 @@ object MatchingResultFixture {
 
 object NewMatchingResultFixture {
     fun create(
-        registerEmail: String = "register@example.com",
+        registerId: Long = 1L,
         targetInfoId: Long = 1L,
-        targetEmail: String = "target@example.com",
+        targetId: Long = 2L,
         middleNumberMatched: Boolean = true,
         lastNumberMatched: Boolean = true,
         yearMatched: Boolean = true,
@@ -57,9 +56,9 @@ object NewMatchingResultFixture {
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
     ): NewMatchingResult {
         return NewMatchingResult(
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetInfoId = targetInfoId,
-            targetEmail = Email(targetEmail),
+            targetId = targetId,
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,

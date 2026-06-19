@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.NewMatchingResultFixture
 import io.kotest.core.spec.style.FunSpec
@@ -15,9 +14,9 @@ class NewMatchingResultsTest : FunSpec({
         test("중복 없이 targetInfoId 목록을 반환한다") {
             val results = NewMatchingResults(
                 listOf(
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                    NewMatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com"),
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "c@c.com")
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                    NewMatchingResultFixture.create(targetInfoId = 2L, targetId = 20L),
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 30L)
                 )
             )
 
@@ -35,13 +34,13 @@ class NewMatchingResultsTest : FunSpec({
 
         test("기존에 없는 결과만 필터링한다") {
             val existing = listOf(
-                MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com")
+                MatchingResultFixture.create(targetInfoId = 1L, targetId = 10L)
             )
 
             val candidates = NewMatchingResults(
                 listOf(
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                    NewMatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com")
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                    NewMatchingResultFixture.create(targetInfoId = 2L, targetId = 20L)
                 )
             )
 
@@ -49,18 +48,18 @@ class NewMatchingResultsTest : FunSpec({
 
             newResults.data shouldHaveSize 1
             newResults.data.first().targetInfoId shouldBe 2L
-            newResults.data.first().targetEmail shouldBe Email("b@b.com")
+            newResults.data.first().targetId shouldBe 20L
         }
 
         test("모두 기존에 존재하면 빈 결과를 반환한다") {
             val existing = listOf(
-                MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                MatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com")
+                MatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                MatchingResultFixture.create(targetInfoId = 2L, targetId = 20L)
             )
 
             val candidates = NewMatchingResults(
                 listOf(
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com")
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 10L)
                 )
             )
 
@@ -74,8 +73,8 @@ class NewMatchingResultsTest : FunSpec({
 
             val candidates = NewMatchingResults(
                 listOf(
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                    NewMatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com")
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                    NewMatchingResultFixture.create(targetInfoId = 2L, targetId = 20L)
                 )
             )
 
@@ -84,14 +83,14 @@ class NewMatchingResultsTest : FunSpec({
             newResults.data shouldHaveSize 2
         }
 
-        test("같은 targetInfoId라도 targetEmail이 다르면 새로운 결과로 판단한다") {
+        test("같은 targetInfoId라도 targetId가 다르면 새로운 결과로 판단한다") {
             val existing = listOf(
-                MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com")
+                MatchingResultFixture.create(targetInfoId = 1L, targetId = 10L)
             )
 
             val candidates = NewMatchingResults(
                 listOf(
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "different@a.com")
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 99L)
                 )
             )
 
@@ -105,10 +104,10 @@ class NewMatchingResultsTest : FunSpec({
 
         test("여러 NewMatchingResults를 하나로 합친다") {
             val results1 = NewMatchingResults(
-                listOf(NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"))
+                listOf(NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 10L))
             )
             val results2 = NewMatchingResults(
-                listOf(NewMatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com"))
+                listOf(NewMatchingResultFixture.create(targetInfoId = 2L, targetId = 20L))
             )
 
             val merged = NewMatchingResults.merge(listOf(results1, results2))
@@ -125,8 +124,8 @@ class NewMatchingResultsTest : FunSpec({
         test("하나의 NewMatchingResults만 merge하면 동일한 결과를 반환한다") {
             val results = NewMatchingResults(
                 listOf(
-                    NewMatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                    NewMatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com")
+                    NewMatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                    NewMatchingResultFixture.create(targetInfoId = 2L, targetId = 20L)
                 )
             )
 

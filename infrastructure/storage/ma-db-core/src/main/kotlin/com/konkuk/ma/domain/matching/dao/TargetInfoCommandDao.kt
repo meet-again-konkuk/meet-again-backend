@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 class TargetInfoCommandDao {
     fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long {
         return TargetInfoTable.insertAndGetId {
-            it[TargetInfoTable.registerEmail] = newTargetInfo.registerEmail.value
+            it[registerId] = newTargetInfo.registerId
             it[name] = newTargetInfo.targetName
             it[TargetInfoTable.targetGender] = targetGender.name
             it[middleNumber] = newTargetInfo.middleNumber?.value
@@ -21,12 +21,12 @@ class TargetInfoCommandDao {
             it[month] = newTargetInfo.month?.value
             it[day] = newTargetInfo.day?.value
             it[region] = newTargetInfo.region?.name
-            it[createdBy] = newTargetInfo.registerEmail.value
-            it[lastModifiedBy] = newTargetInfo.registerEmail.value
+            it[createdBy] = newTargetInfo.registerId.toString()
+            it[lastModifiedBy] = newTargetInfo.registerId.toString()
         }.value
     }
 
-    fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo) {
+    fun update(id: Long, memberId: Long, updateTargetInfo: UpdateTargetInfo) {
         TargetInfoTable.update({ TargetInfoTable.id eq id }) {
             updateTargetInfo.targetName?.let { targetName -> it[name] = targetName }
             it[middleNumber] = updateTargetInfo.middleNumber?.value
@@ -35,15 +35,15 @@ class TargetInfoCommandDao {
             it[month] = updateTargetInfo.month?.value
             it[day] = updateTargetInfo.day?.value
             it[region] = updateTargetInfo.region?.name
-            it[lastModifiedBy] = email
+            it[lastModifiedBy] = memberId.toString()
         }
     }
 
-    fun delete(id: Long, email: String) {
-        TargetInfoTable.softDelete({ TargetInfoTable.id eq id }, email)
+    fun delete(id: Long, memberId: Long) {
+        TargetInfoTable.softDelete({ TargetInfoTable.id eq id }, memberId.toString())
     }
 
-    fun delete(email: String) {
-        TargetInfoTable.softDelete({ TargetInfoTable.registerEmail eq email }, email)
+    fun delete(memberId: Long) {
+        TargetInfoTable.softDelete({ TargetInfoTable.registerId eq memberId }, memberId.toString())
     }
 }

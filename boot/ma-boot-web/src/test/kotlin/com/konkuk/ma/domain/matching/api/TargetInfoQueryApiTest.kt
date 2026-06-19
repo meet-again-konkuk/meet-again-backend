@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.matching.api
 
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -38,14 +37,14 @@ class TargetInfoQueryApiTest(
     @MockkBean private val targetInfoQueryService: TargetInfoQueryService,
 ) : FunSpec({
 
-    val authEmail = "holeman@naver.com"
+    val authMemberId = 1L
 
     test("내가 등록한 찾는 사람 목록 조회 API 문서화") {
         // Given
-        every { targetInfoQueryService.find(authEmail) } returns listOf(
+        every { targetInfoQueryService.find(authMemberId) } returns listOf(
             TargetInfo(
                 targetInfoId = 1L,
-                registerEmail = Email(authEmail),
+                registerId = authMemberId,
                 targetName = "김만남",
                 targetGender = Gender.FEMALE,
                 middleNumber = FourDigit("1234"),
@@ -78,7 +77,7 @@ class TargetInfoQueryApiTest(
 
     test("등록한 찾는 사람이 없으면 빈 목록을 반환한다") {
         // Given
-        every { targetInfoQueryService.find(authEmail) } returns emptyList()
+        every { targetInfoQueryService.find(authMemberId) } returns emptyList()
 
         // When & Then
         mockMvc.getJson("/api/target-infos") {}
@@ -91,9 +90,9 @@ class TargetInfoQueryApiTest(
         // Given
         val encryptedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L)
 
-        every { targetInfoQueryService.findDetail(1L, authEmail) } returns TargetInfo(
+        every { targetInfoQueryService.findDetail(1L, authMemberId) } returns TargetInfo(
             targetInfoId = 1L,
-            registerEmail = Email(authEmail),
+            registerId = authMemberId,
             targetName = "김만남",
             targetGender = Gender.FEMALE,
             middleNumber = FourDigit("1234"),

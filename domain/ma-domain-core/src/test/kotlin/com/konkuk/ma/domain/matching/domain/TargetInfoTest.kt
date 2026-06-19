@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.member.domain.FourDigit
@@ -37,6 +36,7 @@ class TargetInfoTest : FunSpec({
 
         test("모든 비교 필드가 일치하면 모든 matched 플래그가 true") {
             val targetInfo = TargetInfoFixture.create(
+                registerId = 1L,
                 middleNumber = FourDigit("1234"),
                 lastNumber = FourDigit("5678"),
                 region = Region.SEOUL
@@ -44,6 +44,7 @@ class TargetInfoTest : FunSpec({
 
             val targets = Targets.from(listOf(
                 MemberFixture.create(
+                    id = 2L,
                     email = "target@example.com",
                     phoneNumber = "01012345678",
                     birthDate = LocalDate.of(1999, 12, 31),
@@ -55,8 +56,8 @@ class TargetInfoTest : FunSpec({
             results.data shouldHaveSize 1
 
             val result = results.data.first()
-            result.registerEmail shouldBe Email("register@example.com")
-            result.targetEmail shouldBe Email("target@example.com")
+            result.registerId shouldBe 1L
+            result.targetId shouldBe 2L
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe true
             result.regionMatched shouldBe true

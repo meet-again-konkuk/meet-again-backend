@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.InvalidStateException
@@ -64,17 +63,17 @@ class MatchingResultTest : FunSpec({
 
     context("validateOwnership") {
 
-        test("본인 이메일이면 예외 없이 통과한다") {
-            val matchingResult = MatchingResultFixture.create(registerEmail = "owner@example.com")
+        test("본인이면 예외 없이 통과한다") {
+            val matchingResult = MatchingResultFixture.create(registerId = 1L)
 
-            matchingResult.validateOwnership(Email("owner@example.com"))
+            matchingResult.validateOwnership(1L)
         }
 
-        test("다른 이메일이면 AccessDeniedException이 발생한다") {
-            val matchingResult = MatchingResultFixture.create(registerEmail = "owner@example.com")
+        test("다른 회원이면 AccessDeniedException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(registerId = 1L)
 
             shouldThrow<AccessDeniedException> {
-                matchingResult.validateOwnership(Email("other@example.com"))
+                matchingResult.validateOwnership(2L)
             }
         }
     }

@@ -30,7 +30,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.exclude(matchingResultId, "holeman@naver.com") } just runs
+        every { matchingResultCommandService.exclude(matchingResultId, 1L) } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}
@@ -43,7 +43,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.include(matchingResultId, "holeman@naver.com") } just runs
+        every { matchingResultCommandService.include(matchingResultId, 1L) } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/include") {}
@@ -56,7 +56,7 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.claim(matchingResultId, "holeman@naver.com") } just runs
+        every { matchingResultCommandService.claim(matchingResultId, 1L) } just runs
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/claim") {}
@@ -69,8 +69,8 @@ class MatchingResultCommandApiTest(
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
 
-        every { matchingResultCommandService.exclude(matchingResultId, "holeman@naver.com") } throws
-            AccessDeniedException(EntityType.MATCHING_RESULT, "owner@example.com", "holeman@naver.com")
+        every { matchingResultCommandService.exclude(matchingResultId, 1L) } throws
+            AccessDeniedException(EntityType.MATCHING_RESULT, "2", "1")
 
         // When & Then
         mockMvc.patchJson("/api/matching-results/$encodedId/exclude") {}

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
@@ -20,25 +19,23 @@ class TargetInfoCommandService(
     private val memberQueryRepository: MemberQueryRepository,
 ) {
     fun register(newTargetInfo: NewTargetInfo): Long {
-        val member = memberQueryRepository.findOne(newTargetInfo.registerEmail)
+        val member = memberQueryRepository.findOne(newTargetInfo.registerId)
         return targetInfoCommandRepository.save(newTargetInfo, member.getOtherGender())
     }
 
-    fun update(id: Long, email: String, updateTargetInfo: UpdateTargetInfo): TargetInfo {
-        val memberEmail = Email(email)
+    fun update(id: Long, memberId: Long, updateTargetInfo: UpdateTargetInfo): TargetInfo {
         val targetInfo = targetInfoQueryRepository.findOne(id)
-        targetInfo.validateOwnership(memberEmail)
+        targetInfo.validateOwnership(memberId)
         val hasMatchingResult = matchingResultRepository.exists(id)
         targetInfo.validateUpdatable(hasMatchingResult)
-        targetInfoCommandRepository.update(id, memberEmail, updateTargetInfo)
+        targetInfoCommandRepository.update(id, memberId, updateTargetInfo)
         return targetInfoQueryRepository.findOne(id)
     }
 
-    fun delete(id: Long, email: String) {
-        val memberEmail = Email(email)
+    fun delete(id: Long, memberId: Long) {
         val targetInfo = targetInfoQueryRepository.findOne(id)
-        targetInfo.validateOwnership(memberEmail)
-        matchingResultRepository.delete(id, memberEmail)
-        targetInfoCommandRepository.delete(id, memberEmail)
+        targetInfo.validateOwnership(memberId)
+        matchingResultRepository.delete(id, memberId)
+        targetInfoCommandRepository.delete(id, memberId)
     }
 }

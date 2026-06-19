@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Gender
 import io.kotest.core.spec.style.FunSpec
@@ -14,16 +13,16 @@ class TargetsTest : FunSpec({
         test("이름과 성별이 모두 일치하는 Target만 반환한다") {
             val targets = Targets.from(
                 listOf(
-                    MemberFixture.create(name = "홍길동", gender = Gender.MALE, email = "a@a.com"),
-                    MemberFixture.create(name = "홍길동", gender = Gender.FEMALE, email = "b@b.com"),
-                    MemberFixture.create(name = "김철수", gender = Gender.MALE, email = "c@c.com")
+                    MemberFixture.create(id = 1L, name = "홍길동", gender = Gender.MALE, email = "a@a.com"),
+                    MemberFixture.create(id = 2L, name = "홍길동", gender = Gender.FEMALE, email = "b@b.com"),
+                    MemberFixture.create(id = 3L, name = "김철수", gender = Gender.MALE, email = "c@c.com")
                 )
             )
 
             val candidates = targets.filterCandidates("홍길동", Gender.MALE)
 
             candidates shouldHaveSize 1
-            candidates.first().email shouldBe Email("a@a.com")
+            candidates.first().memberId shouldBe 1L
         }
 
         test("이름만 일치하고 성별이 다르면 반환하지 않는다") {
@@ -64,16 +63,16 @@ class TargetsTest : FunSpec({
 
         test("Member 리스트로부터 Targets를 생성한다") {
             val members = listOf(
-                MemberFixture.create(email = "a@a.com", name = "홍길동"),
-                MemberFixture.create(email = "b@b.com", name = "김철수")
+                MemberFixture.create(id = 1L, email = "a@a.com", name = "홍길동"),
+                MemberFixture.create(id = 2L, email = "b@b.com", name = "김철수")
             )
 
             val targets = Targets.from(members)
 
             targets.data shouldHaveSize 2
-            targets.data[0].email shouldBe Email("a@a.com")
+            targets.data[0].memberId shouldBe 1L
             targets.data[0].name shouldBe "홍길동"
-            targets.data[1].email shouldBe Email("b@b.com")
+            targets.data[1].memberId shouldBe 2L
             targets.data[1].name shouldBe "김철수"
         }
 

@@ -31,7 +31,7 @@ class TargetInfoCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: NewTargetInfoRequest
     ): NewTargetInfoResponse {
-        val newTargetInfo = request.toNewTargetInfo(memberInfo.email)
+        val newTargetInfo = request.toNewTargetInfo(memberInfo.id)
         val targetInfoId = targetInfoCommandService.register(newTargetInfo)
         return NewTargetInfoResponse(targetInfoId = targetInfoId, registerEmail = memberInfo.email)
     }
@@ -42,7 +42,7 @@ class TargetInfoCommandApi(
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
         @Valid @RequestBody request: UpdateTargetInfoRequest
     ): TargetInfoResponse {
-        val updated = targetInfoCommandService.update(targetInfoId, memberInfo.email, request.toUpdateTargetInfo())
+        val updated = targetInfoCommandService.update(targetInfoId, memberInfo.id, request.toUpdateTargetInfo())
         return TargetInfoResponse.from(updated)
     }
 
@@ -52,6 +52,6 @@ class TargetInfoCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ) {
-        targetInfoCommandService.delete(targetInfoId, memberInfo.email)
+        targetInfoCommandService.delete(targetInfoId, memberInfo.id)
     }
 }

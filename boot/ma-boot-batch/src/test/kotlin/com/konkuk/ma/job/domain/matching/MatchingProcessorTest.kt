@@ -28,7 +28,7 @@ class MatchingProcessorTest : FunSpec({
         test("TargetInfo와 매칭되는 Member가 있으면 MatchingResult를 생성한다") {
             // Given
             val targetInfo = TargetInfoFixture.create()
-            val member = MemberFixture.create(name = targetInfo.targetName)
+            val member = MemberFixture.create(id = 10L, name = targetInfo.targetName)
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
@@ -40,7 +40,7 @@ class MatchingProcessorTest : FunSpec({
             // Then
             result!! shouldHaveSize 1
             result[0].targetInfoId shouldBe targetInfo.targetInfoId
-            result[0].targetEmail shouldBe member.email
+            result[0].targetId shouldBe member.id
         }
 
         test("매칭되는 Member가 없으면 빈 결과를 반환한다") {
@@ -61,7 +61,7 @@ class MatchingProcessorTest : FunSpec({
         test("이름은 같지만 target 성별이 다르면 매칭되지 않는다") {
             // Given
             val targetInfo = TargetInfoFixture.create(targetGender = Gender.MALE)
-            val member = MemberFixture.create(name = targetInfo.targetName, gender = Gender.FEMALE)
+            val member = MemberFixture.create(id = 10L, name = targetInfo.targetName, gender = Gender.FEMALE)
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
@@ -77,7 +77,7 @@ class MatchingProcessorTest : FunSpec({
         test("이름이 다르면 매칭되지 않는다") {
             // Given
             val targetInfo = TargetInfoFixture.create(targetName = "홍길동")
-            val member = MemberFixture.create(name = "김철수", gender = targetInfo.targetGender)
+            val member = MemberFixture.create(id = 10L, name = "김철수", gender = targetInfo.targetGender)
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
@@ -93,10 +93,10 @@ class MatchingProcessorTest : FunSpec({
         test("이미 존재하는 매칭 결과는 필터링된다") {
             // Given
             val targetInfo = TargetInfoFixture.create()
-            val member = MemberFixture.create(name = targetInfo.targetName)
+            val member = MemberFixture.create(id = 10L, name = targetInfo.targetName)
             val existingResult = MatchingResultFixture.create(
                 targetInfoId = targetInfo.targetInfoId,
-                targetEmail = member.email.value
+                targetId = member.id
             )
             val targetInfos = TargetInfos(listOf(targetInfo))
 
@@ -113,11 +113,11 @@ class MatchingProcessorTest : FunSpec({
         test("여러 매칭 결과 중 일부만 기존에 존재하면 새로운 결과만 반환한다") {
             // Given
             val targetInfo = TargetInfoFixture.create()
-            val member1 = MemberFixture.create(name = targetInfo.targetName, email = "member1@example.com")
-            val member2 = MemberFixture.create(name = targetInfo.targetName, email = "member2@example.com")
+            val member1 = MemberFixture.create(id = 10L, name = targetInfo.targetName, email = "member1@example.com")
+            val member2 = MemberFixture.create(id = 20L, name = targetInfo.targetName, email = "member2@example.com")
             val existingResult = MatchingResultFixture.create(
                 targetInfoId = targetInfo.targetInfoId,
-                targetEmail = member1.email.value
+                targetId = member1.id
             )
             val targetInfos = TargetInfos(listOf(targetInfo))
 
@@ -130,15 +130,15 @@ class MatchingProcessorTest : FunSpec({
             // Then
             result!! shouldHaveSize 1
             result[0].targetInfoId shouldBe targetInfo.targetInfoId
-            result[0].targetEmail shouldBe member2.email
+            result[0].targetId shouldBe member2.id
         }
 
         test("여러 TargetInfo에 대해 각각 매칭 결과를 생성한다") {
             // Given
             val targetInfo1 = TargetInfoFixture.create(targetInfoId = 1L, targetName = "홍길동", targetGender = Gender.MALE)
             val targetInfo2 = TargetInfoFixture.create(targetInfoId = 2L, targetName = "김영희", targetGender = Gender.FEMALE)
-            val member1 = MemberFixture.create(name = targetInfo1.targetName, gender = targetInfo1.targetGender, email = "hong@example.com")
-            val member2 = MemberFixture.create(name = targetInfo2.targetName, gender = targetInfo2.targetGender, email = "kim@example.com")
+            val member1 = MemberFixture.create(id = 10L, name = targetInfo1.targetName, gender = targetInfo1.targetGender, email = "hong@example.com")
+            val member2 = MemberFixture.create(id = 20L, name = targetInfo2.targetName, gender = targetInfo2.targetGender, email = "kim@example.com")
             val targetInfos = TargetInfos(listOf(targetInfo1, targetInfo2))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2)
@@ -150,16 +150,16 @@ class MatchingProcessorTest : FunSpec({
             // Then
             result!! shouldHaveSize 2
             result[0].targetInfoId shouldBe targetInfo1.targetInfoId
-            result[0].targetEmail shouldBe member1.email
+            result[0].targetId shouldBe member1.id
             result[1].targetInfoId shouldBe targetInfo2.targetInfoId
-            result[1].targetEmail shouldBe member2.email
+            result[1].targetId shouldBe member2.id
         }
 
         test("여러 TargetInfo 중 일부만 매칭되는 Member가 있으면 매칭된 것만 결과에 포함된다") {
             // Given
             val targetInfo1 = TargetInfoFixture.create(targetInfoId = 1L, targetName = "홍길동", targetGender = Gender.MALE)
             val targetInfo2 = TargetInfoFixture.create(targetInfoId = 2L, targetName = "김영희", targetGender = Gender.FEMALE)
-            val member1 = MemberFixture.create(name = targetInfo1.targetName, gender = targetInfo1.targetGender, email = "hong@example.com")
+            val member1 = MemberFixture.create(id = 10L, name = targetInfo1.targetName, gender = targetInfo1.targetGender, email = "hong@example.com")
             val targetInfos = TargetInfos(listOf(targetInfo1, targetInfo2))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1)
@@ -171,15 +171,15 @@ class MatchingProcessorTest : FunSpec({
             // Then
             result!! shouldHaveSize 1
             result[0].targetInfoId shouldBe targetInfo1.targetInfoId
-            result[0].targetEmail shouldBe member1.email
+            result[0].targetId shouldBe member1.id
         }
 
         test("하나의 TargetInfo에 여러 Member가 매칭되면 모두 포함한다") {
             // Given
             val targetInfo = TargetInfoFixture.create()
-            val member1 = MemberFixture.create(name = targetInfo.targetName, email = "hong1@example.com")
-            val member2 = MemberFixture.create(name = targetInfo.targetName, email = "hong2@example.com")
-            val member3 = MemberFixture.create(name = targetInfo.targetName, email = "hong3@example.com")
+            val member1 = MemberFixture.create(id = 10L, name = targetInfo.targetName, email = "hong1@example.com")
+            val member2 = MemberFixture.create(id = 20L, name = targetInfo.targetName, email = "hong2@example.com")
+            val member3 = MemberFixture.create(id = 30L, name = targetInfo.targetName, email = "hong3@example.com")
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2, member3)
@@ -190,17 +190,17 @@ class MatchingProcessorTest : FunSpec({
 
             // Then
             result!! shouldHaveSize 3
-            result[0].targetEmail shouldBe member1.email
-            result[1].targetEmail shouldBe member2.email
-            result[2].targetEmail shouldBe member3.email
+            result[0].targetId shouldBe member1.id
+            result[1].targetId shouldBe member2.id
+            result[2].targetId shouldBe member3.id
             result.forEach { it.targetInfoId shouldBe targetInfo.targetInfoId }
         }
 
         test("같은 이름의 TargetInfo가 여러 개 있으면 각각 독립적으로 매칭된다") {
             // Given
-            val targetInfo1 = TargetInfoFixture.create(targetInfoId = 1L, registerEmail = "user1@example.com")
-            val targetInfo2 = TargetInfoFixture.create(targetInfoId = 2L, registerEmail = "user2@example.com")
-            val member = MemberFixture.create(name = targetInfo1.targetName)
+            val targetInfo1 = TargetInfoFixture.create(targetInfoId = 1L, registerId = 100L)
+            val targetInfo2 = TargetInfoFixture.create(targetInfoId = 2L, registerId = 200L)
+            val member = MemberFixture.create(id = 10L, name = targetInfo1.targetName)
             val targetInfos = TargetInfos(listOf(targetInfo1, targetInfo2))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member)
@@ -212,9 +212,9 @@ class MatchingProcessorTest : FunSpec({
             // Then
             result!! shouldHaveSize 2
             result[0].targetInfoId shouldBe targetInfo1.targetInfoId
-            result[0].targetEmail shouldBe member.email
+            result[0].targetId shouldBe member.id
             result[1].targetInfoId shouldBe targetInfo2.targetInfoId
-            result[1].targetEmail shouldBe member.email
+            result[1].targetId shouldBe member.id
         }
 
         test("빈 TargetInfo 목록이 입력되면 빈 결과를 반환한다") {
@@ -234,10 +234,10 @@ class MatchingProcessorTest : FunSpec({
         test("모든 매칭 결과가 기존에 존재하면 빈 결과를 반환한다") {
             // Given
             val targetInfo = TargetInfoFixture.create()
-            val member1 = MemberFixture.create(name = targetInfo.targetName, email = "member1@example.com")
-            val member2 = MemberFixture.create(name = targetInfo.targetName, email = "member2@example.com")
-            val existingResult1 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetEmail = member1.email.value)
-            val existingResult2 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetEmail = member2.email.value)
+            val member1 = MemberFixture.create(id = 10L, name = targetInfo.targetName, email = "member1@example.com")
+            val member2 = MemberFixture.create(id = 20L, name = targetInfo.targetName, email = "member2@example.com")
+            val existingResult1 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetId = member1.id)
+            val existingResult2 = MatchingResultFixture.create(targetInfoId = targetInfo.targetInfoId, targetId = member2.id)
             val targetInfos = TargetInfos(listOf(targetInfo))
 
             every { memberQueryRepository.findByNames(targetInfos.extractTargetNames()) } returns listOf(member1, member2)

@@ -17,9 +17,9 @@ class MatchingResultQueryDao {
             .map { row -> MatchingResultEntity.from(row) }
     }
 
-    fun find(email: String, excluded: Boolean = false): List<MatchingResultEntity> {
+    fun find(memberId: Long, excluded: Boolean = false): List<MatchingResultEntity> {
         return MatchingResultTable
-            .activeRows { (MatchingResultTable.registerEmail eq email) and (MatchingResultTable.excluded eq excluded) }
+            .activeRows { (MatchingResultTable.registerId eq memberId) and (MatchingResultTable.excluded eq excluded) }
             .map { row -> MatchingResultEntity.from(row) }
     }
 
@@ -30,9 +30,9 @@ class MatchingResultQueryDao {
             .any()
     }
 
-    fun findClaimedByTarget(email: String): List<MatchingResultEntity> {
+    fun findClaimedByTarget(memberId: Long): List<MatchingResultEntity> {
         return MatchingResultTable
-            .activeRows { (MatchingResultTable.targetEmail eq email) and (MatchingResultTable.claimed eq true) }
+            .activeRows { (MatchingResultTable.targetId eq memberId) and (MatchingResultTable.claimed eq true) }
             .map { row -> MatchingResultEntity.from(row) }
     }
 

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.ONE_DAY
 import com.konkuk.ma.domain.common.domain.date.hasElapsed
 import com.konkuk.ma.domain.common.domain.date.Day
@@ -17,7 +16,7 @@ import java.time.temporal.ChronoUnit
 
 class TargetInfo(
     val targetInfoId: Long,
-    val registerEmail: Email,
+    val registerId: Long,
     val targetName: String,
     val targetGender: Gender,
 
@@ -40,9 +39,9 @@ class TargetInfo(
         }
     }
 
-    fun validateOwnership(email: Email) {
-        if (registerEmail != email) {
-            throw AccessDeniedException(EntityType.TARGET_INFO, registerEmail.value, email.value)
+    fun validateOwnership(memberId: Long) {
+        if (registerId != memberId) {
+            throw AccessDeniedException(EntityType.TARGET_INFO, registerId.toString(), memberId.toString())
         }
     }
 
@@ -65,9 +64,9 @@ class TargetInfo(
         val regionMatched = region == target.region
 
         return NewMatchingResult(
-            registerEmail = registerEmail,
+            registerId = registerId,
             targetInfoId = targetInfoId,
-            targetEmail = target.email,
+            targetId = target.memberId,
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,

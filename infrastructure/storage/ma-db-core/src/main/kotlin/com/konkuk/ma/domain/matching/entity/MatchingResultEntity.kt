@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.entity
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -9,9 +8,9 @@ import java.time.LocalDateTime
 
 class MatchingResultEntity(
     val id: Long,
-    val registerEmail: String,
+    val registerId: Long,
     val targetInfoId: Long,
-    val targetEmail: String,
+    val targetId: Long,
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,
     val yearMatched: Boolean,
@@ -26,9 +25,9 @@ class MatchingResultEntity(
     fun toDomain(): MatchingResult {
         return MatchingResult(
             id = id,
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetInfoId = targetInfoId,
-            targetEmail = Email(targetEmail),
+            targetId = targetId,
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,
@@ -46,9 +45,9 @@ class MatchingResultEntity(
         fun from(row: ResultRow): MatchingResultEntity {
             return MatchingResultEntity(
                 id = row[MatchingResultTable.id].value,
-                registerEmail = row[MatchingResultTable.registerEmail],
+                registerId = row[MatchingResultTable.registerId],
                 targetInfoId = row[MatchingResultTable.targetInfoId],
-                targetEmail = row[MatchingResultTable.targetEmail],
+                targetId = row[MatchingResultTable.targetId],
                 middleNumberMatched = row[MatchingResultTable.middleNumberMatched],
                 lastNumberMatched = row[MatchingResultTable.lastNumberMatched],
                 yearMatched = row[MatchingResultTable.yearMatched],

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.dao.TargetInfoQueryDao
 import com.konkuk.ma.domain.matching.domain.TargetInfo
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
@@ -17,8 +16,8 @@ class TargetInfoQueryCoreRepository(
             ?: throw EntityNotFoundException(EntityType.TARGET_INFO, id.toString())
     }
 
-    override fun find(email: Email): List<TargetInfo> {
-        return targetInfoQueryDao.find(email.value).map { it.toDomain() }
+    override fun find(memberId: Long): List<TargetInfo> {
+        return targetInfoQueryDao.find(memberId).map { it.toDomain() }
     }
 
     override fun findNoOffset(cursorId: Long?, size: Int): List<TargetInfo> {

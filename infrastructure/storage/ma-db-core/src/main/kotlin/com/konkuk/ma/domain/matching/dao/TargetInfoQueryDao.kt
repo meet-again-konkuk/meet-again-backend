@@ -21,16 +21,16 @@ class TargetInfoQueryDao {
             ?.let { RowEntityMapper.toTargetInfoEntity(it) }
     }
 
-    fun find(email: String): List<TargetInfoEntity> {
+    fun find(memberId: Long): List<TargetInfoEntity> {
         return TargetInfoTable
-            .activeRows { TargetInfoTable.registerEmail eq email }
+            .activeRows { TargetInfoTable.registerId eq memberId }
             .orderBy(TargetInfoTable.id to SortOrder.DESC)
             .map { RowEntityMapper.toTargetInfoEntity(it) }
     }
 
     fun findNoOffset(cursorId: Long?, size: Int): List<TargetInfoEntity> {
         return TargetInfoTable
-            .join(MemberTable, JoinType.INNER, TargetInfoTable.registerEmail, MemberTable.email)
+            .join(MemberTable, JoinType.INNER, TargetInfoTable.registerId, MemberTable.id)
             .selectAll()
             .where {
                 (TargetInfoTable.deleted eq false) and

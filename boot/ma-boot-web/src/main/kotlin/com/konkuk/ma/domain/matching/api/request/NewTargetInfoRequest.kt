@@ -28,9 +28,9 @@ class NewTargetInfoRequest(
 
     val region: Region?
 ) {
-    fun toNewTargetInfo(registerEmail: String): NewTargetInfo {
+    fun toNewTargetInfo(registerId: Long): NewTargetInfo {
         return NewTargetInfo(
-            registerEmail = registerEmail,
+            registerId = registerId,
             targetName = name,
             middleNumber = middleNumber?.let { FourDigit(it) },
             lastNumber = lastNumber?.let { FourDigit(it) },

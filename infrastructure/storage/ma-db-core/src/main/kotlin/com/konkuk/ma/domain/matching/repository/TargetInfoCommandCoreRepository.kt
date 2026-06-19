@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.dao.TargetInfoCommandDao
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
@@ -16,15 +15,15 @@ class TargetInfoCommandCoreRepository(
         return targetInfoCommandDao.save(newTargetInfo, targetGender)
     }
 
-    override fun update(id: Long, email: Email, updateTargetInfo: UpdateTargetInfo) {
-        targetInfoCommandDao.update(id, email.value, updateTargetInfo)
+    override fun update(id: Long, memberId: Long, updateTargetInfo: UpdateTargetInfo) {
+        targetInfoCommandDao.update(id, memberId, updateTargetInfo)
     }
 
-    override fun delete(id: Long, email: Email) {
-        targetInfoCommandDao.delete(id, email.value)
+    override fun delete(id: Long, memberId: Long) {
+        targetInfoCommandDao.delete(id, memberId)
     }
 
-    override fun delete(email: Email) {
-        targetInfoCommandDao.delete(email.value)
+    override fun delete(memberId: Long) {
+        targetInfoCommandDao.delete(memberId)
     }
 }
