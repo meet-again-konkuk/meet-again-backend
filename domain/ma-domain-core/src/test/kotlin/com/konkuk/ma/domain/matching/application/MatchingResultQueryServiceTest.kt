@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
@@ -37,24 +36,24 @@ class MatchingResultQueryServiceTest : FunSpec({
 
         test("매칭결과를 조회하고 회원정보와 사진정보를 조합하여 반환한다") {
             // Given
-            val email = "register@example.com"
+            val memberId = 1L
             val matchingResult = MatchingResultFixture.create(
-                registerEmail = email,
-                targetEmail = "target@example.com"
+                registerId = memberId,
+                targetId = 2L
             )
 
-            val member = MemberFixture.create(email = "target@example.com")
+            val member = MemberFixture.create(id = 2L, email = "target@example.com")
             val photo = MemberPhotoFixture.create(
-                memberEmail = "target@example.com",
+                memberEmail = member.email.value,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
             every { matchingResultRepository.find(any(), eq(false)) } returns listOf(matchingResult)
-            every { memberQueryRepository.findByEmails(any()) } returns listOf(member)
+            every { memberQueryRepository.findByIds(any()) } returns listOf(member)
             every { memberPhotoRepository.find(any()) } returns listOf(photo)
 
             // When
-            val result = service.find(email)
+            val result = service.find(memberId)
 
             // Then
             result.data shouldHaveSize 1
@@ -65,24 +64,24 @@ class MatchingResultQueryServiceTest : FunSpec({
 
         test("excluded=true로 조회하면 제외된 매칭결과를 반환한다") {
             // Given
-            val email = "register@example.com"
+            val memberId = 1L
             val matchingResult = MatchingResultFixture.create(
-                registerEmail = email,
-                targetEmail = "target@example.com"
+                registerId = memberId,
+                targetId = 2L
             )
 
-            val member = MemberFixture.create(email = "target@example.com")
+            val member = MemberFixture.create(id = 2L, email = "target@example.com")
             val photo = MemberPhotoFixture.create(
-                memberEmail = "target@example.com",
+                memberEmail = member.email.value,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
             every { matchingResultRepository.find(any(), eq(true)) } returns listOf(matchingResult)
-            every { memberQueryRepository.findByEmails(any()) } returns listOf(member)
+            every { memberQueryRepository.findByIds(any()) } returns listOf(member)
             every { memberPhotoRepository.find(any()) } returns listOf(photo)
 
             // When
-            val result = service.find(email, excluded = true)
+            val result = service.find(memberId, excluded = true)
 
             // Then
             result.data shouldHaveSize 1
@@ -93,14 +92,14 @@ class MatchingResultQueryServiceTest : FunSpec({
 
         test("매칭결과가 없으면 빈 결과를 반환한다") {
             // Given
-            val email = "register@example.com"
+            val memberId = 1L
 
             every { matchingResultRepository.find(any(), eq(false)) } returns emptyList()
-            every { memberQueryRepository.findByEmails(any()) } returns emptyList()
+            every { memberQueryRepository.findByIds(any()) } returns emptyList()
             every { memberPhotoRepository.find(any()) } returns emptyList()
 
             // When
-            val result = service.find(email)
+            val result = service.find(memberId)
 
             // Then
             result.data shouldHaveSize 0
@@ -112,16 +111,16 @@ class MatchingResultQueryServiceTest : FunSpec({
         test("정상 조회 시 MatchingResult를 반환한다") {
             // Given
             val matchingResultId = 1L
-            val email = "register@example.com"
+            val memberId = 1L
             val matchingResult = MatchingResultFixture.create(
-                registerEmail = email,
-                targetEmail = "target@example.com"
+                registerId = memberId,
+                targetId = 2L
             )
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
-            val result = service.findDetail(matchingResultId, email)
+            val result = service.findDetail(matchingResultId, memberId)
 
             // Then
             result shouldBe matchingResult
@@ -130,28 +129,28 @@ class MatchingResultQueryServiceTest : FunSpec({
         test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
             // Given
             val nonExistentId = 999L
-            val email = "register@example.com"
+            val memberId = 1L
 
             every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.findDetail(nonExistentId, email)
+                service.findDetail(nonExistentId, memberId)
             }
         }
 
         test("소유권이 없는 경우 AccessDeniedException이 발생한다") {
             // Given
             val matchingResultId = 1L
-            val ownerEmail = "owner@example.com"
-            val otherEmail = "other@example.com"
-            val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail)
+            val ownerId = 1L
+            val otherId = 2L
+            val matchingResult = MatchingResultFixture.create(registerId = ownerId)
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
             shouldThrow<AccessDeniedException> {
-                service.findDetail(matchingResultId, otherEmail)
+                service.findDetail(matchingResultId, otherId)
             }
         }
     }
@@ -159,27 +158,27 @@ class MatchingResultQueryServiceTest : FunSpec({
     context("findClaimedBy") {
 
         test("요청자 프로필과 X룸 존재 여부를 조합하여 반환한다") {
-            val myEmail = "me@example.com"
+            val myId = 1L
             val claimer1 = MatchingResultFixture.create(
                 targetInfoId = 10L,
-                registerEmail = "claimer1@a.com",
-                targetEmail = myEmail,
+                registerId = 100L,
+                targetId = myId,
             )
             val claimer2 = MatchingResultFixture.create(
                 targetInfoId = 20L,
-                registerEmail = "claimer2@a.com",
-                targetEmail = myEmail,
+                registerId = 200L,
+                targetId = myId,
             )
-            val member1 = MemberFixture.create(email = "claimer1@a.com", name = "갑")
-            val member2 = MemberFixture.create(email = "claimer2@a.com", name = "을")
-            val photo1 = MemberPhotoFixture.create(memberEmail = "claimer1@a.com", thumbnailPath = "thumb/1.jpg")
+            val member1 = MemberFixture.create(id = 100L, email = "claimer1@a.com", name = "갑")
+            val member2 = MemberFixture.create(id = 200L, email = "claimer2@a.com", name = "을")
+            val photo1 = MemberPhotoFixture.create(memberEmail = member1.email.value, thumbnailPath = "thumb/1.jpg")
 
-            every { matchingResultRepository.findClaimedByTarget(Email(myEmail)) } returns listOf(claimer1, claimer2)
-            every { memberQueryRepository.findByEmails(any()) } returns listOf(member1, member2)
+            every { matchingResultRepository.findClaimedByTarget(myId) } returns listOf(claimer1, claimer2)
+            every { memberQueryRepository.findByIds(any()) } returns listOf(member1, member2)
             every { memberPhotoRepository.find(any()) } returns listOf(photo1)
             every { xroomQueryRepository.exists(setOf(10L, 20L)) } returns setOf(10L)
 
-            val profiles = service.findClaimedBy(myEmail)
+            val profiles = service.findClaimedBy(myId)
 
             profiles.data shouldHaveSize 2
             profiles.data[0].name shouldBe "갑"
@@ -190,14 +189,14 @@ class MatchingResultQueryServiceTest : FunSpec({
         }
 
         test("claim 목록이 비어있으면 빈 프로필을 반환한다") {
-            val myEmail = "me@example.com"
+            val myId = 1L
 
-            every { matchingResultRepository.findClaimedByTarget(Email(myEmail)) } returns emptyList()
-            every { memberQueryRepository.findByEmails(any()) } returns emptyList()
+            every { matchingResultRepository.findClaimedByTarget(myId) } returns emptyList()
+            every { memberQueryRepository.findByIds(any()) } returns emptyList()
             every { memberPhotoRepository.find(any()) } returns emptyList()
             every { xroomQueryRepository.exists(emptySet<Long>()) } returns emptySet()
 
-            val profiles = service.findClaimedBy(myEmail)
+            val profiles = service.findClaimedBy(myId)
 
             profiles.data shouldHaveSize 0
         }

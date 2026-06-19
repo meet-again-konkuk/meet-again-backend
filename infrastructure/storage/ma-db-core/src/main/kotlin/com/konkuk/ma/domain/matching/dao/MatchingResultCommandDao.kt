@@ -28,9 +28,9 @@ class MatchingResultCommandDao {
 
     fun saveAll(matchingResults: List<NewMatchingResult>) {
         MatchingResultTable.batchInsert(matchingResults) {
-            this[MatchingResultTable.registerEmail] = it.registerEmail.value
+            this[MatchingResultTable.registerId] = it.registerId
             this[MatchingResultTable.targetInfoId] = it.targetInfoId
-            this[MatchingResultTable.targetEmail] = it.targetEmail.value
+            this[MatchingResultTable.targetId] = it.targetId
             this[MatchingResultTable.middleNumberMatched] = it.middleNumberMatched
             this[MatchingResultTable.lastNumberMatched] = it.lastNumberMatched
             this[MatchingResultTable.yearMatched] = it.yearMatched
@@ -39,8 +39,8 @@ class MatchingResultCommandDao {
             this[MatchingResultTable.regionMatched] = it.regionMatched
             this[MatchingResultTable.showingExpiryDate] = it.showingExpiryDate
             this[MatchingResultTable.matchingExpiryDate] = it.matchingExpiryDate
-            this[MatchingResultTable.createdBy] = it.registerEmail.value
-            this[MatchingResultTable.lastModifiedBy] = it.registerEmail.value
+            this[MatchingResultTable.createdBy] = it.registerId.toString()
+            this[MatchingResultTable.lastModifiedBy] = it.registerId.toString()
             this[MatchingResultTable.excluded] = false
             this[MatchingResultTable.claimed] = false
         }
@@ -58,20 +58,11 @@ class MatchingResultCommandDao {
         }
     }
 
-    fun delete(targetInfoId: Long, email: String) {
-        MatchingResultTable.softDelete({ MatchingResultTable.targetInfoId eq targetInfoId }, email)
+    fun delete(targetInfoId: Long, memberId: Long) {
+        MatchingResultTable.softDelete({ MatchingResultTable.targetInfoId eq targetInfoId }, memberId.toString())
     }
 
-    fun deleteByRegister(email: String) {
-        MatchingResultTable.softDelete({ MatchingResultTable.registerEmail eq email }, email)
-    }
-
-    fun anonymizeTarget(targetEmail: String, withdrawnEmail: String) {
-        MatchingResultTable.update({
-            (MatchingResultTable.targetEmail eq targetEmail) and (MatchingResultTable.deleted eq false)
-        }) {
-            it[MatchingResultTable.targetEmail] = withdrawnEmail
-            it[lastModifiedBy] = withdrawnEmail
-        }
+    fun deleteByRegister(memberId: Long) {
+        MatchingResultTable.softDelete({ MatchingResultTable.registerId eq memberId }, memberId.toString())
     }
 }

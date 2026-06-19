@@ -17,7 +17,7 @@ class ClaimerQueryApi(
     fun findMyClaimers(
         @LoginMember memberInfo: MemberInfo,
     ): ClaimersResponse {
-        val profiles = matchingResultQueryService.findClaimedBy(memberInfo.email)
+        val profiles = matchingResultQueryService.findClaimedBy(memberInfo.id)
         return ClaimersResponse.from(profiles)
     }
 }

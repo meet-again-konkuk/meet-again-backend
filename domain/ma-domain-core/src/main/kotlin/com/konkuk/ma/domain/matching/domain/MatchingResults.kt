@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 
@@ -9,12 +8,12 @@ class MatchingResults(
 ) {
     val data: List<MatchingResult> = data.filter { it.isVisible() }
 
-    fun extractTargetEmails(): Set<Email> {
-        return data.map { it.targetEmail }.toSet()
+    fun extractTargetIds(): Set<Long> {
+        return data.map { it.targetId }.toSet()
     }
 
-    fun extractRegisterEmails(): Set<Email> {
-        return data.map { it.registerEmail }.toSet()
+    fun extractRegisterIds(): Set<Long> {
+        return data.map { it.registerId }.toSet()
     }
 
     fun extractTargetInfoIds(): Set<Long> {
@@ -23,8 +22,8 @@ class MatchingResults(
 
     fun combineWithProfiles(members: Members, photos: MemberPhotos): MatchingResultsWithProfiles {
         val combined = data.map { result ->
-            val member = members.findOne(result.targetEmail)
-            val photo = photos.findOne(result.targetEmail)
+            val member = members.findOne(result.targetId)
+            val photo = member?.let { photos.findOne(it.email) }
             MatchingResultWithProfile(
                 matchingResult = result,
                 targetMemberId = member?.id,
@@ -42,8 +41,8 @@ class MatchingResults(
         xroomExistTargetInfoIds: Set<Long>,
     ): ClaimerProfiles {
         val profiles = data.map { result ->
-            val member = members.findOne(result.registerEmail)
-            val photo = photos.findOne(result.registerEmail)
+            val member = members.findOne(result.registerId)
+            val photo = member?.let { photos.findOne(it.email) }
             ClaimerProfile(
                 memberId = member?.id,
                 name = member?.name,

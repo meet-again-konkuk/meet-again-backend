@@ -46,7 +46,7 @@ class ClaimerQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.findClaimedBy("holeman@naver.com") } returns profiles
+        every { matchingResultQueryService.findClaimedBy(1L) } returns profiles
 
         mockMvc.getJson("/api/claimers/me") {}
             .andExpect { status { isOk() } }

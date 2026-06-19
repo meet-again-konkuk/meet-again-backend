@@ -20,7 +20,7 @@ class TargetInfoQueryApi(
     fun findMyTargetInfos(
         @LoginMember memberInfo: MemberInfo,
     ): List<TargetInfoResponse> {
-        return targetInfoQueryService.find(memberInfo.email)
+        return targetInfoQueryService.find(memberInfo.id)
             .map { TargetInfoResponse.from(it) }
     }
 
@@ -29,7 +29,7 @@ class TargetInfoQueryApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ): TargetInfoResponse {
-        val targetInfo = targetInfoQueryService.findDetail(targetInfoId, memberInfo.email)
+        val targetInfo = targetInfoQueryService.findDetail(targetInfoId, memberInfo.id)
         return TargetInfoResponse.from(targetInfo)
     }
 }

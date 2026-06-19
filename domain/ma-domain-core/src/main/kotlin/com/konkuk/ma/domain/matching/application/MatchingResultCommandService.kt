@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,23 +9,23 @@ import org.springframework.transaction.annotation.Transactional
 class MatchingResultCommandService(
     private val matchingResultRepository: MatchingResultRepository,
 ) {
-    fun exclude(matchingResultId: Long, email: String) {
+    fun exclude(matchingResultId: Long, memberId: Long) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(Email(email))
+        matchingResult.validateOwnership(memberId)
         matchingResult.exclude()
         matchingResultRepository.updateExcluded(matchingResult)
     }
 
-    fun include(matchingResultId: Long, email: String) {
+    fun include(matchingResultId: Long, memberId: Long) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(Email(email))
+        matchingResult.validateOwnership(memberId)
         matchingResult.include()
         matchingResultRepository.updateExcluded(matchingResult)
     }
 
-    fun claim(matchingResultId: Long, email: String) {
+    fun claim(matchingResultId: Long, memberId: Long) {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(Email(email))
+        matchingResult.validateOwnership(memberId)
         matchingResult.claim()
         matchingResultRepository.updateClaimed(matchingResult)
     }

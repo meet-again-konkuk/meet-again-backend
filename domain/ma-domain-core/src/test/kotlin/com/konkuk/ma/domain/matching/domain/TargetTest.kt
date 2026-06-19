@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
@@ -49,6 +48,7 @@ class TargetTest : FunSpec({
 
         test("Member로부터 Target을 올바르게 생성한다") {
             val member = MemberFixture.create(
+                id = 5L,
                 email = "test@example.com",
                 name = "홍길동",
                 gender = Gender.MALE,
@@ -59,7 +59,7 @@ class TargetTest : FunSpec({
 
             val target = Target.create(member)
 
-            target.email shouldBe Email("test@example.com")
+            target.memberId shouldBe 5L
             target.name shouldBe "홍길동"
             target.gender shouldBe Gender.MALE
             target.middleNumber shouldBe member.phoneNumber.middleNumber

@@ -2,17 +2,21 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
-import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.common.domain.date.Day
+import com.konkuk.ma.domain.common.domain.date.Month
+import com.konkuk.ma.domain.common.domain.date.Year
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
+import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
+import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.test.context.ContextConfiguration
 import java.time.LocalDate
@@ -25,10 +29,12 @@ class TargetInfoCommandDaoTest(
 
     override fun extensions() = listOf(SpringExtension)
 
+    private var registerId: Long = 0L
+
     init {
         beforeEach {
             SchemaUtils.create(MemberTable, TargetInfoTable)
-            insertMember()
+            registerId = insertMember()
         }
 
         afterEach {
@@ -40,14 +46,14 @@ class TargetInfoCommandDaoTest(
             test("모든 필드가 채워진 NewTargetInfo를 저장하고 ID를 반환한다") {
                 // Given
                 val newTargetInfo = NewTargetInfo(
-                    registerEmail = "test@example.com",
+                    registerId = registerId,
                     targetName = "타겟이름",
-                    middleNumber = com.konkuk.ma.domain.member.domain.FourDigit("1234"),
-                    lastNumber = com.konkuk.ma.domain.member.domain.FourDigit("5678"),
-                    year = com.konkuk.ma.domain.common.domain.date.Year(1995),
-                    month = com.konkuk.ma.domain.common.domain.date.Month(3),
-                    day = com.konkuk.ma.domain.common.domain.date.Day(15),
-                    region = com.konkuk.ma.domain.member.domain.Region.SEOUL
+                    middleNumber = FourDigit("1234"),
+                    lastNumber = FourDigit("5678"),
+                    year = Year(1995),
+                    month = Month(3),
+                    day = Day(15),
+                    region = Region.SEOUL
                 )
 
                 // When
@@ -61,7 +67,7 @@ class TargetInfoCommandDaoTest(
             test("nullable 필드가 null인 NewTargetInfo를 저장한다") {
                 // Given
                 val newTargetInfo = NewTargetInfo(
-                    registerEmail = "test@example.com",
+                    registerId = registerId,
                     targetName = "타겟이름",
                     middleNumber = null,
                     lastNumber = null,
@@ -102,8 +108,8 @@ class TargetInfoCommandDaoTest(
         }
     }
 
-    private fun insertMember(email: String = "test@example.com") {
-        MemberTable.insert {
+    private fun insertMember(email: String = "test@example.com"): Long {
+        return MemberTable.insertAndGetId {
             it[MemberTable.email] = email
             it[password] = "password123"
             it[nickname] = "nickname"
@@ -112,15 +118,15 @@ class TargetInfoCommandDaoTest(
             it[name] = "테스트"
             it[birthDate] = LocalDate.of(1990, 1, 1)
             it[region] = "SEOUL"
-        }
+        }.value
     }
 
     private fun createNewTargetInfo(
-        registerEmail: String = "test@example.com",
+        registerId: Long = this.registerId,
         targetName: String = "타겟이름",
     ): NewTargetInfo {
         return NewTargetInfo(
-            registerEmail = registerEmail,
+            registerId = registerId,
             targetName = targetName,
             middleNumber = null,
             lastNumber = null,

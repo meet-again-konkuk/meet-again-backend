@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -10,7 +9,7 @@ import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.Region
 
 class Target(
-    val email: Email,
+    val memberId: Long,
     val name: String,
     val gender: Gender,
     val middleNumber: FourDigit,
@@ -29,7 +28,7 @@ class Target(
     companion object {
         fun create(member: Member): Target {
             return Target(
-                email = member.email,
+                memberId = member.id,
                 name = member.name,
                 gender = member.gender,
                 middleNumber = member.phoneNumber.middleNumber,

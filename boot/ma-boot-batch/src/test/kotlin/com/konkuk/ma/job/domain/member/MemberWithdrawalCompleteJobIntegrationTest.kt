@@ -79,11 +79,11 @@ class MemberWithdrawalCompleteJobIntegrationTest(
 
     fun insertExpiredMember(email: String = withdrawingEmail): Long = insertMember(email, expiredAt)
 
-    fun insertMatchingResult(registerEmail: String, targetEmail: String) = transaction {
+    fun insertMatchingResult(registerId: Long, targetId: Long) = transaction {
         MatchingResultTable.insert {
-            it[MatchingResultTable.registerEmail] = registerEmail
+            it[MatchingResultTable.registerId] = registerId
             it[targetInfoId] = 1L
-            it[MatchingResultTable.targetEmail] = targetEmail
+            it[MatchingResultTable.targetId] = targetId
             it[middleNumberMatched] = true
             it[lastNumberMatched] = true
             it[yearMatched] = true
@@ -163,9 +163,9 @@ class MemberWithdrawalCompleteJobIntegrationTest(
     }
 
     test("soft delete 대상(타겟정보·포인트·xroom·사진·등록한 매칭)을 논리 삭제한다") {
-        insertExpiredMember()
+        val memberId = insertExpiredMember()
         transaction {
-            TargetInfoTable.insert { it[registerEmail] = withdrawingEmail; it[name] = "홍길동"; it[targetGender] = "FEMALE" }
+            TargetInfoTable.insert { it[registerId] = memberId; it[name] = "홍길동"; it[targetGender] = "FEMALE" }
             MemberPointTable.insert { it[ownerEmail] = withdrawingEmail; it[balance] = 500 }
             XroomTable.insert { it[ownerEmail] = withdrawingEmail; it[targetInfoId] = 1L; it[theme] = "CORK_BOARD" }
             MemberPhotoTable.insert {
@@ -174,12 +174,12 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 it[originalFileName] = "photo.jpg"
             }
         }
-        insertMatchingResult(registerEmail = withdrawingEmail, targetEmail = "other@example.com")
+        insertMatchingResult(registerId = memberId, targetId = 999L)
 
         runCleanupJob(4L) shouldBe BatchStatus.COMPLETED
 
         transaction {
-            TargetInfoTable.selectAll().where { TargetInfoTable.registerEmail eq withdrawingEmail }
+            TargetInfoTable.selectAll().where { TargetInfoTable.registerId eq memberId }
                 .single()[TargetInfoTable.deleted] shouldBe true
             MemberPointTable.selectAll().where { MemberPointTable.ownerEmail eq withdrawingEmail }
                 .single()[MemberPointTable.deleted] shouldBe true
@@ -187,12 +187,12 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 .single()[XroomTable.deleted] shouldBe true
             MemberPhotoTable.selectAll().where { MemberPhotoTable.memberEmail eq withdrawingEmail }
                 .single()[MemberPhotoTable.deleted] shouldBe true
-            MatchingResultTable.selectAll().where { MatchingResultTable.registerEmail eq withdrawingEmail }
+            MatchingResultTable.selectAll().where { MatchingResultTable.registerId eq memberId }
                 .single()[MatchingResultTable.deleted] shouldBe true
         }
     }
 
-    test("작성·소유 데이터(글·댓글·문의·포인트이력·매칭 타겟)의 이메일을 익명화한다") {
+    test("작성·소유 데이터(글·댓글·문의·포인트이력)의 이메일을 익명화하고, 내가 타겟인 매칭은 그대로 둔다") {
         val memberId = insertExpiredMember()
         transaction {
             PostTable.insert { it[authorEmail] = withdrawingEmail; it[category] = "SUCCESS_STORY"; it[title] = "글"; it[content] = "내용" }
@@ -206,8 +206,8 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 it[idempotencyKey] = "idem-key-1"
             }
         }
-        // 다른 회원이 등록했고 내가 타겟인 매칭 → targetEmail 익명화(행은 삭제되지 않음)
-        insertMatchingResult(registerEmail = "other@example.com", targetEmail = withdrawingEmail)
+        // 다른 회원이 등록했고 내가 타겟인 매칭 → memberId(비PII) 참조라 익명화 불필요, 행도 삭제되지 않음
+        insertMatchingResult(registerId = 999L, targetId = memberId)
 
         runCleanupJob(5L) shouldBe BatchStatus.COMPLETED
 
@@ -218,7 +218,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             InquiryTable.selectAll().where { InquiryTable.authorEmail eq withdrawnEmail }.count() shouldBe 1L
             PointHistoryTable.selectAll().where { PointHistoryTable.ownerEmail eq withdrawnEmail }.count() shouldBe 1L
             val targetedMatch = MatchingResultTable.selectAll()
-                .where { MatchingResultTable.targetEmail eq withdrawnEmail }.single()
+                .where { MatchingResultTable.targetId eq memberId }.single()
             targetedMatch[MatchingResultTable.deleted] shouldBe false
         }
     }

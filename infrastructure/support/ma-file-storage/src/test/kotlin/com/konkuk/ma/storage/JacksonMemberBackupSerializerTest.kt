@@ -34,9 +34,9 @@ class JacksonMemberBackupSerializerTest : FunSpec({
         val email = member.email.value
         return MemberWithdrawalBackup(
             member = MemberBackupView.from(member),
-            targetInfos = listOf(TargetInfoFixture.create(registerEmail = email)),
-            registeredMatchingResults = listOf(MatchingResultFixture.create(registerEmail = email)),
-            claimedMatchingResults = listOf(MatchingResultFixture.create(targetEmail = email)),
+            targetInfos = listOf(TargetInfoFixture.create(registerId = member.id)),
+            registeredMatchingResults = listOf(MatchingResultFixture.create(registerId = member.id)),
+            claimedMatchingResults = listOf(MatchingResultFixture.create(targetId = member.id)),
             pointBalance = MemberPoint(id = 1L, ownerEmail = member.email, balance = PointQuantity(500)),
             pointHistories = listOf(
                 PointHistory(

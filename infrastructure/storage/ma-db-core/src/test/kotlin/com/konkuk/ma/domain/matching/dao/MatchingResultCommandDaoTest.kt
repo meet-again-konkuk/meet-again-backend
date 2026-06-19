@@ -10,6 +10,7 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.test.context.ContextConfiguration
 import java.time.LocalDate
@@ -23,12 +24,18 @@ class MatchingResultCommandDaoTest(
 
     override fun extensions() = listOf(SpringExtension)
 
+    private var registerId: Long = 0L
+    private var targetId: Long = 0L
+    private var otherId: Long = 0L
+    private var targetInfoId: Long = 0L
+
     init {
         beforeEach {
             SchemaUtils.create(MemberTable, TargetInfoTable, MatchingResultTable)
-            insertTestMember("register@example.com")
-            insertTestMember("target@example.com")
-            insertTestTargetInfo(registerEmail = "register@example.com")
+            registerId = insertTestMember("register@example.com")
+            targetId = insertTestMember("target@example.com")
+            otherId = insertTestMember("other@example.com")
+            targetInfoId = insertTestTargetInfo(registerId = registerId)
         }
 
         afterEach {
@@ -191,7 +198,7 @@ class MatchingResultCommandDaoTest(
                 insertMatchingResult()
 
                 // When
-                matchingResultCommandDao.deleteByRegister("register@example.com")
+                matchingResultCommandDao.deleteByRegister(registerId)
 
                 // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe true
@@ -202,7 +209,7 @@ class MatchingResultCommandDaoTest(
                 insertMatchingResult()
 
                 // When
-                matchingResultCommandDao.deleteByRegister("target@example.com")
+                matchingResultCommandDao.deleteByRegister(targetId)
 
                 // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
@@ -213,54 +220,16 @@ class MatchingResultCommandDaoTest(
                 insertMatchingResult()
 
                 // When
-                matchingResultCommandDao.deleteByRegister("other@example.com")
+                matchingResultCommandDao.deleteByRegister(otherId)
 
                 // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
             }
         }
-
-        context("anonymizeTarget") {
-
-            test("회원이 target인 매칭의 targetEmail을 익명 이메일로 교체한다") {
-                // Given
-                insertMatchingResult()
-                insertTestMember("withdrawn_1@deleted.local")
-
-                // When
-                matchingResultCommandDao.anonymizeTarget("target@example.com", "withdrawn_1@deleted.local")
-
-                // Then
-                MatchingResultTable.selectAll().first()[MatchingResultTable.targetEmail] shouldBe "withdrawn_1@deleted.local"
-            }
-
-            test("회원이 register일 뿐이면 targetEmail을 바꾸지 않는다") {
-                // Given
-                insertMatchingResult()
-
-                // When
-                matchingResultCommandDao.anonymizeTarget("register@example.com", "withdrawn_1@deleted.local")
-
-                // Then
-                MatchingResultTable.selectAll().first()[MatchingResultTable.targetEmail] shouldBe "target@example.com"
-            }
-
-            test("이미 삭제된 매칭은 익명화하지 않는다") {
-                // Given
-                insertMatchingResult()
-                matchingResultCommandDao.deleteByRegister("register@example.com")
-
-                // When
-                matchingResultCommandDao.anonymizeTarget("target@example.com", "withdrawn_1@deleted.local")
-
-                // Then
-                MatchingResultTable.selectAll().first()[MatchingResultTable.targetEmail] shouldBe "target@example.com"
-            }
-        }
     }
 
-    private fun insertTestMember(email: String) {
-        MemberTable.insert {
+    private fun insertTestMember(email: String): Long {
+        return MemberTable.insertAndGetId {
             it[MemberTable.email] = email
             it[password] = "password123"
             it[nickname] = "nickname_$email"
@@ -269,26 +238,25 @@ class MatchingResultCommandDaoTest(
             it[name] = "테스트"
             it[birthDate] = LocalDate.of(2000, 1, 1)
             it[region] = "서울"
-        }
+        }.value
     }
 
-    private fun insertTestTargetInfo(registerEmail: String) {
-        TargetInfoTable.insert {
-            it[TargetInfoTable.registerEmail] = registerEmail
+    private fun insertTestTargetInfo(registerId: Long): Long {
+        return TargetInfoTable.insertAndGetId {
+            it[TargetInfoTable.registerId] = registerId
             it[name] = "타겟이름"
             it[targetGender] = "FEMALE"
-        }
+        }.value
     }
 
     private fun insertMatchingResult(
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
         excluded: Boolean = false
     ) {
-        val targetInfoId = TargetInfoTable.selectAll().first()[TargetInfoTable.id].value
         MatchingResultTable.insert {
-            it[registerEmail] = "register@example.com"
-            it[MatchingResultTable.targetInfoId] = targetInfoId
-            it[targetEmail] = "target@example.com"
+            it[registerId] = this@MatchingResultCommandDaoTest.registerId
+            it[MatchingResultTable.targetInfoId] = this@MatchingResultCommandDaoTest.targetInfoId
+            it[targetId] = this@MatchingResultCommandDaoTest.targetId
             it[middleNumberMatched] = true
             it[lastNumberMatched] = true
             it[yearMatched] = true

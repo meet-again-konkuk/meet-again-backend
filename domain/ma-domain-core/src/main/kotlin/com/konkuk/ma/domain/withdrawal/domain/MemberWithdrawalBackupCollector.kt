@@ -32,9 +32,9 @@ class MemberWithdrawalBackupCollector(
         val email = member.email
         return MemberWithdrawalBackup(
             member = MemberBackupView.from(member),
-            targetInfos = targetInfoQueryRepository.find(email),
-            registeredMatchingResults = matchingResultRepository.find(email),
-            claimedMatchingResults = matchingResultRepository.findClaimedByTarget(email),
+            targetInfos = targetInfoQueryRepository.find(member.id),
+            registeredMatchingResults = matchingResultRepository.find(member.id),
+            claimedMatchingResults = matchingResultRepository.findClaimedByTarget(member.id),
             pointBalance = memberPointRepository.findOneOrInitial(email),
             pointHistories = pointHistoryRepository.find(email),
             posts = postQueryRepository.find(email),

@@ -47,7 +47,7 @@ class MatchingResultQueryApiTest(
     test("매칭 결과 목록 조회 API 문서화") {
         // Given
         val matchingResult = MatchingResultFixture.create(
-            registerEmail = "holeman@naver.com",
+            registerId = 1L,
             monthMatched = false,
             dayMatched = false,
         )
@@ -63,7 +63,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("holeman@naver.com", false) } returns resultsWithProfiles
+        every { matchingResultQueryService.find(1L, false) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -90,7 +90,7 @@ class MatchingResultQueryApiTest(
     test("excluded=true로 제외된 매칭 결과 목록 조회 API 문서화") {
         // Given
         val matchingResult = MatchingResultFixture.create(
-            registerEmail = "holeman@naver.com",
+            registerId = 1L,
             monthMatched = false,
             dayMatched = false,
         )
@@ -106,7 +106,7 @@ class MatchingResultQueryApiTest(
             )
         )
 
-        every { matchingResultQueryService.find("holeman@naver.com", true) } returns resultsWithProfiles
+        every { matchingResultQueryService.find(1L, true) } returns resultsWithProfiles
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {
@@ -136,7 +136,7 @@ class MatchingResultQueryApiTest(
         // Given
         val emptyResults = MatchingResultsWithProfiles(data = emptyList())
 
-        every { matchingResultQueryService.find("holeman@naver.com", false) } returns emptyResults
+        every { matchingResultQueryService.find(1L, false) } returns emptyResults
 
         // When & Then
         mockMvc.getJson("/api/matching-results") {}
@@ -152,12 +152,12 @@ class MatchingResultQueryApiTest(
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
         val matchingResult = MatchingResultFixture.create(
             id = matchingResultId,
-            registerEmail = "holeman@naver.com",
+            registerId = 1L,
             monthMatched = false,
             dayMatched = false,
         )
 
-        every { matchingResultQueryService.findDetail(matchingResultId, "holeman@naver.com") } returns matchingResult
+        every { matchingResultQueryService.findDetail(matchingResultId, 1L) } returns matchingResult
 
         // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}

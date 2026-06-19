@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.dao.MatchingResultCommandDao
 import com.konkuk.ma.domain.matching.dao.MatchingResultQueryDao
 import com.konkuk.ma.domain.matching.domain.MatchingResult
@@ -33,8 +32,8 @@ class MatchingResultCoreRepository(
         return matchingResultCommandDao.deleteExcludedExpired(baseDate)
     }
 
-    override fun find(email: Email, excluded: Boolean): List<MatchingResult> {
-        return matchingResultQueryDao.find(email.value, excluded)
+    override fun find(memberId: Long, excluded: Boolean): List<MatchingResult> {
+        return matchingResultQueryDao.find(memberId, excluded)
             .map { it.toDomain() }
     }
 
@@ -56,20 +55,16 @@ class MatchingResultCoreRepository(
         matchingResultCommandDao.updateClaimed(matchingResult)
     }
 
-    override fun findClaimedByTarget(email: Email): List<MatchingResult> {
-        return matchingResultQueryDao.findClaimedByTarget(email.value)
+    override fun findClaimedByTarget(memberId: Long): List<MatchingResult> {
+        return matchingResultQueryDao.findClaimedByTarget(memberId)
             .map { it.toDomain() }
     }
 
-    override fun delete(targetInfoId: Long, email: Email) {
-        matchingResultCommandDao.delete(targetInfoId, email.value)
+    override fun delete(targetInfoId: Long, memberId: Long) {
+        matchingResultCommandDao.delete(targetInfoId, memberId)
     }
 
-    override fun deleteByRegister(email: Email) {
-        matchingResultCommandDao.deleteByRegister(email.value)
-    }
-
-    override fun anonymizeTarget(targetEmail: Email, withdrawnEmail: Email) {
-        matchingResultCommandDao.anonymizeTarget(targetEmail.value, withdrawnEmail.value)
+    override fun deleteByRegister(memberId: Long) {
+        matchingResultCommandDao.deleteByRegister(memberId)
     }
 }

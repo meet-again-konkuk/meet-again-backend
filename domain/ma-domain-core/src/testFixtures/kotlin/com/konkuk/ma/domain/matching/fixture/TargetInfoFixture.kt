@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.fixture
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -13,7 +12,7 @@ import java.time.LocalDateTime
 object TargetInfoFixture {
     fun create(
         targetInfoId: Long = 1L,
-        registerEmail: String = "register@example.com",
+        registerId: Long = 1L,
         targetName: String = "홍길동",
         targetGender: Gender = Gender.MALE,
         middleNumber: FourDigit? = FourDigit("1234"),
@@ -26,7 +25,7 @@ object TargetInfoFixture {
     ): TargetInfo {
         return TargetInfo(
             targetInfoId = targetInfoId,
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetName = targetName,
             targetGender = targetGender,
             middleNumber = middleNumber,

@@ -23,7 +23,7 @@ class MatchingResultQueryApi(
         @LoginMember memberInfo: MemberInfo,
         @RequestParam(defaultValue = "false") excluded: Boolean,
     ): MatchingResultsResponse {
-        val results = matchingResultQueryService.find(memberInfo.email, excluded)
+        val results = matchingResultQueryService.find(memberInfo.id, excluded)
         return MatchingResultsResponse.from(results)
     }
 
@@ -32,7 +32,7 @@ class MatchingResultQueryApi(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
     ): MatchingResultDetailResponse {
-        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, memberInfo.email)
+        val matchingResult = matchingResultQueryService.findDetail(matchingResultId, memberInfo.id)
         return MatchingResultDetailResponse.from(matchingResult)
     }
 }

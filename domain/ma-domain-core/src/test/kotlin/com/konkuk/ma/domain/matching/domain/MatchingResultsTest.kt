@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
@@ -43,51 +42,51 @@ class MatchingResultsTest : FunSpec({
         }
     }
 
-    context("extractTargetEmails") {
+    context("extractTargetIds") {
 
-        test("중복 없이 타겟 이메일을 추출한다") {
+        test("중복 없이 타겟 ID를 추출한다") {
             val results = MatchingResults(
                 listOf(
-                    MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                    MatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com"),
-                    MatchingResultFixture.create(targetInfoId = 3L, targetEmail = "a@a.com")
+                    MatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                    MatchingResultFixture.create(targetInfoId = 2L, targetId = 20L),
+                    MatchingResultFixture.create(targetInfoId = 3L, targetId = 10L)
                 )
             )
 
-            val emails = results.extractTargetEmails()
+            val ids = results.extractTargetIds()
 
-            emails shouldHaveSize 2
-            emails shouldContainExactlyInAnyOrder listOf(Email("a@a.com"), Email("b@b.com"))
+            ids shouldHaveSize 2
+            ids shouldContainExactlyInAnyOrder setOf(10L, 20L)
         }
 
         test("빈 리스트이면 빈 Set을 반환한다") {
             val results = MatchingResults(emptyList())
 
-            results.extractTargetEmails() shouldHaveSize 0
+            results.extractTargetIds() shouldHaveSize 0
         }
 
-        test("모든 이메일이 다르면 전부 포함된다") {
+        test("모든 ID가 다르면 전부 포함된다") {
             val results = MatchingResults(
                 listOf(
-                    MatchingResultFixture.create(targetInfoId = 1L, targetEmail = "a@a.com"),
-                    MatchingResultFixture.create(targetInfoId = 2L, targetEmail = "b@b.com"),
-                    MatchingResultFixture.create(targetInfoId = 3L, targetEmail = "c@c.com")
+                    MatchingResultFixture.create(targetInfoId = 1L, targetId = 10L),
+                    MatchingResultFixture.create(targetInfoId = 2L, targetId = 20L),
+                    MatchingResultFixture.create(targetInfoId = 3L, targetId = 30L)
                 )
             )
 
-            results.extractTargetEmails() shouldHaveSize 3
+            results.extractTargetIds() shouldHaveSize 3
         }
     }
 
     context("combineWithProfiles") {
 
         test("매칭결과와 회원정보와 사진정보를 조합하여 프로필을 생성한다") {
-            val matchingResult = MatchingResultFixture.create(targetEmail = "target@example.com")
+            val matchingResult = MatchingResultFixture.create(targetId = 10L)
             val matchingResults = MatchingResults(listOf(matchingResult))
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail.value, name = "홍길동", nickname = "닉네임")
+            val member = MemberFixture.create(id = 10L, email = "target@example.com", name = "홍길동", nickname = "닉네임")
             val photo = MemberPhotoFixture.create(
-                memberEmail = matchingResult.targetEmail.value,
+                memberEmail = member.email.value,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -102,11 +101,11 @@ class MatchingResultsTest : FunSpec({
         }
 
         test("탈퇴한 회원도 결과에 포함되며 isWithdrawn이 true이다") {
-            val activeResult = MatchingResultFixture.create(targetEmail = "active@example.com")
-            val withdrawnResult = MatchingResultFixture.create(targetEmail = "withdrawn@example.com")
+            val activeResult = MatchingResultFixture.create(targetInfoId = 1L, targetId = 10L)
+            val withdrawnResult = MatchingResultFixture.create(targetInfoId = 2L, targetId = 20L)
             val matchingResults = MatchingResults(listOf(activeResult, withdrawnResult))
 
-            val activeMember = MemberFixture.create(email = activeResult.targetEmail.value)
+            val activeMember = MemberFixture.create(id = 10L, email = "active@example.com")
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(activeMember)), MemberPhotos(emptyList())
@@ -121,10 +120,10 @@ class MatchingResultsTest : FunSpec({
         }
 
         test("사진이 없는 회원은 profileImageUrl이 null이다") {
-            val matchingResult = MatchingResultFixture.create(targetEmail = "target@example.com")
+            val matchingResult = MatchingResultFixture.create(targetId = 10L)
             val matchingResults = MatchingResults(listOf(matchingResult))
 
-            val member = MemberFixture.create(email = matchingResult.targetEmail.value)
+            val member = MemberFixture.create(id = 10L, email = "target@example.com")
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(member)), MemberPhotos(emptyList())
@@ -145,13 +144,13 @@ class MatchingResultsTest : FunSpec({
         }
 
         test("여러 매칭결과를 한번에 조합한다") {
-            val result1 = MatchingResultFixture.create(targetEmail = "a@example.com", targetInfoId = 1L)
-            val result2 = MatchingResultFixture.create(targetEmail = "b@example.com", targetInfoId = 2L)
+            val result1 = MatchingResultFixture.create(targetId = 10L, targetInfoId = 1L)
+            val result2 = MatchingResultFixture.create(targetId = 20L, targetInfoId = 2L)
             val matchingResults = MatchingResults(listOf(result1, result2))
 
-            val memberA = MemberFixture.create(email = result1.targetEmail.value, name = "김철수", nickname = "철수")
-            val memberB = MemberFixture.create(email = result2.targetEmail.value, name = "이영희", nickname = "영희")
-            val photoA = MemberPhotoFixture.create(memberEmail = result1.targetEmail.value, thumbnailPath = "thumb/a.jpg")
+            val memberA = MemberFixture.create(id = 10L, email = "a@example.com", name = "김철수", nickname = "철수")
+            val memberB = MemberFixture.create(id = 20L, email = "b@example.com", name = "이영희", nickname = "영희")
+            val photoA = MemberPhotoFixture.create(memberEmail = memberA.email.value, thumbnailPath = "thumb/a.jpg")
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(memberA, memberB)), MemberPhotos(listOf(photoA))
@@ -165,18 +164,18 @@ class MatchingResultsTest : FunSpec({
         }
     }
 
-    context("extractRegisterEmails") {
+    context("extractRegisterIds") {
 
-        test("중복 없이 등록자 이메일을 추출한다") {
+        test("중복 없이 등록자 ID를 추출한다") {
             val results = MatchingResults(
                 listOf(
-                    MatchingResultFixture.create(targetInfoId = 1L, registerEmail = "a@a.com"),
-                    MatchingResultFixture.create(targetInfoId = 2L, registerEmail = "b@b.com"),
-                    MatchingResultFixture.create(targetInfoId = 3L, registerEmail = "a@a.com"),
+                    MatchingResultFixture.create(targetInfoId = 1L, registerId = 10L),
+                    MatchingResultFixture.create(targetInfoId = 2L, registerId = 20L),
+                    MatchingResultFixture.create(targetInfoId = 3L, registerId = 10L),
                 )
             )
 
-            results.extractRegisterEmails() shouldContainExactlyInAnyOrder listOf(Email("a@a.com"), Email("b@b.com"))
+            results.extractRegisterIds() shouldContainExactlyInAnyOrder setOf(10L, 20L)
         }
     }
 
@@ -198,13 +197,13 @@ class MatchingResultsTest : FunSpec({
     context("toClaimerProfiles") {
 
         test("요청자 프로필과 xroom 존재 여부를 조합한다") {
-            val result1 = MatchingResultFixture.create(targetInfoId = 10L, registerEmail = "claimer1@a.com")
-            val result2 = MatchingResultFixture.create(targetInfoId = 20L, registerEmail = "claimer2@a.com")
+            val result1 = MatchingResultFixture.create(targetInfoId = 10L, registerId = 100L)
+            val result2 = MatchingResultFixture.create(targetInfoId = 20L, registerId = 200L)
             val matchingResults = MatchingResults(listOf(result1, result2))
 
-            val member1 = MemberFixture.create(email = "claimer1@a.com", name = "갑", nickname = "gap")
-            val member2 = MemberFixture.create(email = "claimer2@a.com", name = "을", nickname = "eul")
-            val photo1 = MemberPhotoFixture.create(memberEmail = "claimer1@a.com", thumbnailPath = "thumb/1.jpg")
+            val member1 = MemberFixture.create(id = 100L, email = "claimer1@a.com", name = "갑", nickname = "gap")
+            val member2 = MemberFixture.create(id = 200L, email = "claimer2@a.com", name = "을", nickname = "eul")
+            val photo1 = MemberPhotoFixture.create(memberEmail = member1.email.value, thumbnailPath = "thumb/1.jpg")
 
             val profiles = matchingResults.toClaimerProfiles(
                 Members(listOf(member1, member2)),
@@ -222,11 +221,11 @@ class MatchingResultsTest : FunSpec({
         }
 
         test("xroomExistTargetInfoIds가 빈 집합이면 모든 hasXroom이 false이다") {
-            val result = MatchingResultFixture.create(targetInfoId = 1L, registerEmail = "c@a.com")
+            val result = MatchingResultFixture.create(targetInfoId = 1L, registerId = 100L)
             val matchingResults = MatchingResults(listOf(result))
 
             val profiles = matchingResults.toClaimerProfiles(
-                Members(listOf(MemberFixture.create(email = "c@a.com"))),
+                Members(listOf(MemberFixture.create(id = 100L, email = "c@a.com"))),
                 MemberPhotos(emptyList()),
                 xroomExistTargetInfoIds = emptySet(),
             )
@@ -235,7 +234,7 @@ class MatchingResultsTest : FunSpec({
         }
 
         test("탈퇴한 요청자는 memberId가 null이고 isWithdrawn이 true이다") {
-            val result = MatchingResultFixture.create(targetInfoId = 1L, registerEmail = "withdrawn@a.com")
+            val result = MatchingResultFixture.create(targetInfoId = 1L, registerId = 100L)
             val matchingResults = MatchingResults(listOf(result))
 
             val profiles = matchingResults.toClaimerProfiles(

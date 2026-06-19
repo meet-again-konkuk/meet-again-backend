@@ -36,7 +36,7 @@ object RowEntityMapper {
 
     fun toTargetInfoEntity(row: ResultRow) = TargetInfoEntity(
         id = row[TargetInfoTable.id].value,
-        registerEmail = row[TargetInfoTable.registerEmail],
+        registerId = row[TargetInfoTable.registerId],
         name = row[TargetInfoTable.name],
         targetGender = Gender.valueOf(row[TargetInfoTable.targetGender]),
         middleNumber = row[TargetInfoTable.middleNumber],
