@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class MemberPointDao {
-    fun findOneForUpdateOrNull(ownerEmail: String): MemberPointEntity? {
+    fun findOneForUpdateOrNull(ownerId: Long): MemberPointEntity? {
         return MemberPointTable
             .selectAll()
-            .where { (MemberPointTable.ownerEmail eq ownerEmail) and (MemberPointTable.deleted eq false) }
+            .where { (MemberPointTable.ownerId eq ownerId) and (MemberPointTable.deleted eq false) }
             .limit(1)
             .forUpdate()
             .firstOrNull()
@@ -22,10 +22,10 @@ class MemberPointDao {
 
     fun insert(entity: MemberPointEntity): Long {
         return MemberPointTable.insertAndGetId {
-            it[ownerEmail] = entity.ownerEmail
+            it[ownerId] = entity.ownerId
             it[balance] = entity.balance
-            it[createdBy] = entity.ownerEmail
-            it[lastModifiedBy] = entity.ownerEmail
+            it[createdBy] = entity.ownerId.toString()
+            it[lastModifiedBy] = entity.ownerId.toString()
         }.value
     }
 
@@ -35,7 +35,7 @@ class MemberPointDao {
         }
     }
 
-    fun delete(ownerEmail: String) {
-        MemberPointTable.softDelete({ MemberPointTable.ownerEmail eq ownerEmail }, ownerEmail)
+    fun delete(ownerId: Long) {
+        MemberPointTable.softDelete({ MemberPointTable.ownerId eq ownerId }, ownerId.toString())
     }
 }

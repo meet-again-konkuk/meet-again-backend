@@ -3,7 +3,7 @@ package com.konkuk.ma.domain.point.entity.table
 import com.konkuk.ma.domain.common.entity.table.BaseTable
 
 object PointHistoryTable : BaseTable("POINT_HISTORIES", "POINT_HISTORY_ID") {
-    val ownerEmail = varchar("OWNER_EMAIL", 255)
+    val ownerId = long("OWNER_ID")
     val pointProductId = long("POINT_PRODUCT_ID").nullable()
     val historyType = varchar("HISTORY_TYPE", 16)
     val quantity = integer("QUANTITY")
