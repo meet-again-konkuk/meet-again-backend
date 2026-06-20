@@ -12,7 +12,7 @@ class Members(val data: List<Member>) {
 
     fun findOne(id: Long): Member? = data.find { it.id == id }
 
-    fun extractEmails(): Set<Email> = data.map { it.email }.toSet()
+    fun extractIds(): Set<Long> = data.map { it.id }.toSet()
 
     fun findNickname(id: Long): String {
         return nicknameById[id] ?: UNKNOWN_NICKNAME

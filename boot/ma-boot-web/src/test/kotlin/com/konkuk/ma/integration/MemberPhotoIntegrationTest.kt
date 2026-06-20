@@ -11,6 +11,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -77,9 +78,9 @@ class MemberPhotoIntegrationTest(
     fun insertMember(
         email: String = "photo-test@example.com",
         rawPassword: String = "password123"
-    ) {
-        transaction {
-            MemberTable.insert {
+    ): Long {
+        return transaction {
+            MemberTable.insertAndGetId {
                 it[MemberTable.email] = email
                 it[password] = passwordEncoder.encode(rawPassword)
                 it[nickname] = "포토테스터"
@@ -88,7 +89,7 @@ class MemberPhotoIntegrationTest(
                 it[name] = "김테스트"
                 it[birthDate] = LocalDate.of(1990, 1, 1)
                 it[region] = "SEOUL"
-            }
+            }.value
         }
     }
 
@@ -120,7 +121,7 @@ class MemberPhotoIntegrationTest(
             // Given
             val email = "photo-test@example.com"
             val password = "password123"
-            insertMember(email = email, rawPassword = password)
+            val memberId = insertMember(email = email, rawPassword = password)
             val accessToken = login(email, password)
 
             val pngBytes = createTestPngBytes()
@@ -141,7 +142,7 @@ class MemberPhotoIntegrationTest(
             // Then - DB에 사진 레코드가 저장되었는지 확인
             val savedPhoto = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq email }
+                    .where { MemberPhotoTable.memberId eq memberId }
                     .singleOrNull()
             }
 
@@ -155,7 +156,7 @@ class MemberPhotoIntegrationTest(
             // Given
             val email = "photo-replace@example.com"
             val password = "password123"
-            insertMember(email = email, rawPassword = password)
+            val memberId = insertMember(email = email, rawPassword = password)
             val accessToken = login(email, password)
 
             val pngBytes = createTestPngBytes()
@@ -177,7 +178,7 @@ class MemberPhotoIntegrationTest(
             // Then - 활성 사진은 1개, 기존 사진은 soft delete
             val activePhotos = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { (MemberPhotoTable.memberEmail eq email) and (MemberPhotoTable.deleted eq false) }
+                    .where { (MemberPhotoTable.memberId eq memberId) and (MemberPhotoTable.deleted eq false) }
                     .toList()
             }
 
@@ -203,7 +204,7 @@ class MemberPhotoIntegrationTest(
             // Given
             val email = "photo-delete@example.com"
             val password = "password123"
-            insertMember(email = email, rawPassword = password)
+            val memberId = insertMember(email = email, rawPassword = password)
             val accessToken = login(email, password)
 
             val pngBytes = createTestPngBytes()
@@ -221,13 +222,13 @@ class MemberPhotoIntegrationTest(
             // Then
             val photo = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq email }
+                    .where { MemberPhotoTable.memberId eq memberId }
                     .singleOrNull()
             }
 
             photo shouldNotBe null
             photo!![MemberPhotoTable.deleted] shouldBe true
-            photo[MemberPhotoTable.deletedBy] shouldBe email
+            photo[MemberPhotoTable.deletedBy] shouldBe memberId.toString()
             photo[MemberPhotoTable.deletedDate] shouldNotBe null
         }
     }

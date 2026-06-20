@@ -169,8 +169,8 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             MemberPointTable.insert { it[ownerId] = memberId; it[balance] = 500 }
             XroomTable.insert { it[ownerEmail] = withdrawingEmail; it[targetInfoId] = 1L; it[theme] = "CORK_BOARD" }
             MemberPhotoTable.insert {
-                it[memberEmail] = withdrawingEmail
-                it[filePath] = "member/profile/$withdrawingEmail/photo.jpg"
+                it[MemberPhotoTable.memberId] = memberId
+                it[filePath] = "member/profile/$memberId/photo.jpg"
                 it[originalFileName] = "photo.jpg"
             }
         }
@@ -185,7 +185,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 .single()[MemberPointTable.deleted] shouldBe true
             XroomTable.selectAll().where { XroomTable.ownerEmail eq withdrawingEmail }
                 .single()[XroomTable.deleted] shouldBe true
-            MemberPhotoTable.selectAll().where { MemberPhotoTable.memberEmail eq withdrawingEmail }
+            MemberPhotoTable.selectAll().where { MemberPhotoTable.memberId eq memberId }
                 .single()[MemberPhotoTable.deleted] shouldBe true
             MatchingResultTable.selectAll().where { MatchingResultTable.registerId eq memberId }
                 .single()[MatchingResultTable.deleted] shouldBe true

@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
 import io.kotest.core.spec.style.FunSpec
@@ -49,7 +48,7 @@ class MemberPhotoCommandDaoTest(
             test("저장된 사진의 필드 값이 정확히 일치한다") {
                 // Given
                 val newPhoto = createNewPhoto(
-                    memberEmail = "photo@example.com",
+                    memberId = 42L,
                     filePath = "/uploads/photo.jpg",
                     originalFileName = "원본사진.jpg",
                     thumbnailPath = "/uploads/thumb.jpg"
@@ -60,7 +59,7 @@ class MemberPhotoCommandDaoTest(
 
                 // Then
                 val row = MemberPhotoTable.selectAll().first()
-                row[MemberPhotoTable.memberEmail] shouldBe newPhoto.memberEmail.value
+                row[MemberPhotoTable.memberId] shouldBe newPhoto.memberId
                 row[MemberPhotoTable.filePath] shouldBe newPhoto.filePath
                 row[MemberPhotoTable.originalFileName] shouldBe newPhoto.originalFileName
                 row[MemberPhotoTable.thumbnailPath] shouldBe newPhoto.thumbnailPath
@@ -82,29 +81,29 @@ class MemberPhotoCommandDaoTest(
 
         context("delete") {
 
-            test("해당 이메일의 사진을 soft delete 처리한다") {
+            test("해당 회원의 사진을 soft delete 처리한다") {
                 // Given
-                val email = "user@example.com"
-                insertMemberPhoto(memberEmail = email)
+                val memberId = 1L
+                insertMemberPhoto(memberId = memberId)
 
                 // When
-                memberPhotoCommandDao.delete(email)
+                memberPhotoCommandDao.delete(memberId)
 
                 // Then
                 val photo = MemberPhotoTable.selectAll().first()
                 photo[MemberPhotoTable.deleted] shouldBe true
-                photo[MemberPhotoTable.deletedBy] shouldBe email
+                photo[MemberPhotoTable.deletedBy] shouldBe memberId.toString()
                 photo[MemberPhotoTable.deletedDate] shouldNotBe null
             }
 
-            test("같은 이메일의 사진이 여러 개이면 모두 soft delete 처리한다") {
+            test("같은 회원의 사진이 여러 개이면 모두 soft delete 처리한다") {
                 // Given
-                val email = "user@example.com"
-                insertMemberPhoto(memberEmail = email, filePath = "/uploads/1.jpg")
-                insertMemberPhoto(memberEmail = email, filePath = "/uploads/2.jpg")
+                val memberId = 1L
+                insertMemberPhoto(memberId = memberId, filePath = "/uploads/1.jpg")
+                insertMemberPhoto(memberId = memberId, filePath = "/uploads/2.jpg")
 
                 // When
-                memberPhotoCommandDao.delete(email)
+                memberPhotoCommandDao.delete(memberId)
 
                 // Then
                 val photos = MemberPhotoTable.selectAll().toList()
@@ -112,24 +111,24 @@ class MemberPhotoCommandDaoTest(
                 photos.all { it[MemberPhotoTable.deleted] } shouldBe true
             }
 
-            test("다른 이메일의 사진은 soft delete 처리하지 않는다") {
+            test("다른 회원의 사진은 soft delete 처리하지 않는다") {
                 // Given
-                insertMemberPhoto(memberEmail = "user1@example.com")
-                insertMemberPhoto(memberEmail = "user2@example.com")
+                insertMemberPhoto(memberId = 1L)
+                insertMemberPhoto(memberId = 2L)
 
                 // When
-                memberPhotoCommandDao.delete("user1@example.com")
+                memberPhotoCommandDao.delete(1L)
 
                 // Then
-                val user2Photo = MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq "user2@example.com" }
+                val otherPhoto = MemberPhotoTable.selectAll()
+                    .where { MemberPhotoTable.memberId eq 2L }
                     .first()
-                user2Photo[MemberPhotoTable.deleted] shouldBe false
+                otherPhoto[MemberPhotoTable.deleted] shouldBe false
             }
 
-            test("존재하지 않는 이메일로 삭제해도 예외가 발생하지 않는다") {
+            test("존재하지 않는 회원으로 삭제해도 예외가 발생하지 않는다") {
                 // When
-                memberPhotoCommandDao.delete("nobody@example.com")
+                memberPhotoCommandDao.delete(99L)
 
                 // Then
                 MemberPhotoTable.selectAll().count() shouldBe 0
@@ -138,13 +137,13 @@ class MemberPhotoCommandDaoTest(
     }
 
     private fun createNewPhoto(
-        memberEmail: String = "user@example.com",
+        memberId: Long = 1L,
         filePath: String = "/uploads/photo.jpg",
         originalFileName: String = "원본.jpg",
         thumbnailPath: String? = "/uploads/thumb.jpg",
     ): NewPhoto {
         return NewPhoto(
-            memberEmail = Email(memberEmail),
+            memberId = memberId,
             filePath = filePath,
             originalFileName = originalFileName,
             thumbnailPath = thumbnailPath
@@ -152,11 +151,11 @@ class MemberPhotoCommandDaoTest(
     }
 
     private fun insertMemberPhoto(
-        memberEmail: String = "user@example.com",
+        memberId: Long = 1L,
         filePath: String = "/uploads/photo.jpg",
     ) {
         MemberPhotoTable.insert {
-            it[MemberPhotoTable.memberEmail] = memberEmail
+            it[MemberPhotoTable.memberId] = memberId
             it[MemberPhotoTable.filePath] = filePath
             it[originalFileName] = "원본.jpg"
         }

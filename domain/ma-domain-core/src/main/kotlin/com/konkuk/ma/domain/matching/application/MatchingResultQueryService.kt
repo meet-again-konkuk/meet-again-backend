@@ -26,7 +26,7 @@ class MatchingResultQueryService(
         val targetIds = matchingResults.extractTargetIds()
 
         val members = Members(memberQueryRepository.findByIds(targetIds))
-        val photos = MemberPhotos(memberPhotoRepository.find(members.extractEmails()))
+        val photos = MemberPhotos(memberPhotoRepository.find(members.extractIds()))
 
         return matchingResults.combineWithProfiles(members, photos)
     }
@@ -42,7 +42,7 @@ class MatchingResultQueryService(
         val registerIds = matchingResults.extractRegisterIds()
 
         val members = Members(memberQueryRepository.findByIds(registerIds))
-        val photos = MemberPhotos(memberPhotoRepository.find(members.extractEmails()))
+        val photos = MemberPhotos(memberPhotoRepository.find(members.extractIds()))
 
         val xroomExistTargetInfoIds = xroomQueryRepository.exists(matchingResults.extractTargetInfoIds())
 

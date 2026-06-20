@@ -10,16 +10,16 @@ class MemberPhotoCommandDao {
 
     fun save(newPhoto: NewPhoto): Long {
         return MemberPhotoTable.insertAndGetId {
-            it[memberEmail] = newPhoto.memberEmail.value
+            it[memberId] = newPhoto.memberId
             it[filePath] = newPhoto.filePath
             it[originalFileName] = newPhoto.originalFileName
             it[thumbnailPath] = newPhoto.thumbnailPath
-            it[createdBy] = newPhoto.memberEmail.value
-            it[lastModifiedBy] = newPhoto.memberEmail.value
+            it[createdBy] = newPhoto.memberId.toString()
+            it[lastModifiedBy] = newPhoto.memberId.toString()
         }.value
     }
 
-    fun delete(email: String) {
-        MemberPhotoTable.softDelete({ MemberPhotoTable.memberEmail eq email }, email)
+    fun delete(memberId: Long) {
+        MemberPhotoTable.softDelete({ MemberPhotoTable.memberId eq memberId }, memberId.toString())
     }
 }

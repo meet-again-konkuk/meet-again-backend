@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.domain.photo
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.file.port.FileStorage
 import com.konkuk.ma.domain.common.domain.file.port.ThumbnailGenerator
 import com.konkuk.ma.domain.common.fixture.PhotoFileFixture
@@ -29,31 +28,31 @@ class MemberPhotoProcessorTest : FunSpec({
 
         test("원본과 썸네일을 저장하고 ProcessedPhoto를 반환한다") {
             // Given
-            val email = Email("user@example.com")
+            val memberId = 1L
             val photoFile = PhotoFileFixture.create()
 
-            every { fileStorage.store(any(), photoFile) } returns "member/profile/user@example.com/photo.jpg"
+            every { fileStorage.store(any(), photoFile) } returns "member/profile/1/photo.jpg"
             every { thumbnailGenerator.generate(photoFile.content, 400) } returns ByteArray(512)
-            every { fileStorage.storeBytes(any(), "thumb_${photoFile.originalFileName}", any()) } returns "member/thumbnail/user@example.com/thumb_photo.jpg"
+            every { fileStorage.storeBytes(any(), "thumb_${photoFile.originalFileName}", any()) } returns "member/thumbnail/1/thumb_photo.jpg"
 
             // When
-            val result = processor.process(email, photoFile)
+            val result = processor.process(memberId, photoFile)
 
             // Then
-            result.filePath shouldBe "member/profile/user@example.com/photo.jpg"
-            result.thumbnailPath shouldBe "member/thumbnail/user@example.com/thumb_photo.jpg"
+            result.filePath shouldBe "member/profile/1/photo.jpg"
+            result.thumbnailPath shouldBe "member/thumbnail/1/thumb_photo.jpg"
         }
 
         test("썸네일 생성에 실패하면 thumbnailPath가 null인 ProcessedPhoto를 반환한다") {
             // Given
-            val email = Email("user@example.com")
+            val memberId = 1L
             val photoFile = PhotoFileFixture.create()
 
-            every { fileStorage.store(any(), photoFile) } returns "member/profile/user@example.com/photo.jpg"
+            every { fileStorage.store(any(), photoFile) } returns "member/profile/1/photo.jpg"
             every { thumbnailGenerator.generate(photoFile.content, 400) } throws RuntimeException("생성 실패")
 
             // When
-            val result = processor.process(email, photoFile)
+            val result = processor.process(memberId, photoFile)
 
             // Then
             result.filePath shouldNotBe null

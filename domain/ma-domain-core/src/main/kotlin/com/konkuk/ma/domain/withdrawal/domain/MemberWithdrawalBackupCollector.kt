@@ -43,7 +43,7 @@ class MemberWithdrawalBackupCollector(
             commentLikes = commentLikeRepository.find(member.id),
             inquiries = inquiryQueryRepository.find(member.id),
             xrooms = xroomQueryRepository.find(email),
-            photo = memberPhotoRepository.findOne(email),
+            photo = memberPhotoRepository.findOne(member.id),
         )
     }
 }

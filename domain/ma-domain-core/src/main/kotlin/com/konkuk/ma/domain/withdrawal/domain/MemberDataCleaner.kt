@@ -62,7 +62,7 @@ class MemberDataCleaner(
     }
 
     private fun cleanPhoto(member: Member) {
-        memberPhotoCleaner.clean(member.email)
+        memberPhotoCleaner.clean(member.id)
     }
 
     private fun anonymizeMember(member: Member) {

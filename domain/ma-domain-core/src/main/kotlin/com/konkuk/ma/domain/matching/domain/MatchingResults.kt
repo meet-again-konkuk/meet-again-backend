@@ -23,7 +23,7 @@ class MatchingResults(
     fun combineWithProfiles(members: Members, photos: MemberPhotos): MatchingResultsWithProfiles {
         val combined = data.map { result ->
             val member = members.findOne(result.targetId)
-            val photo = member?.let { photos.findOne(it.email) }
+            val photo = member?.let { photos.findOne(it.id) }
             MatchingResultWithProfile(
                 matchingResult = result,
                 targetMemberId = member?.id,
@@ -42,7 +42,7 @@ class MatchingResults(
     ): ClaimerProfiles {
         val profiles = data.map { result ->
             val member = members.findOne(result.registerId)
-            val photo = member?.let { photos.findOne(it.email) }
+            val photo = member?.let { photos.findOne(it.id) }
             ClaimerProfile(
                 memberId = member?.id,
                 name = member?.name,
