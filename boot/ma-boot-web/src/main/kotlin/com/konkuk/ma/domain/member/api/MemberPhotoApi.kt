@@ -27,7 +27,7 @@ class MemberPhotoApi(
         @RequestPart("photo") photo: MultipartFile
     ): MemberPhotoResponse {
         val photoFile = PhotoFile.create(photo.originalFilename, photo.size, photo.bytes)
-        memberPhotoService.upload(memberInfo.email, photoFile)
+        memberPhotoService.upload(memberInfo.id, photoFile)
         return MemberPhotoResponse.uploaded()
     }
 
@@ -35,7 +35,7 @@ class MemberPhotoApi(
     fun deletePhoto(
         @LoginMember memberInfo: MemberInfo
     ): MemberPhotoResponse {
-        memberPhotoService.delete(memberInfo.email)
+        memberPhotoService.delete(memberInfo.id)
         return MemberPhotoResponse.deleted()
     }
 }

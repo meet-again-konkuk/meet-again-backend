@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.dao.MemberPhotoCommandDao
 import com.konkuk.ma.domain.member.dao.MemberPhotoQueryDao
 import com.konkuk.ma.domain.member.domain.photo.MemberPhoto
@@ -18,16 +17,16 @@ class MemberPhotoCoreRepository(
         return memberPhotoCommandDao.save(newPhoto)
     }
 
-    override fun findOne(email: Email): MemberPhoto? {
-        return memberPhotoQueryDao.findOne(email.value)?.toDomain()
+    override fun findOne(memberId: Long): MemberPhoto? {
+        return memberPhotoQueryDao.findOne(memberId)?.toDomain()
     }
 
-    override fun delete(email: Email) {
-        memberPhotoCommandDao.delete(email.value)
+    override fun delete(memberId: Long) {
+        memberPhotoCommandDao.delete(memberId)
     }
 
-    override fun find(emails: Set<Email>): List<MemberPhoto> {
-        return memberPhotoQueryDao.find(emails.map { it.value }.toSet())
+    override fun find(memberIds: Set<Long>): List<MemberPhoto> {
+        return memberPhotoQueryDao.find(memberIds)
             .map { it.toDomain() }
     }
 }

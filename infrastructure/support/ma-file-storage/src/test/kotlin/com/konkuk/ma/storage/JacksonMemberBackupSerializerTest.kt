@@ -31,7 +31,6 @@ class JacksonMemberBackupSerializerTest : FunSpec({
     val serializer = JacksonMemberBackupSerializer()
 
     fun fullBackup(member: Member): MemberWithdrawalBackup {
-        val email = member.email.value
         return MemberWithdrawalBackup(
             member = MemberBackupView.from(member),
             targetInfos = listOf(TargetInfoFixture.create(registerId = member.id)),
@@ -66,7 +65,7 @@ class JacksonMemberBackupSerializerTest : FunSpec({
                     createdDate = LocalDateTime.now(),
                 ),
             ),
-            photo = MemberPhotoFixture.create(memberEmail = email),
+            photo = MemberPhotoFixture.create(memberId = member.id),
         )
     }
 

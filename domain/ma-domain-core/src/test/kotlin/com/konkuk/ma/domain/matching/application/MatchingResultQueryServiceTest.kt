@@ -44,7 +44,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             val member = MemberFixture.create(id = 2L, email = "target@example.com")
             val photo = MemberPhotoFixture.create(
-                memberEmail = member.email.value,
+                memberId = member.id,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -72,7 +72,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             val member = MemberFixture.create(id = 2L, email = "target@example.com")
             val photo = MemberPhotoFixture.create(
-                memberEmail = member.email.value,
+                memberId = member.id,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -171,7 +171,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             )
             val member1 = MemberFixture.create(id = 100L, email = "claimer1@a.com", name = "갑")
             val member2 = MemberFixture.create(id = 200L, email = "claimer2@a.com", name = "을")
-            val photo1 = MemberPhotoFixture.create(memberEmail = member1.email.value, thumbnailPath = "thumb/1.jpg")
+            val photo1 = MemberPhotoFixture.create(memberId = member1.id, thumbnailPath = "thumb/1.jpg")
 
             every { matchingResultRepository.findClaimedByTarget(myId) } returns listOf(claimer1, claimer2)
             every { memberQueryRepository.findByIds(any()) } returns listOf(member1, member2)

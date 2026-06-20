@@ -7,18 +7,18 @@ import org.springframework.stereotype.Component
 @Component
 class MemberPhotoQueryDao {
 
-    fun findOne(email: String): MemberPhotoEntity? {
+    fun findOne(memberId: Long): MemberPhotoEntity? {
         return MemberPhotoTable
-            .activeRows { MemberPhotoTable.memberEmail eq email }
+            .activeRows { MemberPhotoTable.memberId eq memberId }
             .limit(1)
             .firstOrNull()
             ?.let { MemberPhotoEntity.from(it) }
     }
 
-    fun find(emails: Set<String>): List<MemberPhotoEntity> {
-        if (emails.isEmpty()) return emptyList()
+    fun find(memberIds: Set<Long>): List<MemberPhotoEntity> {
+        if (memberIds.isEmpty()) return emptyList()
         return MemberPhotoTable
-            .activeRows { MemberPhotoTable.memberEmail inList emails }
+            .activeRows { MemberPhotoTable.memberId inList memberIds }
             .map { MemberPhotoEntity.from(it) }
     }
 }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoProcessor
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
@@ -14,18 +13,16 @@ class MemberPhotoService(
     private val memberPhotoProcessor: MemberPhotoProcessor,
     private val memberPhotoRepository: MemberPhotoRepository
 ) {
-    fun upload(email: String, photoFile: PhotoFile) {
-        val memberEmail = Email(email)
-        delete(email)
-        val processed = memberPhotoProcessor.process(memberEmail, photoFile)
-        val newPhoto = NewPhoto.create(memberEmail, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
+    fun upload(memberId: Long, photoFile: PhotoFile) {
+        delete(memberId)
+        val processed = memberPhotoProcessor.process(memberId, photoFile)
+        val newPhoto = NewPhoto.create(memberId, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
         memberPhotoRepository.save(newPhoto)
     }
 
-    fun delete(email: String) {
-        val memberEmail = Email(email)
-        val existing = memberPhotoRepository.findOne(memberEmail) ?: return
+    fun delete(memberId: Long) {
+        val existing = memberPhotoRepository.findOne(memberId) ?: return
         memberPhotoProcessor.deleteFiles(existing)
-        memberPhotoRepository.delete(memberEmail)
+        memberPhotoRepository.delete(memberId)
     }
 }

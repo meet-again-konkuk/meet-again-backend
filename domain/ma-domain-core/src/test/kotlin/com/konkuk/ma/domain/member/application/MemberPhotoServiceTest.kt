@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.fixture.PhotoFileFixture
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoProcessor
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
@@ -31,7 +30,7 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("새 사진을 업로드하면 processor로 처리하고 DB에 저장한다") {
             // Given
-            val email = "user@example.com"
+            val memberId = 1L
             val photoFile = PhotoFileFixture.create()
             val processed = ProcessedPhoto("stored/path.jpg", "stored/thumb.jpg")
 
@@ -41,20 +40,20 @@ class MemberPhotoServiceTest : FunSpec({
             every { memberPhotoRepository.save(capture(capturedNewPhoto)) } returns 1L
 
             // When
-            service.upload(email, photoFile)
+            service.upload(memberId, photoFile)
 
             // Then
             capturedNewPhoto.captured.filePath shouldBe processed.filePath
             capturedNewPhoto.captured.thumbnailPath shouldBe processed.thumbnailPath
-            capturedNewPhoto.captured.memberEmail shouldBe Email(email)
+            capturedNewPhoto.captured.memberId shouldBe memberId
         }
 
         test("기존 사진이 있으면 삭제 후 새 사진을 업로드한다") {
             // Given
-            val email = "user@example.com"
+            val memberId = 1L
             val photoFile = PhotoFileFixture.create()
             val existingPhoto = MemberPhotoFixture.create(
-                memberEmail = email,
+                memberId = memberId,
                 thumbnailPath = "old/thumb.jpg"
             )
             val processed = ProcessedPhoto("new/path.jpg", "new/thumb.jpg")
@@ -66,7 +65,7 @@ class MemberPhotoServiceTest : FunSpec({
             every { memberPhotoRepository.save(any()) } returns 2L
 
             // When
-            service.upload(email, photoFile)
+            service.upload(memberId, photoFile)
 
             // Then
             verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
@@ -80,15 +79,15 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("기존 사진이 있으면 파일과 DB 레코드를 삭제한다") {
             // Given
-            val email = "user@example.com"
-            val existingPhoto = MemberPhotoFixture.create(memberEmail = email)
+            val memberId = 1L
+            val existingPhoto = MemberPhotoFixture.create(memberId = memberId)
 
             every { memberPhotoRepository.findOne(any()) } returns existingPhoto
             every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
             every { memberPhotoRepository.delete(any()) } just runs
 
             // When
-            service.delete(email)
+            service.delete(memberId)
 
             // Then
             verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
@@ -97,12 +96,12 @@ class MemberPhotoServiceTest : FunSpec({
 
         test("기존 사진이 없으면 아무 동작도 하지 않는다") {
             // Given
-            val email = "nonexistent@example.com"
+            val memberId = 99L
 
             every { memberPhotoRepository.findOne(any()) } returns null
 
             // When
-            service.delete(email)
+            service.delete(memberId)
 
             // Then
             verify(exactly = 0) { memberPhotoProcessor.deleteFiles(any()) }

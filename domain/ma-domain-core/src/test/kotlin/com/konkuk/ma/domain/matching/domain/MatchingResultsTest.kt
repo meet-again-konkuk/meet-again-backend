@@ -86,7 +86,7 @@ class MatchingResultsTest : FunSpec({
 
             val member = MemberFixture.create(id = 10L, email = "target@example.com", name = "홍길동", nickname = "닉네임")
             val photo = MemberPhotoFixture.create(
-                memberEmail = member.email.value,
+                memberId = member.id,
                 thumbnailPath = "thumb/photo.jpg"
             )
 
@@ -150,7 +150,7 @@ class MatchingResultsTest : FunSpec({
 
             val memberA = MemberFixture.create(id = 10L, email = "a@example.com", name = "김철수", nickname = "철수")
             val memberB = MemberFixture.create(id = 20L, email = "b@example.com", name = "이영희", nickname = "영희")
-            val photoA = MemberPhotoFixture.create(memberEmail = memberA.email.value, thumbnailPath = "thumb/a.jpg")
+            val photoA = MemberPhotoFixture.create(memberId = memberA.id, thumbnailPath = "thumb/a.jpg")
 
             val result = matchingResults.combineWithProfiles(
                 Members(listOf(memberA, memberB)), MemberPhotos(listOf(photoA))
@@ -203,7 +203,7 @@ class MatchingResultsTest : FunSpec({
 
             val member1 = MemberFixture.create(id = 100L, email = "claimer1@a.com", name = "갑", nickname = "gap")
             val member2 = MemberFixture.create(id = 200L, email = "claimer2@a.com", name = "을", nickname = "eul")
-            val photo1 = MemberPhotoFixture.create(memberEmail = member1.email.value, thumbnailPath = "thumb/1.jpg")
+            val photo1 = MemberPhotoFixture.create(memberId = member1.id, thumbnailPath = "thumb/1.jpg")
 
             val profiles = matchingResults.toClaimerProfiles(
                 Members(listOf(member1, member2)),
