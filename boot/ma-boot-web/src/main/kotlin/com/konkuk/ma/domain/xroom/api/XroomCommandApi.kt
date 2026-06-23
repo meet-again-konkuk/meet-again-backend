@@ -24,7 +24,7 @@ class XroomCommandApi(
         @LoginMember memberInfo: MemberInfo,
         @RequestParam @DecryptId(ObfuscationType.TARGET_INFO) targetInfoId: Long,
     ): CreateXroomResponse {
-        val xroomId = xroomCommandService.create(targetInfoId, memberInfo.email)
+        val xroomId = xroomCommandService.create(targetInfoId, memberInfo.id)
         return CreateXroomResponse(xroomId = xroomId)
     }
 }

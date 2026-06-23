@@ -58,7 +58,7 @@ class MemberDataCleaner(
     }
 
     private fun cleanXroom(member: Member) {
-        xroomCommandRepository.delete(member.email)
+        xroomCommandRepository.delete(member.id)
     }
 
     private fun cleanPhoto(member: Member) {

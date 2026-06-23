@@ -21,11 +21,11 @@ class XroomCommandServiceTest : FunSpec({
 
         test("검증을 통과하면 X룸을 저장하고 ID를 반환한다") {
             val targetInfoId = 1L
-            val email = "holeman@naver.com"
+            val memberId = 1L
             every { xroomValidator.validate(any()) } just runs
             every { xroomCommandRepository.save(any()) } returns 1L
 
-            val result = xroomCommandService.create(targetInfoId, email)
+            val result = xroomCommandService.create(targetInfoId, memberId)
 
             result shouldBe 1L
             verify { xroomValidator.validate(any<NewXroom>()) }

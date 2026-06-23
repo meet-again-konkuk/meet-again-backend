@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.xroom.domain.port
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.xroom.domain.Xroom
 
 interface XroomQueryRepository {
@@ -8,5 +7,5 @@ interface XroomQueryRepository {
 
     fun exists(targetInfoIds: Set<Long>): Set<Long>
 
-    fun find(ownerEmail: Email): List<Xroom>
+    fun find(ownerId: Long): List<Xroom>
 }

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class XroomQueryDao {
-    fun find(ownerEmail: String): List<XroomEntity> {
+    fun find(ownerId: Long): List<XroomEntity> {
         return XroomTable
-            .activeRows { XroomTable.ownerEmail eq ownerEmail }
+            .activeRows { XroomTable.ownerId eq ownerId }
             .map { XroomEntity.from(it) }
     }
 

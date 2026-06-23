@@ -325,7 +325,7 @@ CREATE TABLE XROOMS
     XROOM_ID           BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     -- XroomTable 특화 컬럼들
-    OWNER_EMAIL        VARCHAR(255) NOT NULL,
+    OWNER_ID           BIGINT       NOT NULL,
     TARGET_INFO_ID     BIGINT       NOT NULL,
     THEME              VARCHAR(32)  NOT NULL DEFAULT 'CORK_BOARD',
 
@@ -339,7 +339,7 @@ CREATE TABLE XROOMS
     DELETED_BY         VARCHAR(255) NULL,
 
     -- 인덱스
-    INDEX idx_xroom_owner_email (OWNER_EMAIL),
+    INDEX idx_xroom_owner_id (OWNER_ID),
     UNIQUE INDEX idx_xroom_target_info_id (TARGET_INFO_ID)
 );
 
@@ -349,7 +349,7 @@ CREATE TABLE MEMBER_POINTS
     MEMBER_POINT_ID    BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     -- MemberPointTable 특화 컬럼들
-    OWNER_EMAIL        VARCHAR(255) NOT NULL,
+    OWNER_ID           BIGINT       NOT NULL,
     BALANCE            INT          NOT NULL DEFAULT 0,
 
     -- BaseTable 공통 컬럼들
@@ -362,7 +362,7 @@ CREATE TABLE MEMBER_POINTS
     DELETED_BY         VARCHAR(255) NULL,
 
     -- 인덱스
-    UNIQUE INDEX idx_member_point_owner_email (OWNER_EMAIL)
+    UNIQUE INDEX idx_member_point_owner_id (OWNER_ID)
 );
 
 -- POINT HISTORIES
@@ -371,7 +371,7 @@ CREATE TABLE POINT_HISTORIES
     POINT_HISTORY_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
 
     -- PointHistoryTable 특화 컬럼들
-    OWNER_EMAIL          VARCHAR(255) NOT NULL,
+    OWNER_ID             BIGINT       NOT NULL,
     POINT_PRODUCT_ID     BIGINT       NULL,
     HISTORY_TYPE         VARCHAR(16)  NOT NULL,
     QUANTITY             INT          NOT NULL,
@@ -391,5 +391,5 @@ CREATE TABLE POINT_HISTORIES
 
     -- 인덱스
     UNIQUE INDEX idx_point_history_idempotency_key (IDEMPOTENCY_KEY),
-    INDEX idx_point_history_owner_email (OWNER_EMAIL)
+    INDEX idx_point_history_owner_id (OWNER_ID)
 );
