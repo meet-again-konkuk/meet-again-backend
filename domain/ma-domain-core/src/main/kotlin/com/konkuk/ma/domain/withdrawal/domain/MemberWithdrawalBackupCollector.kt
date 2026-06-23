@@ -29,7 +29,6 @@ class MemberWithdrawalBackupCollector(
     private val memberPhotoRepository: MemberPhotoRepository,
 ) {
     fun collect(member: Member): MemberWithdrawalBackup {
-        val email = member.email
         return MemberWithdrawalBackup(
             member = MemberBackupView.from(member),
             targetInfos = targetInfoQueryRepository.find(member.id),
@@ -42,7 +41,7 @@ class MemberWithdrawalBackupCollector(
             postLikes = postLikeRepository.find(member.id),
             commentLikes = commentLikeRepository.find(member.id),
             inquiries = inquiryQueryRepository.find(member.id),
-            xrooms = xroomQueryRepository.find(email),
+            xrooms = xroomQueryRepository.find(member.id),
             photo = memberPhotoRepository.findOne(member.id),
         )
     }

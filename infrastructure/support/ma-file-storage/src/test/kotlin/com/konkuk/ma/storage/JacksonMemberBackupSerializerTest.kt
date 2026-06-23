@@ -59,7 +59,7 @@ class JacksonMemberBackupSerializerTest : FunSpec({
             xrooms = listOf(
                 Xroom(
                     id = 1L,
-                    ownerEmail = member.email,
+                    ownerId = member.id,
                     targetInfoId = 1L,
                     theme = XroomTheme.CORK_BOARD,
                     createdDate = LocalDateTime.now(),

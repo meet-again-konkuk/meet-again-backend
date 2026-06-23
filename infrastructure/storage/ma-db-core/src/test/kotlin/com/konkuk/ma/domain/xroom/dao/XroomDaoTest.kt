@@ -2,7 +2,6 @@ package com.konkuk.ma.domain.xroom.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.xroom.domain.NewXroom
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import io.kotest.core.spec.style.FunSpec
@@ -37,7 +36,7 @@ class XroomDaoTest(
         context("save") {
 
             test("X룸을 저장하고 ID를 반환한다") {
-                val newXroom = NewXroom(ownerEmail = Email("test@example.com"), targetInfoId = 1L)
+                val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
 
                 val id = xroomCommandDao.save(newXroom)
 
@@ -49,7 +48,7 @@ class XroomDaoTest(
         context("exists") {
 
             test("해당 targetInfoId의 X룸이 존재하면 true를 반환한다") {
-                val newXroom = NewXroom(ownerEmail = Email("test@example.com"), targetInfoId = 1L)
+                val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
                 xroomCommandDao.save(newXroom)
 
                 xroomQueryDao.exists(1L).shouldBeTrue()
@@ -60,9 +59,9 @@ class XroomDaoTest(
             }
 
             test("deleted=true인 X룸은 존재하지 않는 것으로 판단한다") {
-                val newXroom = NewXroom(ownerEmail = Email("test@example.com"), targetInfoId = 1L)
+                val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
                 xroomCommandDao.save(newXroom)
-                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "test@example.com")
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
 
                 xroomQueryDao.exists(1L).shouldBeFalse()
             }
@@ -71,8 +70,8 @@ class XroomDaoTest(
         context("exists (복수)") {
 
             test("일부만 존재하면 존재하는 targetInfoId만 반환한다") {
-                xroomCommandDao.save(NewXroom(ownerEmail = Email("a@example.com"), targetInfoId = 1L))
-                xroomCommandDao.save(NewXroom(ownerEmail = Email("b@example.com"), targetInfoId = 2L))
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 2L))
 
                 xroomQueryDao.exists(setOf(1L, 2L, 999L)) shouldContainExactlyInAnyOrder setOf(1L, 2L)
             }
@@ -82,9 +81,9 @@ class XroomDaoTest(
             }
 
             test("soft-deleted는 결과에서 제외된다") {
-                xroomCommandDao.save(NewXroom(ownerEmail = Email("a@example.com"), targetInfoId = 1L))
-                xroomCommandDao.save(NewXroom(ownerEmail = Email("b@example.com"), targetInfoId = 2L))
-                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "a@example.com")
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 2L))
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
 
                 xroomQueryDao.exists(setOf(1L, 2L)) shouldContainExactlyInAnyOrder setOf(2L)
             }

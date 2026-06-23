@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component
 class XroomCommandDao {
     fun save(newXroom: NewXroom): Long {
         return XroomTable.insertAndGetId {
-            it[ownerEmail] = newXroom.ownerEmail.value
+            it[ownerId] = newXroom.ownerId
             it[targetInfoId] = newXroom.targetInfoId
             it[theme] = newXroom.theme.name
-            it[createdBy] = newXroom.ownerEmail.value
-            it[lastModifiedBy] = newXroom.ownerEmail.value
+            it[createdBy] = newXroom.ownerId.toString()
+            it[lastModifiedBy] = newXroom.ownerId.toString()
         }.value
     }
 
-    fun delete(ownerEmail: String) {
-        XroomTable.softDelete({ XroomTable.ownerEmail eq ownerEmail }, ownerEmail)
+    fun delete(ownerId: Long) {
+        XroomTable.softDelete({ XroomTable.ownerId eq ownerId }, ownerId.toString())
     }
 }

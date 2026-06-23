@@ -26,12 +26,12 @@ class XroomCommandApiTest(
     @MockkBean private val xroomCommandService: XroomCommandService,
 ) : FunSpec({
 
-    val authEmail = "holeman@naver.com"
+    val authMemberId = 1L
 
     test("X룸 생성 API 문서화") {
         // Given
         val encryptedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L)
-        every { xroomCommandService.create(1L, authEmail) } returns 1L
+        every { xroomCommandService.create(1L, authMemberId) } returns 1L
 
         // When & Then
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")

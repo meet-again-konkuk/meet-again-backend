@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.xroom.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.xroom.domain.NewXroom
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.port.XroomCommandRepository
@@ -13,8 +12,8 @@ class XroomCommandService(
     private val xroomCommandRepository: XroomCommandRepository,
     private val xroomValidator: XroomValidator,
 ) {
-    fun create(targetInfoId: Long, email: String): Long {
-        val newXroom = NewXroom(ownerEmail = Email(email), targetInfoId = targetInfoId)
+    fun create(targetInfoId: Long, memberId: Long): Long {
+        val newXroom = NewXroom(ownerId = memberId, targetInfoId = targetInfoId)
         xroomValidator.validate(newXroom)
         return xroomCommandRepository.save(newXroom)
     }
