@@ -136,7 +136,7 @@ class MemberCommandDaoTest(
                 )
 
                 // When
-                memberCommandDao.anonymizeAndSoftDelete(originalEmail, anonymized)
+                memberCommandDao.anonymizeAndSoftDelete(anonymized)
 
                 // Then
                 val row = MemberTable.selectAll().first()

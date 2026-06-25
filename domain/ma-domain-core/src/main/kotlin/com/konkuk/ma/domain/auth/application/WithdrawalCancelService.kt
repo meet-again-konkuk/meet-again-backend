@@ -18,6 +18,6 @@ class WithdrawalCancelService(
         val member = memberQueryRepository.findOne(command.email)
         passwordVerifier.verify(command.password, member)
         member.cancelWithdrawal()
-        memberCommandRepository.cancelWithdrawal(member.email)
+        memberCommandRepository.cancelWithdrawal(member.id)
     }
 }

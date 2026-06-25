@@ -19,6 +19,6 @@ class WithdrawalService(
         passwordVerifier.verify(command.password, member)
 
         val requestedAt = member.requestWithdrawal()
-        memberCommandRepository.requestWithdrawal(member.email, requestedAt)
+        memberCommandRepository.requestWithdrawal(member.id, requestedAt)
     }
 }

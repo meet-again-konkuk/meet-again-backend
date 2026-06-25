@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.dao
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -30,22 +29,22 @@ class MemberCommandDao {
         }.value
     }
 
-    fun requestWithdrawal(email: Email, requestedAt: LocalDateTime) {
-        MemberTable.update({ MemberTable.email eq email.value }) {
+    fun requestWithdrawal(memberId: Long, requestedAt: LocalDateTime) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
             it[withdrawalRequestedAt] = requestedAt
-            it[lastModifiedBy] = email.value
+            it[lastModifiedBy] = memberId.toString()
         }
     }
 
-    fun cancelWithdrawal(email: Email) {
-        MemberTable.update({ MemberTable.email eq email.value }) {
+    fun cancelWithdrawal(memberId: Long) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
             it[withdrawalRequestedAt] = null
-            it[lastModifiedBy] = email.value
+            it[lastModifiedBy] = memberId.toString()
         }
     }
 
-    fun anonymizeAndSoftDelete(currentEmail: Email, anonymized: MemberEntity) {
-        MemberTable.update({ MemberTable.email eq currentEmail.value }) {
+    fun anonymizeAndSoftDelete(anonymized: MemberEntity) {
+        MemberTable.update({ MemberTable.id eq anonymized.id }) {
             it[email] = anonymized.email
             it[password] = anonymized.password
             it[nickname] = anonymized.nickname
@@ -57,7 +56,7 @@ class MemberCommandDao {
             it[university] = anonymized.university
             it[profileImageUrl] = null
             it[deleted] = true
-            it[lastModifiedBy] = anonymized.email
+            it[lastModifiedBy] = anonymized.id.toString()
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.dao.MemberCommandDao
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.NewMember
@@ -18,17 +17,17 @@ class MemberCommandCoreRepository(
         return memberCommandDao.save(newMember)
     }
 
-    override fun requestWithdrawal(email: Email, requestedAt: LocalDateTime) {
-        memberCommandDao.requestWithdrawal(email, requestedAt)
+    override fun requestWithdrawal(memberId: Long, requestedAt: LocalDateTime) {
+        memberCommandDao.requestWithdrawal(memberId, requestedAt)
     }
 
-    override fun cancelWithdrawal(email: Email) {
-        memberCommandDao.cancelWithdrawal(email)
+    override fun cancelWithdrawal(memberId: Long) {
+        memberCommandDao.cancelWithdrawal(memberId)
     }
 
     override fun anonymizeAndSoftDelete(member: Member) {
         val anonymized = MemberEntity.from(member.anonymize())
-        memberCommandDao.anonymizeAndSoftDelete(member.email, anonymized)
+        memberCommandDao.anonymizeAndSoftDelete(anonymized)
     }
 }
 

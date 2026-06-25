@@ -29,11 +29,11 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
         return selectAll().where { (deleted eq false) and additionalCondition() }
     }
 
-    fun softDelete(where: SqlExpressionBuilder.() -> Op<Boolean>, email: String) {
+    fun softDelete(where: SqlExpressionBuilder.() -> Op<Boolean>, auditUser: String) {
         update(where) {
             it[deleted] = true
             it[deletedDate] = LocalDateTime.now()
-            it[deletedBy] = email
+            it[deletedBy] = auditUser
         }
     }
 }
