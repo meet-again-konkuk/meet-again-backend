@@ -1,8 +1,7 @@
 package com.konkuk.ma.domain.member.dao
 
-import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.NewMember
-import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -30,34 +29,34 @@ class MemberCommandDao {
         }.value
     }
 
-    fun requestWithdrawal(email: Email, requestedAt: LocalDateTime) {
-        MemberTable.update({ MemberTable.email eq email.value }) {
+    fun requestWithdrawal(memberId: Long, requestedAt: LocalDateTime) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
             it[withdrawalRequestedAt] = requestedAt
-            it[lastModifiedBy] = email.value
+            it[lastModifiedBy] = memberId.toString()
         }
     }
 
-    fun cancelWithdrawal(email: Email) {
-        MemberTable.update({ MemberTable.email eq email.value }) {
+    fun cancelWithdrawal(memberId: Long) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
             it[withdrawalRequestedAt] = null
-            it[lastModifiedBy] = email.value
+            it[lastModifiedBy] = memberId.toString()
         }
     }
 
-    fun anonymizeAndSoftDelete(currentEmail: Email, anonymized: MemberEntity) {
-        MemberTable.update({ MemberTable.email eq currentEmail.value }) {
-            it[email] = anonymized.email
+    fun anonymizeAndSoftDelete(anonymized: Member) {
+        MemberTable.update({ MemberTable.id eq anonymized.id }) {
+            it[email] = anonymized.email.value
             it[password] = anonymized.password
             it[nickname] = anonymized.nickname
             it[name] = anonymized.name
-            it[phoneNumber] = anonymized.phoneNumber
+            it[phoneNumber] = anonymized.phoneNumber.fullNumber
             it[birthDate] = anonymized.birthDate
             it[region] = anonymized.region.name
             it[highSchool] = anonymized.highSchool
             it[university] = anonymized.university
             it[profileImageUrl] = null
             it[deleted] = true
-            it[lastModifiedBy] = anonymized.email
+            it[lastModifiedBy] = anonymized.id.toString()
         }
     }
 }

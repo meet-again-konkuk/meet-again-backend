@@ -4,10 +4,10 @@ import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Gender
+import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.Region
-import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
@@ -119,28 +119,27 @@ class MemberCommandDaoTest(
 
             test("회원 정보를 익명 값으로 덮어쓰고 soft delete 처리한다") {
                 // Given
-                val originalEmail = Email("user@example.com")
-                val id = memberCommandDao.save(createNewMember(email = originalEmail.value, nickname = "원래닉네임"))
-                val anonymized = MemberEntity(
+                val id = memberCommandDao.save(createNewMember(email = "user@example.com", nickname = "원래닉네임"))
+                val anonymized = Member.create(
                     id = id,
-                    email = "withdrawn_$id@deleted.local",
-                    password = "",
+                    email = "withdrawn_$id@example.com",
+                    password = "password",
                     nickname = "탈퇴한회원_$id",
                     gender = Gender.MALE,
-                    phoneNumber = "01000000000",
+                    phoneNumber = "01012345678",
                     name = "탈퇴한회원",
                     region = Region.SEOUL,
                     birthDate = LocalDate.of(1900, 1, 1),
                     highSchool = null,
-                    university = null
+                    university = null,
                 )
 
                 // When
-                memberCommandDao.anonymizeAndSoftDelete(originalEmail, anonymized)
+                memberCommandDao.anonymizeAndSoftDelete(anonymized)
 
                 // Then
                 val row = MemberTable.selectAll().first()
-                row[MemberTable.email] shouldBe anonymized.email
+                row[MemberTable.email] shouldBe anonymized.email.value
                 row[MemberTable.nickname] shouldBe anonymized.nickname
                 row[MemberTable.name] shouldBe anonymized.name
                 row[MemberTable.deleted] shouldBe true
