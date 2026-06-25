@@ -41,11 +41,6 @@ class MemberQueryCoreRepository(
             .map { it.toDomain() }
     }
 
-    override fun findByEmails(emails: Set<Email>): List<Member> {
-        return memberQueryDao.findByEmails(emails.map { it.value }.toSet())
-            .map { it.toDomain() }
-    }
-
     override fun findByIds(ids: Set<Long>): List<Member> {
         return memberQueryDao.findByIds(ids)
             .map { it.toDomain() }
