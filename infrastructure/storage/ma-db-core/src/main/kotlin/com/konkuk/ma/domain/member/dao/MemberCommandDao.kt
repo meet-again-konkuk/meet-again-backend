@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.dao
 
+import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.NewMember
-import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -43,13 +43,13 @@ class MemberCommandDao {
         }
     }
 
-    fun anonymizeAndSoftDelete(anonymized: MemberEntity) {
+    fun anonymizeAndSoftDelete(anonymized: Member) {
         MemberTable.update({ MemberTable.id eq anonymized.id }) {
-            it[email] = anonymized.email
+            it[email] = anonymized.email.value
             it[password] = anonymized.password
             it[nickname] = anonymized.nickname
             it[name] = anonymized.name
-            it[phoneNumber] = anonymized.phoneNumber
+            it[phoneNumber] = anonymized.phoneNumber.fullNumber
             it[birthDate] = anonymized.birthDate
             it[region] = anonymized.region.name
             it[highSchool] = anonymized.highSchool

@@ -4,7 +4,6 @@ import com.konkuk.ma.domain.member.dao.MemberCommandDao
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
-import com.konkuk.ma.domain.member.entity.MemberEntity
 import java.time.LocalDateTime
 import org.springframework.stereotype.Repository
 
@@ -26,8 +25,7 @@ class MemberCommandCoreRepository(
     }
 
     override fun anonymizeAndSoftDelete(member: Member) {
-        val anonymized = MemberEntity.from(member.anonymize())
-        memberCommandDao.anonymizeAndSoftDelete(anonymized)
+        memberCommandDao.anonymizeAndSoftDelete(member.anonymize())
     }
 }
 
