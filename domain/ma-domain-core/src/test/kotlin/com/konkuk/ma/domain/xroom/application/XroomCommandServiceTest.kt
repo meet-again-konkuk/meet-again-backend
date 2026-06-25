@@ -19,7 +19,7 @@ class XroomCommandServiceTest : FunSpec({
 
     context("create") {
 
-        test("검증을 통과하면 X룸을 저장하고 ID를 반환한다") {
+        test("검증을 통과하면 방을 저장하고 ID를 반환한다") {
             val targetInfoId = 1L
             val memberId = 1L
             every { xroomValidator.validate(any()) } just runs

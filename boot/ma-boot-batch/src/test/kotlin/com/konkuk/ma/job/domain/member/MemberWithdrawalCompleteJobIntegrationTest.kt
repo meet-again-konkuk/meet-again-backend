@@ -167,7 +167,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         transaction {
             TargetInfoTable.insert { it[registerId] = memberId; it[name] = "홍길동"; it[targetGender] = "FEMALE" }
             MemberPointTable.insert { it[ownerId] = memberId; it[balance] = 500 }
-            XroomTable.insert { it[ownerId] = memberId; it[targetInfoId] = 1L; it[theme] = "CORK_BOARD" }
+            XroomTable.insert { it[ownerId] = memberId; it[targetInfoId] = 1L; it[template] = "chat_memory"; it[title] = "기억의 방" }
             MemberPhotoTable.insert {
                 it[MemberPhotoTable.memberId] = memberId
                 it[filePath] = "member/profile/$memberId/photo.jpg"
