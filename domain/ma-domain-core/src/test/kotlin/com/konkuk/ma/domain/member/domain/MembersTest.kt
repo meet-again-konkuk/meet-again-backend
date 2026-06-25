@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -8,57 +7,6 @@ import io.kotest.matchers.shouldBe
 class MembersTest : FunSpec({
 
     context("findOne") {
-
-        test("이메일로 회원을 찾으면 해당 회원을 반환한다") {
-            // Given
-            val member = MemberFixture.create(email = "target@example.com")
-            val members = Members(listOf(member))
-
-            // When
-            val result = members.findOne(member.email)
-
-            // Then
-            result shouldBe member
-        }
-
-        test("여러 회원 중 이메일로 정확한 회원을 찾는다") {
-            // Given
-            val member1 = MemberFixture.create(email = "a@example.com", nickname = "닉네임A")
-            val member2 = MemberFixture.create(email = "b@example.com", nickname = "닉네임B")
-            val members = Members(listOf(member1, member2))
-
-            // When
-            val result = members.findOne(member2.email)
-
-            // Then
-            result shouldBe member2
-        }
-
-        test("존재하지 않는 이메일이면 null을 반환한다") {
-            // Given
-            val member = MemberFixture.create(email = "existing@example.com")
-            val members = Members(listOf(member))
-
-            // When
-            val result = members.findOne(Email("notfound@example.com"))
-
-            // Then
-            result shouldBe null
-        }
-
-        test("빈 목록에서 조회하면 null을 반환한다") {
-            // Given
-            val members = Members(emptyList())
-
-            // When
-            val result = members.findOne(Email("any@example.com"))
-
-            // Then
-            result shouldBe null
-        }
-    }
-
-    context("findOne(id)") {
 
         test("id로 회원을 찾으면 해당 회원을 반환한다") {
             // Given

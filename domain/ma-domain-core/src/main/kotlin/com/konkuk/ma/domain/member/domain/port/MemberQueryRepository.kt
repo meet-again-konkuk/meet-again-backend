@@ -12,7 +12,6 @@ interface MemberQueryRepository {
     fun findOne(email: Email): Member
     fun findOne(id: Long): Member
     fun findByNames(names: Set<String>): List<Member>
-    fun findByEmails(emails: Set<Email>): List<Member>
     fun findByIds(ids: Set<Long>): List<Member>
     fun findExpiredWithdrawalRequests(expiredBefore: LocalDateTime, cursorId: Long?, pageSize: Int): List<Member>
 }

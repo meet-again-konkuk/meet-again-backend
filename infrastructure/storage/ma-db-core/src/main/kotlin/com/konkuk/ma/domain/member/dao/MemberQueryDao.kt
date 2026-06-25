@@ -53,13 +53,6 @@ class MemberQueryDao {
             ?.let { RowEntityMapper.toMemberEntity(it) }
     }
 
-    fun findByEmails(emails: Set<String>): List<MemberEntity> {
-        if (emails.isEmpty()) return emptyList()
-        return MemberTable
-            .activeRows { MemberTable.email inList emails }
-            .map { RowEntityMapper.toMemberEntity(it) }
-    }
-
     fun findByIds(ids: Set<Long>): List<MemberEntity> {
         if (ids.isEmpty()) return emptyList()
         return MemberTable
