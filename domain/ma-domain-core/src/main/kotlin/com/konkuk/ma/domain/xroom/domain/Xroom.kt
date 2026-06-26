@@ -14,6 +14,8 @@ class Xroom(
     val createdDate: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
+    val titleValue: String get() = title.value
+
     fun validateOwnership(memberId: Long) {
         if (ownerId != memberId) {
             throw AccessDeniedException(EntityType.XROOM, ownerId.toString(), memberId.toString())

@@ -8,7 +8,7 @@ class MyXroom(
     val memoryCount: Int,
 ) {
     val id: Long get() = xroom.id
-    val title: String get() = xroom.title.value
+    val title: String get() = xroom.titleValue
     val targetInfoId: Long get() = xroom.targetInfoId
     val updatedAt: LocalDateTime get() = xroom.updatedAt
 }

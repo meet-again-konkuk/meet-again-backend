@@ -11,13 +11,9 @@ class Xrooms(
                 MyXroom(
                     xroom = xroom,
                     recipientName = targetInfos.findName(xroom.targetInfoId),
-                    memoryCount = memoryCounts[xroom.id] ?: NO_MEMORY,
+                    memoryCount = memoryCounts[xroom.id] ?: 0,
                 )
             }
         )
-    }
-
-    companion object {
-        private const val NO_MEMORY = 0
     }
 }
