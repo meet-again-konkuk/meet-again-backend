@@ -12,7 +12,10 @@ class Xroom(
     val template: XroomTemplate,
     val finalMessage: FinalMessage?,
     val createdDate: LocalDateTime,
+    val updatedAt: LocalDateTime,
 ) {
+    val titleValue: String get() = title.value
+
     fun validateOwnership(memberId: Long) {
         if (ownerId != memberId) {
             throw AccessDeniedException(EntityType.XROOM, ownerId.toString(), memberId.toString())
@@ -28,6 +31,7 @@ class Xroom(
             template = template,
             finalMessage = FinalMessage.of(finalMessage),
             createdDate = createdDate,
+            updatedAt = updatedAt,
         )
     }
 }

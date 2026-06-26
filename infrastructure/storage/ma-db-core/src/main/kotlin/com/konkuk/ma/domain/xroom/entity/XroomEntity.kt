@@ -16,6 +16,7 @@ class XroomEntity(
     val title: String,
     val finalMessage: String?,
     val createdDate: LocalDateTime,
+    val updatedAt: LocalDateTime,
 ) {
     fun toDomain(): Xroom {
         return Xroom(
@@ -26,6 +27,7 @@ class XroomEntity(
             template = XroomTemplate.from(template),
             finalMessage = FinalMessage.of(finalMessage),
             createdDate = createdDate,
+            updatedAt = updatedAt,
         )
     }
 
@@ -39,6 +41,7 @@ class XroomEntity(
                 title = row[XroomTable.title],
                 finalMessage = row[XroomTable.finalMessage],
                 createdDate = row[XroomTable.createdDate],
+                updatedAt = row[XroomTable.lastModifiedDate],
             )
         }
     }

@@ -18,9 +18,7 @@ import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 import com.konkuk.ma.domain.support.domain.Inquiry
 import com.konkuk.ma.domain.withdrawal.domain.MemberBackupView
 import com.konkuk.ma.domain.withdrawal.domain.MemberWithdrawalBackup
-import com.konkuk.ma.domain.xroom.domain.Xroom
-import com.konkuk.ma.domain.xroom.domain.XroomTemplate
-import com.konkuk.ma.domain.xroom.domain.XroomTitle
+import com.konkuk.ma.domain.xroom.fixture.XroomFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -57,17 +55,7 @@ class JacksonMemberBackupSerializerTest : FunSpec({
             postLikes = listOf(PostLikeFixture.create(memberId = member.id)),
             commentLikes = listOf(CommentLikeFixture.create(memberId = member.id)),
             inquiries = listOf(Inquiry(id = 1L, authorId = member.id, title = "문의 제목", content = "문의 내용")),
-            xrooms = listOf(
-                Xroom(
-                    id = 1L,
-                    ownerId = member.id,
-                    targetInfoId = 1L,
-                    title = XroomTitle.DEFAULT,
-                    template = XroomTemplate.DEFAULT,
-                    finalMessage = null,
-                    createdDate = LocalDateTime.now(),
-                ),
-            ),
+            xrooms = listOf(XroomFixture.create(ownerId = member.id)),
             photo = MemberPhotoFixture.create(memberId = member.id),
         )
     }
