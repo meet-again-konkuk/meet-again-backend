@@ -88,5 +88,36 @@ class XroomDaoTest(
                 xroomQueryDao.exists(setOf(1L, 2L)) shouldContainExactlyInAnyOrder setOf(2L)
             }
         }
+
+        context("findOne") {
+
+            test("ID로 활성 방을 조회한다") {
+                val id = xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+
+                val found = xroomQueryDao.findOne(id)
+
+                found shouldNotBe null
+                found!!.id shouldBe id
+            }
+
+            test("soft-deleted 방은 조회되지 않는다") {
+                val id = xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                XroomTable.softDelete({ XroomTable.id eq id }, "1")
+
+                xroomQueryDao.findOne(id) shouldBe null
+            }
+        }
+
+        context("updateFinalMessage") {
+
+            test("마지막 메시지를 수정한다") {
+                val id = xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                val xroom = xroomQueryDao.findOne(id)!!.toDomain().updateFinalMessage("고마웠어")
+
+                xroomCommandDao.updateFinalMessage(xroom)
+
+                xroomQueryDao.findOne(id)!!.finalMessage shouldBe "고마웠어"
+            }
+        }
     }
 }

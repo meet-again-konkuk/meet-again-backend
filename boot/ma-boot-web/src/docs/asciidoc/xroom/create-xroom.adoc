@@ -15,9 +15,9 @@
 
 include::{snippets}/xroom/create-xroom/http-request.adoc[]
 
-=== 요청 파라미터
+=== 요청 필드
 
-include::{snippets}/xroom/create-xroom/query-parameters.adoc[]
+include::{snippets}/xroom/create-xroom/request-fields.adoc[]
 
 === 응답
 

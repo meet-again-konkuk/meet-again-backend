@@ -11,3 +11,6 @@ fun xroomId(fieldName: String = "xroomId") =
 
 fun targetInfoIdParam(fieldName: String = "targetInfoId") =
     fieldName requestParam "찾는 사람 정보 ID (인코딩)"
+
+fun finalMessage(fieldName: String = "finalMessage") =
+    fieldName responseType STRING means "마지막으로 전하는 메시지" example "고마웠어"
