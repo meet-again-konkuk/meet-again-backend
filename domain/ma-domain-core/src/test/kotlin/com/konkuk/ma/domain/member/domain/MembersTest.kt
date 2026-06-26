@@ -107,4 +107,55 @@ class MembersTest : FunSpec({
             result shouldBe "알 수 없음"
         }
     }
+
+    context("findName") {
+
+        test("id로 이름을 찾으면 해당 이름을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L, name = "홍길동")
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findName(member.id)
+
+            // Then
+            result shouldBe member.name
+        }
+
+        test("여러 회원 중 정확한 id의 이름을 반환한다") {
+            // Given
+            val member1 = MemberFixture.create(id = 1L, name = "이름A")
+            val member2 = MemberFixture.create(id = 2L, name = "이름B")
+            val members = Members(listOf(member1, member2))
+
+            // When
+            val result = members.findName(member2.id)
+
+            // Then
+            result shouldBe member2.name
+        }
+
+        test("존재하지 않는 id이면 '알 수 없음'을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findName(999L)
+
+            // Then
+            result shouldBe "알 수 없음"
+        }
+
+        test("빈 목록에서 조회하면 '알 수 없음'을 반환한다") {
+            // Given
+            val members = Members(emptyList())
+
+            // When
+            val result = members.findName(1L)
+
+            // Then
+            result shouldBe "알 수 없음"
+        }
+    }
 })

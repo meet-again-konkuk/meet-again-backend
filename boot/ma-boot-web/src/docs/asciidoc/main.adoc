@@ -198,6 +198,16 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/find-my-rooms.html[내가 만든 X룸 목록 조회 API,window=_blank]
 
+[[xroom-find-received]]
+=== 수신한 X룸 목록 조회
+
+* link:xroom/received.html[수신한 X룸 목록 조회 API,window=_blank]
+
+[[xroom-detail]]
+=== X룸 상세 조회
+
+* link:xroom/xroom-detail.html[X룸 상세 조회 API,window=_blank]
+
 [[support]]
 == 고객지원
 

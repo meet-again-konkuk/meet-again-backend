@@ -1,5 +1,6 @@
 package com.konkuk.ma.vocabulary
 
+import com.konkuk.ma.extension.ARRAY
 import com.konkuk.ma.extension.DATETIME
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
@@ -28,3 +29,17 @@ fun memoryCount(fieldName: String = "memoryCount") =
 
 fun xroomUpdatedAt(fieldName: String = "updatedAt") =
     fieldName responseType DATETIME means "방 마지막 수정 시각" example "2026-06-26T10:30:00"
+
+fun senderName(fieldName: String = "senderName") =
+    fieldName responseType STRING means "보낸 사람(작성자) 이름" example "김보냄"
+
+fun template(fieldName: String = "template") =
+    fieldName responseType STRING means "방 템플릿" example "chat_memory"
+
+fun xroomMemories(fieldName: String = "memories") =
+    fieldName responseType ARRAY means "방에 담긴 기억 목록 (Phase 1에서는 항상 빈 배열)"
+
+// --- X룸 관련 Path Variable ---
+
+fun xroomIdPath(fieldName: String = "xroomId") =
+    fieldName requestParam "X룸 ID (인코딩)"

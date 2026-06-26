@@ -9,5 +9,7 @@ interface XroomQueryRepository {
 
     fun find(ownerId: Long): List<Xroom>
 
+    fun findByTargetInfoIds(targetInfoIds: Set<Long>): List<Xroom>
+
     fun findOne(xroomId: Long): Xroom
 }

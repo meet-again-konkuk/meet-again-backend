@@ -12,6 +12,13 @@ class XroomQueryDao {
             .map { XroomEntity.from(it) }
     }
 
+    fun findByTargetInfoIds(targetInfoIds: Set<Long>): List<XroomEntity> {
+        if (targetInfoIds.isEmpty()) return emptyList()
+        return XroomTable
+            .activeRows { XroomTable.targetInfoId inList targetInfoIds }
+            .map { XroomEntity.from(it) }
+    }
+
     fun findOne(xroomId: Long): XroomEntity? {
         return XroomTable
             .activeRows { XroomTable.id eq xroomId }
