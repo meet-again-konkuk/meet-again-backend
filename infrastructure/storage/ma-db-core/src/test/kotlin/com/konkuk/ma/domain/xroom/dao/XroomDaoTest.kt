@@ -45,6 +45,39 @@ class XroomDaoTest(
             }
         }
 
+        context("find") {
+
+            test("ownerId의 활성 방 목록을 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 2L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 3L))
+
+                val found = xroomQueryDao.find(1L)
+
+                found.map { it.targetInfoId } shouldContainExactlyInAnyOrder listOf(1L, 2L)
+            }
+
+            test("조회 결과는 도메인으로 변환되며 updatedAt이 채워진다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+
+                val xroom = xroomQueryDao.find(1L).first().toDomain()
+
+                xroom.updatedAt shouldNotBe null
+            }
+
+            test("soft-deleted 방은 제외된다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 2L))
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
+
+                xroomQueryDao.find(1L).map { it.targetInfoId } shouldContainExactlyInAnyOrder listOf(2L)
+            }
+
+            test("ownerId의 방이 없으면 빈 목록을 반환한다") {
+                xroomQueryDao.find(999L).shouldBeEmpty()
+            }
+        }
+
         context("exists") {
 
             test("해당 targetInfoId의 방이 존재하면 true를 반환한다") {

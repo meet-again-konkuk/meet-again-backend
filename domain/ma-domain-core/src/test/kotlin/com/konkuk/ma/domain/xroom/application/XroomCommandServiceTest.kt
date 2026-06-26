@@ -34,6 +34,7 @@ class XroomCommandServiceTest : FunSpec({
         template = XroomTemplate.DEFAULT,
         finalMessage = null,
         createdDate = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now(),
     )
 
     context("create") {

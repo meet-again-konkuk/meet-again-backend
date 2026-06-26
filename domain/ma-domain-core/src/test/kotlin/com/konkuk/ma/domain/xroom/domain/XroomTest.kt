@@ -16,6 +16,7 @@ class XroomTest : FunSpec({
         template = XroomTemplate.DEFAULT,
         finalMessage = finalMessage,
         createdDate = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now(),
     )
 
     context("validateOwnership") {
