@@ -11,7 +11,9 @@ class XroomCommandDao {
         return XroomTable.insertAndGetId {
             it[ownerId] = newXroom.ownerId
             it[targetInfoId] = newXroom.targetInfoId
-            it[theme] = newXroom.theme.name
+            it[template] = newXroom.template.wireValue
+            it[title] = newXroom.title.value
+            it[finalMessage] = newXroom.finalMessage?.value
             it[createdBy] = newXroom.ownerId.toString()
             it[lastModifiedBy] = newXroom.ownerId.toString()
         }.value

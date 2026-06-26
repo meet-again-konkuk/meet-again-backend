@@ -8,12 +8,26 @@ class Xroom(
     val id: Long,
     val ownerId: Long,
     val targetInfoId: Long,
-    val theme: XroomTheme,
+    val title: XroomTitle,
+    val template: XroomTemplate,
+    val finalMessage: FinalMessage?,
     val createdDate: LocalDateTime,
 ) {
     fun validateOwnership(memberId: Long) {
         if (ownerId != memberId) {
             throw AccessDeniedException(EntityType.XROOM, ownerId.toString(), memberId.toString())
         }
+    }
+
+    fun updateFinalMessage(finalMessage: FinalMessage?): Xroom {
+        return Xroom(
+            id = id,
+            ownerId = ownerId,
+            targetInfoId = targetInfoId,
+            title = title,
+            template = template,
+            finalMessage = finalMessage,
+            createdDate = createdDate,
+        )
     }
 }

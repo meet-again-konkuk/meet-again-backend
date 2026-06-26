@@ -35,7 +35,7 @@ class XroomDaoTest(
 
         context("save") {
 
-            test("X룸을 저장하고 ID를 반환한다") {
+            test("방을 저장하고 ID를 반환한다") {
                 val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
 
                 val id = xroomCommandDao.save(newXroom)
@@ -47,18 +47,18 @@ class XroomDaoTest(
 
         context("exists") {
 
-            test("해당 targetInfoId의 X룸이 존재하면 true를 반환한다") {
+            test("해당 targetInfoId의 방이 존재하면 true를 반환한다") {
                 val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
                 xroomCommandDao.save(newXroom)
 
                 xroomQueryDao.exists(1L).shouldBeTrue()
             }
 
-            test("해당 targetInfoId의 X룸이 없으면 false를 반환한다") {
+            test("해당 targetInfoId의 방이 없으면 false를 반환한다") {
                 xroomQueryDao.exists(999L).shouldBeFalse()
             }
 
-            test("deleted=true인 X룸은 존재하지 않는 것으로 판단한다") {
+            test("deleted=true인 방은 존재하지 않는 것으로 판단한다") {
                 val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
                 xroomCommandDao.save(newXroom)
                 XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")

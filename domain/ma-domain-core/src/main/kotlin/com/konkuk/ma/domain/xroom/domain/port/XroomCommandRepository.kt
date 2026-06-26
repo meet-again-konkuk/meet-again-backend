@@ -4,5 +4,6 @@ import com.konkuk.ma.domain.xroom.domain.NewXroom
 
 interface XroomCommandRepository {
     fun save(newXroom: NewXroom): Long
+
     fun delete(ownerId: Long)
 }

@@ -18,7 +18,7 @@ class XroomValidatorTest : FunSpec({
 
     context("validate") {
 
-        test("소유자가 일치하고 중복된 X룸이 없으면 예외 없이 통과한다") {
+        test("소유자가 일치하고 중복된 방이 없으면 예외 없이 통과한다") {
             val targetInfo = TargetInfoFixture.create(registerId = 1L)
             val newXroom = NewXroom(
                 ownerId = 1L,
@@ -43,7 +43,7 @@ class XroomValidatorTest : FunSpec({
             }
         }
 
-        test("이미 X룸이 존재하는 TargetInfo이면 DuplicateException이 발생한다") {
+        test("이미 방이 존재하는 TargetInfo이면 DuplicateException이 발생한다") {
             val targetInfo = TargetInfoFixture.create(registerId = 1L)
             val newXroom = NewXroom(
                 ownerId = 1L,

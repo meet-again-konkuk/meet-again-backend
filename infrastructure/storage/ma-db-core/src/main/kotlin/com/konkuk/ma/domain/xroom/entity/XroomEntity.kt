@@ -1,7 +1,9 @@
 package com.konkuk.ma.domain.xroom.entity
 
+import com.konkuk.ma.domain.xroom.domain.FinalMessage
 import com.konkuk.ma.domain.xroom.domain.Xroom
-import com.konkuk.ma.domain.xroom.domain.XroomTheme
+import com.konkuk.ma.domain.xroom.domain.XroomTemplate
+import com.konkuk.ma.domain.xroom.domain.XroomTitle
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.time.LocalDateTime
@@ -10,7 +12,9 @@ class XroomEntity(
     val id: Long,
     val ownerId: Long,
     val targetInfoId: Long,
-    val theme: XroomTheme,
+    val template: String,
+    val title: String,
+    val finalMessage: String?,
     val createdDate: LocalDateTime,
 ) {
     fun toDomain(): Xroom {
@@ -18,7 +22,9 @@ class XroomEntity(
             id = id,
             ownerId = ownerId,
             targetInfoId = targetInfoId,
-            theme = theme,
+            title = XroomTitle(title),
+            template = XroomTemplate.from(template),
+            finalMessage = FinalMessage.of(finalMessage),
             createdDate = createdDate,
         )
     }
@@ -29,7 +35,9 @@ class XroomEntity(
                 id = row[XroomTable.id].value,
                 ownerId = row[XroomTable.ownerId],
                 targetInfoId = row[XroomTable.targetInfoId],
-                theme = XroomTheme.valueOf(row[XroomTable.theme]),
+                template = row[XroomTable.template],
+                title = row[XroomTable.title],
+                finalMessage = row[XroomTable.finalMessage],
                 createdDate = row[XroomTable.createdDate],
             )
         }

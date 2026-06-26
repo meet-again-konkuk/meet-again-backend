@@ -19,7 +19,8 @@ import com.konkuk.ma.domain.support.domain.Inquiry
 import com.konkuk.ma.domain.withdrawal.domain.MemberBackupView
 import com.konkuk.ma.domain.withdrawal.domain.MemberWithdrawalBackup
 import com.konkuk.ma.domain.xroom.domain.Xroom
-import com.konkuk.ma.domain.xroom.domain.XroomTheme
+import com.konkuk.ma.domain.xroom.domain.XroomTemplate
+import com.konkuk.ma.domain.xroom.domain.XroomTitle
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -61,7 +62,9 @@ class JacksonMemberBackupSerializerTest : FunSpec({
                     id = 1L,
                     ownerId = member.id,
                     targetInfoId = 1L,
-                    theme = XroomTheme.CORK_BOARD,
+                    title = XroomTitle.DEFAULT,
+                    template = XroomTemplate.DEFAULT,
+                    finalMessage = null,
                     createdDate = LocalDateTime.now(),
                 ),
             ),
