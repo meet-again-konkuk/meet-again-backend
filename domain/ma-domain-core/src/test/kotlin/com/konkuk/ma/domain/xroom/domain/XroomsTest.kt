@@ -2,31 +2,20 @@ package com.konkuk.ma.domain.xroom.domain
 
 import com.konkuk.ma.domain.matching.domain.TargetInfos
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
+import com.konkuk.ma.domain.xroom.fixture.XroomFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import java.time.LocalDateTime
 
 class XroomsTest : FunSpec({
-
-    fun xroom(id: Long, targetInfoId: Long) = Xroom(
-        id = id,
-        ownerId = 1L,
-        targetInfoId = targetInfoId,
-        title = XroomTitle.DEFAULT,
-        template = XroomTemplate.DEFAULT,
-        finalMessage = null,
-        createdDate = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now(),
-    )
 
     context("toMine") {
 
         test("각 방의 수신자 이름을 targetInfo에서 채워 MyXrooms로 변환한다") {
             val xrooms = Xrooms(
                 listOf(
-                    xroom(id = 1L, targetInfoId = 10L),
-                    xroom(id = 2L, targetInfoId = 20L),
+                    XroomFixture.create(id = 1L, targetInfoId = 10L),
+                    XroomFixture.create(id = 2L, targetInfoId = 20L),
                 )
             )
             val targetInfos = TargetInfos(
@@ -44,7 +33,7 @@ class XroomsTest : FunSpec({
         }
 
         test("기억 개수가 집계되지 않은 방은 memoryCount가 0이다") {
-            val xrooms = Xrooms(listOf(xroom(id = 1L, targetInfoId = 10L)))
+            val xrooms = Xrooms(listOf(XroomFixture.create(id = 1L, targetInfoId = 10L)))
             val targetInfos = TargetInfos(
                 listOf(TargetInfoFixture.create(targetInfoId = 10L, targetName = "홍길동"))
             )
@@ -55,7 +44,7 @@ class XroomsTest : FunSpec({
         }
 
         test("집계된 기억 개수가 있으면 해당 값을 채운다") {
-            val xrooms = Xrooms(listOf(xroom(id = 1L, targetInfoId = 10L)))
+            val xrooms = Xrooms(listOf(XroomFixture.create(id = 1L, targetInfoId = 10L)))
             val targetInfos = TargetInfos(
                 listOf(TargetInfoFixture.create(targetInfoId = 10L, targetName = "홍길동"))
             )

@@ -3,16 +3,13 @@ package com.konkuk.ma.domain.xroom.application
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.xroom.domain.FinalMessage
-import com.konkuk.ma.domain.xroom.domain.Xroom
-import com.konkuk.ma.domain.xroom.domain.XroomTemplate
-import com.konkuk.ma.domain.xroom.domain.XroomTitle
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
+import com.konkuk.ma.domain.xroom.fixture.XroomFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDateTime
 
 class XroomQueryServiceTest : FunSpec({
 
@@ -20,15 +17,10 @@ class XroomQueryServiceTest : FunSpec({
     val targetInfoQueryRepository = mockk<TargetInfoQueryRepository>()
     val xroomQueryService = XroomQueryService(xroomQueryRepository, targetInfoQueryRepository)
 
-    fun xroom(id: Long, targetInfoId: Long) = Xroom(
+    fun xroom(id: Long, targetInfoId: Long) = XroomFixture.create(
         id = id,
-        ownerId = 1L,
         targetInfoId = targetInfoId,
-        title = XroomTitle.DEFAULT,
-        template = XroomTemplate.DEFAULT,
         finalMessage = FinalMessage.of("고마웠어"),
-        createdDate = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now(),
     )
 
     context("findMine") {
