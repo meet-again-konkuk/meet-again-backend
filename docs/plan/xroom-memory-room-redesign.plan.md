@@ -9,7 +9,7 @@
 
 - 엔드포인트 경로는 기존대로 `/api/xrooms` 유지(엔드포인트 10종).
 - **새 도메인을 만들지 않는다.** 기존 `xroom` 도메인 안에 Xroom/Memory/Media를 둔다(같은 애그리거트 컨텍스트).
-- 모든 ID는 응답에서 암호화(`@EncryptId`), 경로/파라미터는 복호화(`@DecryptId`). 모든 변경/삭제는 **방 작성자(owner)만**, 수신자(recipient)는 **조회만**. 전부 soft delete.
+- 모든 ID는 응답에서 암호화(`@EncryptId`), 경로/파라미터는 복호화(`@DecryptId`), **요청 body 필드는 `@field:EncryptId`로 역직렬화 시 자동 복호화**(전역 `ObfuscatedIdJacksonConfig`). 모든 변경/삭제는 **방 작성자(owner)만**, 수신자(recipient)는 **조회만**. 전부 soft delete.
 - 대규모 변경이므로 **Phase 0~4 단계별 PR**로 쪼갠다(§9).
 
 > **네이밍/구조 규칙(확정).** 애그리거트 루트 클래스명은 **`Xroom`** 그대로 유지한다(패키지 `xroom`·테이블 `XROOMS`·경로 `/api/xrooms`·`ObfuscationType.XROOM`·`EntityType.XROOM`·프론트 계약이 모두 "xroom"이라 일관성 유지). `Room`으로 리네임하지 않는다. 루트는 `xroom/domain/` **직속**(서브패키지 없음). 하위 엔티티 Memory/Media는 `member/domain/photo` 선례대로 `xroom/domain/memory`·`xroom/domain/media` 서브패키지로 둔다. **아래 본문에서 "Room\*"으로 표기된 루트 타입(RoomTitle/RoomTemplate/RoomValidator/Room\*Repository 등)은 모두 `Xroom*`(XroomTitle/XroomTemplate/XroomValidator/Xroom\*Repository)로 읽는다.**
@@ -264,7 +264,7 @@
 
 ### 8.7 Boot — ma-boot-web (xroom/api)
 
-- `api/XroomCommandApi.kt` (수정): POST `@RequestBody CreateRoomRequest{targetInfoId(@DecryptId 불가 → String+Service 복호화 or body 복호 처리), finalMessage?}` → 201 `{roomId}`. PATCH `/{roomId}` body `{finalMessage}` → 200. (body 내 ID 복호화 방식은 §10-6).
+- `api/XroomCommandApi.kt` (수정): POST `@RequestBody CreateRoomRequest{targetInfoId: Long(@field:EncryptId(TARGET_INFO)로 자동 복호화), finalMessage?}` → 201 `{roomId}`. PATCH `/{roomId}` body `{finalMessage}` → 200. (body 내 ID는 `@field:EncryptId`가 역직렬화 시 복호화 — §10-6).
 - `api/XroomQueryApi.kt` (신규): GET `/received`, `/me`, `/{roomId}`(@PathVariable @DecryptId XROOM).
 - `api/MemoryCommandApi.kt` (신규): POST/PATCH/DELETE `/{roomId}/memories[/{memoryId}]`.
 - `api/MemoryPhotoApi.kt` (신규, MemberPhotoApi 패턴): POST consumes MULTIPART_FORM_DATA, `@RequestPart("photo")` → `PhotoFile.create`. DELETE.
@@ -295,7 +295,7 @@
 3. **Room:targetInfo 1:1 — 옵션 B 확정(DB UNIQUE 제거 + 전부 soft delete + 앱 exists).** `TARGET_INFO_ID`엔 일반 INDEX만, DB UNIQUE는 두지 않는다. "targetInfo당 active Room 1개"는 `RoomQueryRepository.exists(targetInfoId)`(활성 행만 카운트)로 보장하고, soft-deleted 방은 무시되어 재생성이 자동 허용된다. 매칭 `hasXroom`(`exists(Set)`)도 활성 기준이라 의미 보존. 방·기억·사진 전부 soft delete로 통일, 로컬 파일은 cleanup job(Phase 4) 정리. → hard delete 안 함.
 4. **emotionTags 저장방식 — 자식 테이블 확정.** 정규화 `MEMORY_EMOTION_TAGS`(MEMORY_ID 인덱스, 일급컬렉션 `EmotionTags`로 포장). 콤마조인 대안은 채택 안 함.
 5. **사진 active 1장 보장** — partial/조건부 UNIQUE를 MariaDB가 미지원하므로 DB UNIQUE 불가, **애플리케이션(교체 시 기존 soft delete)**으로 보장. 동시 업로드 레이스는 트랜잭션+재조회로 완화. 확인 필요: 정적 서빙 방식(`file.upload.base-path` 하위 정적 리소스 핸들러 vs 스트리밍 컨트롤러). 추천: 정적 리소스 핸들러로 `photoUrl` 제공(dev), 운영은 S3 presigned로 교체.
-6. **body 내 ID 복호화** — `@DecryptId`는 PathVariable/RequestParam에 적용되는 패턴. POST `/api/xrooms` body의 `targetInfoId`(암호화 String)는 Service에서 수동 복호화하거나 별도 처리 필요. 확인 필요: body ID 복호화 컨벤션(기존 사례 없음) — 대안은 targetInfoId를 RequestParam으로 유지.
+6. **body 내 ID 복호화 — 해결됨(인프라 기구현, 결정 불필요).** `@DecryptId`(PathVariable/RequestParam 전용, `DecryptIdConverter`)는 body에 안 먹지만, body용 짝인 **`@EncryptId`가 양방향**이다. `EncryptIdAnnotationIntrospector`가 `findSerializer`(응답 Long→암호문)와 **`findDeserializer`(요청 body 암호문→Long)** 를 둘 다 등록하고, `ObfuscatedIdJacksonConfig`(`@Configuration`, main)가 전역 `ObjectMapper`에 물려 모든 `@RequestBody`에 자동 적용된다. 통합 테스트 `EncryptIdRequestBodyIntegrationTest`가 `@field:EncryptId` 필드의 body 역직렬화를 이미 검증. → POST `/api/xrooms`의 `CreateXroomRequest.targetInfoId: Long`에 `@field:EncryptId(ObfuscationType.TARGET_INFO)`만 붙이면 끝(Service 수동 복호화·RequestParam 유지 불필요). 단, 현재 production request DTO 중 `@EncryptId` 사용 선례는 없어(응답 전용) Phase 1이 첫 body-디코딩 적용 사례.
 7. **3단계 URL 중첩**(`/{roomId}/memories/{memoryId}/photo`) — code-implementation-rules §14 "2단계까지"를 초과. 사진을 메모리 종속 단일 리소스로 간주해 허용. 확인 필요: 별도 최상위 `/api/xrooms/media` 리소스로 평탄화할지(추천: 현행 유지, 직관적).
 8. **FK 미사용**(프로젝트 정책) — ROOM_ID/MEMORY_ID 참조 무결성은 애플리케이션이 보장. 연쇄 soft delete(기억→media)는 Service에서 명시적 처리.
 9. **성능** — `me`/`received` 목록의 memoryCount는 `countByRooms` 벌크(groupBy)로 N+1 방지. 상세의 photoUrl은 `findActiveByMemories` 벌크. exists는 `limit(1).any()`. 시점 정렬은 `(ROOM_ID, EVENT_DATE)` 복합 인덱스로 DB ORDER BY.

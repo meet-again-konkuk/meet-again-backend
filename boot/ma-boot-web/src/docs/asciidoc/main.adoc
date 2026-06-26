@@ -188,6 +188,11 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/create-xroom.html[X룸 생성 API,window=_blank]
 
+[[xroom-update-final-message]]
+=== X룸 마지막 메시지 수정
+
+* link:xroom/update-final-message.html[X룸 마지막 메시지 수정 API,window=_blank]
+
 [[support]]
 == 고객지원
 

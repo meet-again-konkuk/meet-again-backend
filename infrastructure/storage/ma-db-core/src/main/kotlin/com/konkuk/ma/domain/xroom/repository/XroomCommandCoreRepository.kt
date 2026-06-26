@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.xroom.repository
 
 import com.konkuk.ma.domain.xroom.dao.XroomCommandDao
 import com.konkuk.ma.domain.xroom.domain.NewXroom
+import com.konkuk.ma.domain.xroom.domain.Xroom
 import com.konkuk.ma.domain.xroom.domain.port.XroomCommandRepository
 import org.springframework.stereotype.Repository
 
@@ -11,6 +12,10 @@ class XroomCommandCoreRepository(
 ) : XroomCommandRepository {
     override fun save(newXroom: NewXroom): Long {
         return xroomCommandDao.save(newXroom)
+    }
+
+    override fun updateFinalMessage(xroom: Xroom) {
+        xroomCommandDao.updateFinalMessage(xroom)
     }
 
     override fun delete(ownerId: Long) {

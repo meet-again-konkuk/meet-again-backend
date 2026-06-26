@@ -1,9 +1,12 @@
 package com.konkuk.ma.domain.xroom.dao
 
 import com.konkuk.ma.domain.xroom.domain.NewXroom
+import com.konkuk.ma.domain.xroom.domain.Xroom
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class XroomCommandDao {
@@ -17,6 +20,14 @@ class XroomCommandDao {
             it[createdBy] = newXroom.ownerId.toString()
             it[lastModifiedBy] = newXroom.ownerId.toString()
         }.value
+    }
+
+    fun updateFinalMessage(xroom: Xroom) {
+        XroomTable.update({ XroomTable.id eq xroom.id }) {
+            it[finalMessage] = xroom.finalMessage?.value
+            it[lastModifiedDate] = LocalDateTime.now()
+            it[lastModifiedBy] = xroom.ownerId.toString()
+        }
     }
 
     fun delete(ownerId: Long) {

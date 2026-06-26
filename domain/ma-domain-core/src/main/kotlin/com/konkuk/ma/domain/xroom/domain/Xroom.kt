@@ -19,14 +19,14 @@ class Xroom(
         }
     }
 
-    fun updateFinalMessage(finalMessage: FinalMessage?): Xroom {
+    fun updateFinalMessage(finalMessage: String?): Xroom {
         return Xroom(
             id = id,
             ownerId = ownerId,
             targetInfoId = targetInfoId,
             title = title,
             template = template,
-            finalMessage = finalMessage,
+            finalMessage = FinalMessage.of(finalMessage),
             createdDate = createdDate,
         )
     }
