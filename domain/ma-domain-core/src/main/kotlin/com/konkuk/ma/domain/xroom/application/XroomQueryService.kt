@@ -17,6 +17,6 @@ class XroomQueryService(
     fun findMine(memberId: Long): MyXrooms {
         val xrooms = Xrooms(xroomQueryRepository.find(memberId))
         val targetInfos = TargetInfos(targetInfoQueryRepository.find(memberId))
-        return xrooms.toMine(targetInfos, emptyMap())
+        return xrooms.toMine(targetInfos)
     }
 }

@@ -5,13 +5,14 @@ import com.konkuk.ma.domain.matching.domain.TargetInfos
 class Xrooms(
     val data: List<Xroom>,
 ) {
-    fun toMine(targetInfos: TargetInfos, memoryCounts: Map<Long, Int>): MyXrooms {
+    fun toMine(targetInfos: TargetInfos): MyXrooms {
         return MyXrooms(
             data.map { xroom ->
                 MyXroom(
                     xroom = xroom,
                     recipientName = targetInfos.findName(xroom.targetInfoId),
-                    memoryCount = memoryCounts[xroom.id] ?: 0,
+                    // 기억(Memory)은 Phase 2에서 도입 — 현재 방의 기억 수는 항상 0
+                    memoryCount = 0,
                 )
             }
         )

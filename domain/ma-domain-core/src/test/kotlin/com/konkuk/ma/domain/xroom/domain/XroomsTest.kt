@@ -25,37 +25,26 @@ class XroomsTest : FunSpec({
                 )
             )
 
-            val mine = xrooms.toMine(targetInfos, emptyMap())
+            val mine = xrooms.toMine(targetInfos)
 
             mine.data shouldHaveSize 2
             mine.data[0].recipientName shouldBe "홍길동"
             mine.data[1].recipientName shouldBe "김철수"
         }
 
-        test("기억 개수가 집계되지 않은 방은 memoryCount가 0이다") {
+        test("기억은 Phase 2에서 도입되므로 memoryCount는 0이다") {
             val xrooms = Xrooms(listOf(XroomFixture.create(id = 1L, targetInfoId = 10L)))
             val targetInfos = TargetInfos(
                 listOf(TargetInfoFixture.create(targetInfoId = 10L, targetName = "홍길동"))
             )
 
-            val mine = xrooms.toMine(targetInfos, emptyMap())
+            val mine = xrooms.toMine(targetInfos)
 
             mine.data[0].memoryCount shouldBe 0
         }
 
-        test("집계된 기억 개수가 있으면 해당 값을 채운다") {
-            val xrooms = Xrooms(listOf(XroomFixture.create(id = 1L, targetInfoId = 10L)))
-            val targetInfos = TargetInfos(
-                listOf(TargetInfoFixture.create(targetInfoId = 10L, targetName = "홍길동"))
-            )
-
-            val mine = xrooms.toMine(targetInfos, mapOf(1L to 3))
-
-            mine.data[0].memoryCount shouldBe 3
-        }
-
         test("방이 없으면 빈 MyXrooms를 반환한다") {
-            val mine = Xrooms(emptyList()).toMine(TargetInfos(emptyList()), emptyMap())
+            val mine = Xrooms(emptyList()).toMine(TargetInfos(emptyList()))
 
             mine.data shouldHaveSize 0
         }
