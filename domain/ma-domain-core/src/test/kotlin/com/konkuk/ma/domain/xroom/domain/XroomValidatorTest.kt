@@ -94,5 +94,37 @@ class XroomValidatorTest : FunSpec({
                 xroomValidator.validateAccessible(xroom, 3L)
             }
         }
+
+        test("claim한 매칭이 있어도 이 방의 targetInfo가 아니면 AccessDeniedException이 발생한다") {
+            val xroom = XroomFixture.create(ownerId = 1L, targetInfoId = 100L)
+            every { matchingResultRepository.findClaimedByTarget(2L) } returns listOf(
+                MatchingResultFixture.create(
+                    targetId = 2L,
+                    targetInfoId = 999L,
+                    claimed = true,
+                    showingExpiryDate = LocalDateTime.now().plusDays(29),
+                )
+            )
+
+            shouldThrow<AccessDeniedException> {
+                xroomValidator.validateAccessible(xroom, 2L)
+            }
+        }
+
+        test("claim했지만 아직 공개 전(isVisible=false)인 매칭은 접근을 허용하지 않는다") {
+            val xroom = XroomFixture.create(ownerId = 1L, targetInfoId = 100L)
+            every { matchingResultRepository.findClaimedByTarget(2L) } returns listOf(
+                MatchingResultFixture.create(
+                    targetId = 2L,
+                    targetInfoId = 100L,
+                    claimed = true,
+                    showingExpiryDate = LocalDateTime.now().plusDays(31),
+                )
+            )
+
+            shouldThrow<AccessDeniedException> {
+                xroomValidator.validateAccessible(xroom, 2L)
+            }
+        }
     }
 })
