@@ -13,21 +13,21 @@ class EventDateTest : FunSpec({
         test("YEAR 정밀도는 'yyyy'를 파싱해 1월 1일로 정규화한다") {
             val eventDate = EventDate.parse("2019", EventDatePrecision.YEAR)
 
-            eventDate.precision shouldBe EventDatePrecision.YEAR
+            eventDate.precisionName() shouldBe "YEAR"
             eventDate.normalizedDate shouldBe LocalDate.of(2019, 1, 1)
         }
 
         test("MONTH 정밀도는 'yyyy-MM'을 파싱해 해당 월 1일로 정규화한다") {
             val eventDate = EventDate.parse("2019-05", EventDatePrecision.MONTH)
 
-            eventDate.precision shouldBe EventDatePrecision.MONTH
+            eventDate.precisionName() shouldBe "MONTH"
             eventDate.normalizedDate shouldBe LocalDate.of(2019, 5, 1)
         }
 
         test("DAY 정밀도는 'yyyy-MM-dd'를 파싱해 실제 날짜로 정규화한다") {
             val eventDate = EventDate.parse("2019-05-10", EventDatePrecision.DAY)
 
-            eventDate.precision shouldBe EventDatePrecision.DAY
+            eventDate.precisionName() shouldBe "DAY"
             eventDate.normalizedDate shouldBe LocalDate.of(2019, 5, 10)
         }
 
@@ -90,24 +90,9 @@ class EventDateTest : FunSpec({
 
             val eventDate = EventDate.of(EventDatePrecision.MONTH, normalizedDate)
 
-            eventDate.precision shouldBe EventDatePrecision.MONTH
+            eventDate.precisionName() shouldBe "MONTH"
             eventDate.normalizedDate shouldBe normalizedDate
             eventDate.toWire() shouldBe "2019-05"
-        }
-    }
-
-    context("sortKey") {
-
-        test("정규화된 날짜를 정렬 키로 반환한다") {
-            val eventDate = EventDate.parse("2019-05-10", EventDatePrecision.DAY)
-
-            eventDate.sortKey() shouldBe eventDate.normalizedDate
-        }
-
-        test("YEAR 정밀도의 정렬 키는 해당 연도의 1월 1일이다") {
-            val eventDate = EventDate.parse("2019", EventDatePrecision.YEAR)
-
-            eventDate.sortKey() shouldBe LocalDate.of(2019, 1, 1)
         }
     }
 })

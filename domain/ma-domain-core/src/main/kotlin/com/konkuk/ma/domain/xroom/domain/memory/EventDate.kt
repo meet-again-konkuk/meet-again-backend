@@ -4,7 +4,7 @@ import com.konkuk.ma.exception.InvalidValueException
 import java.time.LocalDate
 
 class EventDate private constructor(
-    val precision: EventDatePrecision,
+    private val precision: EventDatePrecision,
     val normalizedDate: LocalDate,
 ) {
     fun toWire(): String {
@@ -15,8 +15,6 @@ class EventDate private constructor(
                 "%04d-%02d-%02d".format(normalizedDate.year, normalizedDate.monthValue, normalizedDate.dayOfMonth)
         }
     }
-
-    fun sortKey(): LocalDate = normalizedDate
 
     fun precisionName(): String = precision.name
 

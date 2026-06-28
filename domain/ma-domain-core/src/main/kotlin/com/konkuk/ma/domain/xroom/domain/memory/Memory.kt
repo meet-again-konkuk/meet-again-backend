@@ -20,5 +20,5 @@ class Memory(
     val text: String? get() = content.text
     val letter: String? get() = content.letter
 
-    fun sortKey(): LocalDate = eventDate.sortKey()
+    fun sortKey(): LocalDate = eventDate.normalizedDate
 }

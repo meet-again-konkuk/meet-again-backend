@@ -14,7 +14,7 @@ class MemoryCommandDao {
             it[xroomId] = newMemory.xroomId
             it[title] = newMemory.title.value
             it[eventDate] = newMemory.eventDate.normalizedDate
-            it[eventDatePrecision] = newMemory.eventDate.precision.name
+            it[eventDatePrecision] = newMemory.eventDate.precisionName()
             it[location] = newMemory.location
             it[text] = newMemory.content.text
             it[letter] = newMemory.content.letter
