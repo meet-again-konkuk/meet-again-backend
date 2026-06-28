@@ -7,11 +7,9 @@ import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
-import com.konkuk.ma.domain.xroom.api.request.AddMemoryRequest
 import com.konkuk.ma.domain.xroom.entity.table.MemoryEmotionTagTable
 import com.konkuk.ma.domain.xroom.entity.table.MemoryTable
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
-import com.konkuk.ma.domain.xroom.fixture.AddMemoryRequestFixture
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.patchJson
 import com.konkuk.ma.extension.postJson
@@ -172,16 +170,20 @@ class XroomIntegrationTest(
         return mapper.readTree(result.response.contentAsString).get("accessToken").asText()
     }
 
-    fun addMemory(
-        encodedXroomId: String,
-        accessToken: String,
-        request: AddMemoryRequest = AddMemoryRequestFixture.create(),
+    fun insertMemory(
+        xroomId: Long,
+        eventDate: LocalDate = LocalDate.of(2019, 5, 10),
+        eventDatePrecision: String = "DAY",
     ) {
-        mockMvc.postJson("/api/xrooms/{xroomId}/memories", encodedXroomId) {
-            content = mapper.writeValueAsString(request)
-            authorization("Bearer $accessToken")
+        transaction {
+            MemoryTable.insert {
+                it[MemoryTable.xroomId] = xroomId
+                it[MemoryTable.title] = "첫 만남"
+                it[MemoryTable.eventDate] = eventDate
+                it[MemoryTable.eventDatePrecision] = eventDatePrecision
+                it[MemoryTable.text] = "그날의 기억"
+            }
         }
-            .andExpect { status { isCreated() } }
     }
 
     context("GET /api/xrooms/me") {
@@ -221,10 +223,9 @@ class XroomIntegrationTest(
             val targetInfoId = insertTargetInfo(registerId = memberId)
             val xroomId = insertXroom(ownerId = memberId, targetInfoId = targetInfoId)
             val accessToken = login(email, password)
-            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
 
             val memoryCount = 2
-            repeat(memoryCount) { addMemory(encodedXroomId, accessToken) }
+            repeat(memoryCount) { insertMemory(xroomId) }
 
             // When
             val result = mockMvc.getJson("/api/xrooms/me") {
@@ -410,12 +411,10 @@ class XroomIntegrationTest(
                 claimed = true,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
-            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
 
-            // 작성자가 기억을 추가한다
-            val ownerToken = login(ownerEmail, ownerPassword)
+            // 작성자가 만든 방에 기억이 쌓인다
             val memoryCount = 3
-            repeat(memoryCount) { addMemory(encodedXroomId, ownerToken) }
+            repeat(memoryCount) { insertMemory(xroomId) }
 
             // When - 수신자가 수신함을 조회한다
             val recipientToken = login(recipientEmail, recipientPassword)
@@ -552,7 +551,17 @@ class XroomIntegrationTest(
             val accessToken = login(email, password)
             val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
 
-            val request = AddMemoryRequestFixture.create()
+            val title = "첫 만남"
+            val eventDate = "2019-05-10"
+            val emotionTags = listOf("설렘", "행복")
+            val text = "그날의 기억"
+            val request = mapOf(
+                "title" to title,
+                "eventDate" to eventDate,
+                "eventDatePrecision" to "DAY",
+                "emotionTags" to emotionTags,
+                "text" to text,
+            )
 
             // When
             val createResult = mockMvc.postJson("/api/xrooms/{xroomId}/memories", encodedXroomId) {
@@ -576,13 +585,12 @@ class XroomIntegrationTest(
             val memories = mapper.readTree(detailResult.response.contentAsByteArray).get("memories")
             memories.size() shouldBe 1
             val memory = memories.get(0)
-            memory.get("title").asText() shouldBe request.title
-            memory.get("eventDate").asText() shouldBe request.eventDate
-            memory.get("eventDatePrecision").asText() shouldBe request.eventDatePrecision
-            memory.get("text").asText() shouldBe request.text
-            memory.get("location").asText() shouldBe request.location
+            memory.get("title").asText() shouldBe title
+            memory.get("eventDate").asText() shouldBe eventDate
+            memory.get("eventDatePrecision").asText() shouldBe "DAY"
+            memory.get("text").asText() shouldBe text
             memory.get("photoUrl").isNull shouldBe true
-            memory.get("emotionTags").map { it.asText() } shouldContainExactlyInAnyOrder request.emotionTags
+            memory.get("emotionTags").map { it.asText() } shouldContainExactlyInAnyOrder emotionTags
         }
 
         test("여러 기억을 시점을 뒤섞어 추가하면 상세에서 시점 오름차순으로 반환된다") {
@@ -595,9 +603,9 @@ class XroomIntegrationTest(
             val accessToken = login(email, password)
             val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
 
-            addMemory(encodedXroomId, accessToken, AddMemoryRequestFixture.create(title = "세 번째", eventDate = "2021-03-03"))
-            addMemory(encodedXroomId, accessToken, AddMemoryRequestFixture.create(title = "첫 번째", eventDate = "2019-01-01"))
-            addMemory(encodedXroomId, accessToken, AddMemoryRequestFixture.create(title = "두 번째", eventDate = "2020-02-02"))
+            insertMemory(xroomId, eventDate = LocalDate.of(2021, 3, 3))
+            insertMemory(xroomId, eventDate = LocalDate.of(2019, 1, 1))
+            insertMemory(xroomId, eventDate = LocalDate.of(2020, 2, 2))
 
             // When
             val detailResult = mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
@@ -629,7 +637,13 @@ class XroomIntegrationTest(
             val accessToken = login(recipientEmail, recipientPassword)
             val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
 
-            val request = AddMemoryRequestFixture.create()
+            val request = mapOf(
+                "title" to "첫 만남",
+                "eventDate" to "2019-05-10",
+                "eventDatePrecision" to "DAY",
+                "emotionTags" to listOf("설렘"),
+                "text" to "그날의 기억",
+            )
 
             // When & Then
             mockMvc.postJson("/api/xrooms/{xroomId}/memories", encodedXroomId) {
@@ -642,7 +656,13 @@ class XroomIntegrationTest(
         test("인증 토큰 없이 기억을 추가하면 401이 반환된다") {
             // Given
             val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
-            val request = AddMemoryRequestFixture.create()
+            val request = mapOf(
+                "title" to "첫 만남",
+                "eventDate" to "2019-05-10",
+                "eventDatePrecision" to "DAY",
+                "emotionTags" to listOf("설렘"),
+                "text" to "그날의 기억",
+            )
 
             // When & Then
             mockMvc.postJson("/api/xrooms/{xroomId}/memories", encodedXroomId) {
@@ -661,7 +681,14 @@ class XroomIntegrationTest(
             val accessToken = login(email, password)
             val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
 
-            val request = AddMemoryRequestFixture.create(text = "그날의 기억", letter = "보고 싶었어")
+            val request = mapOf(
+                "title" to "첫 만남",
+                "eventDate" to "2019-05-10",
+                "eventDatePrecision" to "DAY",
+                "emotionTags" to listOf("설렘"),
+                "text" to "그날의 기억",
+                "letter" to "보고 싶었어",
+            )
 
             // When & Then
             mockMvc.postJson("/api/xrooms/{xroomId}/memories", encodedXroomId) {

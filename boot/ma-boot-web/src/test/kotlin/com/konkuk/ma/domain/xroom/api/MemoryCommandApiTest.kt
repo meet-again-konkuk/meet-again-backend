@@ -6,7 +6,6 @@ import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.xroom.application.MemoryCommandService
 import com.konkuk.ma.domain.xroom.application.command.AddMemoryCommand
-import com.konkuk.ma.domain.xroom.fixture.AddMemoryRequestFixture
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.postJson
@@ -41,7 +40,14 @@ class MemoryCommandApiTest(
     test("기억 추가 API 문서화") {
         // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
-        val request = AddMemoryRequestFixture.create(location = "서울")
+        val request = mapOf(
+            "title" to "첫 만남",
+            "eventDate" to "2019-05-10",
+            "eventDatePrecision" to "DAY",
+            "location" to "서울",
+            "emotionTags" to listOf("설렘", "행복"),
+            "text" to "그날의 기억",
+        )
         every {
             memoryCommandService.addMemory(1L, authMemberId, any<AddMemoryCommand>())
         } returns 1L
