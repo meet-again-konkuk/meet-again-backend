@@ -11,6 +11,9 @@ import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
+import com.konkuk.ma.domain.xroom.domain.memory.Memories
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryCounts
+import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,12 +25,14 @@ class XroomQueryService(
     private val targetInfoQueryRepository: TargetInfoQueryRepository,
     private val matchingResultRepository: MatchingResultRepository,
     private val memberQueryRepository: MemberQueryRepository,
+    private val memoryQueryRepository: MemoryQueryRepository,
     private val xroomValidator: XroomValidator,
 ) {
     fun findMine(memberId: Long): MyXrooms {
         val xrooms = Xrooms(xroomQueryRepository.find(memberId))
         val targetInfos = TargetInfos(targetInfoQueryRepository.find(memberId))
-        return xrooms.toMine(targetInfos)
+        val memoryCounts = MemoryCounts(memoryQueryRepository.count(xrooms.extractIds()))
+        return xrooms.toMine(targetInfos, memoryCounts)
     }
 
     fun findReceived(memberId: Long): ReceivedXrooms {
@@ -36,8 +41,9 @@ class XroomQueryService(
 
         val xrooms = Xrooms(xroomQueryRepository.findByTargetInfoIds(targetInfoIds))
         val senders = Members(memberQueryRepository.findByIds(xrooms.extractOwnerIds()))
+        val memoryCounts = MemoryCounts(memoryQueryRepository.count(xrooms.extractIds()))
 
-        return xrooms.toReceived(senders)
+        return xrooms.toReceived(senders, memoryCounts)
     }
 
     fun findDetail(xroomId: Long, memberId: Long): XroomDetail {
@@ -45,6 +51,7 @@ class XroomQueryService(
         xroomValidator.validateAccessible(xroom, memberId)
 
         val targetInfo = targetInfoQueryRepository.findOne(xroom.targetInfoId)
-        return XroomDetail(xroom = xroom, recipientName = targetInfo.targetName)
+        val memories = Memories(memoryQueryRepository.find(xroomId))
+        return XroomDetail(xroom = xroom, recipientName = targetInfo.targetName, memoriesCollection = memories)
     }
 }

@@ -37,7 +37,36 @@ fun template(fieldName: String = "template") =
     fieldName responseType STRING means "방 템플릿" example "chat_memory"
 
 fun xroomMemories(fieldName: String = "memories") =
-    fieldName responseType ARRAY means "방에 담긴 기억 목록 (Phase 1에서는 항상 빈 배열)"
+    fieldName responseType ARRAY means "방에 담긴 기억 목록"
+
+// --- 기억(Memory) 관련 필드 ---
+
+fun memoryId(fieldName: String = "memoryId") =
+    fieldName responseType STRING means "기억 ID (인코딩)" example "mem123"
+
+fun memoryTitle(fieldName: String = "title") =
+    fieldName responseType STRING means "기억 제목" example "첫 만남"
+
+fun eventDate(fieldName: String = "eventDate") =
+    fieldName responseType STRING means "기억의 시점, precision별 부분 날짜" example "2019-05-10"
+
+fun eventDatePrecision(fieldName: String = "eventDatePrecision") =
+    fieldName responseType STRING means "시점 정밀도 (YEAR|MONTH|DAY)" example "DAY"
+
+fun location(fieldName: String = "location") =
+    fieldName responseType STRING means "장소" example "서울"
+
+fun emotionTags(fieldName: String = "emotionTags") =
+    fieldName responseType ARRAY means "감정 태그 목록" example "[\"설렘\", \"행복\"]"
+
+fun memoryText(fieldName: String = "text") =
+    fieldName responseType STRING means "짧은 글 (letter와 상호배타)" example "그날의 기억"
+
+fun memoryLetter(fieldName: String = "letter") =
+    fieldName responseType STRING means "편지 (text와 상호배타)" example "오랜만에 편지를 써본다"
+
+fun photoUrl(fieldName: String = "photoUrl") =
+    fieldName responseType STRING means "사진 URL (Phase 3, 현재 항상 null)" example "https://cdn.example.com/p.jpg"
 
 // --- X룸 관련 Path Variable ---
 

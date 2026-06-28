@@ -11,7 +11,7 @@ class XroomDetailResponse(
     val recipientName: String,
     val template: String,
     val finalMessage: String?,
-    val memories: List<Any>,
+    val memories: List<MemoryDetailResponse>,
 ) {
     companion object {
         fun from(xroomDetail: XroomDetail): XroomDetailResponse {
@@ -21,8 +21,7 @@ class XroomDetailResponse(
                 recipientName = xroomDetail.recipientName,
                 template = xroomDetail.template,
                 finalMessage = xroomDetail.finalMessage,
-                // 기억(Memory)은 Phase 2에서 채움 — Phase 1에서는 항상 빈 배열
-                memories = emptyList(),
+                memories = xroomDetail.memories.map { MemoryDetailResponse.from(it) },
             )
         }
     }
