@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
+import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
@@ -13,6 +14,7 @@ import com.konkuk.ma.extension.postJson
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
+import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
@@ -37,13 +39,14 @@ class XroomIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, RefreshTokenTable, TargetInfoTable, XroomTable)
+            SchemaUtils.create(MemberTable, RefreshTokenTable, TargetInfoTable, XroomTable, MatchingResultTable)
         }
     }
 
     afterEach {
         transaction {
             XroomTable.deleteAll()
+            MatchingResultTable.deleteAll()
             TargetInfoTable.deleteAll()
             RefreshTokenTable.deleteAll()
             MemberTable.deleteAll()
@@ -52,13 +55,14 @@ class XroomIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(XroomTable, TargetInfoTable, RefreshTokenTable, MemberTable)
+            SchemaUtils.drop(MatchingResultTable, XroomTable, TargetInfoTable, RefreshTokenTable, MemberTable)
         }
     }
 
     fun insertMember(
         email: String = "xroom-test@example.com",
         rawPassword: String = "password123",
+        name: String = "김테스트",
     ): Long {
         return transaction {
             MemberTable.insertAndGetId {
@@ -67,10 +71,36 @@ class XroomIntegrationTest(
                 it[nickname] = "테스터"
                 it[gender] = "MALE"
                 it[phoneNumber] = "01012345678"
-                it[name] = "김테스트"
+                it[MemberTable.name] = name
                 it[birthDate] = LocalDate.of(1990, 1, 1)
                 it[region] = "SEOUL"
             }.value
+        }
+    }
+
+    fun insertMatchingResult(
+        registerId: Long,
+        targetInfoId: Long,
+        targetId: Long,
+        claimed: Boolean = true,
+    ) {
+        transaction {
+            MatchingResultTable.insert {
+                it[MatchingResultTable.registerId] = registerId
+                it[MatchingResultTable.targetInfoId] = targetInfoId
+                it[MatchingResultTable.targetId] = targetId
+                it[middleNumberMatched] = false
+                it[lastNumberMatched] = false
+                it[yearMatched] = false
+                it[monthMatched] = false
+                it[dayMatched] = false
+                it[regionMatched] = false
+                // isVisible()=true 보장: now > showingExpiryDate - 30일
+                it[showingExpiryDate] = LocalDateTime.now().plusDays(7)
+                it[matchingExpiryDate] = LocalDate.now().plusDays(30)
+                it[excluded] = false
+                it[MatchingResultTable.claimed] = claimed
+            }
         }
     }
 
@@ -265,6 +295,151 @@ class XroomIntegrationTest(
             mockMvc.patchJson("/api/xrooms/{xroomId}", encodedXroomId) {
                 content = mapper.writeValueAsString(request)
             }
+                .andExpect { status { isUnauthorized() } }
+        }
+    }
+
+    context("GET /api/xrooms/received") {
+
+        test("수신자가 로그인하면 자신에게 도착한 방 목록을 보낸 사람 이름과 함께 반환한다") {
+            // Given
+            val ownerName = "김작성"
+            val ownerId = insertMember(email = "xroom-owner@example.com", name = ownerName)
+            val recipientPassword = "password123"
+            val recipientEmail = "xroom-recipient@example.com"
+            val recipientId = insertMember(email = recipientEmail, rawPassword = recipientPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            insertMatchingResult(
+                registerId = ownerId,
+                targetInfoId = targetInfoId,
+                targetId = recipientId,
+                claimed = true,
+            )
+            insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(recipientEmail, recipientPassword)
+
+            // When
+            val result = mockMvc.getJson("/api/xrooms/received") {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then
+            val rooms = mapper.readTree(result.response.contentAsByteArray).get("rooms")
+            rooms.size() shouldBe 1
+            val room = rooms.get(0)
+            room.get("senderName").asText() shouldBe ownerName
+            room.get("memoryCount").asInt() shouldBe 0
+            room.get("id").asText().isNotBlank() shouldBe true
+        }
+
+        test("수신한 방이 없으면 빈 목록을 반환한다") {
+            // Given
+            val email = "xroom-no-received@example.com"
+            val password = "password123"
+            insertMember(email = email, rawPassword = password)
+            val accessToken = login(email, password)
+
+            // When
+            val result = mockMvc.getJson("/api/xrooms/received") {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then
+            val rooms = mapper.readTree(result.response.contentAsByteArray).get("rooms")
+            rooms.size() shouldBe 0
+        }
+
+        test("인증 토큰 없이 수신한 방 목록을 조회하면 401이 반환된다") {
+            // When & Then
+            mockMvc.getJson("/api/xrooms/received")
+                .andExpect { status { isUnauthorized() } }
+        }
+    }
+
+    context("GET /api/xrooms/{xroomId}") {
+
+        test("작성자가 자신의 방을 조회하면 상세 정보를 반환한다") {
+            // Given
+            val email = "xroom-detail-owner@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetName = "홍길동"
+            val targetInfoId = insertTargetInfo(registerId = ownerId, targetName = targetName)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(email, password)
+
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+
+            // When
+            val result = mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then
+            val body = mapper.readTree(result.response.contentAsByteArray)
+            body.get("id").asText() shouldBe encodedXroomId
+            body.get("recipientName").asText() shouldBe targetName
+            body.get("template").asText() shouldBe "chat_memory"
+            body.get("finalMessage").asText().isNotBlank() shouldBe true
+            body.get("memories").size() shouldBe 0
+        }
+
+        test("수신자가 자신에게 도착한 방을 조회하면 상세 정보를 반환한다") {
+            // Given
+            val ownerId = insertMember(email = "xroom-detail-sender@example.com")
+            val recipientEmail = "xroom-detail-recipient@example.com"
+            val recipientPassword = "password123"
+            val recipientId = insertMember(email = recipientEmail, rawPassword = recipientPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            insertMatchingResult(
+                registerId = ownerId,
+                targetInfoId = targetInfoId,
+                targetId = recipientId,
+                claimed = true,
+            )
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(recipientEmail, recipientPassword)
+
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+
+            // When & Then
+            mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+        }
+
+        test("작성자도 수신자도 아니면 403이 반환된다") {
+            // Given
+            val ownerId = insertMember(email = "xroom-detail-other-owner@example.com")
+            val strangerEmail = "xroom-detail-stranger@example.com"
+            val strangerPassword = "password123"
+            insertMember(email = strangerEmail, rawPassword = strangerPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(strangerEmail, strangerPassword)
+
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+
+            // When & Then
+            mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isForbidden() } }
+        }
+
+        test("인증 토큰 없이 방 상세를 조회하면 401이 반환된다") {
+            // Given
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
+
+            // When & Then
+            mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId)
                 .andExpect { status { isUnauthorized() } }
         }
     }
