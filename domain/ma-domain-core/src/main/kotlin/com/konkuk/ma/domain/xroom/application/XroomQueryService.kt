@@ -8,8 +8,8 @@ import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.xroom.domain.MyXrooms
 import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
-import com.konkuk.ma.domain.xroom.domain.XroomAccessValidator
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
+import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import org.springframework.stereotype.Service
@@ -22,7 +22,7 @@ class XroomQueryService(
     private val targetInfoQueryRepository: TargetInfoQueryRepository,
     private val matchingResultRepository: MatchingResultRepository,
     private val memberQueryRepository: MemberQueryRepository,
-    private val xroomAccessValidator: XroomAccessValidator,
+    private val xroomValidator: XroomValidator,
 ) {
     fun findMine(memberId: Long): MyXrooms {
         val xrooms = Xrooms(xroomQueryRepository.find(memberId))
@@ -42,7 +42,7 @@ class XroomQueryService(
 
     fun findDetail(xroomId: Long, memberId: Long): XroomDetail {
         val xroom = xroomQueryRepository.findOne(xroomId)
-        xroomAccessValidator.validate(xroom, memberId)
+        xroomValidator.validateAccessible(xroom, memberId)
 
         val targetInfo = targetInfoQueryRepository.findOne(xroom.targetInfoId)
         return XroomDetail(xroom = xroom, recipientName = targetInfo.targetName)
