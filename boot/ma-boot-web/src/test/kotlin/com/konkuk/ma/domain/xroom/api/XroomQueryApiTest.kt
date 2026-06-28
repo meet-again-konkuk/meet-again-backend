@@ -9,21 +9,31 @@ import com.konkuk.ma.domain.xroom.domain.MyXrooms
 import com.konkuk.ma.domain.xroom.domain.ReceivedXroom
 import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
+import com.konkuk.ma.domain.xroom.domain.memory.Memories
+import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
 import com.konkuk.ma.domain.xroom.fixture.MyXroomFixture
 import com.konkuk.ma.domain.xroom.fixture.XroomFixture
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.emotionTags
+import com.konkuk.ma.vocabulary.eventDate
+import com.konkuk.ma.vocabulary.eventDatePrecision
 import com.konkuk.ma.vocabulary.finalMessage
+import com.konkuk.ma.vocabulary.location
 import com.konkuk.ma.vocabulary.memoryCount
+import com.konkuk.ma.vocabulary.memoryId
+import com.konkuk.ma.vocabulary.memoryLetter
+import com.konkuk.ma.vocabulary.memoryText
+import com.konkuk.ma.vocabulary.memoryTitle
+import com.konkuk.ma.vocabulary.photoUrl
 import com.konkuk.ma.vocabulary.recipientName
 import com.konkuk.ma.vocabulary.senderName
 import com.konkuk.ma.vocabulary.targetInfoId
 import com.konkuk.ma.vocabulary.template
 import com.konkuk.ma.vocabulary.xroomId
 import com.konkuk.ma.vocabulary.xroomIdPath
-import com.konkuk.ma.vocabulary.xroomMemories
 import com.konkuk.ma.vocabulary.xroomTitle
 import com.konkuk.ma.vocabulary.xroomUpdatedAt
 import com.ninjasquad.springmockk.MockkBean
@@ -111,6 +121,7 @@ class XroomQueryApiTest(
         val xroomDetail = XroomDetail(
             xroom = XroomFixture.create(id = 1L, finalMessage = FinalMessage("고마웠어")),
             recipientName = "김만남",
+            memoriesCollection = Memories(listOf(MemoryFixture.create(id = 1L, xroomId = 1L))),
         )
         every { xroomQueryService.findDetail(1L, authMemberId) } returns xroomDetail
 
@@ -128,7 +139,15 @@ class XroomQueryApiTest(
                     recipientName("recipientName"),
                     template("template"),
                     finalMessage("finalMessage") isOptional true,
-                    xroomMemories("memories"),
+                    memoryId("memories[].id"),
+                    memoryTitle("memories[].title"),
+                    eventDate("memories[].eventDate"),
+                    eventDatePrecision("memories[].eventDatePrecision"),
+                    location("memories[].location") isOptional true,
+                    emotionTags("memories[].emotionTags"),
+                    memoryText("memories[].text") isOptional true,
+                    memoryLetter("memories[].letter") isOptional true,
+                    photoUrl("memories[].photoUrl") isOptional true,
                 ),
             )
     }

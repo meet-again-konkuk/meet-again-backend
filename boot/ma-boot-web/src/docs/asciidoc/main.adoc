@@ -208,6 +208,11 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/xroom-detail.html[X룸 상세 조회 API,window=_blank]
 
+[[xroom-add-memory]]
+=== 기억 추가
+
+* link:xroom/add-memory.html[기억 추가 API,window=_blank]
+
 [[support]]
 == 고객지원
 
