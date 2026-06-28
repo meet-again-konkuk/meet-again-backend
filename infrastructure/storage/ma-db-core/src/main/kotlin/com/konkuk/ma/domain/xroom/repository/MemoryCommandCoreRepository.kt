@@ -2,7 +2,7 @@ package com.konkuk.ma.domain.xroom.repository
 
 import com.konkuk.ma.domain.xroom.dao.MemoryCommandDao
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
-import com.konkuk.ma.domain.xroom.domain.memory.port.MemoryCommandRepository
+import com.konkuk.ma.domain.xroom.domain.port.MemoryCommandRepository
 import org.springframework.stereotype.Repository
 
 @Repository

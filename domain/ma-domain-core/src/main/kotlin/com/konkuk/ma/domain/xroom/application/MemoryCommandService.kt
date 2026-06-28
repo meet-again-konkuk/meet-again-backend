@@ -2,7 +2,7 @@ package com.konkuk.ma.domain.xroom.application
 
 import com.konkuk.ma.domain.xroom.application.command.AddMemoryCommand
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
-import com.konkuk.ma.domain.xroom.domain.memory.port.MemoryCommandRepository
+import com.konkuk.ma.domain.xroom.domain.port.MemoryCommandRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

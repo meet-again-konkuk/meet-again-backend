@@ -2,7 +2,7 @@ package com.konkuk.ma.domain.xroom.repository
 
 import com.konkuk.ma.domain.xroom.dao.MemoryQueryDao
 import com.konkuk.ma.domain.xroom.domain.memory.Memory
-import com.konkuk.ma.domain.xroom.domain.memory.port.MemoryQueryRepository
+import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
 import org.springframework.stereotype.Repository
 
 @Repository

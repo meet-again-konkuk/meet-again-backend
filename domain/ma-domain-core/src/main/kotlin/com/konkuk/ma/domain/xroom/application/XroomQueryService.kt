@@ -13,7 +13,7 @@ import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryCounts
-import com.konkuk.ma.domain.xroom.domain.memory.port.MemoryQueryRepository
+import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
