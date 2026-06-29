@@ -9,12 +9,16 @@ import com.konkuk.ma.domain.member.domain.Region
 class NewTargetInfo(
     val registerId: Long,
     val targetName: String,
-    val middleNumber: FourDigit?,
-    val lastNumber: FourDigit?,
-
-    val year: Year?,
-    val month: Month?,
-    val day: Day?,
-
-    val region: Region?
-)
+    middleNumber: String?,
+    lastNumber: String?,
+    year: Int?,
+    month: Int?,
+    day: Int?,
+    val region: Region?,
+) {
+    val middleNumber: FourDigit? = middleNumber?.let { FourDigit(it) }
+    val lastNumber: FourDigit? = lastNumber?.let { FourDigit(it) }
+    val year: Year? = year?.let { Year(it) }
+    val month: Month? = month?.let { Month(it) }
+    val day: Day? = day?.let { Day(it) }
+}
