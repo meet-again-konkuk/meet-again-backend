@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.xroom.api.request
 
-import com.konkuk.ma.domain.xroom.application.command.UpdateMemoryCommand
+import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 
 class UpdateMemoryRequest(
     val title: String,
@@ -11,8 +11,9 @@ class UpdateMemoryRequest(
     val text: String? = null,
     val letter: String? = null,
 ) {
-    fun toCommand(): UpdateMemoryCommand {
-        return UpdateMemoryCommand(
+    fun toNewMemory(xroomId: Long): NewMemory {
+        return NewMemory(
+            xroomId = xroomId,
             title = title,
             eventDate = eventDate,
             eventDatePrecision = eventDatePrecision,

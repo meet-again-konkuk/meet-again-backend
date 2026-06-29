@@ -1,7 +1,5 @@
 package com.konkuk.ma.domain.xroom.application
 
-import com.konkuk.ma.domain.xroom.application.command.AddMemoryCommand
-import com.konkuk.ma.domain.xroom.application.command.UpdateMemoryCommand
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 import com.konkuk.ma.domain.xroom.domain.port.MemoryCommandRepository
 import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
@@ -16,37 +14,17 @@ class MemoryCommandService(
     private val memoryQueryRepository: MemoryQueryRepository,
     private val memoryCommandRepository: MemoryCommandRepository,
 ) {
-    fun addMemory(xroomId: Long, memberId: Long, command: AddMemoryCommand): Long {
-        val xroom = xroomQueryRepository.findOne(xroomId)
+    fun addMemory(memberId: Long, newMemory: NewMemory): Long {
+        val xroom = xroomQueryRepository.findOne(newMemory.xroomId)
         xroom.validateOwnership(memberId)
-        val newMemory = NewMemory(
-            xroomId = xroomId,
-            title = command.title,
-            eventDate = command.eventDate,
-            eventDatePrecision = command.eventDatePrecision,
-            location = command.location,
-            emotionTags = command.emotionTags,
-            text = command.text,
-            letter = command.letter,
-        )
         return memoryCommandRepository.save(newMemory)
     }
 
-    fun updateMemory(xroomId: Long, memoryId: Long, memberId: Long, command: UpdateMemoryCommand): Long {
-        val xroom = xroomQueryRepository.findOne(xroomId)
+    fun updateMemory(memoryId: Long, memberId: Long, newMemory: NewMemory): Long {
+        val xroom = xroomQueryRepository.findOne(newMemory.xroomId)
         xroom.validateOwnership(memberId)
         val memory = memoryQueryRepository.findOne(memoryId)
-        memory.validateBelongsTo(xroomId)
-        val newMemory = NewMemory(
-            xroomId = xroomId,
-            title = command.title,
-            eventDate = command.eventDate,
-            eventDatePrecision = command.eventDatePrecision,
-            location = command.location,
-            emotionTags = command.emotionTags,
-            text = command.text,
-            letter = command.letter,
-        )
+        memory.validateBelongsTo(newMemory.xroomId)
         val updated = memory.update(newMemory)
         memoryCommandRepository.update(updated, memberId)
         return updated.id

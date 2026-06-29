@@ -5,8 +5,7 @@ import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.xroom.application.MemoryCommandService
-import com.konkuk.ma.domain.xroom.application.command.AddMemoryCommand
-import com.konkuk.ma.domain.xroom.application.command.UpdateMemoryCommand
+import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.patchJson
@@ -54,7 +53,7 @@ class MemoryCommandApiTest(
             "text" to "그날의 기억",
         )
         every {
-            memoryCommandService.addMemory(1L, authMemberId, any<AddMemoryCommand>())
+            memoryCommandService.addMemory(authMemberId, any<NewMemory>())
         } returns 1L
 
         // When & Then
@@ -95,7 +94,7 @@ class MemoryCommandApiTest(
             "text" to "그날의 기억",
         )
         every {
-            memoryCommandService.updateMemory(1L, 1L, authMemberId, any<UpdateMemoryCommand>())
+            memoryCommandService.updateMemory(1L, authMemberId, any<NewMemory>())
         } returns 1L
 
         // When & Then
