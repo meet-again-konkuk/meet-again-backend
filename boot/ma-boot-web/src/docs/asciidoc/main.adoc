@@ -213,6 +213,16 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/add-memory.html[기억 추가 API,window=_blank]
 
+[[xroom-update-memory]]
+=== 기억 수정
+
+* link:xroom/update-memory.html[기억 수정 API,window=_blank]
+
+[[xroom-delete-memory]]
+=== 기억 삭제
+
+* link:xroom/delete-memory.html[기억 삭제 API,window=_blank]
+
 [[support]]
 == 고객지원
 

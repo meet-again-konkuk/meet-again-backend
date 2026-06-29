@@ -2,6 +2,13 @@ package com.konkuk.ma.domain.xroom.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.xroom.domain.memory.EmotionTags
+import com.konkuk.ma.domain.xroom.domain.memory.EventDate
+import com.konkuk.ma.domain.xroom.domain.memory.EventDatePrecision
+import com.konkuk.ma.domain.xroom.domain.memory.Memory
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryContent
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryTitle
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryDetails
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 import com.konkuk.ma.domain.xroom.entity.table.MemoryEmotionTagTable
 import com.konkuk.ma.domain.xroom.entity.table.MemoryTable
@@ -13,6 +20,8 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import java.time.LocalDate
+import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.springframework.test.context.ContextConfiguration
 
@@ -45,13 +54,36 @@ class MemoryDaoTest(
             letter: String? = null,
         ) = NewMemory(
             xroomId = xroomId,
-            title = title,
-            eventDate = eventDate,
-            eventDatePrecision = eventDatePrecision,
+            details = MemoryDetails.of(
+                title = title,
+                eventDate = eventDate,
+                eventDatePrecision = eventDatePrecision,
+                location = location,
+                emotionTags = emotionTags,
+                text = text,
+                letter = letter,
+            ),
+        )
+
+        fun memory(
+            id: Long,
+            xroomId: Long = 1L,
+            title: String = "수정된 만남",
+            eventDate: LocalDate = LocalDate.of(2020, 8, 15),
+            eventDatePrecision: EventDatePrecision = EventDatePrecision.DAY,
+            location: String? = "부산",
+            emotionTags: List<String> = listOf("그리움"),
+            text: String? = "수정된 기억",
+            letter: String? = null,
+        ) = Memory(
+            id = id,
+            xroomId = xroomId,
+            title = MemoryTitle(title),
+            eventDate = EventDate.of(eventDatePrecision, eventDate),
             location = location,
-            emotionTags = emotionTags,
-            text = text,
-            letter = letter,
+            emotionTags = EmotionTags.of(emotionTags),
+            content = MemoryContent.of(text, letter),
+            createdDate = LocalDateTime.now(),
         )
 
         context("save") {
@@ -162,6 +194,101 @@ class MemoryDaoTest(
                 memoryCommandDao.save(newMemory(xroomId = 1L))
 
                 memoryQueryDao.count(emptySet()).shouldBeEmpty()
+            }
+        }
+
+        context("findOne") {
+
+            test("저장된 기억을 단건 조회하면 감정 태그가 합성되어 반환된다") {
+                val tags = listOf("설렘", "행복")
+                val id = memoryCommandDao.save(newMemory(emotionTags = tags))
+
+                val found = memoryQueryDao.findOne(id)
+
+                found shouldNotBe null
+                found!!.id shouldBe id
+                found.emotionTags shouldContainExactlyInAnyOrder tags
+            }
+
+            test("soft-deleted 기억은 null을 반환한다") {
+                val id = memoryCommandDao.save(newMemory())
+                MemoryTable.softDelete({ MemoryTable.id eq id }, "1")
+
+                memoryQueryDao.findOne(id) shouldBe null
+            }
+
+            test("존재하지 않는 id로 조회하면 null을 반환한다") {
+                memoryCommandDao.save(newMemory())
+
+                memoryQueryDao.findOne(999L) shouldBe null
+            }
+        }
+
+        context("update") {
+
+            test("기억 본문이 새 값으로 갱신된다") {
+                val id = memoryCommandDao.save(
+                    newMemory(
+                        title = "첫 만남",
+                        eventDate = "2019-05-10",
+                        eventDatePrecision = "DAY",
+                        location = "서울",
+                        text = "그날의 기억",
+                    ),
+                )
+                val updated = memory(
+                    id = id,
+                    title = "두 번째 만남",
+                    eventDate = LocalDate.of(2020, 8, 1),
+                    eventDatePrecision = EventDatePrecision.MONTH,
+                    location = "부산",
+                    text = "바뀐 기억",
+                )
+
+                memoryCommandDao.update(updated, memberId = 1L)
+
+                val found = memoryQueryDao.findOne(id)!!
+                found.title shouldBe updated.titleValue
+                found.eventDate shouldBe updated.eventDate.normalizedDate
+                found.eventDatePrecision shouldBe updated.eventDatePrecisionValue
+                found.location shouldBe updated.location
+                found.text shouldBe updated.text
+            }
+
+            test("감정 태그를 다른 태그로 바꾸면 옛 태그는 사라지고 새 태그만 남는다") {
+                val oldTags = listOf("설렘", "행복")
+                val newTags = listOf("그리움")
+                val id = memoryCommandDao.save(newMemory(emotionTags = oldTags))
+
+                memoryCommandDao.update(memory(id = id, emotionTags = newTags), memberId = 1L)
+
+                val found = memoryQueryDao.findOne(id)!!
+                found.emotionTags shouldContainExactlyInAnyOrder newTags
+            }
+
+            test("text 기억을 letter로 전환하면 text는 null이 되고 letter가 채워진다") {
+                val id = memoryCommandDao.save(newMemory(text = "그날의 기억", letter = null))
+                val updated = memory(id = id, text = null, letter = "보고 싶었어")
+
+                memoryCommandDao.update(updated, memberId = 1L)
+
+                val found = memoryQueryDao.findOne(id)!!
+                found.text shouldBe null
+                found.letter shouldBe updated.letter
+            }
+        }
+
+        context("softDelete") {
+
+            test("삭제하면 단건 조회·목록 조회·집계에서 모두 제외된다") {
+                val xroomId = 1L
+                val id = memoryCommandDao.save(newMemory(xroomId = xroomId))
+
+                memoryCommandDao.delete(id, memberId = 1L)
+
+                memoryQueryDao.findOne(id) shouldBe null
+                memoryQueryDao.find(xroomId).shouldBeEmpty()
+                memoryQueryDao.count(setOf(xroomId)).containsKey(xroomId) shouldBe false
             }
         }
     }

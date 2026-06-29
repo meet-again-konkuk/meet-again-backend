@@ -15,13 +15,15 @@ object NewMemoryFixture {
     ): NewMemory {
         return NewMemory(
             xroomId = xroomId,
-            title = title,
-            eventDate = eventDate,
-            eventDatePrecision = eventDatePrecision,
-            location = location,
-            emotionTags = emotionTags,
-            text = text,
-            letter = letter,
+            details = MemoryDetailsFixture.create(
+                title = title,
+                eventDate = eventDate,
+                eventDatePrecision = eventDatePrecision,
+                location = location,
+                emotionTags = emotionTags,
+                text = text,
+                letter = letter,
+            ),
         )
     }
 }

@@ -21,6 +21,16 @@ class MemoryQueryDao {
         return rows.map { MemoryEntity.from(it, tags[it[MemoryTable.id].value] ?: emptyList()) }
     }
 
+    fun findOne(memoryId: Long): MemoryEntity? {
+        val row = MemoryTable
+            .activeRows { MemoryTable.id eq memoryId }
+            .limit(1)
+            .firstOrNull()
+            ?: return null
+        val tags = findTags(setOf(memoryId))
+        return MemoryEntity.from(row, tags[memoryId] ?: emptyList())
+    }
+
     fun count(xroomIds: Set<Long>): Map<Long, Int> {
         if (xroomIds.isEmpty()) return emptyMap()
         val memoryCount = MemoryTable.id.count()

@@ -1,6 +1,7 @@
 package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.extension.ARRAY
+import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.DATETIME
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
@@ -68,7 +69,13 @@ fun memoryLetter(fieldName: String = "letter") =
 fun photoUrl(fieldName: String = "photoUrl") =
     fieldName responseType STRING means "사진 URL (Phase 3, 현재 항상 null)" example "https://cdn.example.com/p.jpg"
 
+fun deleted(fieldName: String = "deleted") =
+    fieldName responseType BOOLEAN means "삭제 여부 (true 고정)" example "true"
+
 // --- X룸 관련 Path Variable ---
 
 fun xroomIdPath(fieldName: String = "xroomId") =
     fieldName requestParam "X룸 ID (인코딩)"
+
+fun memoryIdPath(fieldName: String = "memoryId") =
+    fieldName requestParam "기억 ID (인코딩)"

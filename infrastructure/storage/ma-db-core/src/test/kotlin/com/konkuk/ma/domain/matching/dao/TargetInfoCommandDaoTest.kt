@@ -2,12 +2,8 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
-import com.konkuk.ma.domain.common.domain.date.Day
-import com.konkuk.ma.domain.common.domain.date.Month
-import com.konkuk.ma.domain.common.domain.date.Year
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
-import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -48,11 +44,11 @@ class TargetInfoCommandDaoTest(
                 val newTargetInfo = NewTargetInfo(
                     registerId = registerId,
                     targetName = "타겟이름",
-                    middleNumber = FourDigit("1234"),
-                    lastNumber = FourDigit("5678"),
-                    year = Year(1995),
-                    month = Month(3),
-                    day = Day(15),
+                    middleNumber = "1234",
+                    lastNumber = "5678",
+                    year = 1995,
+                    month = 3,
+                    day = 15,
                     region = Region.SEOUL
                 )
 
