@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.xroom.application
 
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryDetails
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 import com.konkuk.ma.domain.xroom.domain.port.MemoryCommandRepository
 import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
@@ -20,12 +21,12 @@ class MemoryCommandService(
         return memoryCommandRepository.save(newMemory)
     }
 
-    fun updateMemory(memoryId: Long, memberId: Long, newMemory: NewMemory): Long {
-        val xroom = xroomQueryRepository.findOne(newMemory.xroomId)
+    fun updateMemory(xroomId: Long, memoryId: Long, memberId: Long, details: MemoryDetails): Long {
+        val xroom = xroomQueryRepository.findOne(xroomId)
         xroom.validateOwnership(memberId)
         val memory = memoryQueryRepository.findOne(memoryId)
-        memory.validateBelongsTo(newMemory.xroomId)
-        val updated = memory.update(newMemory)
+        memory.validateBelongsTo(xroomId)
+        val updated = memory.update(details)
         memoryCommandRepository.update(updated, memberId)
         return updated.id
     }

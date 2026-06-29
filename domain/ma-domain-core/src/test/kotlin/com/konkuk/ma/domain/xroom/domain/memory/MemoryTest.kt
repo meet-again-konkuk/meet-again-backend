@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.xroom.domain.memory
 
+import com.konkuk.ma.domain.xroom.fixture.MemoryDetailsFixture
 import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
-import com.konkuk.ma.domain.xroom.fixture.NewMemoryFixture
 import com.konkuk.ma.exception.AccessDeniedException
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
@@ -16,7 +16,7 @@ class MemoryTest : FunSpec({
         test("변경 가능한 필드는 새 값으로 교체된다") {
             // Given
             val memory = MemoryFixture.create()
-            val newMemory = NewMemoryFixture.create(
+            val details = MemoryDetailsFixture.create(
                 title = "두 번째 만남",
                 eventDate = "2020-08-15",
                 eventDatePrecision = "DAY",
@@ -26,23 +26,23 @@ class MemoryTest : FunSpec({
             )
 
             // When
-            val updated = memory.update(newMemory)
+            val updated = memory.update(details)
 
             // Then
-            updated.titleValue shouldBe newMemory.title.value
-            updated.eventDateWire shouldBe newMemory.eventDate.toWire()
-            updated.location shouldBe newMemory.location
-            updated.emotionTagValues shouldContainExactly newMemory.emotionTags.data
-            updated.text shouldBe newMemory.content.text
+            updated.titleValue shouldBe details.title.value
+            updated.eventDateWire shouldBe details.eventDate.toWire()
+            updated.location shouldBe details.location
+            updated.emotionTagValues shouldContainExactly details.emotionTags.data
+            updated.text shouldBe details.content.text
         }
 
         test("id·xroomId·createdDate는 기존 값이 보존된다") {
             // Given
             val memory = MemoryFixture.create()
-            val newMemory = NewMemoryFixture.create(title = "두 번째 만남")
+            val details = MemoryDetailsFixture.create(title = "두 번째 만남")
 
             // When
-            val updated = memory.update(newMemory)
+            val updated = memory.update(details)
 
             // Then
             updated.id shouldBe memory.id
@@ -55,14 +55,14 @@ class MemoryTest : FunSpec({
             val memory = MemoryFixture.create(
                 content = MemoryContent.of(text = "그날의 기억", letter = null),
             )
-            val newMemory = NewMemoryFixture.create(text = null, letter = "보고 싶었어")
+            val details = MemoryDetailsFixture.create(text = null, letter = "보고 싶었어")
 
             // When
-            val updated = memory.update(newMemory)
+            val updated = memory.update(details)
 
             // Then
             updated.text shouldBe null
-            updated.letter shouldBe newMemory.content.letter
+            updated.letter shouldBe details.content.letter
         }
     }
 

@@ -42,7 +42,7 @@ class MemoryCommandApi(
         @PathVariable @DecryptId(ObfuscationType.MEMORY) memoryId: Long,
         @RequestBody request: UpdateMemoryRequest,
     ): MemoryResponse {
-        val updatedMemoryId = memoryCommandService.updateMemory(memoryId, memberInfo.id, request.toNewMemory(xroomId))
+        val updatedMemoryId = memoryCommandService.updateMemory(xroomId, memoryId, memberInfo.id, request.toMemoryDetails())
         return MemoryResponse(memoryId = updatedMemoryId)
     }
 

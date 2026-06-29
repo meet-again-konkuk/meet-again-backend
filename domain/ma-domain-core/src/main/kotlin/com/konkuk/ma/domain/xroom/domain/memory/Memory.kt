@@ -24,15 +24,15 @@ class Memory(
 
     fun sortKey(): LocalDate = eventDate.normalizedDate
 
-    fun update(newMemory: NewMemory): Memory {
+    fun update(details: MemoryDetails): Memory {
         return Memory(
             id = id,
             xroomId = xroomId,
-            title = newMemory.title,
-            eventDate = newMemory.eventDate,
-            location = newMemory.location,
-            emotionTags = newMemory.emotionTags,
-            content = newMemory.content,
+            title = details.title,
+            eventDate = details.eventDate,
+            location = details.location,
+            emotionTags = details.emotionTags,
+            content = details.content,
             createdDate = createdDate,
         )
     }

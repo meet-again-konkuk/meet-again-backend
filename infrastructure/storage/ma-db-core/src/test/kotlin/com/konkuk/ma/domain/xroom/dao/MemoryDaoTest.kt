@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.xroom.domain.memory.EventDatePrecision
 import com.konkuk.ma.domain.xroom.domain.memory.Memory
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryContent
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryTitle
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryDetails
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 import com.konkuk.ma.domain.xroom.entity.table.MemoryEmotionTagTable
 import com.konkuk.ma.domain.xroom.entity.table.MemoryTable
@@ -53,13 +54,15 @@ class MemoryDaoTest(
             letter: String? = null,
         ) = NewMemory(
             xroomId = xroomId,
-            title = title,
-            eventDate = eventDate,
-            eventDatePrecision = eventDatePrecision,
-            location = location,
-            emotionTags = emotionTags,
-            text = text,
-            letter = letter,
+            details = MemoryDetails.of(
+                title = title,
+                eventDate = eventDate,
+                eventDatePrecision = eventDatePrecision,
+                location = location,
+                emotionTags = emotionTags,
+                text = text,
+                letter = letter,
+            ),
         )
 
         fun memory(

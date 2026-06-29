@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.xroom.api.request
 
+import com.konkuk.ma.domain.xroom.domain.memory.MemoryDetails
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 
 class AddMemoryRequest(
@@ -14,13 +15,15 @@ class AddMemoryRequest(
     fun toNewMemory(xroomId: Long): NewMemory {
         return NewMemory(
             xroomId = xroomId,
-            title = title,
-            eventDate = eventDate,
-            eventDatePrecision = eventDatePrecision,
-            location = location,
-            emotionTags = emotionTags,
-            text = text,
-            letter = letter,
+            details = MemoryDetails.of(
+                title = title,
+                eventDate = eventDate,
+                eventDatePrecision = eventDatePrecision,
+                location = location,
+                emotionTags = emotionTags,
+                text = text,
+                letter = letter,
+            ),
         )
     }
 }
