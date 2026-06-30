@@ -9,6 +9,7 @@ enum class EntityType(val entityName: String, val keyName: String) {
     TARGET_INFO("TargetInfo", "id"),
     XROOM("Xroom", "id"),
     MEMORY("Memory", "id"),
+    MEDIA("Media", "id"),
     POINT_PRODUCT("PointProduct", "id"),
     POINT_HISTORY("PointHistory", "idempotencyKey"),
     MEMBER_POINT("MemberPoint", "email"),

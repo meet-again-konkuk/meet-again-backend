@@ -84,6 +84,24 @@ class AllowedExtensionTest : BehaviorSpec({
         }
     }
 
+    Given("허용된 확장자 파일명이 주어졌을 때 mimeType 매핑") {
+        listOf(
+            "photo.jpg" to "image/jpeg",
+            "photo.jpeg" to "image/jpeg",
+            "photo.png" to "image/png",
+            "photo.svg" to "image/svg+xml",
+            "photo.webp" to "image/webp",
+        ).forEach { (fileName, expectedMimeType) ->
+            When("${fileName} 파일명으로 생성하면") {
+                val extension = AllowedExtension.from(fileName)
+
+                Then("mimeType는 ${expectedMimeType}로 매핑된다") {
+                    extension.mimeType shouldBe expectedMimeType
+                }
+            }
+        }
+    }
+
     Given("동일 확장자로 여러 번 생성할 때") {
         When("같은 파일명으로 두 번 생성하면") {
             val first = AllowedExtension.from("a.jpg")

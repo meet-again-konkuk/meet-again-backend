@@ -22,6 +22,26 @@ class PhotoFileTest : BehaviorSpec({
                 photoFile.originalFileName shouldBe "profile.jpg"
                 photoFile.extension.normalized shouldBe "jpg"
             }
+
+            Then("mimeType는 확장자에서 파생된다") {
+                photoFile.mimeType shouldBe "image/jpeg"
+            }
+        }
+    }
+
+    Given("png 파일 정보가 주어졌을 때") {
+        val content = "fake-image".toByteArray()
+
+        When("PhotoFile을 생성하면") {
+            val photoFile = PhotoFile.create(
+                originalFileName = "profile.png",
+                sizeInBytes = content.size.toLong(),
+                content = content
+            )
+
+            Then("mimeType는 image/png로 파생된다") {
+                photoFile.mimeType shouldBe "image/png"
+            }
         }
     }
 

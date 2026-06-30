@@ -11,8 +11,10 @@ import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
+import com.konkuk.ma.domain.xroom.domain.media.Medias
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryCounts
+import com.konkuk.ma.domain.xroom.domain.port.MediaQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import org.springframework.stereotype.Service
@@ -26,6 +28,7 @@ class XroomQueryService(
     private val matchingResultRepository: MatchingResultRepository,
     private val memberQueryRepository: MemberQueryRepository,
     private val memoryQueryRepository: MemoryQueryRepository,
+    private val mediaQueryRepository: MediaQueryRepository,
     private val xroomValidator: XroomValidator,
 ) {
     fun findMine(memberId: Long): MyXrooms {
@@ -52,6 +55,12 @@ class XroomQueryService(
 
         val targetInfo = targetInfoQueryRepository.findOne(xroom.targetInfoId)
         val memories = Memories(memoryQueryRepository.find(xroomId))
-        return XroomDetail(xroom = xroom, recipientName = targetInfo.targetName, memoriesCollection = memories)
+        val medias = Medias(mediaQueryRepository.findActiveByMemories(memories.extractIds()))
+        return XroomDetail(
+            xroom = xroom,
+            recipientName = targetInfo.targetName,
+            memoriesCollection = memories,
+            medias = medias,
+        )
     }
 }

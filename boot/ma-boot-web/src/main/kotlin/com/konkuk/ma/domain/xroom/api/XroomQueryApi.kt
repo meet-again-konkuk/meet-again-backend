@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/xrooms")
 class XroomQueryApi(
     private val xroomQueryService: XroomQueryService,
+    private val mediaUrlAssembler: MediaUrlAssembler,
 ) {
     @GetMapping("/me")
     fun findMine(
@@ -40,6 +41,6 @@ class XroomQueryApi(
         @LoginMember memberInfo: MemberInfo,
     ): XroomDetailResponse {
         val xroomDetail = xroomQueryService.findDetail(xroomId, memberInfo.id)
-        return XroomDetailResponse.from(xroomDetail)
+        return XroomDetailResponse.from(xroomDetail, mediaUrlAssembler)
     }
 }

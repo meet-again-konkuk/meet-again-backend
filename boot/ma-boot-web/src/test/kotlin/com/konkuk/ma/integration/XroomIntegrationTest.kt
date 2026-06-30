@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.domain.xroom.entity.table.MemoryEmotionTagTable
+import com.konkuk.ma.domain.xroom.entity.table.MemoryMediaTable
 import com.konkuk.ma.domain.xroom.entity.table.MemoryTable
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import com.konkuk.ma.extension.deleteJson
@@ -17,18 +18,29 @@ import com.konkuk.ma.extension.postJson
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.imageio.ImageIO
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.multipart
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,6 +52,16 @@ class XroomIntegrationTest(
 ) : FunSpec({
 
     val passwordEncoder = BCryptPasswordEncoder()
+    val testUploadDir = Paths.get(System.getProperty("java.io.tmpdir"), "meet-again-test", "uploads")
+
+    fun cleanUploadDir() {
+        if (Files.exists(testUploadDir)) {
+            Files.walk(testUploadDir)
+                .sorted(Comparator.reverseOrder())
+                .filter { it != testUploadDir }
+                .forEach { Files.deleteIfExists(it) }
+        }
+    }
 
     beforeSpec {
         transaction {
@@ -51,12 +73,14 @@ class XroomIntegrationTest(
                 MatchingResultTable,
                 MemoryTable,
                 MemoryEmotionTagTable,
+                MemoryMediaTable,
             )
         }
     }
 
     afterEach {
         transaction {
+            MemoryMediaTable.deleteAll()
             MemoryEmotionTagTable.deleteAll()
             MemoryTable.deleteAll()
             XroomTable.deleteAll()
@@ -65,11 +89,13 @@ class XroomIntegrationTest(
             RefreshTokenTable.deleteAll()
             MemberTable.deleteAll()
         }
+        cleanUploadDir()
     }
 
     afterSpec {
         transaction {
             SchemaUtils.drop(
+                MemoryMediaTable,
                 MemoryEmotionTagTable,
                 MemoryTable,
                 MatchingResultTable,
@@ -79,6 +105,7 @@ class XroomIntegrationTest(
                 MemberTable,
             )
         }
+        cleanUploadDir()
     }
 
     fun insertMember(
@@ -184,6 +211,32 @@ class XroomIntegrationTest(
                 it[MemoryTable.text] = text
             }.value
         }
+    }
+
+    fun createTestPngBytes(): ByteArray {
+        val image = BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB)
+        val graphics = image.createGraphics()
+        graphics.fillRect(0, 0, 800, 600)
+        graphics.dispose()
+
+        val outputStream = ByteArrayOutputStream()
+        ImageIO.write(image, "png", outputStream)
+        return outputStream.toByteArray()
+    }
+
+    fun pngPhotoFile(fileName: String = "memory-photo.png") =
+        MockMultipartFile("photo", fileName, MediaType.IMAGE_PNG_VALUE, createTestPngBytes())
+
+    fun uploadPhoto(encodedXroomId: String, encodedMemoryId: String, accessToken: String, fileName: String = "memory-photo.png") =
+        mockMvc.multipart("/api/xrooms/{xroomId}/memories/{memoryId}/photo", encodedXroomId, encodedMemoryId) {
+            file(pngPhotoFile(fileName))
+            header("Authorization", "Bearer $accessToken")
+        }
+
+    fun activeMedias(memoryId: Long) = transaction {
+        MemoryMediaTable.selectAll()
+            .where { (MemoryMediaTable.memoryId eq memoryId) and (MemoryMediaTable.deleted eq false) }
+            .toList()
     }
 
     context("GET /api/xrooms/me") {
@@ -1007,6 +1060,326 @@ class XroomIntegrationTest(
                 encodedMemoryId,
             )
                 .andExpect { status { isUnauthorized() } }
+        }
+    }
+
+    context("POST /api/xrooms/{xroomId}/memories/{memoryId}/photo") {
+
+        test("작성자가 사진을 업로드하면 201과 함께 MEMORY_MEDIA에 active 1행이 적재되고 응답에 photoUrl·thumbnailUrl이 담긴다") {
+            // Given
+            val email = "xroom-photo-upload@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val accessToken = login(email, password)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            val photo = pngPhotoFile("memory-photo.png")
+
+            // When
+            val result = mockMvc.multipart(
+                "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
+                encodedXroomId,
+                encodedMemoryId,
+            ) {
+                file(photo)
+                header("Authorization", "Bearer $accessToken")
+            }
+                .andExpect { status { isCreated() } }
+                .andReturn()
+
+            // Then - MEMORY_MEDIA에 active 1행이 상대 storageKey·mimeType·fileSize와 함께 적재된다
+            val medias = activeMedias(memoryId)
+            medias.size shouldBe 1
+            val storageKey = medias[0][MemoryMediaTable.storageKey]
+            storageKey.startsWith("memory/memory-photo/$memoryId/") shouldBe true
+            storageKey.startsWith("/") shouldBe false
+            medias[0][MemoryMediaTable.mimeType] shouldBe MediaType.IMAGE_PNG_VALUE
+            medias[0][MemoryMediaTable.fileSize] shouldBe photo.size
+
+            // Then - 응답의 photoUrl은 "/files/" + storageKey, thumbnailUrl도 채워진다
+            val body = mapper.readTree(result.response.contentAsString)
+            body.get("mediaId").asText().isNotBlank() shouldBe true
+            body.get("photoUrl").asText() shouldBe "/files/$storageKey"
+            body.get("thumbnailUrl").asText().startsWith("/files/memory/thumbnail/$memoryId/") shouldBe true
+        }
+
+        test("같은 기억에 사진을 재업로드하면 active 1행만 유지되고 기존 행은 soft delete 된다") {
+            // Given
+            val email = "xroom-photo-replace@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val accessToken = login(email, password)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            uploadPhoto(encodedXroomId, encodedMemoryId, accessToken, "first.png")
+                .andExpect { status { isCreated() } }
+
+            // When - 두 번째 업로드
+            uploadPhoto(encodedXroomId, encodedMemoryId, accessToken, "second.png")
+                .andExpect { status { isCreated() } }
+
+            // Then - active는 1행(두 번째), 전체는 2행(첫 번째는 soft delete)
+            val active = activeMedias(memoryId)
+            active.size shouldBe 1
+            active[0][MemoryMediaTable.originalFilename] shouldBe "second.png"
+
+            val total = transaction {
+                MemoryMediaTable.selectAll().where { MemoryMediaTable.memoryId eq memoryId }.toList()
+            }
+            total.size shouldBe 2
+            total.count { it[MemoryMediaTable.deleted] } shouldBe 1
+        }
+
+        test("업로드한 사진은 정적 경로로 서빙되어 200을 반환한다") {
+            // Given
+            val email = "xroom-photo-serve@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val accessToken = login(email, password)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            val uploadResult = uploadPhoto(encodedXroomId, encodedMemoryId, accessToken)
+                .andExpect { status { isCreated() } }
+                .andReturn()
+            val photoUrl = mapper.readTree(uploadResult.response.contentAsString).get("photoUrl").asText()
+
+            // When & Then - 업로드된 실제 파일이 resource handler로 서빙된다.
+            // /files/memory/** 는 permitAll 이므로 토큰 없이도(브라우저 <img> 처럼) 200을 반환한다.
+            mockMvc.get(photoUrl)
+                .andExpect { status { isOk() } }
+        }
+
+        test("작성자가 아닌 수신자가 사진을 업로드하면 403이 반환된다") {
+            // Given
+            val ownerId = insertMember(email = "xroom-photo-owner@example.com")
+            val recipientEmail = "xroom-photo-recipient@example.com"
+            val recipientPassword = "password123"
+            val recipientId = insertMember(email = recipientEmail, rawPassword = recipientPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            insertMatchingResult(
+                registerId = ownerId,
+                targetInfoId = targetInfoId,
+                targetId = recipientId,
+                claimed = true,
+            )
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val accessToken = login(recipientEmail, recipientPassword)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            // When & Then
+            uploadPhoto(encodedXroomId, encodedMemoryId, accessToken)
+                .andExpect { status { isForbidden() } }
+        }
+
+        test("다른 방의 memoryId로 사진을 업로드하면 403이 반환된다") {
+            // Given - 한 작성자가 방 A·방 B를 소유, 기억은 방 B에만 존재
+            val email = "xroom-photo-cross@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoIdA = insertTargetInfo(registerId = ownerId)
+            val targetInfoIdB = insertTargetInfo(registerId = ownerId)
+            val xroomIdA = insertXroom(ownerId = ownerId, targetInfoId = targetInfoIdA, title = "방 A")
+            val xroomIdB = insertXroom(ownerId = ownerId, targetInfoId = targetInfoIdB, title = "방 B")
+            val memoryIdInB = insertMemory(xroomIdB)
+            val accessToken = login(email, password)
+
+            // 방 A 경로로 방 B의 기억에 사진 업로드 시도
+            val encodedXroomIdA = idObfuscator.encode(ObfuscationType.XROOM, xroomIdA)
+            val encodedMemoryIdInB = idObfuscator.encode(ObfuscationType.MEMORY, memoryIdInB)
+
+            // When & Then
+            uploadPhoto(encodedXroomIdA, encodedMemoryIdInB, accessToken)
+                .andExpect { status { isForbidden() } }
+        }
+
+        test("인증 토큰 없이 사진을 업로드하면 401이 반환된다") {
+            // Given
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, 1L)
+
+            // When & Then
+            mockMvc.multipart(
+                "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
+                encodedXroomId,
+                encodedMemoryId,
+            ) {
+                file(pngPhotoFile())
+            }
+                .andExpect { status { isUnauthorized() } }
+        }
+    }
+
+    context("DELETE /api/xrooms/{xroomId}/memories/{memoryId}/photo") {
+
+        test("작성자가 사진을 삭제하면 200·photoDeleted=true를 반환하고 active 행이 soft delete 된다") {
+            // Given
+            val email = "xroom-photo-delete@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val accessToken = login(email, password)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            uploadPhoto(encodedXroomId, encodedMemoryId, accessToken)
+                .andExpect { status { isCreated() } }
+
+            // When
+            val result = mockMvc.deleteJson(
+                "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
+                encodedXroomId,
+                encodedMemoryId,
+            ) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then - 응답에 암호화된 memoryId와 photoDeleted=true가 담긴다
+            val body = mapper.readTree(result.response.contentAsString)
+            body.get("memoryId").asText() shouldBe encodedMemoryId
+            body.get("photoDeleted").asBoolean() shouldBe true
+
+            // Then - active 미디어가 사라진다
+            activeMedias(memoryId).size shouldBe 0
+        }
+
+        test("작성자가 아닌 수신자가 사진을 삭제하면 403이 반환된다") {
+            // Given
+            val ownerEmail = "xroom-photo-delete-owner@example.com"
+            val ownerPassword = "password123"
+            val ownerId = insertMember(email = ownerEmail, rawPassword = ownerPassword)
+            val recipientEmail = "xroom-photo-delete-recipient@example.com"
+            val recipientPassword = "password123"
+            val recipientId = insertMember(email = recipientEmail, rawPassword = recipientPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            insertMatchingResult(
+                registerId = ownerId,
+                targetInfoId = targetInfoId,
+                targetId = recipientId,
+                claimed = true,
+            )
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            // 작성자가 먼저 사진을 올린다
+            val ownerToken = login(ownerEmail, ownerPassword)
+            uploadPhoto(encodedXroomId, encodedMemoryId, ownerToken)
+                .andExpect { status { isCreated() } }
+
+            // When & Then - 수신자가 삭제를 시도하면 403
+            val recipientToken = login(recipientEmail, recipientPassword)
+            mockMvc.deleteJson(
+                "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
+                encodedXroomId,
+                encodedMemoryId,
+            ) {
+                authorization("Bearer $recipientToken")
+            }
+                .andExpect { status { isForbidden() } }
+        }
+
+        test("인증 토큰 없이 사진을 삭제하면 401이 반환된다") {
+            // Given
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, 1L)
+
+            // When & Then
+            mockMvc.deleteJson(
+                "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
+                encodedXroomId,
+                encodedMemoryId,
+            )
+                .andExpect { status { isUnauthorized() } }
+        }
+    }
+
+    context("사진과 기억 상세·연쇄 삭제 연계") {
+
+        test("사진을 업로드한 기억은 상세 조회 시 photoUrl이 채워지고 사진 없는 기억은 null이다") {
+            // Given
+            val email = "xroom-photo-detail@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(email, password)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+
+            // 시점 오름차순: photoMemory(2019) → noPhotoMemory(2020)
+            val photoMemoryId = insertMemory(xroomId, eventDate = LocalDate.of(2019, 1, 1))
+            insertMemory(xroomId, eventDate = LocalDate.of(2020, 2, 2))
+            val encodedPhotoMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, photoMemoryId)
+
+            uploadPhoto(encodedXroomId, encodedPhotoMemoryId, accessToken)
+                .andExpect { status { isCreated() } }
+
+            // When
+            val detailResult = mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then
+            val memories = mapper.readTree(detailResult.response.contentAsByteArray).get("memories")
+            memories.size() shouldBe 2
+            memories.get(0).get("photoUrl").asText().startsWith("/files/memory/memory-photo/$photoMemoryId/") shouldBe true
+            memories.get(1).get("photoUrl").isNull shouldBe true
+        }
+
+        test("사진이 있는 기억을 삭제하면 기억과 사진이 함께 soft delete 된다") {
+            // Given
+            val email = "xroom-photo-cascade@example.com"
+            val password = "password123"
+            val ownerId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val memoryId = insertMemory(xroomId)
+            val accessToken = login(email, password)
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+            val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, memoryId)
+
+            uploadPhoto(encodedXroomId, encodedMemoryId, accessToken)
+                .andExpect { status { isCreated() } }
+
+            // When - 사진이 아니라 기억 자체를 삭제한다
+            mockMvc.deleteJson(
+                "/api/xrooms/{xroomId}/memories/{memoryId}",
+                encodedXroomId,
+                encodedMemoryId,
+            ) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+
+            // Then - 상세에서 기억이 사라지고, 그 기억의 사진도 active에서 제외된다
+            val detailResult = mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            mapper.readTree(detailResult.response.contentAsByteArray).get("memories").size() shouldBe 0
+            activeMedias(memoryId).size shouldBe 0
         }
     }
 })

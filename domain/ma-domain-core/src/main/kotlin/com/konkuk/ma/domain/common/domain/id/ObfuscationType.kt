@@ -7,5 +7,6 @@ enum class ObfuscationType(val saltSuffix: String) {
     MATCHING_RESULT("matching-result"),
     XROOM("xroom"),
     MEMORY("memory"),
+    MEDIA("media"),
     POINT_HISTORY("point-history"),
 }

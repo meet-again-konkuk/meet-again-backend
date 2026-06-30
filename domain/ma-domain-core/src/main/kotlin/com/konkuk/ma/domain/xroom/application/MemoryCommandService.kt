@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.xroom.application
 
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryDetails
 import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
+import com.konkuk.ma.domain.xroom.domain.port.MediaCommandRepository
 import com.konkuk.ma.domain.xroom.domain.port.MemoryCommandRepository
 import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
@@ -14,6 +15,7 @@ class MemoryCommandService(
     private val xroomQueryRepository: XroomQueryRepository,
     private val memoryQueryRepository: MemoryQueryRepository,
     private val memoryCommandRepository: MemoryCommandRepository,
+    private val mediaCommandRepository: MediaCommandRepository,
 ) {
     fun addMemory(memberId: Long, newMemory: NewMemory): Long {
         val xroom = xroomQueryRepository.findOne(newMemory.xroomId)
@@ -37,6 +39,7 @@ class MemoryCommandService(
         val memory = memoryQueryRepository.findOne(memoryId)
         memory.validateBelongsTo(xroomId)
         memoryCommandRepository.delete(memoryId, memberId)
+        mediaCommandRepository.softDeleteByMemory(memoryId, memberId)
         return memoryId
     }
 }

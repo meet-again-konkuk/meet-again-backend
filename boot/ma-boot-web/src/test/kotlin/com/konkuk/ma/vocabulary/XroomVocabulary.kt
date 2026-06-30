@@ -67,10 +67,21 @@ fun memoryLetter(fieldName: String = "letter") =
     fieldName responseType STRING means "편지 (text와 상호배타)" example "오랜만에 편지를 써본다"
 
 fun photoUrl(fieldName: String = "photoUrl") =
-    fieldName responseType STRING means "사진 URL (Phase 3, 현재 항상 null)" example "https://cdn.example.com/p.jpg"
+    fieldName responseType STRING means "사진 서빙 URL (/files/...), 없으면 null" example "/files/xroom/1/memory/1/photo.jpg"
 
 fun deleted(fieldName: String = "deleted") =
     fieldName responseType BOOLEAN means "삭제 여부 (true 고정)" example "true"
+
+// --- 기억 사진(Media) 관련 필드 ---
+
+fun mediaId(fieldName: String = "mediaId") =
+    fieldName responseType STRING means "미디어(사진) ID (인코딩)" example "media123"
+
+fun thumbnailUrl(fieldName: String = "thumbnailUrl") =
+    fieldName responseType STRING means "썸네일 서빙 URL (/files/...), 없으면 null" example "/files/xroom/1/memory/1/thumb.jpg"
+
+fun photoDeleted(fieldName: String = "photoDeleted") =
+    fieldName responseType BOOLEAN means "사진 삭제 여부 (true 고정)" example "true"
 
 // --- X룸 관련 Path Variable ---
 

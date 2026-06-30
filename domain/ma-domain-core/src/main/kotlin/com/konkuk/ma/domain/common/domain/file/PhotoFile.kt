@@ -8,6 +8,8 @@ class PhotoFile(
     val sizeInBytes: Long,
     val content: ByteArray
 ) {
+    val mimeType: String get() = extension.mimeType
+
     init {
         if (sizeInBytes > MAX_FILE_SIZE_BYTES) throw InvalidValueException(PhotoFile::class, sizeInBytes, "파일 크기는 ${MAX_FILE_SIZE_MB}MB를 초과할 수 없습니다.")
         if (content.isEmpty()) throw InvalidValueException(PhotoFile::class, originalFileName, "파일 내용이 비어있습니다.")
