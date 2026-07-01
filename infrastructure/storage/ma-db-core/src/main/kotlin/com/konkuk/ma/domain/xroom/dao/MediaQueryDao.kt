@@ -6,14 +6,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class MediaQueryDao {
-    fun findActiveByMemory(memoryId: Long): MediaEntity? {
-        return MemoryMediaTable
-            .activeRows { MemoryMediaTable.memoryId eq memoryId }
-            .limit(1)
-            .firstOrNull()
-            ?.let { MediaEntity.from(it) }
-    }
-
     fun findActiveByMemories(memoryIds: Set<Long>): List<MediaEntity> {
         if (memoryIds.isEmpty()) return emptyList()
         return MemoryMediaTable

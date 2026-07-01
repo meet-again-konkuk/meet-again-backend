@@ -62,38 +62,13 @@ class MediaDaoTest(
 
                 val id = mediaCommandDao.save(media)
 
-                val found = mediaQueryDao.findActiveByMemory(media.memoryId)!!
+                val found = mediaQueryDao.findActiveByMemories(setOf(media.memoryId)).first()
                 found.id shouldBe id
                 found.storageKey shouldBe media.storageKey
                 found.originalFilename shouldBe media.originalFilename
                 found.mimeType shouldBe media.mimeType
                 found.fileSize shouldBe media.fileSize
                 found.thumbnailKey shouldBe media.thumbnailKey
-            }
-        }
-
-        context("findActiveByMemory") {
-
-            test("active 미디어 1건을 반환한다") {
-                val media = newMedia()
-                mediaCommandDao.save(media)
-
-                val found = mediaQueryDao.findActiveByMemory(media.memoryId)
-
-                found shouldNotBe null
-                found!!.memoryId shouldBe media.memoryId
-            }
-
-            test("soft-deleted 미디어는 제외되어 null을 반환한다") {
-                val media = newMedia()
-                mediaCommandDao.save(media)
-                mediaCommandDao.softDeleteByMemory(media.memoryId, memberId = 1L)
-
-                mediaQueryDao.findActiveByMemory(media.memoryId) shouldBe null
-            }
-
-            test("미디어가 없으면 null을 반환한다") {
-                mediaQueryDao.findActiveByMemory(999L) shouldBe null
             }
         }
 
@@ -144,7 +119,7 @@ class MediaDaoTest(
                 row[MemoryMediaTable.deletedBy] shouldBe memberId.toString()
                 row[MemoryMediaTable.deletedDate] shouldNotBe null
 
-                mediaQueryDao.findActiveByMemory(media.memoryId) shouldBe null
+                mediaQueryDao.findActiveByMemories(setOf(media.memoryId)).shouldBeEmpty()
             }
         }
     }
