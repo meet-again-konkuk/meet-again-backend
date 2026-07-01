@@ -223,6 +223,16 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/delete-memory.html[기억 삭제 API,window=_blank]
 
+[[xroom-upload-memory-photo]]
+=== 기억 사진 업로드
+
+* link:xroom/upload-memory-photo.html[기억 사진 업로드 API,window=_blank]
+
+[[xroom-delete-memory-photo]]
+=== 기억 사진 삭제
+
+* link:xroom/delete-memory-photo.html[기억 사진 삭제 API,window=_blank]
+
 [[support]]
 == 고객지원
 

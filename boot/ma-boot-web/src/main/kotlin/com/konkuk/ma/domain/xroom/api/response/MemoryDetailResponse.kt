@@ -14,10 +14,10 @@ class MemoryDetailResponse(
     val emotionTags: List<String>,
     val text: String?,
     val letter: String?,
-    val photoUrl: String? = null,
+    val photoUrl: String?,
 ) {
     companion object {
-        fun from(memory: Memory): MemoryDetailResponse {
+        fun from(memory: Memory, photoUrl: String?): MemoryDetailResponse {
             return MemoryDetailResponse(
                 id = memory.id,
                 title = memory.titleValue,
@@ -27,7 +27,7 @@ class MemoryDetailResponse(
                 emotionTags = memory.emotionTagValues,
                 text = memory.text,
                 letter = memory.letter,
-                photoUrl = null,
+                photoUrl = photoUrl,
             )
         }
     }

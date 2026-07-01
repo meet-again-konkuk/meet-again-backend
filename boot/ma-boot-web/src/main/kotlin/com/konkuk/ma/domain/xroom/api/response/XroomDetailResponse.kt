@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.xroom.api.response
 
+import com.konkuk.ma.config.WebConfig.Companion.FILE_URL_PREFIX
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.support.id.EncryptId
@@ -21,7 +22,9 @@ class XroomDetailResponse(
                 recipientName = xroomDetail.recipientName,
                 template = xroomDetail.template,
                 finalMessage = xroomDetail.finalMessage,
-                memories = xroomDetail.memories.map { MemoryDetailResponse.from(it) },
+                memories = xroomDetail.memories.map { memory ->
+                    MemoryDetailResponse.from(memory, xroomDetail.photoUrlOf(memory.id, FILE_URL_PREFIX))
+                },
             )
         }
     }

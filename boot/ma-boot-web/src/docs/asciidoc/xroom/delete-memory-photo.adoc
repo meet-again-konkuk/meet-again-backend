@@ -1,0 +1,30 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 기억 사진 삭제 API
+
+== 기억 사진 삭제
+
+작성자가 자신의 기억의 방에 담긴 기억 한 건의 사진을 삭제한다. 작성자가 아니면 403을 반환한다.
+
+응답의 `photoDeleted` 는 항상 true 이다.
+
+=== 요청
+
+include::{snippets}/xroom/delete-memory-photo/http-request.adoc[]
+
+=== 경로 변수
+
+include::{snippets}/xroom/delete-memory-photo/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/xroom/delete-memory-photo/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/xroom/delete-memory-photo/response-fields.adoc[]

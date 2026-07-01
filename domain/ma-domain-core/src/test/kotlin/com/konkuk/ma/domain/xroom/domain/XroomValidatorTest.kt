@@ -4,12 +4,15 @@ import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
+import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
+import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
 import com.konkuk.ma.domain.xroom.fixture.XroomFixture
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.DuplicateException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import java.time.LocalDateTime
@@ -18,9 +21,10 @@ class XroomValidatorTest : FunSpec({
 
     val targetInfoQueryRepository = mockk<TargetInfoQueryRepository>()
     val xroomQueryRepository = mockk<XroomQueryRepository>()
+    val memoryQueryRepository = mockk<MemoryQueryRepository>()
     val matchingResultRepository = mockk<MatchingResultRepository>()
     val xroomValidator =
-        XroomValidator(targetInfoQueryRepository, xroomQueryRepository, matchingResultRepository)
+        XroomValidator(targetInfoQueryRepository, xroomQueryRepository, memoryQueryRepository, matchingResultRepository)
 
     context("validate") {
 
@@ -124,6 +128,52 @@ class XroomValidatorTest : FunSpec({
 
             shouldThrow<AccessDeniedException> {
                 xroomValidator.validateAccessible(xroom, 2L)
+            }
+        }
+    }
+
+    context("validateOwnedXroom") {
+
+        test("작성자이면 통과한다") {
+            every { xroomQueryRepository.findOne(10L) } returns XroomFixture.create(id = 10L, ownerId = 1L)
+
+            xroomValidator.validateOwnedXroom(10L, 1L)
+        }
+
+        test("작성자가 아니면 AccessDeniedException이 발생한다") {
+            every { xroomQueryRepository.findOne(10L) } returns XroomFixture.create(id = 10L, ownerId = 1L)
+
+            shouldThrow<AccessDeniedException> {
+                xroomValidator.validateOwnedXroom(10L, 2L)
+            }
+        }
+    }
+
+    context("validateOwnedMemory") {
+
+        test("작성자이고 기억이 해당 방에 속하면 그 기억을 반환한다") {
+            every { xroomQueryRepository.findOne(10L) } returns XroomFixture.create(id = 10L, ownerId = 1L)
+            every { memoryQueryRepository.findOne(20L) } returns MemoryFixture.create(id = 20L, xroomId = 10L)
+
+            val memory = xroomValidator.validateOwnedMemory(10L, 20L, 1L)
+
+            memory.id shouldBe 20L
+        }
+
+        test("작성자가 아니면 AccessDeniedException이 발생한다") {
+            every { xroomQueryRepository.findOne(10L) } returns XroomFixture.create(id = 10L, ownerId = 1L)
+
+            shouldThrow<AccessDeniedException> {
+                xroomValidator.validateOwnedMemory(10L, 20L, 2L)
+            }
+        }
+
+        test("기억이 다른 방에 속하면 AccessDeniedException이 발생한다") {
+            every { xroomQueryRepository.findOne(10L) } returns XroomFixture.create(id = 10L, ownerId = 1L)
+            every { memoryQueryRepository.findOne(20L) } returns MemoryFixture.create(id = 20L, xroomId = 99L)
+
+            shouldThrow<AccessDeniedException> {
+                xroomValidator.validateOwnedMemory(10L, 20L, 1L)
             }
         }
     }

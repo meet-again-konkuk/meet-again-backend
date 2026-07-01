@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import
     TestIdObfuscatorConfig::class,
     MemberQueryServiceTestConfig::class,
     WebConfig::class,
-    LoginMemberArgumentResolver::class
+    LoginMemberArgumentResolver::class,
 )
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
