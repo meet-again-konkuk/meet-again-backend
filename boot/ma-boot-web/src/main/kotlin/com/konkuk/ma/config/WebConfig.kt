@@ -16,8 +16,6 @@ class WebConfig(
     private val loginMemberArgumentResolver: LoginMemberArgumentResolver,
     @Value("\${file.upload.base-path:uploads}")
     private val basePath: String,
-    @Value("\${file.upload.url-prefix:/files}")
-    private val urlPrefix: String,
 ) : WebMvcConfigurer {
 
     override fun addFormatters(registry: FormatterRegistry) {
@@ -29,7 +27,11 @@ class WebConfig(
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        registry.addResourceHandler("$urlPrefix/**")
+        registry.addResourceHandler("$FILE_URL_PREFIX/**")
             .addResourceLocations("file:$basePath/")
+    }
+
+    companion object {
+        const val FILE_URL_PREFIX = "/files"
     }
 }

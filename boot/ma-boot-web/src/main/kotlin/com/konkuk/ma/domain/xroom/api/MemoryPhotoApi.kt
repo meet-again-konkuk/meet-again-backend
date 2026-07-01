@@ -8,7 +8,6 @@ import com.konkuk.ma.domain.xroom.application.MemoryPhotoCommandService
 import com.konkuk.ma.support.id.DecryptId
 import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/api/xrooms/{xroomId}/memories/{memoryId}/photo")
 class MemoryPhotoApi(
     private val memoryPhotoCommandService: MemoryPhotoCommandService,
-    @Value("\${file.upload.url-prefix:/files}")
-    private val fileBaseUrl: String,
 ) {
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,7 +34,7 @@ class MemoryPhotoApi(
     ): MediaUploadResponse {
         val photoFile = PhotoFile.create(photo.originalFilename, photo.size, photo.bytes)
         val media = memoryPhotoCommandService.uploadPhoto(xroomId, memoryId, memberInfo.id, photoFile)
-        return MediaUploadResponse.from(media, fileBaseUrl)
+        return MediaUploadResponse.from(media)
     }
 
     @DeleteMapping
