@@ -16,10 +16,10 @@ class MediaProcessor(
     private val thumbnailGenerator: ThumbnailGenerator,
 ) {
 
-    fun process(memoryId: Long, photoFile: PhotoFile): ProcessedMedia {
+    fun process(memoryId: Long, photoFile: PhotoFile): NewMedia {
         val storageKey = storeOriginal(memoryId, photoFile)
         val thumbnailKey = storeThumbnail(memoryId, photoFile)
-        return ProcessedMedia(storageKey, thumbnailKey)
+        return NewMedia.of(memoryId, photoFile, storageKey, thumbnailKey)
     }
 
     private fun storeOriginal(memoryId: Long, photoFile: PhotoFile): String {

@@ -39,7 +39,7 @@ class MediaDaoTest(
             mimeType: String = "image/jpeg",
             fileSize: Long = 2048L,
             thumbnailKey: String? = "memory/thumbnail/1/thumb_photo.jpg",
-        ) = NewMedia.create(
+        ) = NewMedia(
             memoryId = memoryId,
             storageKey = storageKey,
             originalFilename = originalFilename,

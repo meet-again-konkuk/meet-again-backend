@@ -37,8 +37,12 @@ class MediaProcessorTest : FunSpec({
             // When
             val result = processor.process(memoryId, photoFile)
 
-            // Then - 절대경로 prefix는 제거되고 directory + leaf 형태의 상대키가 된다
+            // Then - 절대경로 prefix는 제거되고 directory + leaf 형태의 상대키가 되며, photoFile 메타가 담긴다
             result.storageKey shouldBe "memory/memory-photo/$memoryId/$storedLeaf"
+            result.memoryId shouldBe memoryId
+            result.originalFilename shouldBe photoFile.originalFileName
+            result.mimeType shouldBe photoFile.mimeType
+            result.fileSize shouldBe photoFile.sizeInBytes
         }
 
         test("썸네일 생성에 성공하면 thumbnailKey를 상대 경로로 반환한다") {
@@ -56,7 +60,7 @@ class MediaProcessorTest : FunSpec({
             result.thumbnailKey shouldBe "memory/thumbnail/$memoryId/thumb_${photoFile.originalFileName}"
         }
 
-        test("썸네일 생성에 실패하면 thumbnailKey가 null인 ProcessedMedia를 반환한다") {
+        test("썸네일 생성에 실패하면 thumbnailKey가 null인 NewMedia를 반환한다") {
             // Given
             val memoryId = 1L
             val photoFile = PhotoFileFixture.create()
