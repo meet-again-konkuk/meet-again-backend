@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.xroom.application
 
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
-import com.konkuk.ma.domain.xroom.application.result.MediaUploadResult
+import com.konkuk.ma.domain.xroom.domain.media.Media
 import com.konkuk.ma.domain.xroom.domain.media.MediaProcessor
 import com.konkuk.ma.domain.xroom.domain.media.NewMedia
 import com.konkuk.ma.domain.xroom.domain.port.MediaCommandRepository
@@ -20,7 +20,7 @@ class MemoryPhotoCommandService(
     private val mediaCommandRepository: MediaCommandRepository,
     private val mediaProcessor: MediaProcessor,
 ) {
-    fun uploadPhoto(xroomId: Long, memoryId: Long, memberId: Long, photoFile: PhotoFile): MediaUploadResult {
+    fun uploadPhoto(xroomId: Long, memoryId: Long, memberId: Long, photoFile: PhotoFile): Media {
         validateOwnedMemory(xroomId, memoryId, memberId)
 
         replaceExistingPhoto(memoryId, memberId)
@@ -34,7 +34,15 @@ class MemoryPhotoCommandService(
             thumbnailKey = processed.thumbnailKey,
         )
         val mediaId = mediaCommandRepository.save(newMedia)
-        return MediaUploadResult(mediaId, processed.storageKey, processed.thumbnailKey)
+        return Media(
+            id = mediaId,
+            memoryId = memoryId,
+            storageKey = processed.storageKey,
+            originalFilename = photoFile.originalFileName,
+            mimeType = photoFile.mimeType,
+            fileSize = photoFile.sizeInBytes,
+            thumbnailKey = processed.thumbnailKey,
+        )
     }
 
     fun removePhoto(xroomId: Long, memoryId: Long, memberId: Long) {

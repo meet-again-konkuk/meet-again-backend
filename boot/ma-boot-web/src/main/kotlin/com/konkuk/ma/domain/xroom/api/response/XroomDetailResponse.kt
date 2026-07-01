@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.xroom.api.response
 
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
-import com.konkuk.ma.domain.xroom.api.MediaUrlAssembler
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.support.id.EncryptId
 
@@ -15,7 +14,7 @@ class XroomDetailResponse(
     val memories: List<MemoryDetailResponse>,
 ) {
     companion object {
-        fun from(xroomDetail: XroomDetail, mediaUrlAssembler: MediaUrlAssembler): XroomDetailResponse {
+        fun from(xroomDetail: XroomDetail, baseUrl: String): XroomDetailResponse {
             return XroomDetailResponse(
                 id = xroomDetail.id,
                 title = xroomDetail.title,
@@ -23,8 +22,7 @@ class XroomDetailResponse(
                 template = xroomDetail.template,
                 finalMessage = xroomDetail.finalMessage,
                 memories = xroomDetail.memories.map { memory ->
-                    val photoUrl = mediaUrlAssembler.toUrlOrNull(xroomDetail.storageKeyOf(memory.id))
-                    MemoryDetailResponse.from(memory, photoUrl)
+                    MemoryDetailResponse.from(memory, xroomDetail.photoUrlOf(memory.id, baseUrl))
                 },
             )
         }

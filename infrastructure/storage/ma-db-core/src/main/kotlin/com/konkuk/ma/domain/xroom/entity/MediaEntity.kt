@@ -3,7 +3,6 @@ package com.konkuk.ma.domain.xroom.entity
 import com.konkuk.ma.domain.xroom.domain.media.Media
 import com.konkuk.ma.domain.xroom.entity.table.MemoryMediaTable
 import org.jetbrains.exposed.sql.ResultRow
-import java.time.LocalDateTime
 
 class MediaEntity(
     val id: Long,
@@ -13,7 +12,6 @@ class MediaEntity(
     val mimeType: String,
     val fileSize: Long,
     val thumbnailKey: String?,
-    val createdDate: LocalDateTime,
 ) {
     fun toDomain(): Media {
         return Media(
@@ -24,7 +22,6 @@ class MediaEntity(
             mimeType = mimeType,
             fileSize = fileSize,
             thumbnailKey = thumbnailKey,
-            createdDate = createdDate,
         )
     }
 
@@ -38,7 +35,6 @@ class MediaEntity(
                 mimeType = row[MemoryMediaTable.mimeType],
                 fileSize = row[MemoryMediaTable.fileSize],
                 thumbnailKey = row[MemoryMediaTable.thumbnailKey],
-                createdDate = row[MemoryMediaTable.createdDate],
             )
         }
     }

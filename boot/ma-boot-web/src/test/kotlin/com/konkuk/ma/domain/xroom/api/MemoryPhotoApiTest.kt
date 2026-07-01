@@ -5,7 +5,7 @@ import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.xroom.application.MemoryPhotoCommandService
-import com.konkuk.ma.domain.xroom.application.result.MediaUploadResult
+import com.konkuk.ma.domain.xroom.fixture.MediaFixture
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.pathVariables
@@ -52,10 +52,11 @@ class MemoryPhotoApiTest(
         )
         every {
             memoryPhotoCommandService.uploadPhoto(1L, 1L, authMemberId, any<PhotoFile>())
-        } returns MediaUploadResult(
-            mediaId = 1L,
-            storageKey = "xroom/1/memory/1/photo.jpg",
-            thumbnailKey = "xroom/1/memory/1/thumb.jpg",
+        } returns MediaFixture.create(
+            id = 1L,
+            memoryId = 1L,
+            storageKey = "memory/memory-photo/1/photo.jpg",
+            thumbnailKey = "memory/thumbnail/1/thumb_photo.jpg",
         )
 
         // When & Then

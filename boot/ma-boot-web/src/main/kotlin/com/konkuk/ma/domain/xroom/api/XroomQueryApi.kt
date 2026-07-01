@@ -8,6 +8,7 @@ import com.konkuk.ma.domain.xroom.application.XroomQueryService
 import com.konkuk.ma.support.id.DecryptId
 import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/xrooms")
 class XroomQueryApi(
     private val xroomQueryService: XroomQueryService,
-    private val mediaUrlAssembler: MediaUrlAssembler,
+    @Value("\${file.upload.url-prefix:/files}")
+    private val fileBaseUrl: String,
 ) {
     @GetMapping("/me")
     fun findMine(
@@ -41,6 +43,6 @@ class XroomQueryApi(
         @LoginMember memberInfo: MemberInfo,
     ): XroomDetailResponse {
         val xroomDetail = xroomQueryService.findDetail(xroomId, memberInfo.id)
-        return XroomDetailResponse.from(xroomDetail, mediaUrlAssembler)
+        return XroomDetailResponse.from(xroomDetail, fileBaseUrl)
     }
 }

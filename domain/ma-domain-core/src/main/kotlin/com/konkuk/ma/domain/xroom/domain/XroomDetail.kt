@@ -16,5 +16,5 @@ class XroomDetail(
     val finalMessage: String? get() = xroom.finalMessageValue
     val memories: List<Memory> get() = memoriesCollection.sortedByEventDate()
 
-    fun storageKeyOf(memoryId: Long): String? = medias.findByMemory(memoryId)?.storageKey
+    fun photoUrlOf(memoryId: Long, baseUrl: String): String? = medias.findByMemory(memoryId)?.toPhotoUrl(baseUrl)
 }

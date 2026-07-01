@@ -1,7 +1,6 @@
 package com.konkuk.ma.config
 
 import com.konkuk.ma.auth.JwtManager
-import com.konkuk.ma.domain.xroom.api.MediaUrlAssembler
 import com.konkuk.ma.support.id.TestIdObfuscatorConfig
 import com.konkuk.ma.support.security.LoginMemberArgumentResolver
 import com.konkuk.ma.support.security.RoutingAwareEntryPoint
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Import
     MemberQueryServiceTestConfig::class,
     WebConfig::class,
     LoginMemberArgumentResolver::class,
-    MediaUrlAssembler::class
 )
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs

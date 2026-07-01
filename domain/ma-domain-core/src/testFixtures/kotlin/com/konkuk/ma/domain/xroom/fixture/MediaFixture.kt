@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.xroom.fixture
 
 import com.konkuk.ma.domain.xroom.domain.media.Media
-import java.time.LocalDateTime
 
 object MediaFixture {
     fun create(
@@ -12,7 +11,6 @@ object MediaFixture {
         mimeType: String = "image/jpeg",
         fileSize: Long = 1024L,
         thumbnailKey: String? = "memory/thumbnail/1/thumb_photo.jpg",
-        createdDate: LocalDateTime = LocalDateTime.now(),
     ): Media {
         return Media(
             id = id,
@@ -22,7 +20,6 @@ object MediaFixture {
             mimeType = mimeType,
             fileSize = fileSize,
             thumbnailKey = thumbnailKey,
-            createdDate = createdDate,
         )
     }
 }
