@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.xroom.domain
 
-import com.konkuk.ma.domain.xroom.domain.media.Medias
+import com.konkuk.ma.domain.xroom.domain.media.MemoryPhotoUrls
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.domain.memory.Memory
 
@@ -8,7 +8,7 @@ class XroomDetail(
     private val xroom: Xroom,
     val recipientName: String,
     private val memoriesCollection: Memories,
-    private val medias: Medias,
+    private val photoUrls: MemoryPhotoUrls,
 ) {
     val id: Long get() = xroom.id
     val title: String get() = xroom.titleValue
@@ -16,5 +16,5 @@ class XroomDetail(
     val finalMessage: String? get() = xroom.finalMessageValue
     val memories: List<Memory> get() = memoriesCollection.sortedByEventDate()
 
-    fun photoUrlOf(memoryId: Long, baseUrl: String): String? = medias.findByMemory(memoryId)?.toPhotoUrl(baseUrl)
+    fun photoUrlOf(memoryId: Long): String? = photoUrls.photoUrlOf(memoryId)
 }

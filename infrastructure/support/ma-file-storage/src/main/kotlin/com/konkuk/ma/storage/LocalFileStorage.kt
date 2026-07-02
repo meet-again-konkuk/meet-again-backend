@@ -6,9 +6,11 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.UUID
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnProperty(name = ["file.storage.mode"], havingValue = "local", matchIfMissing = true)
 class LocalFileStorage(
     @Value("\${file.upload.base-path:uploads}")
     private val basePath: String

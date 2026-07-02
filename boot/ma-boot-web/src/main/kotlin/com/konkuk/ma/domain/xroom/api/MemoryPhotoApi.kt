@@ -33,8 +33,8 @@ class MemoryPhotoApi(
         @RequestPart("photo") photo: MultipartFile,
     ): MediaUploadResponse {
         val photoFile = PhotoFile.create(photo.originalFilename, photo.size, photo.bytes)
-        val media = memoryPhotoCommandService.uploadPhoto(xroomId, memoryId, memberInfo.id, photoFile)
-        return MediaUploadResponse.from(media)
+        val uploadResult = memoryPhotoCommandService.uploadPhoto(xroomId, memoryId, memberInfo.id, photoFile)
+        return MediaUploadResponse.from(uploadResult)
     }
 
     @DeleteMapping

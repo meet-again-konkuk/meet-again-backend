@@ -11,7 +11,7 @@ import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
-import com.konkuk.ma.domain.xroom.domain.media.Medias
+import com.konkuk.ma.domain.xroom.domain.media.MediaUrlResolver
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryCounts
 import com.konkuk.ma.domain.xroom.domain.port.MediaQueryRepository
@@ -29,6 +29,7 @@ class XroomQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val memoryQueryRepository: MemoryQueryRepository,
     private val mediaQueryRepository: MediaQueryRepository,
+    private val mediaUrlResolver: MediaUrlResolver,
     private val xroomValidator: XroomValidator,
 ) {
     fun findMine(memberId: Long): MyXrooms {
@@ -55,12 +56,14 @@ class XroomQueryService(
 
         val targetInfo = targetInfoQueryRepository.findOne(xroom.targetInfoId)
         val memories = Memories(memoryQueryRepository.find(xroomId))
-        val medias = Medias(mediaQueryRepository.findActiveByMemories(memories.extractIds()))
+        val medias = mediaQueryRepository.findActiveByMemories(memories.extractIds())
+        val photoUrls = mediaUrlResolver.resolveByMemory(medias)
+
         return XroomDetail(
             xroom = xroom,
             recipientName = targetInfo.targetName,
             memoriesCollection = memories,
-            medias = medias,
+            photoUrls = photoUrls,
         )
     }
 }

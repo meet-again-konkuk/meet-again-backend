@@ -8,10 +8,4 @@ class Media(
     val mimeType: String,
     val fileSize: Long,
     val thumbnailKey: String?,
-) {
-    fun belongsTo(memoryId: Long): Boolean = this.memoryId == memoryId
-
-    fun toPhotoUrl(baseUrl: String): String = "$baseUrl/$storageKey"
-
-    fun toThumbnailUrl(baseUrl: String): String? = thumbnailKey?.let { "$baseUrl/$it" }
-}
+)
