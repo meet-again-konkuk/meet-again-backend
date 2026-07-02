@@ -4,7 +4,6 @@ import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.common.domain.file.port.FileUrlResolver
 import com.konkuk.ma.domain.xroom.application.result.MediaUploadResult
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
-import com.konkuk.ma.domain.xroom.domain.media.Media
 import com.konkuk.ma.domain.xroom.domain.media.MediaProcessor
 import com.konkuk.ma.domain.xroom.domain.port.MediaCommandRepository
 import org.springframework.stereotype.Service
@@ -23,20 +22,17 @@ class MemoryPhotoCommandService(
         mediaCommandRepository.softDeleteByMemory(memoryId, memberId)
 
         val newMedia = mediaProcessor.process(memoryId, photoFile)
-        val mediaId = mediaCommandRepository.save(newMedia)
-        return toUploadResult(newMedia.toMedia(mediaId))
-    }
+        val media = newMedia.toMedia(mediaCommandRepository.save(newMedia))
 
-    fun removePhoto(xroomId: Long, memoryId: Long, memberId: Long) {
-        xroomValidator.validateOwnedMemory(xroomId, memoryId, memberId)
-        mediaCommandRepository.softDeleteByMemory(memoryId, memberId)
-    }
-
-    private fun toUploadResult(media: Media): MediaUploadResult {
         return MediaUploadResult(
             mediaId = media.id,
             photoUrl = fileUrlResolver.resolve(media.storageKey),
             thumbnailUrl = media.thumbnailKey?.let { fileUrlResolver.resolve(it) },
         )
+    }
+
+    fun removePhoto(xroomId: Long, memoryId: Long, memberId: Long) {
+        xroomValidator.validateOwnedMemory(xroomId, memoryId, memberId)
+        mediaCommandRepository.softDeleteByMemory(memoryId, memberId)
     }
 }

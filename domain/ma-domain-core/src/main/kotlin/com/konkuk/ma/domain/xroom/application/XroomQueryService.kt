@@ -12,7 +12,6 @@ import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
-import com.konkuk.ma.domain.xroom.domain.media.Media
 import com.konkuk.ma.domain.xroom.domain.media.MemoryPhotoUrls
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryCounts
@@ -59,16 +58,13 @@ class XroomQueryService(
         val targetInfo = targetInfoQueryRepository.findOne(xroom.targetInfoId)
         val memories = Memories(memoryQueryRepository.find(xroomId))
         val medias = mediaQueryRepository.findActiveByMemories(memories.extractIds())
+        val photoUrls = MemoryPhotoUrls(medias.associate { it.memoryId to fileUrlResolver.resolve(it.storageKey) })
+
         return XroomDetail(
             xroom = xroom,
             recipientName = targetInfo.targetName,
             memoriesCollection = memories,
-            photoUrls = resolvePhotoUrls(medias),
+            photoUrls = photoUrls,
         )
-    }
-
-    private fun resolvePhotoUrls(medias: List<Media>): MemoryPhotoUrls {
-        val urlsByMemory = medias.associate { it.memoryId to fileUrlResolver.resolve(it.storageKey) }
-        return MemoryPhotoUrls(urlsByMemory)
     }
 }
