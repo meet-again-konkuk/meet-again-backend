@@ -122,5 +122,33 @@ class MediaDaoTest(
                 mediaQueryDao.findActiveByMemories(setOf(media.memoryId)).shouldBeEmpty()
             }
         }
+
+        context("softDeleteByMemories") {
+
+            test("대상 기억들의 미디어만 soft delete 하고 다른 기억 미디어는 남긴다") {
+                val memberId = 7L
+                mediaCommandDao.save(newMedia(memoryId = 1L))
+                mediaCommandDao.save(newMedia(memoryId = 2L))
+                mediaCommandDao.save(newMedia(memoryId = 3L)) // 대상 외 기억
+
+                mediaCommandDao.softDeleteByMemories(setOf(1L, 2L), memberId)
+
+                mediaQueryDao.findActiveByMemories(setOf(1L, 2L)).shouldBeEmpty()
+                val row = MemoryMediaTable.selectAll()
+                    .where { MemoryMediaTable.memoryId eq 1L }
+                    .single()
+                row[MemoryMediaTable.deleted] shouldBe true
+                row[MemoryMediaTable.deletedBy] shouldBe memberId.toString()
+                mediaQueryDao.findActiveByMemories(setOf(3L)) shouldHaveSize 1
+            }
+
+            test("빈 Set이 입력되면 아무 미디어도 삭제하지 않는다") {
+                mediaCommandDao.save(newMedia(memoryId = 1L))
+
+                mediaCommandDao.softDeleteByMemories(emptySet(), memberId = 1L)
+
+                mediaQueryDao.findActiveByMemories(setOf(1L)) shouldHaveSize 1
+            }
+        }
     }
 }

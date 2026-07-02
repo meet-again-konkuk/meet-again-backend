@@ -21,6 +21,16 @@ class MemoryQueryDao {
         return rows.map { MemoryEntity.from(it, tags[it[MemoryTable.id].value] ?: emptyList()) }
     }
 
+    fun find(xroomIds: Set<Long>): List<MemoryEntity> {
+        if (xroomIds.isEmpty()) return emptyList()
+        val rows = MemoryTable
+            .activeRows { MemoryTable.xroomId inList xroomIds }
+            .toList()
+        val memoryIds = rows.map { it[MemoryTable.id].value }.toSet()
+        val tags = findTags(memoryIds)
+        return rows.map { MemoryEntity.from(it, tags[it[MemoryTable.id].value] ?: emptyList()) }
+    }
+
     fun findOne(memoryId: Long): MemoryEntity? {
         val row = MemoryTable
             .activeRows { MemoryTable.id eq memoryId }

@@ -9,7 +9,7 @@ import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoCleaner
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
 import com.konkuk.ma.domain.point.domain.port.MemberPointRepository
-import com.konkuk.ma.domain.xroom.domain.port.XroomCommandRepository
+import com.konkuk.ma.domain.xroom.domain.XroomCleaner
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,7 +21,7 @@ class MemberDataCleaner(
     private val memberPointRepository: MemberPointRepository,
     private val postLikeRepository: PostLikeRepository,
     private val commentLikeRepository: CommentLikeRepository,
-    private val xroomCommandRepository: XroomCommandRepository,
+    private val xroomCleaner: XroomCleaner,
     private val memberPhotoCleaner: MemberPhotoCleaner
 ) {
 
@@ -58,7 +58,7 @@ class MemberDataCleaner(
     }
 
     private fun cleanXroom(member: Member) {
-        xroomCommandRepository.delete(member.id)
+        xroomCleaner.clean(member.id)
     }
 
     private fun cleanPhoto(member: Member) {
