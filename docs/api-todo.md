@@ -22,6 +22,8 @@
 | POST | /api/members/email/exists | 이메일 중복 확인 |
 | POST | /api/members/photos | 프로필 사진 업로드 |
 | DELETE | /api/members/photos | 프로필 사진 삭제 |
+| POST | /api/members/withdrawal | 회원 탈퇴 신청 (비밀번호 검증, 7일 유예) |
+| POST | /api/members/withdrawal/cancellation | 탈퇴 복구 (public, email/password, 204) |
 
 ### 매칭
 
@@ -89,7 +91,13 @@
 
 ## 매칭
 
-### X 받아주기, 거절하기
+### X 거절하기
+
+- **인증**: 필요
+
+**참고사항**:
+- 받아주기(claim)는 구현 완료 (`PATCH /api/matching-results/{id}/claim`) — 거절만 남음
+- 착수 전 스펙 결정 필요: 수신자가 claim을 명시적으로 거부하는 별도 상태인지, 등록자 쪽 exclude(제외)로 충분한지 프론트와 확인
 
 ---
 
@@ -156,19 +164,15 @@
 
 ## 기타
 
-### 회원 탈퇴
+### 로그아웃 : POST /api/auth/logout
 
 - **인증**: 필요
 
 **참고사항**:
-- 비밀번호 확인 추가 필요할 수 있음
+- refresh token 삭제로 세션 연장 봉쇄 (`RefreshTokenRepository.delete` 재사용 — 탈퇴 정리에서 사용 중)
+- access token은 stateless JWT라 TTL(1시간)까지 잔존 수용 (탈퇴 로그인 차단과 동일 정책)
 
-### 로그아웃
-
-- **인증**: 필요
-
-**참고사항**:
-- 토큰 무효화 처리
+<!-- 회원 탈퇴는 구현 완료되어 완료된 API 테이블로 이동 (신청 시 비밀번호 검증 포함, PR #17) -->
 
 ---
 
