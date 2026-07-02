@@ -77,4 +77,23 @@ class LocalFileStorageTest : FunSpec({
             storage.delete("/non/existent/path/file.jpg")
         }
     }
+
+    context("deleteByKey") {
+
+        test("basePath 아래 상대 storageKey의 파일을 삭제한다") {
+            val storageKey = "memory/memory-photo/1/photo.jpg"
+            val target = tempDir.resolve(storageKey)
+            Files.createDirectories(target.parent)
+            Files.write(target, "to-purge".toByteArray())
+            Files.exists(target) shouldBe true
+
+            storage.deleteByKey(storageKey)
+
+            Files.exists(target) shouldBe false
+        }
+
+        test("존재하지 않는 storageKey로 삭제해도 예외가 발생하지 않는다") {
+            storage.deleteByKey("memory/memory-photo/1/missing.jpg")
+        }
+    }
 })

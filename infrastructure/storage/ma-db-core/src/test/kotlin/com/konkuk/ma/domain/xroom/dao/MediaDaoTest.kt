@@ -10,7 +10,9 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.test.context.ContextConfiguration
 
@@ -148,6 +150,108 @@ class MediaDaoTest(
                 mediaCommandDao.softDeleteByMemories(emptySet(), memberId = 1L)
 
                 mediaQueryDao.findActiveByMemories(setOf(1L)) shouldHaveSize 1
+            }
+        }
+
+        // deletedDate를 특정 시각으로 제어해야 하므로 softDelete 헬퍼(now 사용) 대신 직접 삽입한다.
+        fun insertDeletedMedia(
+            storageKey: String = "memory/memory-photo/1/photo.jpg",
+            thumbnailKey: String? = "memory/thumbnail/1/thumb_photo.jpg",
+            deletedDate: LocalDateTime,
+        ): Long = MemoryMediaTable.insertAndGetId {
+            it[memoryId] = 1L
+            it[MemoryMediaTable.storageKey] = storageKey
+            it[originalFilename] = "photo.jpg"
+            it[mimeType] = "image/jpeg"
+            it[fileSize] = 2048L
+            it[MemoryMediaTable.thumbnailKey] = thumbnailKey
+            it[deleted] = true
+            it[MemoryMediaTable.deletedDate] = deletedDate
+        }.value
+
+        context("findDeletedBefore") {
+
+            val cutoff = LocalDateTime.of(2026, 6, 10, 0, 0)
+            val beforeCutoff = LocalDateTime.of(2026, 6, 1, 0, 0)
+            val afterCutoff = LocalDateTime.of(2026, 6, 15, 0, 0)
+
+            test("cutoff 이전에 soft delete된 미디어만 반환한다 (active·cutoff 이후 제외)") {
+                mediaCommandDao.save(newMedia()) // active → 제외
+                val expiredId = insertDeletedMedia(deletedDate = beforeCutoff)
+                insertDeletedMedia(deletedDate = afterCutoff) // cutoff 이후 → 제외
+
+                val found = mediaQueryDao.findDeletedBefore(cutoff, null, 100)
+
+                found shouldHaveSize 1
+                found.first().id shouldBe expiredId
+            }
+
+            test("id ASC 순으로 정렬해 반환한다") {
+                val firstId = insertDeletedMedia(deletedDate = beforeCutoff)
+                val secondId = insertDeletedMedia(deletedDate = beforeCutoff)
+                val thirdId = insertDeletedMedia(deletedDate = beforeCutoff)
+
+                val found = mediaQueryDao.findDeletedBefore(cutoff, null, 100)
+
+                found.map { it.id } shouldBe listOf(firstId, secondId, thirdId)
+            }
+
+            test("cursorId 이후의 미디어만 반환한다") {
+                val firstId = insertDeletedMedia(deletedDate = beforeCutoff)
+                val secondId = insertDeletedMedia(deletedDate = beforeCutoff)
+                val thirdId = insertDeletedMedia(deletedDate = beforeCutoff)
+
+                val found = mediaQueryDao.findDeletedBefore(cutoff, firstId, 100)
+
+                found.map { it.id } shouldBe listOf(secondId, thirdId)
+            }
+
+            test("pageSize만큼만 반환한다") {
+                val firstId = insertDeletedMedia(deletedDate = beforeCutoff)
+                val secondId = insertDeletedMedia(deletedDate = beforeCutoff)
+                insertDeletedMedia(deletedDate = beforeCutoff)
+
+                val found = mediaQueryDao.findDeletedBefore(cutoff, null, 2)
+
+                found.map { it.id } shouldBe listOf(firstId, secondId)
+            }
+
+            test("반환된 Entity에 storageKey와 thumbnailKey가 매핑된다") {
+                val storageKey = "memory/memory-photo/9/keepsake.jpg"
+                val thumbnailKey = "memory/thumbnail/9/thumb_keepsake.jpg"
+                insertDeletedMedia(storageKey = storageKey, thumbnailKey = thumbnailKey, deletedDate = beforeCutoff)
+
+                val found = mediaQueryDao.findDeletedBefore(cutoff, null, 100).first()
+
+                found.storageKey shouldBe storageKey
+                found.thumbnailKey shouldBe thumbnailKey
+            }
+        }
+
+        context("delete") {
+
+            test("해당 미디어 행을 물리 삭제한다") {
+                val id = mediaCommandDao.save(newMedia())
+
+                mediaCommandDao.delete(id)
+
+                MemoryMediaTable.selectAll()
+                    .where { MemoryMediaTable.id eq id }
+                    .count() shouldBe 0L
+            }
+
+            test("지정한 미디어만 삭제하고 다른 미디어는 유지한다") {
+                val targetId = mediaCommandDao.save(newMedia(memoryId = 1L))
+                val survivorId = mediaCommandDao.save(newMedia(memoryId = 2L))
+
+                mediaCommandDao.delete(targetId)
+
+                MemoryMediaTable.selectAll()
+                    .where { MemoryMediaTable.id eq targetId }
+                    .count() shouldBe 0L
+                MemoryMediaTable.selectAll()
+                    .where { MemoryMediaTable.id eq survivorId }
+                    .count() shouldBe 1L
             }
         }
     }

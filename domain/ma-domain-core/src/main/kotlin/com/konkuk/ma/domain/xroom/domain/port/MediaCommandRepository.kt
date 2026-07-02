@@ -8,4 +8,6 @@ interface MediaCommandRepository {
     fun softDeleteByMemory(memoryId: Long, memberId: Long)
 
     fun softDeleteByMemories(memoryIds: Set<Long>, memberId: Long)
+
+    fun delete(mediaId: Long)
 }

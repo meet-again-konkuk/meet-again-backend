@@ -41,4 +41,11 @@ class LocalFileStorage(
             Files.delete(path)
         }
     }
+
+    override fun deleteByKey(storageKey: String) {
+        val path = Paths.get(basePath).resolve(storageKey)
+        if (Files.exists(path)) {
+            Files.delete(path)
+        }
+    }
 }
