@@ -23,6 +23,7 @@ import io.kotest.matchers.shouldNotBe
 import java.time.LocalDate
 import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.selectAll
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [TestDatabaseConfig::class, MemoryCommandDao::class, MemoryQueryDao::class])
@@ -289,6 +290,65 @@ class MemoryDaoTest(
                 memoryQueryDao.findOne(id) shouldBe null
                 memoryQueryDao.find(xroomId).shouldBeEmpty()
                 memoryQueryDao.count(setOf(xroomId)).containsKey(xroomId) shouldBe false
+            }
+        }
+
+        context("find(xroomIds) - 벌크 조회") {
+
+            test("여러 방의 active 기억만 반환하고 soft-deleted·대상 외 방 기억은 제외한다") {
+                val firstRoomId = memoryCommandDao.save(newMemory(xroomId = 1L))
+                val secondRoomId = memoryCommandDao.save(newMemory(xroomId = 2L))
+                memoryCommandDao.save(newMemory(xroomId = 3L)) // 대상 외 방
+                val deletedId = memoryCommandDao.save(newMemory(xroomId = 1L))
+                MemoryTable.softDelete({ MemoryTable.id eq deletedId }, "1")
+
+                val found = memoryQueryDao.find(setOf(1L, 2L))
+
+                found.map { it.id } shouldContainExactlyInAnyOrder listOf(firstRoomId, secondRoomId)
+                found.map { it.xroomId }.toSet() shouldBe setOf(1L, 2L)
+            }
+
+            test("감정 태그가 합성되어 함께 반환된다") {
+                val tags = listOf("설렘", "행복")
+                val id = memoryCommandDao.save(newMemory(xroomId = 1L, emotionTags = tags))
+
+                val found = memoryQueryDao.find(setOf(1L)).first { it.id == id }
+
+                found.emotionTags shouldContainExactlyInAnyOrder tags
+            }
+
+            test("빈 Set이 입력되면 빈 리스트를 반환한다") {
+                memoryCommandDao.save(newMemory(xroomId = 1L))
+
+                memoryQueryDao.find(emptySet()).shouldBeEmpty()
+            }
+        }
+
+        context("deleteByXrooms") {
+
+            test("대상 방들의 기억만 soft delete 하고 다른 방 기억은 남긴다") {
+                val memberId = 7L
+                val targetMemoryId = memoryCommandDao.save(newMemory(xroomId = 1L))
+                memoryCommandDao.save(newMemory(xroomId = 2L))
+                val survivorId = memoryCommandDao.save(newMemory(xroomId = 3L))
+
+                memoryCommandDao.deleteByXrooms(setOf(1L, 2L), memberId = memberId)
+
+                memoryQueryDao.find(setOf(1L, 2L)).shouldBeEmpty()
+                val deletedRow = MemoryTable.selectAll()
+                    .where { MemoryTable.id eq targetMemoryId }
+                    .single()
+                deletedRow[MemoryTable.deleted] shouldBe true
+                deletedRow[MemoryTable.deletedBy] shouldBe memberId.toString()
+                memoryQueryDao.find(setOf(3L)).map { it.id } shouldContainExactly listOf(survivorId)
+            }
+
+            test("빈 Set이 입력되면 아무 기억도 삭제하지 않는다") {
+                val id = memoryCommandDao.save(newMemory(xroomId = 1L))
+
+                memoryCommandDao.deleteByXrooms(emptySet(), memberId = 1L)
+
+                memoryQueryDao.find(setOf(1L)).map { it.id } shouldContainExactly listOf(id)
             }
         }
     }

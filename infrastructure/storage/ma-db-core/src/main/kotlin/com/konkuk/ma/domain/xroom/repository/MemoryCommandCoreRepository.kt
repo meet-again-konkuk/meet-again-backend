@@ -21,4 +21,8 @@ class MemoryCommandCoreRepository(
     override fun delete(memoryId: Long, memberId: Long) {
         memoryCommandDao.delete(memoryId, memberId)
     }
+
+    override fun deleteByXrooms(xroomIds: Set<Long>, memberId: Long) {
+        memoryCommandDao.deleteByXrooms(xroomIds, memberId)
+    }
 }

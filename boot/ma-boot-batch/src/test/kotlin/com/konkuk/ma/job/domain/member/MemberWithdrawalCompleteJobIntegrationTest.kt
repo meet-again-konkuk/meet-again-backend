@@ -12,9 +12,13 @@ import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.domain.point.entity.table.MemberPointTable
 import com.konkuk.ma.domain.point.entity.table.PointHistoryTable
 import com.konkuk.ma.domain.support.entity.table.InquiryTable
+import com.konkuk.ma.domain.xroom.entity.table.MemoryEmotionTagTable
+import com.konkuk.ma.domain.xroom.entity.table.MemoryMediaTable
+import com.konkuk.ma.domain.xroom.entity.table.MemoryTable
 import com.konkuk.ma.domain.xroom.entity.table.XroomTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -55,6 +59,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         MemberTable, RefreshTokenTable, TargetInfoTable, MatchingResultTable,
         MemberPointTable, PointHistoryTable, PostTable, CommentTable,
         PostLikeTable, CommentLikeTable, InquiryTable, XroomTable, MemberPhotoTable,
+        MemoryTable, MemoryEmotionTagTable, MemoryMediaTable,
     )
 
     // inputDate(2026-06-17) - 유예 7일 → cutoff 2026-06-10. 그 이전이면 만료.
@@ -103,8 +108,41 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         return jobLauncher.run(memberWithdrawalCompleteJob, params).status
     }
 
+    fun insertXroom(ownerId: Long): Long = transaction {
+        XroomTable.insertAndGetId {
+            it[XroomTable.ownerId] = ownerId
+            it[targetInfoId] = 1L
+            it[template] = "chat_memory"
+            it[title] = "기억의 방"
+        }.value
+    }
+
+    fun insertMemory(xroomId: Long, title: String = "우리의 첫 기억"): Long = transaction {
+        MemoryTable.insertAndGetId {
+            it[MemoryTable.xroomId] = xroomId
+            it[MemoryTable.title] = title
+            it[eventDate] = LocalDate.of(2019, 5, 10)
+            it[eventDatePrecision] = "DAY"
+            it[location] = "서울"
+            it[text] = "그날의 기억"
+        }.value
+    }
+
+    fun insertMedia(memoryId: Long, storageKey: String = "memory/memory-photo/1/photo.jpg") = transaction {
+        MemoryMediaTable.insert {
+            it[MemoryMediaTable.memoryId] = memoryId
+            it[MemoryMediaTable.storageKey] = storageKey
+            it[originalFilename] = "photo.jpg"
+            it[mimeType] = "image/jpeg"
+            it[fileSize] = 2048L
+        }
+    }
+
     fun backupFileExists(memberId: Long): Boolean =
         Files.exists(Paths.get(backupBasePath, "withdrawal-backup", "$memberId.json"))
+
+    fun readBackup(memberId: Long): String =
+        Files.readString(Paths.get(backupBasePath, "withdrawal-backup", "$memberId.json"))
 
     beforeSpec {
         transaction { SchemaUtils.create(*allTables) }
@@ -247,5 +285,50 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             RefreshTokenTable.selectAll().where { RefreshTokenTable.memberId eq memberId }.count() shouldBe 1L
         }
         backupFileExists(memberId) shouldBe false
+    }
+
+    test("탈퇴 시 방의 기억·미디어까지 연쇄로 soft delete 한다") {
+        val memberId = insertExpiredMember()
+        val xroomId = insertXroom(ownerId = memberId)
+        val memoryId = insertMemory(xroomId = xroomId)
+        insertMedia(memoryId = memoryId)
+        // 탈퇴 대상이 아닌 다른 회원의 방·기억·미디어는 영향받지 않아야 한다
+        val survivorMemberId = insertMember("survivor@example.com", withdrawalRequestedAt = null)
+        val survivorXroomId = insertXroom(ownerId = survivorMemberId)
+        val survivorMemoryId = insertMemory(xroomId = survivorXroomId)
+        insertMedia(memoryId = survivorMemoryId)
+
+        runCleanupJob(7L) shouldBe BatchStatus.COMPLETED
+
+        transaction {
+            XroomTable.selectAll().where { XroomTable.id eq xroomId }
+                .single()[XroomTable.deleted] shouldBe true
+            MemoryTable.selectAll().where { MemoryTable.id eq memoryId }
+                .single()[MemoryTable.deleted] shouldBe true
+            MemoryMediaTable.selectAll().where { MemoryMediaTable.memoryId eq memoryId }
+                .single()[MemoryMediaTable.deleted] shouldBe true
+
+            XroomTable.selectAll().where { XroomTable.id eq survivorXroomId }
+                .single()[XroomTable.deleted] shouldBe false
+            MemoryTable.selectAll().where { MemoryTable.id eq survivorMemoryId }
+                .single()[MemoryTable.deleted] shouldBe false
+            MemoryMediaTable.selectAll().where { MemoryMediaTable.memoryId eq survivorMemoryId }
+                .single()[MemoryMediaTable.deleted] shouldBe false
+        }
+    }
+
+    test("탈퇴 백업 JSON에 방의 기억 제목과 미디어 storageKey를 담는다") {
+        val memberId = insertExpiredMember()
+        val memoryTitle = "백업에 남을 기억"
+        val storageKey = "memory/memory-photo/backup/keepsake.jpg"
+        val xroomId = insertXroom(ownerId = memberId)
+        val memoryId = insertMemory(xroomId = xroomId, title = memoryTitle)
+        insertMedia(memoryId = memoryId, storageKey = storageKey)
+
+        runCleanupJob(8L) shouldBe BatchStatus.COMPLETED
+
+        val backupJson = readBackup(memberId)
+        backupJson shouldContain memoryTitle
+        backupJson shouldContain storageKey
     }
 })

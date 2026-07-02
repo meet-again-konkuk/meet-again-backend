@@ -18,6 +18,8 @@ import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 import com.konkuk.ma.domain.support.domain.Inquiry
 import com.konkuk.ma.domain.withdrawal.domain.MemberBackupView
 import com.konkuk.ma.domain.withdrawal.domain.MemberWithdrawalBackup
+import com.konkuk.ma.domain.xroom.fixture.MediaFixture
+import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
 import com.konkuk.ma.domain.xroom.fixture.XroomFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -56,6 +58,8 @@ class JacksonMemberBackupSerializerTest : FunSpec({
             commentLikes = listOf(CommentLikeFixture.create(memberId = member.id)),
             inquiries = listOf(Inquiry(id = 1L, authorId = member.id, title = "문의 제목", content = "문의 내용")),
             xrooms = listOf(XroomFixture.create(ownerId = member.id)),
+            memories = listOf(MemoryFixture.create()),
+            medias = listOf(MediaFixture.create()),
             photo = MemberPhotoFixture.create(memberId = member.id),
         )
     }

@@ -17,3 +17,7 @@ exposed:
 backup:
   local:
     base-path: ${java.io.tmpdir}/meet-again-batch-test/backups
+
+file:
+  upload:
+    base-path: ${java.io.tmpdir}/meet-again-batch-test/uploads

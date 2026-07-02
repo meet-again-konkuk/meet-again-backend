@@ -46,6 +46,11 @@ class MemoryCommandDao {
         MemoryTable.softDelete({ MemoryTable.id eq memoryId }, memberId.toString())
     }
 
+    fun deleteByXrooms(xroomIds: Set<Long>, memberId: Long) {
+        if (xroomIds.isEmpty()) return
+        MemoryTable.softDelete({ MemoryTable.xroomId inList xroomIds }, memberId.toString())
+    }
+
     private fun saveEmotionTags(memoryId: Long, tags: List<String>) {
         if (tags.isEmpty()) return
         MemoryEmotionTagTable.batchInsert(tags) {

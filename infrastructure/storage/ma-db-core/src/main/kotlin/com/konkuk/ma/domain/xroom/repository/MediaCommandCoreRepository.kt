@@ -16,4 +16,12 @@ class MediaCommandCoreRepository(
     override fun softDeleteByMemory(memoryId: Long, memberId: Long) {
         mediaCommandDao.softDeleteByMemory(memoryId, memberId)
     }
+
+    override fun softDeleteByMemories(memoryIds: Set<Long>, memberId: Long) {
+        mediaCommandDao.softDeleteByMemories(memoryIds, memberId)
+    }
+
+    override fun delete(mediaId: Long) {
+        mediaCommandDao.delete(mediaId)
+    }
 }

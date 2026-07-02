@@ -15,6 +15,10 @@ class MemoryQueryCoreRepository(
         return memoryQueryDao.find(xroomId).map { it.toDomain() }
     }
 
+    override fun find(xroomIds: Set<Long>): List<Memory> {
+        return memoryQueryDao.find(xroomIds).map { it.toDomain() }
+    }
+
     override fun findOne(memoryId: Long): Memory {
         return memoryQueryDao.findOne(memoryId)?.toDomain()
             ?: throw EntityNotFoundException(EntityType.MEMORY, memoryId.toString())
