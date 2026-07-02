@@ -68,11 +68,20 @@
 | GET | /api/points | 인연 상품 목록 조회 |
 | POST | /api/points | 인연 충전 (구매) |
 
-### X룸
+### X룸 (기억의 방)
 
 | Method | Endpoint | 용도 |
 |--------|----------|------|
-| POST | /api/xrooms | X룸 생성 |
+| POST | /api/xrooms | 방 생성 |
+| GET | /api/xrooms/me | 내가 만든 방 목록 조회 |
+| GET | /api/xrooms/received | 내가 수신한 방 목록 조회 |
+| GET | /api/xrooms/{xroomId} | 방 상세 조회 (기억·사진 포함) |
+| PATCH | /api/xrooms/{xroomId} | 끝맺음 메시지 수정 |
+| POST | /api/xrooms/{xroomId}/memories | 기억 추가 |
+| PATCH | /api/xrooms/{xroomId}/memories/{memoryId} | 기억 수정 |
+| DELETE | /api/xrooms/{xroomId}/memories/{memoryId} | 기억 삭제 |
+| POST | /api/xrooms/{xroomId}/memories/{memoryId}/photo | 기억 사진 업로드/교체 |
+| DELETE | /api/xrooms/{xroomId}/memories/{memoryId}/photo | 기억 사진 삭제 |
 
 ---
 
@@ -90,77 +99,9 @@
 
 ---
 
-## X룸
+## X룸 (기억의 방)
 
-X룸은 과거 연인과의 추억을 테마 공간에 블록 단위로 배치하여 꾸미는 기능이다.
-
-### 블록 저장
-- **인증**: 필요
-
-**상세내용**:
-- 생성한 X룸에 블록 단위로 저장.
-- 블록 타입은 사진(여러장, 최대 10장), 텍스트, 영상(여러개, 최대 3개)으로 올릴 수 있음.
-- 블록은 아이템을 지정할 수 있음.
-
-### X룸 상세 조회
-- **인증**: 필요
-
-**상세내용**:
-- 생성자가 
-
-### X룸 관리
-
-| Method | Endpoint | 용도 | 인증 |
-|--------|----------|------|------|
-| GET | /api/xrooms/me | 내 X룸 조회 | 필요 |
-| PATCH | /api/xrooms/{id} | X룸 설정 수정 (테마 변경, 배경음악 등) | 필요 |
-| DELETE | /api/xrooms/{id} | X룸 삭제 | 필요 |
-
-### 테마
-
-| Method | Endpoint | 용도 | 인증 |
-|--------|----------|------|------|
-| GET | /api/xrooms/themes | 테마 목록 조회 | 필요 |
-
-**테마 종류**:
-- 코르크보드 — 폴라로이드 사진을 핀으로 꽂는 느낌
-- 스트링라이트 — 사진을 빨래줄처럼 걸어두는 따뜻한 감성
-- 드리미 버블 — 추억이 떠다니는 몽환적 공간
-
-### 콘텐츠 블록
-
-X룸 안에 배치하는 콘텐츠 단위. 각 블록은 위치/크기/회전 속성을 가진다.
-
-| Method | Endpoint | 용도 | 인증 |
-|--------|----------|------|------|
-| GET | /api/xrooms/{xroomId}/blocks | 블록 목록 조회 | 필요 |
-| POST | /api/xrooms/{xroomId}/blocks | 블록 추가 | 필요 |
-| PATCH | /api/xrooms/{xroomId}/blocks/{blockId} | 블록 수정 (내용, 위치, 크기 등) | 필요 |
-| DELETE | /api/xrooms/{xroomId}/blocks/{blockId} | 블록 삭제 | 필요 |
-
-**블록 타입**:
-- **PHOTO** — 사진 + 캡션 + 날짜
-- **TEXT** — 편지/메모 스타일 텍스트
-- **MUSIC** — 노래 링크 (우리의 노래)
-- **DDAY** — 기념일 카운터 ("처음 만난 날" 등)
-- **VIDEO** - 동영상
-
-**블록 공통 속성**:
-```json
-{
-  "type": "PHOTO | TEXT | MUSIC | DDAY",
-  "positionX": "number",
-  "positionY": "number",
-  "rotation": "number (degree)",
-  "content": "블록 타입별 데이터"
-}
-```
-
-### X룸 공유
-
-| Method | Endpoint | 용도 | 인증 |
-|--------|----------|------|------|
-| POST | /api/xrooms/{xroomId}/share | 상대방에게 X룸 공유 (초대) | 필요 |
+작업할 내용 없음 (기억의 방 재설계 Phase 0~3 완료 — 위 "완료된 API" 참조)
 
 ---
 
