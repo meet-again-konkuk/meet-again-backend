@@ -4,6 +4,7 @@ import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.TargetInfos
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
+import com.konkuk.ma.domain.common.domain.file.port.FileUrlResolver
 import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.xroom.domain.MyXrooms
@@ -11,7 +12,8 @@ import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.Xrooms
-import com.konkuk.ma.domain.xroom.domain.media.Medias
+import com.konkuk.ma.domain.xroom.domain.media.Media
+import com.konkuk.ma.domain.xroom.domain.media.MemoryPhotoUrls
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.domain.memory.MemoryCounts
 import com.konkuk.ma.domain.xroom.domain.port.MediaQueryRepository
@@ -29,6 +31,7 @@ class XroomQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val memoryQueryRepository: MemoryQueryRepository,
     private val mediaQueryRepository: MediaQueryRepository,
+    private val fileUrlResolver: FileUrlResolver,
     private val xroomValidator: XroomValidator,
 ) {
     fun findMine(memberId: Long): MyXrooms {
@@ -55,12 +58,17 @@ class XroomQueryService(
 
         val targetInfo = targetInfoQueryRepository.findOne(xroom.targetInfoId)
         val memories = Memories(memoryQueryRepository.find(xroomId))
-        val medias = Medias(mediaQueryRepository.findActiveByMemories(memories.extractIds()))
+        val medias = mediaQueryRepository.findActiveByMemories(memories.extractIds())
         return XroomDetail(
             xroom = xroom,
             recipientName = targetInfo.targetName,
             memoriesCollection = memories,
-            medias = medias,
+            photoUrls = resolvePhotoUrls(medias),
         )
+    }
+
+    private fun resolvePhotoUrls(medias: List<Media>): MemoryPhotoUrls {
+        val urlsByMemory = medias.associate { it.memoryId to fileUrlResolver.resolve(it.storageKey) }
+        return MemoryPhotoUrls(urlsByMemory)
     }
 }

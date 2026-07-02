@@ -1,8 +1,7 @@
 package com.konkuk.ma.domain.xroom.api.response
 
-import com.konkuk.ma.config.WebConfig.Companion.FILE_URL_PREFIX
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
-import com.konkuk.ma.domain.xroom.domain.media.Media
+import com.konkuk.ma.domain.xroom.application.result.MediaUploadResult
 import com.konkuk.ma.support.id.EncryptId
 
 class MediaUploadResponse(
@@ -12,11 +11,11 @@ class MediaUploadResponse(
     val thumbnailUrl: String?,
 ) {
     companion object {
-        fun from(media: Media): MediaUploadResponse {
+        fun from(result: MediaUploadResult): MediaUploadResponse {
             return MediaUploadResponse(
-                mediaId = media.id,
-                photoUrl = media.toPhotoUrl(FILE_URL_PREFIX),
-                thumbnailUrl = media.toThumbnailUrl(FILE_URL_PREFIX),
+                mediaId = result.mediaId,
+                photoUrl = result.photoUrl,
+                thumbnailUrl = result.thumbnailUrl,
             )
         }
     }

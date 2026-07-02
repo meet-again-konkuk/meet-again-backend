@@ -9,7 +9,7 @@ import com.konkuk.ma.domain.xroom.domain.MyXrooms
 import com.konkuk.ma.domain.xroom.domain.ReceivedXroom
 import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
-import com.konkuk.ma.domain.xroom.domain.media.Medias
+import com.konkuk.ma.domain.xroom.domain.media.MemoryPhotoUrls
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
 import com.konkuk.ma.domain.xroom.fixture.MyXroomFixture
@@ -123,7 +123,7 @@ class XroomQueryApiTest(
             xroom = XroomFixture.create(id = 1L, finalMessage = FinalMessage("고마웠어")),
             recipientName = "김만남",
             memoriesCollection = Memories(listOf(MemoryFixture.create(id = 1L, xroomId = 1L))),
-            medias = Medias(emptyList()),
+            photoUrls = MemoryPhotoUrls(emptyMap()),
         )
         every { xroomQueryService.findDetail(1L, authMemberId) } returns xroomDetail
 

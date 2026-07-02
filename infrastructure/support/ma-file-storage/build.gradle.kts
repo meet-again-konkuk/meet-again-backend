@@ -9,5 +9,8 @@ dependencies {
     implementation("com.twelvemonkeys.imageio:imageio-webp:3.11.0")
     implementation("com.twelvemonkeys.imageio:imageio-batik:3.11.0")
 
+    implementation(platform("software.amazon.awssdk:bom:2.46.20"))
+    implementation("software.amazon.awssdk:s3")
+
     testImplementation(testFixtures(project(":domain:ma-domain-core")))
 }
