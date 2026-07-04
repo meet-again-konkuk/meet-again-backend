@@ -11,6 +11,8 @@ class PostDetailResponse(
     val content: String,
     val likes: Int,
     val timeAgo: String,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
     val comments: List<CommentResponse>,
 ) {
     companion object {
@@ -24,6 +26,8 @@ class PostDetailResponse(
                 content = post.content,
                 likes = postDetail.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
+                likedByMe = postDetail.likedByMe,
+                isMine = postDetail.isMine,
                 comments = postDetail.comments.map { CommentResponse.from(it) },
             )
         }

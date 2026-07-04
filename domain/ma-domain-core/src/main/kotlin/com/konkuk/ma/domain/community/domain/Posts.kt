@@ -12,12 +12,20 @@ class Posts(val data: List<Post>) {
         return data.map { it.id }
     }
 
-    fun combineWithAuthors(members: Members, likeCounts: LikeCounts): List<PostWithAuthor> {
+    fun combineWithAuthors(
+        members: Members,
+        likeCounts: LikeCounts,
+        commentCounts: CommentCounts,
+        viewer: Viewer,
+    ): List<PostWithAuthor> {
         return data.map { post ->
             PostWithAuthor(
                 post = post,
                 nickname = members.findNickname(post.authorId),
                 likeCount = likeCounts.countOf(post.id),
+                likedByMe = viewer.isLikedByMe(post.id),
+                isMine = viewer.isMine(post.authorId),
+                commentCount = commentCounts.countOf(post.id),
             )
         }
     }

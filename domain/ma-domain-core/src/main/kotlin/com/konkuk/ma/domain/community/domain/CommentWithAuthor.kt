@@ -6,4 +6,6 @@ class CommentWithAuthor(
     val likeCount: Int,
     val replies: List<ReplyWithAuthor> = emptyList(),
     val remainingReplyCount: Int = 0,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
 )

@@ -46,6 +46,21 @@ class CommentLikeDao {
             .associate { row -> row[CommentLikeTable.commentId] to row[likeCount].toInt() }
     }
 
+    fun findLikedCommentIds(memberId: Long, commentIds: List<Long>): Set<Long> {
+        if (commentIds.isEmpty()) {
+            return emptySet()
+        }
+        return CommentLikeTable
+            .select(CommentLikeTable.commentId)
+            .where {
+                (CommentLikeTable.deleted eq false) and
+                    (CommentLikeTable.memberId eq memberId) and
+                    (CommentLikeTable.commentId inList commentIds)
+            }
+            .map { row -> row[CommentLikeTable.commentId] }
+            .toSet()
+    }
+
     fun delete(commentId: Long, memberId: Long) {
         CommentLikeTable.deleteWhere {
             (CommentLikeTable.commentId eq commentId) and

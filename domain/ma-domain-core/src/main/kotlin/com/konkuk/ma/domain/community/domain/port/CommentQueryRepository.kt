@@ -7,4 +7,5 @@ interface CommentQueryRepository {
     fun find(postId: Long): List<Comment>
     fun findByAuthor(authorId: Long): List<Comment>
     fun findReplies(parentCommentId: Long): List<Comment>
+    fun count(postIds: List<Long>): Map<Long, Int>
 }

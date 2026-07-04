@@ -7,6 +7,7 @@ interface CommentLikeRepository {
     fun find(memberId: Long): List<CommentLike>
     fun count(commentId: Long): Int
     fun count(commentIds: List<Long>): Map<Long, Int>
+    fun findLikedCommentIds(memberId: Long, commentIds: List<Long>): Set<Long>
     fun delete(commentId: Long, memberId: Long)
     fun deleteByMember(memberId: Long)
 }

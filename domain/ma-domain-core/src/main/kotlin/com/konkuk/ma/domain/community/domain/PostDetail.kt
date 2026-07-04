@@ -5,4 +5,6 @@ class PostDetail(
     val nickname: String,
     val likeCount: Int,
     val comments: List<CommentWithAuthor>,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
 )

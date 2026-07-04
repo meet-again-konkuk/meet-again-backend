@@ -6,13 +6,19 @@ class CommentDetail(
     val rootComment: Comment,
     val replies: Replies,
 ) {
-    fun combineWithAuthor(members: Members, likeCounts: LikeCounts): CommentWithAuthor {
+    fun combineWithAuthor(
+        members: Members,
+        likeCounts: LikeCounts,
+        viewer: Viewer,
+    ): CommentWithAuthor {
         return CommentWithAuthor(
             comment = rootComment,
             nickname = members.findNickname(rootComment.authorId),
             likeCount = likeCounts.countOf(rootComment.id),
-            replies = replies.combineWithAuthors(members, likeCounts),
+            replies = replies.combineWithAuthors(members, likeCounts, viewer),
             remainingReplyCount = 0,
+            likedByMe = viewer.isLikedByMe(rootComment.id),
+            isMine = viewer.isMine(rootComment.authorId),
         )
     }
 

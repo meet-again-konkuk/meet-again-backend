@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.community.fixture.CommentFixture
+import com.konkuk.ma.domain.community.fixture.ViewerFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
 import io.kotest.core.spec.style.FunSpec
@@ -24,7 +25,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
 
             // When
-            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result.comment shouldBe parent
@@ -52,7 +53,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
 
             // When
-            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result.nickname shouldBe "부모작성자"
@@ -74,7 +75,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             )
 
             // When
-            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result.remainingReplyCount shouldBe 5
@@ -92,7 +93,7 @@ class CommentWithPreviewRepliesTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()))
+            val result = grouped.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result.nickname shouldBe "알 수 없음"
