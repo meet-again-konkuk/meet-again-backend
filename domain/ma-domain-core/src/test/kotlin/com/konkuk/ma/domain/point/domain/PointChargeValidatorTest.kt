@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.point.domain
 
 import com.konkuk.ma.domain.common.domain.Money
-import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.history.PointHistory
 import com.konkuk.ma.domain.point.domain.history.PointHistoryType
@@ -20,20 +19,6 @@ class PointChargeValidatorTest : FunSpec({
 
     val pointHistoryRepository = mockk<PointHistoryRepository>()
     val pointChargeValidator = PointChargeValidator(pointHistoryRepository)
-
-    fun createCommand(
-        idempotencyKey: String = "idem-key-1",
-        orderPointPrice: Int = 1000,
-    ): ChargePointCommand {
-        return ChargePointCommand(
-            ownerId = 1L,
-            pointProductId = 1L,
-            paymentMethod = PaymentMethod.CARD,
-            paymentToken = "token-1",
-            orderPointPrice = orderPointPrice,
-            idempotencyKey = idempotencyKey,
-        )
-    }
 
     fun createProduct(price: Int = 1000): PointProductWithDiscount {
         return PointProductWithDiscount(
@@ -61,51 +46,55 @@ class PointChargeValidatorTest : FunSpec({
 
         test("멱등키가 존재하지 않고 가격이 일치하면 예외 없이 통과한다") {
             // Given
-            val command = createCommand(orderPointPrice = 1000)
+            val idempotencyKey = "idem-key-1"
+            val orderPointPrice = 1000
             val product = createProduct(price = 1000)
-            every { pointHistoryRepository.findOneOrNull(command.idempotencyKey) } returns null
+            every { pointHistoryRepository.findOneOrNull(idempotencyKey) } returns null
 
             // When
-            pointChargeValidator.validate(command.idempotencyKey, command.orderPointPrice, product)
+            pointChargeValidator.validate(idempotencyKey, orderPointPrice, product)
         }
 
         test("멱등키가 이미 존재하면 DuplicateException이 발생한다") {
             // Given
-            val command = createCommand(idempotencyKey = "duplicate-key")
+            val idempotencyKey = "duplicate-key"
+            val orderPointPrice = 1000
             val product = createProduct(price = 1000)
             every {
-                pointHistoryRepository.findOneOrNull(command.idempotencyKey)
-            } returns createExistingHistory(command.idempotencyKey)
+                pointHistoryRepository.findOneOrNull(idempotencyKey)
+            } returns createExistingHistory(idempotencyKey)
 
             // When & Then
             shouldThrow<DuplicateException> {
-                pointChargeValidator.validate(command.idempotencyKey, command.orderPointPrice, product)
+                pointChargeValidator.validate(idempotencyKey, orderPointPrice, product)
             }
         }
 
         test("주문 가격이 상품 가격과 다르면 InvalidStateException이 발생한다") {
             // Given
-            val command = createCommand(orderPointPrice = 1000)
+            val idempotencyKey = "idem-key-1"
+            val orderPointPrice = 1000
             val product = createProduct(price = 2000)
-            every { pointHistoryRepository.findOneOrNull(command.idempotencyKey) } returns null
+            every { pointHistoryRepository.findOneOrNull(idempotencyKey) } returns null
 
             // When & Then
             shouldThrow<InvalidStateException> {
-                pointChargeValidator.validate(command.idempotencyKey, command.orderPointPrice, product)
+                pointChargeValidator.validate(idempotencyKey, orderPointPrice, product)
             }
         }
 
         test("멱등키 중복이 먼저 검증되어 가격 불일치보다 우선 예외를 발생시킨다") {
             // Given: 멱등키 중복 AND 가격 불일치를 모두 만족하는 상황
-            val command = createCommand(idempotencyKey = "dup-key", orderPointPrice = 500)
+            val idempotencyKey = "dup-key"
+            val orderPointPrice = 500
             val product = createProduct(price = 1000)
             every {
-                pointHistoryRepository.findOneOrNull(command.idempotencyKey)
-            } returns createExistingHistory(command.idempotencyKey)
+                pointHistoryRepository.findOneOrNull(idempotencyKey)
+            } returns createExistingHistory(idempotencyKey)
 
             // When & Then: DuplicateException이 먼저 발생
             shouldThrow<DuplicateException> {
-                pointChargeValidator.validate(command.idempotencyKey, command.orderPointPrice, product)
+                pointChargeValidator.validate(idempotencyKey, orderPointPrice, product)
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.point.api.request
 
-import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 import com.konkuk.ma.support.validation.ValidationMessages
 import jakarta.validation.constraints.Min
@@ -22,15 +21,4 @@ class ChargePointRequest(
 
     @field:NotBlank(message = ValidationMessages.IDEMPOTENCY_KEY_REQUIRED)
     val idempotencyKey: String,
-) {
-    fun toCommand(memberId: Long): ChargePointCommand {
-        return ChargePointCommand(
-            ownerId = memberId,
-            pointProductId = pointProductId,
-            paymentMethod = paymentMethod,
-            paymentToken = paymentToken,
-            orderPointPrice = orderPointPrice,
-            idempotencyKey = idempotencyKey,
-        )
-    }
-}
+)

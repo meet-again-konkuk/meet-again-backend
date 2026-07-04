@@ -40,7 +40,7 @@ class LoginApiTest(
             accessToken = "access-token",
             refreshToken = RefreshToken(memberId = 1L, LocalDateTime.now().plusDays(7), "refresh-token")
         )
-        every { loginService.login(match { it.email == Email(request.email) && it.password == request.password }) } returns loginInfo
+        every { loginService.login(request.email, request.password) } returns loginInfo
 
         mockMvc.postJson("/api/auth/login") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isOk() } }

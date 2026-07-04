@@ -30,7 +30,7 @@ class MemberWithdrawalApiTest(
 
     test("회원 탈퇴 신청 API 문서화") {
         val request = WithdrawalRequest(password = "password1")
-        every { withdrawalService.requestWithdrawal(any()) } just runs
+        every { withdrawalService.requestWithdrawal(any(), any()) } just runs
 
         mockMvc.postJson("/api/members/withdrawal") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isNoContent() } }
@@ -51,7 +51,7 @@ class MemberWithdrawalApiTest(
 
     test("회원 탈퇴 복구 API 문서화") {
         val request = WithdrawalCancelRequest(email = "user@example.com", password = "password1")
-        every { withdrawalCancelService.cancel(any()) } just runs
+        every { withdrawalCancelService.cancel(any(), any()) } just runs
 
         mockMvc.postJson("/api/members/withdrawal/cancellation") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isNoContent() } }

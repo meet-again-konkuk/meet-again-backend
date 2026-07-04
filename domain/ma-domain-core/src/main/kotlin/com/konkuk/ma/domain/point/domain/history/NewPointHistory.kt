@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.point.domain.history
 
 import com.konkuk.ma.domain.common.domain.Money
-import com.konkuk.ma.domain.point.application.command.ChargePointCommand
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscount
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.payment.PaymentApproval
@@ -19,18 +18,20 @@ class NewPointHistory(
 ) {
     companion object {
         fun forCharge(
-            command: ChargePointCommand,
+            ownerId: Long,
+            paymentMethod: PaymentMethod,
+            idempotencyKey: String,
             productWithDiscount: PointProductWithDiscount,
             approval: PaymentApproval,
         ): NewPointHistory {
             return NewPointHistory(
-                ownerId = command.ownerId,
+                ownerId = ownerId,
                 pointProductId = productWithDiscount.productId(),
                 historyType = PointHistoryType.CHARGE,
                 quantity = productWithDiscount.chargeQuantity(),
                 paidAmount = approval.approvedAmount,
-                paymentMethod = command.paymentMethod,
-                idempotencyKey = command.idempotencyKey,
+                paymentMethod = paymentMethod,
+                idempotencyKey = idempotencyKey,
                 approvalNumber = approval.approvalNumber,
             )
         }
