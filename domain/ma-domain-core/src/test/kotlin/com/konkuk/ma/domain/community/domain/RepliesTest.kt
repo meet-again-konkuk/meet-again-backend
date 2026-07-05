@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.community.fixture.CommentFixture
+import com.konkuk.ma.domain.community.fixture.ViewerFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
 import io.kotest.core.spec.style.FunSpec
@@ -98,7 +99,7 @@ class RepliesTest : FunSpec({
             )
 
             // When
-            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()))
+            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 2
@@ -115,7 +116,7 @@ class RepliesTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()))
+            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 1
@@ -128,7 +129,7 @@ class RepliesTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()))
+            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 0

@@ -6,6 +6,8 @@ import com.konkuk.ma.domain.community.api.response.PostResponse
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.support.payload.response.CursorResponse
+import com.konkuk.ma.support.security.LoginMember
+import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,11 +21,12 @@ class PostQueryApi(
 ) {
     @GetMapping
     fun findPosts(
+        @LoginMember memberInfo: MemberInfo,
         @RequestParam(required = false) category: PostCategory?,
         @RequestParam(required = false) cursorId: Long?,
         @RequestParam(required = false) size: Int?,
     ): CursorResponse<List<PostResponse>> {
-        val cursorResult = postQueryService.find(category, CursorIdCondition.of(cursorId, size))
+        val cursorResult = postQueryService.find(category, CursorIdCondition.of(cursorId, size), memberInfo.id)
         return CursorResponse(
             data = cursorResult.data.map { PostResponse.from(it) },
             hasNext = cursorResult.hasNext,
@@ -33,9 +36,10 @@ class PostQueryApi(
 
     @GetMapping("/{id}")
     fun findDetail(
+        @LoginMember memberInfo: MemberInfo,
         @PathVariable id: Long,
     ): PostDetailResponse {
-        val postDetail = postQueryService.findDetail(id)
+        val postDetail = postQueryService.findDetail(id, memberInfo.id)
         return PostDetailResponse.from(postDetail)
     }
 }

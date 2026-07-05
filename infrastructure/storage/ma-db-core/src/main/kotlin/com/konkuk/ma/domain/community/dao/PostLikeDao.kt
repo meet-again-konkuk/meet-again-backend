@@ -53,6 +53,21 @@ class PostLikeDao {
             .associate { row -> row[PostLikeTable.postId] to row[likeCount].toInt() }
     }
 
+    fun findLikedPostIds(memberId: Long, postIds: List<Long>): Set<Long> {
+        if (postIds.isEmpty()) {
+            return emptySet()
+        }
+        return PostLikeTable
+            .select(PostLikeTable.postId)
+            .where {
+                (PostLikeTable.deleted eq false) and
+                    (PostLikeTable.memberId eq memberId) and
+                    (PostLikeTable.postId inList postIds)
+            }
+            .map { row -> row[PostLikeTable.postId] }
+            .toSet()
+    }
+
     fun delete(postId: Long, memberId: Long) {
         PostLikeTable.deleteWhere {
             (PostLikeTable.postId eq postId) and

@@ -25,6 +25,10 @@ class PostLikeCoreRepository(
         return postLikeDao.count(postIds)
     }
 
+    override fun findLikedPostIds(memberId: Long, postIds: List<Long>): Set<Long> {
+        return postLikeDao.findLikedPostIds(memberId, postIds)
+    }
+
     override fun delete(postId: Long, memberId: Long) {
         postLikeDao.delete(postId, memberId)
     }

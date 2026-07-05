@@ -211,3 +211,50 @@ fun commentDetailReplyTimeAgo(fieldName: String = "replies[].timeAgo") =
 
 fun commentDetailRemainingReplyCount(fieldName: String = "remainingReplyCount") =
     fieldName responseType NUMBER means "남은 대댓글 수" example "0"
+
+// --- REQ-011: 조회 응답 사용자 상태 필드 ---
+
+// 게시글 목록 data[]
+fun postLikedByMe(fieldName: String = "data[].likedByMe") =
+    fieldName responseType BOOLEAN means "조회자의 활성 좋아요 여부" example "true"
+
+fun postIsMine(fieldName: String = "data[].isMine") =
+    fieldName responseType BOOLEAN means "조회자가 작성한 게시글인지 여부" example "false"
+
+fun postCommentCount(fieldName: String = "data[].commentCount") =
+    fieldName responseType NUMBER means "댓글 수 (삭제 제외 루트+대댓글 합)" example "3"
+
+// 게시글 상세(post)
+fun detailLikedByMe(fieldName: String = "likedByMe") =
+    fieldName responseType BOOLEAN means "조회자의 활성 좋아요 여부" example "true"
+
+fun detailIsMine(fieldName: String = "isMine") =
+    fieldName responseType BOOLEAN means "조회자가 작성한 게시글인지 여부" example "false"
+
+// 게시글 상세 comments[]
+fun detailCommentLikedByMe(fieldName: String = "comments[].likedByMe") =
+    fieldName responseType BOOLEAN means "조회자의 활성 좋아요 여부" example "true"
+
+fun detailCommentIsMine(fieldName: String = "comments[].isMine") =
+    fieldName responseType BOOLEAN means "조회자가 작성한 댓글인지 여부" example "false"
+
+// 게시글 상세 comments[].replies[]
+fun detailReplyLikedByMe(fieldName: String = "comments[].replies[].likedByMe") =
+    fieldName responseType BOOLEAN means "조회자의 활성 좋아요 여부" example "true"
+
+fun detailReplyIsMine(fieldName: String = "comments[].replies[].isMine") =
+    fieldName responseType BOOLEAN means "조회자가 작성한 대댓글인지 여부" example "false"
+
+// 루트 댓글 상세(comment)
+fun commentDetailLikedByMe(fieldName: String = "likedByMe") =
+    fieldName responseType BOOLEAN means "조회자의 활성 좋아요 여부" example "true"
+
+fun commentDetailIsMine(fieldName: String = "isMine") =
+    fieldName responseType BOOLEAN means "조회자가 작성한 댓글인지 여부" example "false"
+
+// 루트 댓글 상세 replies[]
+fun commentDetailReplyLikedByMe(fieldName: String = "replies[].likedByMe") =
+    fieldName responseType BOOLEAN means "조회자의 활성 좋아요 여부" example "true"
+
+fun commentDetailReplyIsMine(fieldName: String = "replies[].isMine") =
+    fieldName responseType BOOLEAN means "조회자가 작성한 대댓글인지 여부" example "false"

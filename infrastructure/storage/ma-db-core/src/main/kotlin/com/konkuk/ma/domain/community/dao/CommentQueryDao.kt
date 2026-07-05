@@ -3,6 +3,8 @@ package com.konkuk.ma.domain.community.dao
 import com.konkuk.ma.domain.community.entity.CommentEntity
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Component
 
@@ -37,5 +39,17 @@ class CommentQueryDao {
             .where { CommentTable.parentCommentId eq parentCommentId }
             .orderBy(CommentTable.id to SortOrder.DESC)
             .map { row -> CommentEntity.from(row) }
+    }
+
+    fun count(postIds: List<Long>): Map<Long, Int> {
+        if (postIds.isEmpty()) {
+            return emptyMap()
+        }
+        val commentCount = CommentTable.id.count()
+        return CommentTable
+            .select(CommentTable.postId, commentCount)
+            .where { (CommentTable.deleted eq false) and (CommentTable.postId inList postIds) }
+            .groupBy(CommentTable.postId)
+            .associate { row -> row[CommentTable.postId] to row[commentCount].toInt() }
     }
 }

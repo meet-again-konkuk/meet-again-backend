@@ -8,6 +8,7 @@ interface PostLikeRepository {
     fun find(memberId: Long): List<PostLike>
     fun count(postId: Long): Int
     fun count(postIds: List<Long>): Map<Long, Int>
+    fun findLikedPostIds(memberId: Long, postIds: List<Long>): Set<Long>
     fun delete(postId: Long, memberId: Long)
     fun deleteByMember(memberId: Long)
 }

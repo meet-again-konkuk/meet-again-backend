@@ -14,8 +14,11 @@ import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.categoryParam
 import com.konkuk.ma.vocabulary.cursorIdParam
 import com.konkuk.ma.vocabulary.postCategory
+import com.konkuk.ma.vocabulary.postCommentCount
 import com.konkuk.ma.vocabulary.postContent
 import com.konkuk.ma.vocabulary.postId
+import com.konkuk.ma.vocabulary.postIsMine
+import com.konkuk.ma.vocabulary.postLikedByMe
 import com.konkuk.ma.vocabulary.postLikes
 import com.konkuk.ma.vocabulary.postNickname
 import com.konkuk.ma.vocabulary.postTimeAgo
@@ -43,6 +46,9 @@ class PostQueryApiTest(
             post = PostFixture.create(category = PostCategory.CHEER),
             nickname = "테스트닉네임",
             likeCount = 5,
+            likedByMe = true,
+            isMine = false,
+            commentCount = 3,
         )
         val cursorResult = CursorResult(
             data = listOf(postWithAuthor),
@@ -50,7 +56,7 @@ class PostQueryApiTest(
             nextCursorId = 1L,
         )
 
-        every { postQueryService.find(PostCategory.CHEER, CursorIdCondition(null, 20)) } returns cursorResult
+        every { postQueryService.find(PostCategory.CHEER, CursorIdCondition(null, 20), any<Long>()) } returns cursorResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {
@@ -73,6 +79,9 @@ class PostQueryApiTest(
                     postContent(),
                     postLikes(),
                     postTimeAgo(),
+                    postLikedByMe(),
+                    postIsMine(),
+                    postCommentCount(),
                     postsHasNext(),
                     postsNextCursorId(),
                 ),
@@ -87,7 +96,7 @@ class PostQueryApiTest(
             nextCursorId = null,
         )
 
-        every { postQueryService.find(PostCategory.SUCCESS_STORY, CursorIdCondition(null, 20)) } returns cursorResult
+        every { postQueryService.find(PostCategory.SUCCESS_STORY, CursorIdCondition(null, 20), any<Long>()) } returns cursorResult
 
         // When & Then
         mockMvc.getJson("/api/community/posts") {

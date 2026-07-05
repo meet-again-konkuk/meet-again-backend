@@ -17,6 +17,9 @@ class PostResponseTest : FunSpec({
                 post = PostFixture.create(category = PostCategory.SUCCESS_STORY),
                 nickname = "작성자",
                 likeCount = 5,
+                likedByMe = false,
+                isMine = false,
+                commentCount = 0,
             )
 
             val response = PostResponse.from(postWithAuthor)
@@ -34,6 +37,9 @@ class PostResponseTest : FunSpec({
                 post = PostFixture.create(createdDate = LocalDateTime.now().minusMinutes(30)),
                 nickname = "작성자",
                 likeCount = 0,
+                likedByMe = false,
+                isMine = false,
+                commentCount = 0,
             )
 
             val response = PostResponse.from(postWithAuthor)

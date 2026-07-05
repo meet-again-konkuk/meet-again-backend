@@ -27,4 +27,8 @@ class CommentQueryCoreRepository(
     override fun findReplies(parentCommentId: Long): List<Comment> {
         return commentQueryDao.findReplies(parentCommentId).map { it.toDomain() }
     }
+
+    override fun count(postIds: List<Long>): Map<Long, Int> {
+        return commentQueryDao.count(postIds)
+    }
 }
