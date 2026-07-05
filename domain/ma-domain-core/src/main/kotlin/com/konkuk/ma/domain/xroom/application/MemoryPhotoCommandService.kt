@@ -1,9 +1,9 @@
 package com.konkuk.ma.domain.xroom.application
 
 import com.konkuk.ma.domain.common.domain.file.PhotoFile
-import com.konkuk.ma.domain.xroom.application.result.MediaUploadResult
 import com.konkuk.ma.domain.xroom.domain.XroomValidator
 import com.konkuk.ma.domain.xroom.domain.media.MediaProcessor
+import com.konkuk.ma.domain.xroom.domain.media.MediaUploadResult
 import com.konkuk.ma.domain.xroom.domain.media.MediaUrlResolver
 import com.konkuk.ma.domain.xroom.domain.port.MediaCommandRepository
 import org.springframework.stereotype.Service

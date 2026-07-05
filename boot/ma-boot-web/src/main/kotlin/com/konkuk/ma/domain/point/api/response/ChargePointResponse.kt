@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.point.api.response
 
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
-import com.konkuk.ma.domain.point.application.result.ChargeResult
+import com.konkuk.ma.domain.point.domain.ChargeResult
 import com.konkuk.ma.support.id.EncryptId
 
 class ChargePointResponse(

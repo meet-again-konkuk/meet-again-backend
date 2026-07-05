@@ -26,7 +26,7 @@ class MemberWithdrawalApi(
         @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: WithdrawalRequest
     ) {
-        withdrawalService.requestWithdrawal(request.toCommand(memberInfo.email))
+        withdrawalService.requestWithdrawal(memberInfo.email, request.password)
     }
 
     @PostMapping("/cancellation")
@@ -34,6 +34,6 @@ class MemberWithdrawalApi(
     fun cancelWithdrawal(
         @Valid @RequestBody request: WithdrawalCancelRequest
     ) {
-        withdrawalCancelService.cancel(request.toCommand())
+        withdrawalCancelService.cancel(request.email, request.password)
     }
 }

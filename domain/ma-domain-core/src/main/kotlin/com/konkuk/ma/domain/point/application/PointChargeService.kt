@@ -1,11 +1,11 @@
 package com.konkuk.ma.domain.point.application
 
-import com.konkuk.ma.domain.point.application.command.ChargePointCommand
-import com.konkuk.ma.domain.point.application.result.ChargeResult
+import com.konkuk.ma.domain.point.domain.ChargeResult
 import com.konkuk.ma.domain.point.domain.PointChargeValidator
 import com.konkuk.ma.domain.point.domain.PointProductWithDiscountFinder
 import com.konkuk.ma.domain.point.domain.history.NewPointHistory
 import com.konkuk.ma.domain.point.domain.payment.PaymentApproverRouter
+import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 import com.konkuk.ma.domain.point.domain.payment.PaymentOrder
 import com.konkuk.ma.domain.point.domain.port.MemberPointRepository
 import com.konkuk.ma.domain.point.domain.port.PointHistoryRepository
@@ -21,19 +21,26 @@ class PointChargeService(
     private val memberPointRepository: MemberPointRepository,
     private val pointHistoryRepository: PointHistoryRepository,
 ) {
-    fun charge(command: ChargePointCommand): ChargeResult {
-        val product = productFinder.findOne(command.pointProductId)
-        pointChargeValidator.validate(command.idempotencyKey, command.orderPointPrice, product)
+    fun charge(
+        ownerId: Long,
+        pointProductId: Long,
+        paymentMethod: PaymentMethod,
+        paymentToken: String,
+        orderPointPrice: Int,
+        idempotencyKey: String,
+    ): ChargeResult {
+        val product = productFinder.findOne(pointProductId)
+        pointChargeValidator.validate(idempotencyKey, orderPointPrice, product)
 
         val approval = paymentApproverRouter.approve(
-            command.paymentMethod,
-            PaymentOrder.of(command, product),
+            paymentMethod,
+            PaymentOrder.of(paymentMethod, paymentToken, idempotencyKey, product),
         )
-        val memberPoint = memberPointRepository.findOneOrInitial(command.ownerId)
+        val memberPoint = memberPointRepository.findOneOrInitial(ownerId)
             .charge(product.chargeQuantity())
         memberPointRepository.save(memberPoint)
         val pointHistoryId = pointHistoryRepository.save(
-            NewPointHistory.forCharge(command, product, approval),
+            NewPointHistory.forCharge(ownerId, paymentMethod, idempotencyKey, product, approval),
         )
 
         return ChargeResult(

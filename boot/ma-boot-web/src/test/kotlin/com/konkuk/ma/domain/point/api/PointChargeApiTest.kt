@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.application.PointChargeService
-import com.konkuk.ma.domain.point.application.result.ChargeResult
+import com.konkuk.ma.domain.point.domain.ChargeResult
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 import com.konkuk.ma.domain.point.exception.PaymentApprovalFailedException
@@ -50,7 +50,7 @@ class PointChargeApiTest(
             "idempotencyKey" to "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         )
 
-        every { pointChargeService.charge(any()) } returns ChargeResult(
+        every { pointChargeService.charge(any(), any(), any(), any(), any(), any()) } returns ChargeResult(
             pointHistoryId = 100L,
             balance = PointQuantity(30),
             chargedQuantity = PointQuantity(30),
@@ -92,7 +92,7 @@ class PointChargeApiTest(
             "idempotencyKey" to "11111111-2222-3333-4444-555555555555",
         )
 
-        every { pointChargeService.charge(any()) } returns ChargeResult(
+        every { pointChargeService.charge(any(), any(), any(), any(), any(), any()) } returns ChargeResult(
             pointHistoryId = 100L,
             balance = PointQuantity(10),
             chargedQuantity = PointQuantity(10),
@@ -134,7 +134,7 @@ class PointChargeApiTest(
             "idempotencyKey" to "duplicated-idempotency-key",
         )
 
-        every { pointChargeService.charge(any()) } throws DuplicateException(
+        every { pointChargeService.charge(any(), any(), any(), any(), any(), any()) } throws DuplicateException(
             EntityType.POINT_HISTORY,
             "idempotencyKey",
             "duplicated-idempotency-key",
@@ -158,7 +158,7 @@ class PointChargeApiTest(
             "idempotencyKey" to "price-mismatch-key",
         )
 
-        every { pointChargeService.charge(any()) } throws InvalidStateException(
+        every { pointChargeService.charge(any(), any(), any(), any(), any(), any()) } throws InvalidStateException(
             PointChargeApiTest::class,
             999,
             "주문 가격(999원)과 상품 가격(1000원)이 다릅니다.",
@@ -182,7 +182,7 @@ class PointChargeApiTest(
             "idempotencyKey" to "product-not-found-key",
         )
 
-        every { pointChargeService.charge(any()) } throws EntityNotFoundException(
+        every { pointChargeService.charge(any(), any(), any(), any(), any(), any()) } throws EntityNotFoundException(
             EntityType.POINT_PRODUCT,
             "1",
         )
@@ -205,7 +205,7 @@ class PointChargeApiTest(
             "idempotencyKey" to "payment-fail-key",
         )
 
-        every { pointChargeService.charge(any()) } throws PaymentApprovalFailedException(
+        every { pointChargeService.charge(any(), any(), any(), any(), any(), any()) } throws PaymentApprovalFailedException(
             paymentToken = "FAIL_token_example",
             reason = "Mock 결제 승인이 FAIL 토큰으로 거부되었습니다.",
         )

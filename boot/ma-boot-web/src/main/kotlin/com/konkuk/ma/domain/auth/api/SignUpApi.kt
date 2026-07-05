@@ -21,7 +21,7 @@ class SignUpApi(
     fun signUp(
         @Valid @RequestBody request: SignUpRequest
     ): SignUpResponse {
-        val memberId = signUpService.signUp(request.toCommand())
+        val memberId = signUpService.signUp(request.toNewMember())
 
         return SignUpResponse(
             memberId = memberId,

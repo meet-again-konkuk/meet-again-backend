@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.point.application.result
+package com.konkuk.ma.domain.point.domain
 
 import com.konkuk.ma.domain.common.domain.Money
 import com.konkuk.ma.domain.point.domain.balance.PointQuantity

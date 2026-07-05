@@ -5,7 +5,7 @@ import com.konkuk.ma.domain.common.domain.file.PhotoFile
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.xroom.application.MemoryPhotoCommandService
-import com.konkuk.ma.domain.xroom.application.result.MediaUploadResult
+import com.konkuk.ma.domain.xroom.domain.media.MediaUploadResult
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.deleteJson
 import com.konkuk.ma.extension.pathVariables

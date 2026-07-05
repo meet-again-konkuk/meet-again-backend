@@ -1,4 +1,4 @@
-package com.konkuk.ma.domain.xroom.application.result
+package com.konkuk.ma.domain.xroom.domain.media
 
 class MediaUploadResult(
     val mediaId: Long,

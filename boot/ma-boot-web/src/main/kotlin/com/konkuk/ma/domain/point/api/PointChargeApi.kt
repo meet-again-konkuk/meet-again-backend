@@ -24,8 +24,14 @@ class PointChargeApi(
         @LoginMember memberInfo: MemberInfo,
         @Valid @RequestBody request: ChargePointRequest,
     ): ChargePointResponse {
-        val command = request.toCommand(memberInfo.id)
-        val result = pointChargeService.charge(command)
+        val result = pointChargeService.charge(
+            ownerId = memberInfo.id,
+            pointProductId = request.pointProductId,
+            paymentMethod = request.paymentMethod,
+            paymentToken = request.paymentToken,
+            orderPointPrice = request.orderPointPrice,
+            idempotencyKey = request.idempotencyKey,
+        )
         return ChargePointResponse.from(result)
     }
 }
