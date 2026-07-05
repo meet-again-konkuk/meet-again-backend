@@ -25,6 +25,10 @@ class CommentLikeCoreRepository(
         return commentLikeDao.count(commentIds)
     }
 
+    override fun findLikedCommentIds(memberId: Long, commentIds: List<Long>): Set<Long> {
+        return commentLikeDao.findLikedCommentIds(memberId, commentIds)
+    }
+
     override fun delete(commentId: Long, memberId: Long) {
         commentLikeDao.delete(commentId, memberId)
     }

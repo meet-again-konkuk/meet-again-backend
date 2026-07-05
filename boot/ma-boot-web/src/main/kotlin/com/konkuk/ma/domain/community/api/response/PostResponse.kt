@@ -11,6 +11,9 @@ class PostResponse(
     val content: String,
     val likes: Int,
     val timeAgo: String,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
+    val commentCount: Int,
 ) {
     companion object {
         fun from(postWithAuthor: PostWithAuthor): PostResponse {
@@ -23,6 +26,9 @@ class PostResponse(
                 content = post.content,
                 likes = postWithAuthor.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
+                likedByMe = postWithAuthor.likedByMe,
+                isMine = postWithAuthor.isMine,
+                commentCount = postWithAuthor.commentCount,
             )
         }
     }

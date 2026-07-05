@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.community.fixture.CommentFixture
+import com.konkuk.ma.domain.community.fixture.ViewerFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
 import io.kotest.core.spec.style.FunSpec
@@ -80,7 +81,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 1
@@ -110,7 +111,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 1
@@ -128,7 +129,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 1
@@ -149,7 +150,7 @@ class CommentsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 1
@@ -163,7 +164,7 @@ class CommentsTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 0
@@ -195,7 +196,7 @@ class CommentsTest : FunSpec({
             )
 
             // When
-            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()))
+            val result = comments.groupByRootComment(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 2

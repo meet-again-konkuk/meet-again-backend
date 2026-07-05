@@ -17,11 +17,15 @@ import com.konkuk.ma.extension.responseBody
 import com.konkuk.ma.vocabulary.detailCategory
 import com.konkuk.ma.vocabulary.detailCommentContent
 import com.konkuk.ma.vocabulary.detailCommentId
+import com.konkuk.ma.vocabulary.detailCommentIsMine
+import com.konkuk.ma.vocabulary.detailCommentLikedByMe
 import com.konkuk.ma.vocabulary.detailCommentLikes
 import com.konkuk.ma.vocabulary.detailCommentNickname
 import com.konkuk.ma.vocabulary.detailCommentTimeAgo
 import com.konkuk.ma.vocabulary.detailComments
 import com.konkuk.ma.vocabulary.detailContent
+import com.konkuk.ma.vocabulary.detailIsMine
+import com.konkuk.ma.vocabulary.detailLikedByMe
 import com.konkuk.ma.vocabulary.detailLikes
 import com.konkuk.ma.vocabulary.detailNickname
 import com.konkuk.ma.vocabulary.detailPostId
@@ -29,6 +33,8 @@ import com.konkuk.ma.vocabulary.detailRemainingReplyCount
 import com.konkuk.ma.vocabulary.detailReplies
 import com.konkuk.ma.vocabulary.detailReplyContent
 import com.konkuk.ma.vocabulary.detailReplyId
+import com.konkuk.ma.vocabulary.detailReplyIsMine
+import com.konkuk.ma.vocabulary.detailReplyLikedByMe
 import com.konkuk.ma.vocabulary.detailReplyLikes
 import com.konkuk.ma.vocabulary.detailReplyNickname
 import com.konkuk.ma.vocabulary.detailReplyTimeAgo
@@ -54,6 +60,8 @@ class PostDetailQueryApiTest(
             comment = CommentFixture.create(id = 2L, parentCommentId = 1L, content = "감사합니다!"),
             nickname = "대댓글작성자",
             likeCount = 1,
+            likedByMe = false,
+            isMine = false,
         )
         val commentWithAuthor = CommentWithAuthor(
             comment = CommentFixture.create(id = 1L, content = "좋은 글이네요!"),
@@ -61,15 +69,19 @@ class PostDetailQueryApiTest(
             likeCount = 2,
             replies = listOf(reply),
             remainingReplyCount = 3,
+            likedByMe = true,
+            isMine = false,
         )
         val postDetail = PostDetail(
             post = PostFixture.create(category = PostCategory.CHEER, title = "안녕하세요", content = "반갑습니다"),
             nickname = "테스트닉네임",
             likeCount = 5,
             comments = listOf(commentWithAuthor),
+            likedByMe = true,
+            isMine = true,
         )
 
-        every { postQueryService.findDetail(1L) } returns postDetail
+        every { postQueryService.findDetail(1L, any<Long>()) } returns postDetail
 
         // When & Then
         mockMvc.getJson("/api/community/posts/{id}", 1L)
@@ -87,18 +99,24 @@ class PostDetailQueryApiTest(
                     detailContent(),
                     detailLikes(),
                     detailTimeAgo(),
+                    detailLikedByMe(),
+                    detailIsMine(),
                     detailComments(),
                     detailCommentId(),
                     detailCommentNickname(),
                     detailCommentContent(),
                     detailCommentLikes(),
                     detailCommentTimeAgo(),
+                    detailCommentLikedByMe(),
+                    detailCommentIsMine(),
                     detailReplies(),
                     detailReplyId(),
                     detailReplyNickname(),
                     detailReplyContent(),
                     detailReplyLikes(),
                     detailReplyTimeAgo(),
+                    detailReplyLikedByMe(),
+                    detailReplyIsMine(),
                     detailRemainingReplyCount(),
                 ),
             )
@@ -106,7 +124,7 @@ class PostDetailQueryApiTest(
 
     test("존재하지 않는 게시글 조회 시 404를 반환한다") {
         // Given
-        every { postQueryService.findDetail(999L) } throws
+        every { postQueryService.findDetail(999L, any<Long>()) } throws
             EntityNotFoundException(EntityType.COMMUNITY_POST, "999")
 
         // When & Then

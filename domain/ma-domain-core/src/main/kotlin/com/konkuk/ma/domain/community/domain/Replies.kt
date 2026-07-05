@@ -26,12 +26,18 @@ class Replies(val data: List<Comment>) {
         return data.map { it.id }
     }
 
-    fun combineWithAuthors(members: Members, likeCounts: LikeCounts): List<ReplyWithAuthor> {
+    fun combineWithAuthors(
+        members: Members,
+        likeCounts: LikeCounts,
+        viewer: Viewer,
+    ): List<ReplyWithAuthor> {
         return data.map { reply ->
             ReplyWithAuthor(
                 comment = reply,
                 nickname = members.findNickname(reply.authorId),
                 likeCount = likeCounts.countOf(reply.id),
+                likedByMe = viewer.isLikedByMe(reply.id),
+                isMine = viewer.isMine(reply.authorId),
             )
         }
     }

@@ -11,6 +11,8 @@ class CommentResponse(
     val timeAgo: String,
     val replies: List<ReplyResponse>,
     val remainingReplyCount: Int,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
 ) {
     companion object {
         fun from(commentWithAuthor: CommentWithAuthor): CommentResponse {
@@ -23,6 +25,8 @@ class CommentResponse(
                 timeAgo = TimeAgoCalculator.calculate(comment.createdDate),
                 replies = commentWithAuthor.replies.map { ReplyResponse.from(it) },
                 remainingReplyCount = commentWithAuthor.remainingReplyCount,
+                likedByMe = commentWithAuthor.likedByMe,
+                isMine = commentWithAuthor.isMine,
             )
         }
     }
