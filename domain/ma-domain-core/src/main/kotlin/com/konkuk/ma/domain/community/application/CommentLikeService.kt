@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.domain.CommentLikeResult
+import com.konkuk.ma.domain.community.domain.CommentLiker
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -9,12 +9,11 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class CommentLikeService(
+    private val commentLiker: CommentLiker,
     private val commentLikeRepository: CommentLikeRepository,
 ) {
     fun like(commentId: Long, memberId: Long): CommentLikeResult {
-        if (!commentLikeRepository.exists(commentId, memberId)) {
-            commentLikeRepository.save(CommentLike(commentId = commentId, memberId = memberId))
-        }
+        commentLiker.like(commentId, memberId)
         return CommentLikeResult.liked(commentLikeRepository.count(commentId))
     }
 
