@@ -1,10 +1,9 @@
 package com.konkuk.ma.domain.matching.entity.table
 
 import com.konkuk.ma.domain.common.entity.table.BaseTable
-import com.konkuk.ma.domain.member.entity.table.MemberTable
 
 object TargetInfoTable : BaseTable("TARGET_INFOS", "TARGET_INFO_ID") {
-    val registerId = long("REGISTER_ID").references(MemberTable.id)
+    val registerId = long("REGISTER_ID").index()
     val name = varchar("NAME", 255)
     val targetGender = varchar("TARGET_GENDER", 32)
     val middleNumber = varchar("MIDDLE_NUMBER", 255).nullable()

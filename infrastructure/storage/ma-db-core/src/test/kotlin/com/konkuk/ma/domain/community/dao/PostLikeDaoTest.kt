@@ -6,7 +6,6 @@ import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
-import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
@@ -33,12 +32,20 @@ class PostLikeDaoTest(
 
         context("save") {
 
-            test("좋아요를 저장하고 ID를 반환한다") {
+            test("좋아요를 저장한다") {
                 // When
-                val id = postLikeDao.save(1L, 100L)
+                postLikeDao.save(1L, 100L)
 
                 // Then
-                id shouldBeGreaterThan 0L
+                PostLikeTable.selectAll().count() shouldBe 1
+            }
+
+            test("같은 회원이 같은 게시글에 중복 저장해도 한 건만 유지된다") {
+                // When
+                postLikeDao.save(1L, 100L)
+                postLikeDao.save(1L, 100L)
+
+                // Then
                 PostLikeTable.selectAll().count() shouldBe 1
             }
         }

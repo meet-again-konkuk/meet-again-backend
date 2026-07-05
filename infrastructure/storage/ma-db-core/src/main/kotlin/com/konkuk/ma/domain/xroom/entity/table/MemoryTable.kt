@@ -4,7 +4,7 @@ import com.konkuk.ma.domain.common.entity.table.BaseTable
 import org.jetbrains.exposed.sql.javatime.date
 
 object MemoryTable : BaseTable("MEMORIES", "MEMORY_ID") {
-    val xroomId = long("ROOM_ID")
+    val xroomId = long("ROOM_ID").index()
     val title = varchar("TITLE", 200)
     val eventDate = date("EVENT_DATE")
     val eventDatePrecision = varchar("EVENT_DATE_PRECISION", 8)

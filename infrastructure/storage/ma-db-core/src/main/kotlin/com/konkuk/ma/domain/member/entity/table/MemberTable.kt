@@ -9,7 +9,7 @@ object MemberTable : BaseTable("MEMBERS", "MEMBER_ID") {
     val password = varchar("PASSWORD", 255)
     val nickname = varchar("NICKNAME", 255)
     val gender = varchar("GENDER", 32)
-    val phoneNumber = varchar("PHONE_NUMBER", 255)
+    val phoneNumber = varchar("PHONE_NUMBER", 255).index()
     val name = varchar("NAME", 255)
     val birthDate = date("BIRTH_DATE")
     val region = varchar("REGION", 255)

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository
 class CommentLikeCoreRepository(
     private val commentLikeDao: CommentLikeDao,
 ) : CommentLikeRepository {
-    override fun save(commentLike: CommentLike): Long {
-        return commentLikeDao.save(commentLike.commentId, commentLike.memberId)
+    override fun save(commentLike: CommentLike) {
+        commentLikeDao.save(commentLike.commentId, commentLike.memberId)
     }
 
     override fun find(memberId: Long): List<CommentLike> {
