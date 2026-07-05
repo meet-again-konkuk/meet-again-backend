@@ -242,7 +242,7 @@ DB 스키마 변화 없음. 순수 응답 필드 additive. 프론트는 optional
 | `application/ReportCommandService.kt` (신규) | `reportPost(postId, reporterId, reason, detail): ReportResult` / `reportComment(commentId, reporterId, reason, detail)`. 흐름: 대상 findOne(404) → targetAuthorId·**원문 스냅샷(title/content) 확보** → `NewReport`(본인 400) → `reportValidator`(중복 409) → save |
 | `application/BlockCommandService.kt` (신규) | `blockPostAuthor(postId, blockerId): BlockResult` / `blockCommentAuthor(...)`. 흐름: 대상 findOne(404) → blockedId=작성자 → `NewBlock`(본인 400) → 기존 active 있으면 그대로(200), 없으면 save(201) → blockedNickname 조회. `unblock(blockId, blockerId)`: findOne(404)→validateOwnership(403)→softDelete |
 | `application/BlockQueryService.kt` (신규) | `findBlocks(blockerId): List<BlockView>` — `Blocks` + `Members` 닉네임 조립 |
-| `application/result/ReportResult.kt`·`BlockResult.kt`·`BlockView.kt` (신규) | reportId/status · (blockId, blockedNickname, newlyBlocked) · (blockId, nickname, blockedAt) |
+| `domain/report/ReportResult.kt`·`domain/block/{BlockResult,BlockView}.kt` (신규) | reportId/status · (blockId, blockedNickname, newlyBlocked) · (blockId, nickname, blockedAt). **PR #41 컨벤션(application/result 폐기 — 타입은 domain 아니면 boot Response)에 따라 domain 서브패키지 배치** (ChargeResult→point/domain 선례) |
 
 ### 변경 파일 — 차단 필터 적용 (Phase 1 조회 경로 확장)
 
@@ -359,7 +359,7 @@ DB 스키마 변화 없음. 순수 응답 필드 additive. 프론트는 optional
 | 파일 | 변경 |
 |------|------|
 | `application/PostImageCommandService.kt` (신규) | `upload(postId, memberId, photoFile): PostImageUploadResult` — findOne(404)→`post.validateOwnership`(403, **Phase 2 의존**)→기존 active 조회(201/200 판별)→`softDeleteByPost`(교체)→`processor.process`→save→`resolve`. `delete(postId, memberId)`: findOne(404)→validateOwnership→softDeleteByPost |
-| `application/result/PostImageUploadResult.kt` (신규) | `(mediaId, postId, imageUrl, thumbnailUrl?, replaced: Boolean)` |
+| `domain/image/PostImageUploadResult.kt` (신규) | `(mediaId, postId, imageUrl, thumbnailUrl?, replaced: Boolean)`. **PR #41 컨벤션에 따라 domain 배치** (MediaUploadResult→xroom/domain/media 선례) |
 | `application/PostCommandService.kt` (수정) | `delete` 에 `postImageCommandRepository.softDeleteByPost(postId, memberId)` 추가 (게시글 삭제 시 이미지 연쇄 soft delete — REQ-012 정책) |
 | `application/PostQueryService.kt` (수정) | `find`: `postImageQueryRepository.findActiveByPosts(postIds)` → `resolveByPosts` → `PostWithAuthor.imageUrl/thumbnailUrl` (1쿼리, N+1 없음). `findDetail`: `findActiveByPost(postId)` → 상세 imageUrl |
 | `domain/community/domain/PostWithAuthor.kt` (수정) | `imageUrl: String?`·`thumbnailUrl: String?` 추가 |
