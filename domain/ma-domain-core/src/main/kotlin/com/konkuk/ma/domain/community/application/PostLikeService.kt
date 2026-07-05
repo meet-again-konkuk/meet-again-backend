@@ -12,7 +12,9 @@ class PostLikeService(
     private val postLikeRepository: PostLikeRepository,
 ) {
     fun like(postId: Long, memberId: Long): PostLikeResult {
-        postLikeRepository.save(PostLike(postId = postId, memberId = memberId))
+        if (!postLikeRepository.exists(postId, memberId)) {
+            postLikeRepository.save(PostLike(postId = postId, memberId = memberId))
+        }
         return PostLikeResult.liked(postLikeRepository.count(postId))
     }
 

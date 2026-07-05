@@ -1,17 +1,13 @@
 package com.konkuk.ma.domain.common.entity.table
 
-import java.sql.SQLIntegrityConstraintViolationException
 import java.time.LocalDateTime
 import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.update
 
 
@@ -38,15 +34,6 @@ abstract class BaseTable(name: String, idName: String) : LongIdTable(name, idNam
             it[deleted] = true
             it[deletedDate] = LocalDateTime.now()
             it[deletedBy] = auditUser
-        }
-    }
-
-    /** 유니크 제약 충돌을 무시하는 멱등 insert — DB 방언에 의존하는 insertIgnore 대체 */
-    fun insertIgnoringDuplicate(body: BaseTable.(InsertStatement<Number>) -> Unit) {
-        try {
-            insert(body)
-        } catch (e: ExposedSQLException) {
-            if (e.cause !is SQLIntegrityConstraintViolationException) throw e
         }
     }
 }

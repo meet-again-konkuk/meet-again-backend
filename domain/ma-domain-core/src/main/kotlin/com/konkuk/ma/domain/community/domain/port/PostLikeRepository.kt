@@ -3,7 +3,7 @@ package com.konkuk.ma.domain.community.domain.port
 import com.konkuk.ma.domain.community.domain.PostLike
 
 interface PostLikeRepository {
-    /** 멱등 저장 — 같은 회원이 같은 게시글에 중복 저장하면 무시된다 (복합 유니크 기반) */
+    fun exists(postId: Long, memberId: Long): Boolean
     fun save(postLike: PostLike)
     fun find(memberId: Long): List<PostLike>
     fun count(postId: Long): Int

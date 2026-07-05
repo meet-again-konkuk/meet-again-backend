@@ -5,9 +5,11 @@ import com.konkuk.ma.config.TestDatabaseConfig
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -42,13 +44,39 @@ class CommentLikeDaoTest(
                 CommentLikeTable.selectAll().count() shouldBe 1
             }
 
-            test("같은 회원이 같은 댓글에 중복 저장해도 한 건만 유지된다") {
-                // When
-                commentLikeDao.save(1L, 100L)
+            test("같은 회원이 같은 댓글에 중복 저장하면 유니크 제약이 거부한다") {
+                // Given
                 commentLikeDao.save(1L, 100L)
 
-                // Then
+                // When & Then
+                shouldThrow<ExposedSQLException> {
+                    commentLikeDao.save(1L, 100L)
+                }
                 CommentLikeTable.selectAll().count() shouldBe 1
+            }
+        }
+
+        context("exists") {
+
+            test("좋아요가 존재하면 true를 반환한다") {
+                // Given
+                commentLikeDao.save(1L, 100L)
+
+                // When & Then
+                commentLikeDao.exists(1L, 100L) shouldBe true
+            }
+
+            test("좋아요가 없으면 false를 반환한다") {
+                // When & Then
+                commentLikeDao.exists(1L, 100L) shouldBe false
+            }
+
+            test("다른 회원의 좋아요는 존재로 판단하지 않는다") {
+                // Given
+                commentLikeDao.save(1L, 100L)
+
+                // When & Then
+                commentLikeDao.exists(1L, 999L) shouldBe false
             }
         }
 

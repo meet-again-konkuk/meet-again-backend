@@ -3,7 +3,7 @@ package com.konkuk.ma.domain.community.domain.port
 import com.konkuk.ma.domain.community.domain.CommentLike
 
 interface CommentLikeRepository {
-    /** 멱등 저장 — 같은 회원이 같은 댓글에 중복 저장하면 무시된다 (복합 유니크 기반) */
+    fun exists(commentId: Long, memberId: Long): Boolean
     fun save(commentLike: CommentLike)
     fun find(memberId: Long): List<CommentLike>
     fun count(commentId: Long): Int

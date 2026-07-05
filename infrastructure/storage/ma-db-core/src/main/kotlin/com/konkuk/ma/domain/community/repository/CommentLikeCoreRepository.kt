@@ -9,6 +9,10 @@ import org.springframework.stereotype.Repository
 class CommentLikeCoreRepository(
     private val commentLikeDao: CommentLikeDao,
 ) : CommentLikeRepository {
+    override fun exists(commentId: Long, memberId: Long): Boolean {
+        return commentLikeDao.exists(commentId, memberId)
+    }
+
     override fun save(commentLike: CommentLike) {
         commentLikeDao.save(commentLike.commentId, commentLike.memberId)
     }

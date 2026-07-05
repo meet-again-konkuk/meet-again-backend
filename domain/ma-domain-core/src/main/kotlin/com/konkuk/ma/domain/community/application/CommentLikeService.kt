@@ -12,7 +12,9 @@ class CommentLikeService(
     private val commentLikeRepository: CommentLikeRepository,
 ) {
     fun like(commentId: Long, memberId: Long): CommentLikeResult {
-        commentLikeRepository.save(CommentLike(commentId = commentId, memberId = memberId))
+        if (!commentLikeRepository.exists(commentId, memberId)) {
+            commentLikeRepository.save(CommentLike(commentId = commentId, memberId = memberId))
+        }
         return CommentLikeResult.liked(commentLikeRepository.count(commentId))
     }
 

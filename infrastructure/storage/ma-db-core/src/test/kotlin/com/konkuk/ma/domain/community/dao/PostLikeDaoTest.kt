@@ -4,9 +4,11 @@ import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -40,13 +42,39 @@ class PostLikeDaoTest(
                 PostLikeTable.selectAll().count() shouldBe 1
             }
 
-            test("같은 회원이 같은 게시글에 중복 저장해도 한 건만 유지된다") {
-                // When
-                postLikeDao.save(1L, 100L)
+            test("같은 회원이 같은 게시글에 중복 저장하면 유니크 제약이 거부한다") {
+                // Given
                 postLikeDao.save(1L, 100L)
 
-                // Then
+                // When & Then
+                shouldThrow<ExposedSQLException> {
+                    postLikeDao.save(1L, 100L)
+                }
                 PostLikeTable.selectAll().count() shouldBe 1
+            }
+        }
+
+        context("exists") {
+
+            test("좋아요가 존재하면 true를 반환한다") {
+                // Given
+                postLikeDao.save(1L, 100L)
+
+                // When & Then
+                postLikeDao.exists(1L, 100L) shouldBe true
+            }
+
+            test("좋아요가 없으면 false를 반환한다") {
+                // When & Then
+                postLikeDao.exists(1L, 100L) shouldBe false
+            }
+
+            test("다른 회원의 좋아요는 존재로 판단하지 않는다") {
+                // Given
+                postLikeDao.save(1L, 100L)
+
+                // When & Then
+                postLikeDao.exists(1L, 999L) shouldBe false
             }
         }
 
