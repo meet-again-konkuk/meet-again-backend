@@ -114,6 +114,29 @@ class PostLikeIntegrationTest(
 
     context("POST /api/community/posts/{postId}/likes") {
 
+        test("이미 좋아요한 게시글에 다시 좋아요해도 성공 응답과 함께 좋아요 수가 1로 유지된다") {
+            // Given
+            val email = "post-like-idem@example.com"
+            insertMember(email = email)
+            val accessToken = login(email)
+            val postId = insertPost()
+            mockMvc.postJson("/api/community/posts/{postId}/likes", postId) {
+                authorization("Bearer $accessToken")
+            }.andExpect { status { isCreated() } }
+
+            // When
+            val result = mockMvc.postJson("/api/community/posts/{postId}/likes", postId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isCreated() } }
+                .andReturn()
+
+            // Then
+            val likeCount = mapper.readTree(result.response.contentAsString).get("likeCount").asInt()
+            likeCount shouldBe 1
+            countActiveLikes(postId) shouldBe 1
+        }
+
         test("로그인 후 좋아요를 누르면 likeCount=1을 반환하고 좋아요 행이 1개 생성된다") {
             // Given
             val email = "post-like-e2e@example.com"

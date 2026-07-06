@@ -3,7 +3,8 @@ package com.konkuk.ma.domain.community.domain.port
 import com.konkuk.ma.domain.community.domain.PostLike
 
 interface PostLikeRepository {
-    fun save(postLike: PostLike): Long
+    fun exists(postId: Long, memberId: Long): Boolean
+    fun save(postLike: PostLike)
     fun find(memberId: Long): List<PostLike>
     fun count(postId: Long): Int
     fun count(postIds: List<Long>): Map<Long, Int>

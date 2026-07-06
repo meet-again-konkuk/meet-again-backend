@@ -6,18 +6,25 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.insert
 import org.springframework.stereotype.Component
 
 @Component
 class PostLikeDao {
-    fun save(postId: Long, memberId: Long): Long {
-        return PostLikeTable.insertAndGetId {
+    fun exists(postId: Long, memberId: Long): Boolean {
+        return PostLikeTable
+            .activeRows { (PostLikeTable.postId eq postId) and (PostLikeTable.memberId eq memberId) }
+            .limit(1)
+            .any()
+    }
+
+    fun save(postId: Long, memberId: Long) {
+        PostLikeTable.insert {
             it[PostLikeTable.postId] = postId
             it[PostLikeTable.memberId] = memberId
             it[createdBy] = memberId.toString()
             it[lastModifiedBy] = memberId.toString()
-        }.value
+        }
     }
 
     fun find(memberId: Long): List<PostLikeEntity> {

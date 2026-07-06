@@ -9,8 +9,12 @@ import org.springframework.stereotype.Repository
 class PostLikeCoreRepository(
     private val postLikeDao: PostLikeDao,
 ) : PostLikeRepository {
-    override fun save(postLike: PostLike): Long {
-        return postLikeDao.save(postLike.postId, postLike.memberId)
+    override fun exists(postId: Long, memberId: Long): Boolean {
+        return postLikeDao.exists(postId, memberId)
+    }
+
+    override fun save(postLike: PostLike) {
+        postLikeDao.save(postLike.postId, postLike.memberId)
     }
 
     override fun find(memberId: Long): List<PostLike> {
