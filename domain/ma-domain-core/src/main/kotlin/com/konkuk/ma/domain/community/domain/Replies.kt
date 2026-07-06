@@ -38,6 +38,7 @@ class Replies(val data: List<Comment>) {
                 likeCount = likeCounts.countOf(reply.id),
                 likedByMe = viewer.isLikedByMe(reply.id),
                 isMine = viewer.isMine(reply.authorId),
+                blockedAuthor = viewer.hasBlocked(reply.authorId),
             )
         }
     }

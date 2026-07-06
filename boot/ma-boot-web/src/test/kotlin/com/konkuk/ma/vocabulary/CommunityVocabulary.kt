@@ -2,8 +2,10 @@ package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.domain.community.domain.NewPost
+import com.konkuk.ma.domain.community.domain.report.NewReport
 import com.konkuk.ma.extension.ARRAY
 import com.konkuk.ma.extension.BOOLEAN
+import com.konkuk.ma.extension.DATETIME
 import com.konkuk.ma.extension.NUMBER
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.requestParam
@@ -258,3 +260,59 @@ fun commentDetailReplyLikedByMe(fieldName: String = "replies[].likedByMe") =
 
 fun commentDetailReplyIsMine(fieldName: String = "replies[].isMine") =
     fieldName responseType BOOLEAN means "조회자가 작성한 대댓글인지 여부" example "false"
+
+// --- REQ-014: 차단한 작성자 표식 (댓글/대댓글 공통) ---
+
+// fieldName 파라미터로 comments[]/replies[]/루트 등 위치를 바꿔 재사용한다.
+fun blockedAuthor(fieldName: String = "blockedAuthor") =
+    fieldName responseType BOOLEAN means
+        "조회자가 차단한 작성자의 콘텐츠 여부 (true면 content는 \"차단한 사용자의 댓글입니다.\" placeholder로 대체)" example "false"
+
+// --- REQ-014: 신고 요청 필드 ---
+
+fun reportReason(fieldName: String = "reason") =
+    fieldName responseType STRING means
+        "신고 사유 (SPAM, HARASSMENT, HATE, SEXUAL_CONTENT, PRIVACY, OTHER)" example "SPAM"
+
+fun reportDetail(fieldName: String = "detail") =
+    fieldName responseType STRING means
+        "신고 상세 사유 (최대 ${NewReport.MAX_DETAIL_LENGTH}자, 선택)" example "욕설이 포함되어 있습니다." isOptional true
+
+// --- REQ-014: 신고 응답 필드 ---
+
+fun reportId(fieldName: String = "reportId") =
+    fieldName responseType NUMBER means "생성된 신고 ID" example "1"
+
+fun reportStatus(fieldName: String = "status") =
+    fieldName responseType STRING means
+        "신고 처리 상태 (RECEIVED, REVIEWING, ACTIONED, DISMISSED)" example "RECEIVED"
+
+// --- REQ-014: 차단 응답 필드 (단건) ---
+
+fun blockId(fieldName: String = "blockId") =
+    fieldName responseType NUMBER means "차단 ID" example "1"
+
+fun blocked(fieldName: String = "blocked") =
+    fieldName responseType BOOLEAN means "차단 여부 (항상 true)" example "true"
+
+fun blockedNickname(fieldName: String = "blockedNickname") =
+    fieldName responseType STRING means "차단한 작성자 닉네임" example "차단된작성자"
+
+// --- REQ-014: 차단 목록 응답 필드 ---
+
+fun blocksArray(fieldName: String = "blocks[]") =
+    fieldName responseType ARRAY means "차단 목록"
+
+fun blocksBlockId(fieldName: String = "blocks[].blockId") =
+    fieldName responseType NUMBER means "차단 ID" example "1"
+
+fun blocksNickname(fieldName: String = "blocks[].nickname") =
+    fieldName responseType STRING means "차단한 작성자 닉네임" example "차단된작성자"
+
+fun blocksBlockedAt(fieldName: String = "blocks[].blockedAt") =
+    fieldName responseType DATETIME means "차단한 시각" example "2026-07-07T10:30:00"
+
+// --- REQ-014: 차단 관련 Path Variable ---
+
+fun blockIdPath(fieldName: String = "blockId") =
+    fieldName requestParam "차단 ID"

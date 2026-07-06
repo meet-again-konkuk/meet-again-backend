@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PostQueryDao {
-    fun find(category: String?, cursorId: Long?, size: Int): List<PostEntity> {
+    fun find(category: String?, cursorId: Long?, size: Int, excludedAuthorIds: Set<Long> = emptySet()): List<PostEntity> {
         return PostTable
             .selectAll()
             .where {
@@ -23,6 +23,9 @@ class PostQueryDao {
                 }
                 if (cursorId != null) {
                     condition = condition and (PostTable.id less cursorId)
+                }
+                if (excludedAuthorIds.isNotEmpty()) {
+                    condition = condition and (PostTable.authorId notInList excludedAuthorIds)
                 }
                 condition
             }

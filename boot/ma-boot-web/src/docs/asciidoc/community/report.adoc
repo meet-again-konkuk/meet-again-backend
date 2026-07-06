@@ -1,0 +1,56 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 신고 API
+
+== 게시글 신고
+
+게시글을 신고합니다. 본인이 작성한 게시글은 신고할 수 없으며, 동일 게시글을 중복 신고할 수 없습니다.
+
+=== 요청
+
+include::{snippets}/community/report-post/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/report-post/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/report-post/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/report-post/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/report-post/response-fields.adoc[]
+
+== 댓글 신고
+
+댓글을 신고합니다. 본인이 작성한 댓글은 신고할 수 없으며, 동일 댓글을 중복 신고할 수 없습니다.
+
+=== 요청
+
+include::{snippets}/community/report-comment/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/report-comment/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/report-comment/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/report-comment/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/report-comment/response-fields.adoc[]

@@ -3,14 +3,19 @@ package com.konkuk.ma.integration
 import com.konkuk.ma.domain.common.domain.page.CursorIdCondition
 import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostWithAuthor
+import com.konkuk.ma.domain.community.entity.table.BlockTable
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import com.konkuk.ma.exception.EntityNotFoundException
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -43,12 +48,13 @@ class PostQueryServiceIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable, BlockTable)
         }
     }
 
     afterEach {
         transaction {
+            BlockTable.deleteAll()
             PostLikeTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
@@ -59,7 +65,7 @@ class PostQueryServiceIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(PostLikeTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
+            SchemaUtils.drop(BlockTable, PostLikeTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
         }
     }
 
@@ -126,8 +132,22 @@ class PostQueryServiceIntegrationTest(
         }
     }
 
+    fun blockMember(blockerId: Long, blockedId: Long, deleted: Boolean = false) {
+        transaction {
+            BlockTable.insert {
+                it[BlockTable.blockerId] = blockerId
+                it[BlockTable.blockedId] = blockedId
+                it[BlockTable.deleted] = deleted
+            }
+        }
+    }
+
     fun findPost(posts: List<PostWithAuthor>, postId: Long): PostWithAuthor {
         return posts.first { it.post.id == postId }
+    }
+
+    fun postIds(posts: List<PostWithAuthor>): List<Long> {
+        return posts.map { it.post.id }
     }
 
     context("find - 게시글 목록 상태 필드") {
@@ -295,6 +315,109 @@ class PostQueryServiceIntegrationTest(
             val placeholder = detail.comments.first { it.comment.id == deletedComment }
             placeholder.comment.displayContent() shouldBe "삭제된 댓글입니다."
             placeholder.isMine.shouldBeTrue()
+        }
+    }
+
+    context("find - 차단 필터") {
+
+        test("차단한 작성자의 게시글은 목록에서 제외되고 다른 작성자의 게시글만 노출된다") {
+            // Given - 조회자가 blockedAuthor를 차단, 각 작성자가 게시글 1개씩 작성
+            val viewerId = insertMember(nickname = "조회자")
+            val blockedAuthorId = insertMember(nickname = "차단대상")
+            val visibleAuthorId = insertMember(nickname = "비차단")
+            val blockedPost = insertPost(blockedAuthorId)
+            val visiblePost = insertPost(visibleAuthorId)
+            blockMember(blockerId = viewerId, blockedId = blockedAuthorId)
+
+            // When
+            val posts = postQueryService.find(null, defaultCursor, viewerId).data
+
+            // Then
+            postIds(posts) shouldNotContain blockedPost
+            postIds(posts) shouldContain visiblePost
+        }
+
+        test("차단 작성자 게시글을 제외해도 나머지 게시글 수와 정렬(id 내림차순)이 유지된다") {
+            // Given - 비차단 작성자 게시글 3개 사이에 차단 작성자 게시글 1개가 섞여 있다
+            val viewerId = insertMember(nickname = "조회자")
+            val blockedAuthorId = insertMember(nickname = "차단대상")
+            val visibleAuthorId = insertMember(nickname = "비차단")
+            val first = insertPost(visibleAuthorId)
+            insertPost(blockedAuthorId)
+            val second = insertPost(visibleAuthorId)
+            val third = insertPost(visibleAuthorId)
+            blockMember(blockerId = viewerId, blockedId = blockedAuthorId)
+
+            // When
+            val posts = postQueryService.find(null, defaultCursor, viewerId).data
+
+            // Then - 차단 게시글만 빠지고 나머지 3개가 id 내림차순으로 유지된다
+            postIds(posts) shouldBe listOf(third, second, first)
+        }
+
+        test("해제(soft delete)된 차단은 목록 필터에 영향을 주지 않아 해당 작성자 게시글이 노출된다") {
+            // Given - 차단이 이미 해제된 상태
+            val viewerId = insertMember(nickname = "조회자")
+            val unblockedAuthorId = insertMember(nickname = "해제된차단대상")
+            val visiblePost = insertPost(unblockedAuthorId)
+            blockMember(blockerId = viewerId, blockedId = unblockedAuthorId, deleted = true)
+
+            // When
+            val posts = postQueryService.find(null, defaultCursor, viewerId).data
+
+            // Then
+            postIds(posts) shouldContain visiblePost
+        }
+    }
+
+    context("findDetail - 차단 필터") {
+
+        test("차단한 작성자의 게시글을 상세 조회하면 EntityNotFoundException이 발생한다") {
+            // Given - 조회자가 게시글 작성자를 차단
+            val viewerId = insertMember(nickname = "조회자")
+            val blockedAuthorId = insertMember(nickname = "차단대상")
+            val postId = insertPost(blockedAuthorId)
+            blockMember(blockerId = viewerId, blockedId = blockedAuthorId)
+
+            // When & Then
+            shouldThrow<EntityNotFoundException> {
+                postQueryService.findDetail(postId, viewerId)
+            }
+        }
+
+        test("차단한 작성자의 댓글은 placeholder로 노출되고 blockedAuthor=true다") {
+            // Given - 게시글 작성자는 차단하지 않고(상세 조회 가능) 댓글 작성자만 차단
+            val viewerId = insertMember(nickname = "조회자")
+            val postAuthorId = insertMember(nickname = "게시글작성자")
+            val blockedCommentAuthorId = insertMember(nickname = "차단댓글작성자")
+            val postId = insertPost(postAuthorId)
+            val blockedComment = insertComment(postId, blockedCommentAuthorId)
+            blockMember(blockerId = viewerId, blockedId = blockedCommentAuthorId)
+
+            // When
+            val detail = postQueryService.findDetail(postId, viewerId)
+
+            // Then
+            val comment = detail.comments.first { it.comment.id == blockedComment }
+            comment.blockedAuthor.shouldBeTrue()
+            comment.displayContent() shouldBe "차단한 사용자의 댓글입니다."
+        }
+
+        test("차단하지 않은 작성자의 댓글은 원문과 blockedAuthor=false로 노출된다") {
+            // Given - 아무도 차단하지 않음
+            val viewerId = insertMember(nickname = "조회자")
+            val postAuthorId = insertMember(nickname = "게시글작성자")
+            val commentAuthorId = insertMember(nickname = "댓글작성자")
+            val postId = insertPost(postAuthorId)
+            val comment = insertComment(postId, commentAuthorId)
+
+            // When
+            val detail = postQueryService.findDetail(postId, viewerId)
+
+            // Then
+            val target = detail.comments.first { it.comment.id == comment }
+            target.blockedAuthor.shouldBeFalse()
+            target.displayContent() shouldBe "테스트 댓글"
         }
     }
 })

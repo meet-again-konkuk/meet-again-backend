@@ -1,6 +1,7 @@
 package com.konkuk.ma.integration
 
 import com.konkuk.ma.domain.community.application.CommentQueryService
+import com.konkuk.ma.domain.community.entity.table.BlockTable
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
@@ -37,12 +38,13 @@ class CommentQueryServiceIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, PostTable, CommentTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, PostTable, CommentTable, CommentLikeTable, BlockTable)
         }
     }
 
     afterEach {
         transaction {
+            BlockTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
             PostTable.deleteAll()
@@ -52,7 +54,7 @@ class CommentQueryServiceIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(CommentLikeTable, CommentTable, PostTable, MemberTable)
+            SchemaUtils.drop(BlockTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
         }
     }
 
@@ -103,6 +105,15 @@ class CommentQueryServiceIntegrationTest(
             CommentLikeTable.insert {
                 it[CommentLikeTable.commentId] = commentId
                 it[CommentLikeTable.memberId] = memberId
+            }
+        }
+    }
+
+    fun blockMember(blockerId: Long, blockedId: Long) {
+        transaction {
+            BlockTable.insert {
+                it[BlockTable.blockerId] = blockerId
+                it[BlockTable.blockedId] = blockedId
             }
         }
     }
@@ -160,6 +171,63 @@ class CommentQueryServiceIntegrationTest(
             mine.likedByMe.shouldBeTrue()
             others.isMine.shouldBeFalse()
             others.likedByMe.shouldBeFalse()
+        }
+    }
+
+    context("findDetail - 차단 필터") {
+
+        test("차단한 작성자의 루트 댓글은 placeholder로 노출되고 blockedAuthor=true다") {
+            // Given - 조회자가 루트 댓글 작성자를 차단
+            val viewerId = insertMember(nickname = "조회자")
+            val blockedAuthorId = insertMember(nickname = "차단대상")
+            val postId = insertPost(blockedAuthorId)
+            val rootCommentId = insertComment(postId, blockedAuthorId)
+            blockMember(blockerId = viewerId, blockedId = blockedAuthorId)
+
+            // When
+            val root = commentQueryService.findDetail(rootCommentId, viewerId)
+
+            // Then
+            root.blockedAuthor.shouldBeTrue()
+            root.displayContent() shouldBe "차단한 사용자의 댓글입니다."
+        }
+
+        test("차단한 작성자의 대댓글은 placeholder로 노출되고 blockedAuthor=true다") {
+            // Given - 루트 댓글 작성자는 차단하지 않고 대댓글 작성자만 차단
+            val viewerId = insertMember(nickname = "조회자")
+            val rootAuthorId = insertMember(nickname = "루트작성자")
+            val blockedReplyAuthorId = insertMember(nickname = "차단대댓글작성자")
+            val postId = insertPost(rootAuthorId)
+            val rootCommentId = insertComment(postId, rootAuthorId)
+            val blockedReply = insertComment(postId, blockedReplyAuthorId, parentCommentId = rootCommentId)
+            blockMember(blockerId = viewerId, blockedId = blockedReplyAuthorId)
+
+            // When
+            val root = commentQueryService.findDetail(rootCommentId, viewerId)
+
+            // Then - 루트는 정상, 대댓글만 placeholder
+            root.blockedAuthor.shouldBeFalse()
+            val reply = root.replies.first { it.comment.id == blockedReply }
+            reply.blockedAuthor.shouldBeTrue()
+            reply.displayContent() shouldBe "차단한 사용자의 댓글입니다."
+        }
+
+        test("차단하지 않은 작성자의 대댓글은 원문과 blockedAuthor=false로 노출된다") {
+            // Given - 아무도 차단하지 않음
+            val viewerId = insertMember(nickname = "조회자")
+            val rootAuthorId = insertMember(nickname = "루트작성자")
+            val replyAuthorId = insertMember(nickname = "대댓글작성자")
+            val postId = insertPost(rootAuthorId)
+            val rootCommentId = insertComment(postId, rootAuthorId)
+            val reply = insertComment(postId, replyAuthorId, parentCommentId = rootCommentId)
+
+            // When
+            val root = commentQueryService.findDetail(rootCommentId, viewerId)
+
+            // Then
+            val target = root.replies.first { it.comment.id == reply }
+            target.blockedAuthor.shouldBeFalse()
+            target.displayContent() shouldBe "테스트 댓글"
         }
     }
 })

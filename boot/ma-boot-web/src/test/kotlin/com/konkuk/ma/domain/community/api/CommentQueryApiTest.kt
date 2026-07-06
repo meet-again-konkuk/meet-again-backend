@@ -11,6 +11,7 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.blockedAuthor
 import com.konkuk.ma.vocabulary.commentDetailContent
 import com.konkuk.ma.vocabulary.commentDetailId
 import com.konkuk.ma.vocabulary.commentDetailIsMine
@@ -78,6 +79,7 @@ class CommentQueryApiTest(
                     commentDetailTimeAgo(),
                     commentDetailLikedByMe(),
                     commentDetailIsMine(),
+                    blockedAuthor(),
                     commentDetailReplies(),
                     commentDetailReplyId(),
                     commentDetailReplyNickname(),
@@ -86,6 +88,7 @@ class CommentQueryApiTest(
                     commentDetailReplyTimeAgo(),
                     commentDetailReplyLikedByMe(),
                     commentDetailReplyIsMine(),
+                    blockedAuthor("replies[].blockedAuthor"),
                     commentDetailRemainingReplyCount(),
                 ),
             )

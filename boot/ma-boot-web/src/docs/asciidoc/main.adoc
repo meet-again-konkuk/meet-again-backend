@@ -163,6 +163,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/toggle-comment-like.html[댓글 좋아요 토글 API,window=_blank]
 
+[[community-report]]
+=== 신고
+
+* link:community/report.html[커뮤니티 신고 API,window=_blank]
+
+[[community-block]]
+=== 차단
+
+* link:community/block.html[커뮤니티 차단 API,window=_blank]
+
 [[point]]
 == 포인트
 

@@ -2,6 +2,7 @@ package com.konkuk.ma.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
+import com.konkuk.ma.domain.community.entity.table.BlockTable
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
@@ -45,12 +46,13 @@ class CommentQueryIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, CommentLikeTable, BlockTable)
         }
     }
 
     afterEach {
         transaction {
+            BlockTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
             PostTable.deleteAll()
@@ -61,7 +63,7 @@ class CommentQueryIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(CommentLikeTable, CommentTable, PostTable, RefreshTokenTable, MemberTable)
+            SchemaUtils.drop(BlockTable, CommentLikeTable, CommentTable, PostTable, RefreshTokenTable, MemberTable)
         }
     }
 

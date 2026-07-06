@@ -6,6 +6,8 @@ import com.konkuk.ma.domain.community.domain.LikeCounts
 import com.konkuk.ma.domain.community.domain.LikedIds
 import com.konkuk.ma.domain.community.domain.Replies
 import com.konkuk.ma.domain.community.domain.Viewer
+import com.konkuk.ma.domain.community.domain.block.BlockedMemberIds
+import com.konkuk.ma.domain.community.domain.port.BlockQueryRepository
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.member.domain.Members
@@ -19,6 +21,7 @@ class CommentQueryService(
     private val commentQueryRepository: CommentQueryRepository,
     private val memberQueryRepository: MemberQueryRepository,
     private val commentLikeRepository: CommentLikeRepository,
+    private val blockQueryRepository: BlockQueryRepository,
 ) {
     fun findDetail(commentId: Long, viewerId: Long): CommentWithAuthor {
         val rootComment = commentQueryRepository.findOne(commentId)
@@ -28,7 +31,12 @@ class CommentQueryService(
         val commentIds = commentDetail.extractIds()
         val members = Members(memberQueryRepository.findByIds(commentDetail.extractAuthorIds()))
         val likeCounts = LikeCounts.from(commentLikeRepository.count(commentIds))
-        val viewer = Viewer(viewerId, LikedIds(commentLikeRepository.findLikedCommentIds(viewerId, commentIds)))
+        val blockedMemberIds = BlockedMemberIds(blockQueryRepository.findBlockedMemberIds(viewerId))
+        val viewer = Viewer(
+            viewerId,
+            LikedIds(commentLikeRepository.findLikedCommentIds(viewerId, commentIds)),
+            blockedMemberIds,
+        )
 
         return commentDetail.combineWithAuthor(members, likeCounts, viewer)
     }
