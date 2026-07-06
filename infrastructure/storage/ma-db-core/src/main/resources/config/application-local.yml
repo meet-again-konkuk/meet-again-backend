@@ -7,3 +7,10 @@ spring:
     username: appuser
     password: AppUserPass
     driver-class-name: org.mariadb.jdbc.Driver
+  # 로컬은 앱 부팅 시 자동 마이그레이션(재시작 비용이 없어 편의 우선).
+  # 운영은 부팅 자동 대신 배포 파이프라인의 flywayMigrate 스텝이 담당한다(application-prod.yml).
+  flyway:
+    enabled: true
+    baseline-on-migrate: true   # 기존 테이블만 있는 로컬 DB 를 V1 로 자동 baseline 후 V2 부터 적용
+    baseline-version: 1
+    # locations 기본값 classpath:db/migration

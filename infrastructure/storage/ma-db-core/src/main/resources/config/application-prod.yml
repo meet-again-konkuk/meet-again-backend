@@ -1,0 +1,15 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+  # 운영은 앱 부팅 시 자동 마이그레이션을 끈다(긴 DDL 이 부팅을 막거나, 마이그레이션 실패가
+  # 라이브 앱 부팅을 막는 것을 방지). 스키마 변경은 배포 파이프라인에서 앱과 분리해 실행한다:
+  #   DB_URL/DB_USERNAME/DB_PASSWORD 주입 후
+  #   ./gradlew :infrastructure:storage:ma-db-core:flywayMigrate
+  flyway:
+    enabled: false

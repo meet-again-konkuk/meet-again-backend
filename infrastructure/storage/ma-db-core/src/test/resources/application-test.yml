@@ -5,11 +5,14 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
-    password: 
+    password:
     driver-class-name: org.h2.Driver
   h2:
     console:
       enabled: true
+  # 테스트는 H2 + SchemaUtils 로 스키마를 만든다. Flyway(MariaDB 문법 마이그레이션)는 끈다.
+  flyway:
+    enabled: false
 
 exposed:
   generate-ddl: true
