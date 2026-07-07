@@ -5,6 +5,7 @@ import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.community.domain.PostDetails
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
+import com.konkuk.ma.domain.community.entity.table.PostImageTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -13,6 +14,7 @@ import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.patchJson
 import com.konkuk.ma.extension.postJson
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
@@ -20,6 +22,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -51,12 +54,13 @@ class PostCommandIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable, PostImageTable)
         }
     }
 
     afterEach {
         transaction {
+            PostImageTable.deleteAll()
             PostLikeTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
@@ -68,7 +72,7 @@ class PostCommandIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(PostLikeTable, CommentLikeTable, CommentTable, PostTable, RefreshTokenTable, MemberTable)
+            SchemaUtils.drop(PostImageTable, PostLikeTable, CommentLikeTable, CommentTable, PostTable, RefreshTokenTable, MemberTable)
         }
     }
 
@@ -115,6 +119,23 @@ class PostCommandIntegrationTest(
                 it[PostLikeTable.memberId] = memberId
             }
         }
+    }
+
+    fun insertActivePostImage(postId: Long): Long {
+        return transaction {
+            PostImageTable.insertAndGetId {
+                it[PostImageTable.postId] = postId
+                it[storageKey] = "community/post-image/$postId/photo.jpg"
+                it[originalFilename] = "photo.jpg"
+                it[mimeType] = "image/jpeg"
+                it[fileSize] = 1024L
+                it[thumbnailKey] = "community/thumbnail/$postId/thumb_photo.jpg"
+            }.value
+        }
+    }
+
+    fun isImageDeleted(imageId: Long): Boolean = transaction {
+        PostImageTable.selectAll().where { PostImageTable.id eq imageId }.first()[PostImageTable.deleted]
     }
 
     fun login(email: String, rawPassword: String = "password123"): String {
@@ -450,6 +471,26 @@ class PostCommandIntegrationTest(
             mockMvc.postJson("/api/community/posts/{postId}/likes", postId) {
                 authorization("Bearer $token")
             }.andExpect { status { isNotFound() } }
+        }
+    }
+
+    context("게시글 삭제 시 이미지 연쇄 soft delete (REQ-013)") {
+
+        test("이미지가 있는 게시글을 삭제하면 204와 함께 이미지 행도 soft delete 된다") {
+            // Given - 게시글 + active 이미지
+            val email = "delete-cascade-image@example.com"
+            val authorId = insertMember(email)
+            val token = login(email)
+            val postId = insertPost(authorId)
+            val imageId = insertActivePostImage(postId)
+
+            // When
+            mockMvc.deleteJson("/api/community/posts/{postId}", postId) {
+                authorization("Bearer $token")
+            }.andExpect { status { isNoContent() } }
+
+            // Then - 게시글 이미지도 연쇄 soft delete 된다
+            isImageDeleted(imageId).shouldBeTrue()
         }
     }
 })

@@ -7,6 +7,7 @@ import com.konkuk.ma.domain.community.domain.PostCategory
 import com.konkuk.ma.domain.community.domain.PostDetails
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
+import com.konkuk.ma.domain.community.entity.table.PostImageTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -14,6 +15,7 @@ import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityNotFoundException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
@@ -50,12 +52,13 @@ class PostCommandServiceIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable, PostImageTable)
         }
     }
 
     afterEach {
         transaction {
+            PostImageTable.deleteAll()
             PostLikeTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
@@ -66,7 +69,7 @@ class PostCommandServiceIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(PostLikeTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
+            SchemaUtils.drop(PostImageTable, PostLikeTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
         }
     }
 
@@ -144,6 +147,23 @@ class PostCommandServiceIntegrationTest(
 
     fun readPostRow(postId: Long) = transaction {
         PostTable.selectAll().where { PostTable.id eq postId }.first()
+    }
+
+    fun insertActivePostImage(postId: Long): Long {
+        return transaction {
+            PostImageTable.insertAndGetId {
+                it[PostImageTable.postId] = postId
+                it[storageKey] = "community/post-image/$postId/photo.jpg"
+                it[originalFilename] = "photo.jpg"
+                it[mimeType] = "image/jpeg"
+                it[fileSize] = 1024L
+                it[thumbnailKey] = "community/thumbnail/$postId/thumb_photo.jpg"
+            }.value
+        }
+    }
+
+    fun readImageRow(imageId: Long) = transaction {
+        PostImageTable.selectAll().where { PostImageTable.id eq imageId }.first()
     }
 
     context("update") {
@@ -312,6 +332,36 @@ class PostCommandServiceIntegrationTest(
             shouldThrow<EntityNotFoundException> {
                 postCommandService.delete(postId, authorId)
             }
+        }
+    }
+
+    context("delete - 이미지 연쇄 soft delete (REQ-013)") {
+
+        test("게시글을 삭제하면 그 게시글의 active 이미지도 함께 soft delete 된다") {
+            // Given - 게시글 + active 이미지
+            val authorId = insertMember()
+            val postId = insertPost(authorId)
+            val imageId = insertActivePostImage(postId)
+
+            // When
+            postCommandService.delete(postId, authorId)
+
+            // Then - 이미지 행이 연쇄 soft delete 된다
+            readImageRow(imageId)[PostImageTable.deleted].shouldBeTrue()
+        }
+
+        test("게시글을 삭제해도 다른 게시글의 이미지는 active 로 보존된다") {
+            // Given - 삭제 대상 글과, 이미지를 가진 별개의 글
+            val authorId = insertMember()
+            val targetPostId = insertPost(authorId)
+            val otherPostId = insertPost(authorId)
+            val otherImageId = insertActivePostImage(otherPostId)
+
+            // When
+            postCommandService.delete(targetPostId, authorId)
+
+            // Then - 다른 글의 이미지는 영향받지 않는다
+            readImageRow(otherImageId)[PostImageTable.deleted].shouldBeFalse()
         }
     }
 })

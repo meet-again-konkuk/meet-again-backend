@@ -5,12 +5,15 @@ import com.konkuk.ma.domain.community.application.PostQueryService
 import com.konkuk.ma.domain.community.domain.PostWithAuthor
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
+import com.konkuk.ma.domain.community.entity.table.PostImageTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -43,12 +46,13 @@ class PostQueryServiceIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable, PostImageTable)
         }
     }
 
     afterEach {
         transaction {
+            PostImageTable.deleteAll()
             PostLikeTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
@@ -59,7 +63,7 @@ class PostQueryServiceIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(PostLikeTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
+            SchemaUtils.drop(PostImageTable, PostLikeTable, CommentLikeTable, CommentTable, PostTable, MemberTable)
         }
     }
 
@@ -128,6 +132,19 @@ class PostQueryServiceIntegrationTest(
 
     fun findPost(posts: List<PostWithAuthor>, postId: Long): PostWithAuthor {
         return posts.first { it.post.id == postId }
+    }
+
+    fun insertPostImage(postId: Long) {
+        transaction {
+            PostImageTable.insert {
+                it[PostImageTable.postId] = postId
+                it[storageKey] = "community/post-image/$postId/photo.jpg"
+                it[originalFilename] = "photo.jpg"
+                it[mimeType] = "image/jpeg"
+                it[fileSize] = 1024L
+                it[thumbnailKey] = "community/thumbnail/$postId/thumb_photo.jpg"
+            }
+        }
     }
 
     context("find - 게시글 목록 상태 필드") {
@@ -295,6 +312,41 @@ class PostQueryServiceIntegrationTest(
             val placeholder = detail.comments.first { it.comment.id == deletedComment }
             placeholder.comment.displayContent() shouldBe "삭제된 댓글입니다."
             placeholder.isMine.shouldBeTrue()
+        }
+    }
+
+    context("find/findDetail - 이미지 상태 필드 (REQ-013)") {
+
+        test("이미지가 있는 게시글은 목록의 thumbnailUrl 과 상세의 imageUrl 에 반영된다") {
+            // Given - active 이미지가 달린 게시글
+            val viewerId = insertMember()
+            val postId = insertPost(viewerId)
+            insertPostImage(postId)
+
+            // When - 목록
+            val listPost = findPost(postQueryService.find(null, defaultCursor, viewerId).data, postId)
+            // When - 상세
+            val detail = postQueryService.findDetail(postId, viewerId)
+
+            // Then - 목록은 썸네일, 상세는 원본 URL 이 채워진다
+            listPost.thumbnailUrl.shouldNotBeNull()
+            detail.imageUrl.shouldNotBeNull()
+        }
+
+        test("이미지가 없는 게시글은 목록·상세의 이미지 필드가 모두 null 이다") {
+            // Given - 이미지 없는 게시글
+            val viewerId = insertMember()
+            val postId = insertPost(viewerId)
+
+            // When
+            val listPost = findPost(postQueryService.find(null, defaultCursor, viewerId).data, postId)
+            val detail = postQueryService.findDetail(postId, viewerId)
+
+            // Then
+            listPost.imageUrl.shouldBeNull()
+            listPost.thumbnailUrl.shouldBeNull()
+            detail.imageUrl.shouldBeNull()
+            detail.thumbnailUrl.shouldBeNull()
         }
     }
 })

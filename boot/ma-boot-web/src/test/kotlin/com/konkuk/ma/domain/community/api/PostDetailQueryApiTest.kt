@@ -41,6 +41,8 @@ import com.konkuk.ma.vocabulary.detailReplyTimeAgo
 import com.konkuk.ma.vocabulary.detailTimeAgo
 import com.konkuk.ma.vocabulary.detailTitle
 import com.konkuk.ma.vocabulary.postDetailIdPath
+import com.konkuk.ma.vocabulary.postImageUrl
+import com.konkuk.ma.vocabulary.postThumbnailUrl
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
@@ -79,6 +81,8 @@ class PostDetailQueryApiTest(
             comments = listOf(commentWithAuthor),
             likedByMe = true,
             isMine = true,
+            imageUrl = "/files/community/post/1/image.jpg",
+            thumbnailUrl = "/files/community/post/1/thumb.jpg",
         )
 
         every { postQueryService.findDetail(1L, any<Long>()) } returns postDetail
@@ -118,6 +122,8 @@ class PostDetailQueryApiTest(
                     detailReplyLikedByMe(),
                     detailReplyIsMine(),
                     detailRemainingReplyCount(),
+                    postImageUrl() isOptional true,
+                    postThumbnailUrl() isOptional true,
                 ),
             )
     }

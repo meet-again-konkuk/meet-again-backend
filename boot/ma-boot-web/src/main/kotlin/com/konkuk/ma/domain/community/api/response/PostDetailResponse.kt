@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api.response
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.konkuk.ma.domain.common.domain.TimeAgoCalculator
 import com.konkuk.ma.domain.community.domain.PostDetail
 
@@ -14,6 +15,10 @@ class PostDetailResponse(
     val likedByMe: Boolean,
     val isMine: Boolean,
     val comments: List<CommentResponse>,
+    @get:JsonInclude(JsonInclude.Include.NON_NULL)
+    val imageUrl: String? = null,
+    @get:JsonInclude(JsonInclude.Include.NON_NULL)
+    val thumbnailUrl: String? = null,
 ) {
     companion object {
         fun from(postDetail: PostDetail): PostDetailResponse {
@@ -29,6 +34,8 @@ class PostDetailResponse(
                 likedByMe = postDetail.likedByMe,
                 isMine = postDetail.isMine,
                 comments = postDetail.comments.map { CommentResponse.from(it) },
+                imageUrl = postDetail.imageUrl,
+                thumbnailUrl = postDetail.thumbnailUrl,
             )
         }
     }

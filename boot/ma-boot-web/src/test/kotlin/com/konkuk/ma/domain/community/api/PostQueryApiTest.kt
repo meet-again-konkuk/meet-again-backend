@@ -17,10 +17,12 @@ import com.konkuk.ma.vocabulary.postCategory
 import com.konkuk.ma.vocabulary.postCommentCount
 import com.konkuk.ma.vocabulary.postContent
 import com.konkuk.ma.vocabulary.postId
+import com.konkuk.ma.vocabulary.postImageUrl
 import com.konkuk.ma.vocabulary.postIsMine
 import com.konkuk.ma.vocabulary.postLikedByMe
 import com.konkuk.ma.vocabulary.postLikes
 import com.konkuk.ma.vocabulary.postNickname
+import com.konkuk.ma.vocabulary.postThumbnailUrl
 import com.konkuk.ma.vocabulary.postTimeAgo
 import com.konkuk.ma.vocabulary.postTitle
 import com.konkuk.ma.vocabulary.postsHasNext
@@ -49,6 +51,8 @@ class PostQueryApiTest(
             likedByMe = true,
             isMine = false,
             commentCount = 3,
+            imageUrl = "/files/community/post/1/image.jpg",
+            thumbnailUrl = "/files/community/post/1/thumb.jpg",
         )
         val cursorResult = CursorResult(
             data = listOf(postWithAuthor),
@@ -82,6 +86,8 @@ class PostQueryApiTest(
                     postLikedByMe(),
                     postIsMine(),
                     postCommentCount(),
+                    postImageUrl("data[].imageUrl") isOptional true,
+                    postThumbnailUrl("data[].thumbnailUrl") isOptional true,
                     postsHasNext(),
                     postsNextCursorId(),
                 ),

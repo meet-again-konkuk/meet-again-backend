@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
+import com.konkuk.ma.domain.community.entity.table.PostImageTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -47,12 +48,13 @@ class PostQueryIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable, PostImageTable)
         }
     }
 
     afterEach {
         transaction {
+            PostImageTable.deleteAll()
             PostLikeTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()
@@ -64,7 +66,7 @@ class PostQueryIntegrationTest(
 
     afterSpec {
         transaction {
-            SchemaUtils.drop(PostLikeTable, CommentLikeTable, CommentTable, PostTable, RefreshTokenTable, MemberTable)
+            SchemaUtils.drop(PostImageTable, PostLikeTable, CommentLikeTable, CommentTable, PostTable, RefreshTokenTable, MemberTable)
         }
     }
 
@@ -144,6 +146,19 @@ class PostQueryIntegrationTest(
 
     fun findPostNode(posts: JsonNode, postId: Long): JsonNode {
         return posts.first { it.get("id").asLong() == postId }
+    }
+
+    fun insertPostImage(postId: Long) {
+        transaction {
+            PostImageTable.insert {
+                it[PostImageTable.postId] = postId
+                it[storageKey] = "community/post-image/$postId/photo.jpg"
+                it[originalFilename] = "photo.jpg"
+                it[mimeType] = "image/jpeg"
+                it[fileSize] = 1024L
+                it[thumbnailKey] = "community/thumbnail/$postId/thumb_photo.jpg"
+            }
+        }
     }
 
     context("GET /api/community/posts (목록)") {
@@ -262,6 +277,67 @@ class PostQueryIntegrationTest(
             detail.get("likes").asInt() shouldBe 0
             val comment = detail.get("comments").first { it.get("id").asLong() == commentId }
             comment.get("likes").asInt() shouldBe 0
+        }
+    }
+
+    context("이미지 첨부 게시글 조회 필드 (REQ-013)") {
+
+        test("이미지가 있는 게시글은 목록에 thumbnailUrl, 상세에 imageUrl 이 담긴다") {
+            // Given - active 이미지가 달린 게시글
+            val accessToken = loginAsViewer()
+            val authorId = insertMember(email = "image-author@example.com")
+            val postId = insertPost(authorId)
+            insertPostImage(postId)
+
+            // When - 목록
+            val listResult = mockMvc.getJson("/api/community/posts") {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+            // When - 상세
+            val detailResult = mockMvc.getJson("/api/community/posts/{id}", postId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then - 목록은 thumbnailUrl, 상세는 imageUrl 필드가 채워진다
+            val listData = mapper.readTree(listResult.response.contentAsString).get("data")
+            findPostNode(listData, postId).get("thumbnailUrl").asText()
+                .startsWith("/files/community/thumbnail/$postId/") shouldBe true
+
+            val detail = mapper.readTree(detailResult.response.contentAsString)
+            detail.get("imageUrl").asText()
+                .startsWith("/files/community/post-image/$postId/") shouldBe true
+        }
+
+        test("이미지가 없는 게시글은 목록·상세 응답에 imageUrl·thumbnailUrl 필드가 없다") {
+            // Given - 이미지 없는 게시글
+            val accessToken = loginAsViewer()
+            val authorId = insertMember(email = "no-image-author@example.com")
+            val postId = insertPost(authorId)
+
+            // When
+            val listResult = mockMvc.getJson("/api/community/posts") {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+            val detailResult = mockMvc.getJson("/api/community/posts/{id}", postId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then - null 필드는 JsonInclude.NON_NULL 로 응답에서 생략된다
+            val listNode = findPostNode(mapper.readTree(listResult.response.contentAsString).get("data"), postId)
+            listNode.has("imageUrl") shouldBe false
+            listNode.has("thumbnailUrl") shouldBe false
+
+            val detail = mapper.readTree(detailResult.response.contentAsString)
+            detail.has("imageUrl") shouldBe false
+            detail.has("thumbnailUrl") shouldBe false
         }
     }
 })
