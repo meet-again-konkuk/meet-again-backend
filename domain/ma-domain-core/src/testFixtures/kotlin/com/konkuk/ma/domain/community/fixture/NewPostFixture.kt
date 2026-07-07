@@ -12,9 +12,7 @@ object NewPostFixture {
     ): NewPost {
         return NewPost(
             authorId = authorId,
-            category = category,
-            title = title,
-            content = content,
+            details = PostDetailsFixture.create(category = category, title = title, content = content),
         )
     }
 }
