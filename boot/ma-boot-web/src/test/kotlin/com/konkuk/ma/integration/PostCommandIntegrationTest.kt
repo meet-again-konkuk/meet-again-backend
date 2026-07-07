@@ -16,10 +16,13 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
+import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc
  * - 권한/존재: 타인 403, 없는·삭제된 글 404, 반복 삭제 404
  * - 입력 검증: 빈/초과 제목·내용 400, 인증 없음 401
  * - 정책: 삭제된 게시글에 신규 댓글/좋아요 시 404
+ * - DB 상태(transaction 직접 읽기): 수정 후 좋아요/댓글(대댓글) 보존·audit(createdDate 유지·lastModifiedDate 갱신), 삭제는 soft delete(deleted=true)로 잔존
  *
  * REST Docs 스니펫은 별도 단계에서 다루므로 여기서는 기능만 검증한다.
  * 한국어 응답 필드는 charset 이슈로 contentAsByteArray 로 파싱한다.
@@ -87,24 +91,26 @@ class PostCommandIntegrationTest(
         }
     }
 
-    fun insertPost(authorId: Long): Long {
+    fun insertPost(authorId: Long, createdDate: LocalDateTime? = null): Long {
         return transaction {
             PostTable.insertAndGetId {
                 it[PostTable.authorId] = authorId
                 it[category] = "SUCCESS_STORY"
                 it[title] = "원본 제목"
                 it[content] = "원본 내용"
+                if (createdDate != null) it[PostTable.createdDate] = createdDate
             }.value
         }
     }
 
-    fun insertComment(postId: Long, authorId: Long) {
-        transaction {
-            CommentTable.insert {
+    fun insertComment(postId: Long, authorId: Long, parentCommentId: Long? = null): Long {
+        return transaction {
+            CommentTable.insertAndGetId {
                 it[CommentTable.postId] = postId
                 it[CommentTable.authorId] = authorId
                 it[content] = "테스트 댓글"
-            }
+                it[CommentTable.parentCommentId] = parentCommentId
+            }.value
         }
     }
 
@@ -115,6 +121,26 @@ class PostCommandIntegrationTest(
                 it[PostLikeTable.memberId] = memberId
             }
         }
+    }
+
+    fun countActiveComments(postId: Long): Long {
+        return transaction {
+            CommentTable.selectAll()
+                .where { (CommentTable.postId eq postId) and (CommentTable.deleted eq false) }
+                .count()
+        }
+    }
+
+    fun countActiveLikes(postId: Long): Long {
+        return transaction {
+            PostLikeTable.selectAll()
+                .where { (PostLikeTable.postId eq postId) and (PostLikeTable.deleted eq false) }
+                .count()
+        }
+    }
+
+    fun readPostRow(postId: Long) = transaction {
+        PostTable.selectAll().where { PostTable.id eq postId }.first()
     }
 
     fun login(email: String, rawPassword: String = "password123"): String {
@@ -194,6 +220,53 @@ class PostCommandIntegrationTest(
             detail.get("likes").asInt() shouldBe 1
             detail.get("comments").size() shouldBe 1
             detail.get("title").asText() shouldBe "보존 확인 제목"
+        }
+
+        test("수정해도 대댓글과 좋아요는 DB에 그대로 보존된다(deleted=false)") {
+            // Given - 루트 댓글 1 + 대댓글 1 + 좋아요 2
+            val email = "patch-preserve-db@example.com"
+            val authorId = insertMember(email)
+            val likerId = insertMember("patch-liker@example.com", nickname = "좋아요회원")
+            val token = login(email)
+            val postId = insertPost(authorId)
+            val rootCommentId = insertComment(postId, authorId)
+            val replyId = insertComment(postId, likerId, parentCommentId = rootCommentId)
+            likePost(postId, authorId)
+            likePost(postId, likerId)
+
+            // When
+            mockMvc.patchJson("/api/community/posts/{postId}", postId) {
+                authorization("Bearer $token")
+                content = editRequest(category = "CHEER", title = "보존 확인 제목", content = "보존 확인 내용")
+            }.andExpect { status { isOk() } }
+
+            // Then - 좋아요 2건·댓글 2건(대댓글 포함)이 삭제되지 않고 유지되며, 대댓글의 부모 관계도 보존된다
+            countActiveComments(postId) shouldBe 2L
+            countActiveLikes(postId) shouldBe 2L
+            val replyRow = transaction {
+                CommentTable.selectAll().where { CommentTable.id eq replyId }.first()
+            }
+            replyRow[CommentTable.parentCommentId] shouldBe rootCommentId
+        }
+
+        test("수정해도 createdDate는 유지되고 lastModifiedDate는 갱신된다") {
+            // Given - createdDate를 과거 시각으로 고정해 둔다
+            val email = "patch-audit@example.com"
+            val authorId = insertMember(email)
+            val token = login(email)
+            val originalCreatedDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0)
+            val postId = insertPost(authorId, createdDate = originalCreatedDate)
+
+            // When
+            mockMvc.patchJson("/api/community/posts/{postId}", postId) {
+                authorization("Bearer $token")
+                content = editRequest()
+            }.andExpect { status { isOk() } }
+
+            // Then - createdDate는 그대로, lastModifiedDate는 createdDate 이후로 갱신된다
+            val row = readPostRow(postId)
+            row[PostTable.createdDate] shouldBe originalCreatedDate
+            row[PostTable.lastModifiedDate].isAfter(originalCreatedDate) shouldBe true
         }
 
         test("타인이 수정하면 403을 반환한다") {
@@ -322,6 +395,22 @@ class PostCommandIntegrationTest(
             mockMvc.deleteJson("/api/community/posts/{postId}", postId) {
                 authorization("Bearer $token")
             }.andExpect { status { isNoContent() } }
+        }
+
+        test("본인이 삭제하면 게시글 행이 물리 삭제되지 않고 soft delete(deleted=true)로 남는다") {
+            // Given
+            val email = "delete-softdelete@example.com"
+            val authorId = insertMember(email)
+            val token = login(email)
+            val postId = insertPost(authorId)
+
+            // When
+            mockMvc.deleteJson("/api/community/posts/{postId}", postId) {
+                authorization("Bearer $token")
+            }.andExpect { status { isNoContent() } }
+
+            // Then - 행은 그대로 남고 deleted 플래그만 true 로 전환된다
+            readPostRow(postId)[PostTable.deleted] shouldBe true
         }
 
         test("삭제 후 상세를 조회하면 404를 반환한다") {
