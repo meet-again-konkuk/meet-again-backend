@@ -8,11 +8,18 @@ import com.konkuk.ma.domain.community.entity.table.ReportTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.extension.postJson
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.longs.shouldBeGreaterThan
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import java.time.LocalDate
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -84,24 +91,38 @@ class ReportIntegrationTest(
         return insertMember(email = nextEmail("author"), nickname = nickname)
     }
 
-    fun insertPost(authorId: Long): Long {
+    fun insertPost(authorId: Long, title: String = "신고 대상 게시글", content: String = "내용"): Long {
         return transaction {
             PostTable.insertAndGetId {
                 it[PostTable.authorId] = authorId
                 it[category] = "CHEER"
-                it[title] = "신고 대상 게시글"
-                it[content] = "내용"
+                it[PostTable.title] = title
+                it[PostTable.content] = content
             }.value
         }
     }
 
-    fun insertComment(postId: Long, authorId: Long): Long {
+    fun insertComment(postId: Long, authorId: Long, content: String = "신고 대상 댓글"): Long {
         return transaction {
             CommentTable.insertAndGetId {
                 it[CommentTable.postId] = postId
                 it[CommentTable.authorId] = authorId
-                it[content] = "신고 대상 댓글"
+                it[CommentTable.content] = content
             }.value
+        }
+    }
+
+    // 저장된 활성 신고 row 를 (신고자·대상 타입·대상 식별자)로 직접 조회한다.
+    fun findStoredReport(reporterId: Long, targetType: String, targetId: Long): ResultRow? {
+        return transaction {
+            ReportTable.selectAll()
+                .where {
+                    (ReportTable.reporterId eq reporterId) and
+                        (ReportTable.targetType eq targetType) and
+                        (ReportTable.targetId eq targetId) and
+                        (ReportTable.deleted eq false)
+                }
+                .singleOrNull()
         }
     }
 
@@ -147,6 +168,36 @@ class ReportIntegrationTest(
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
             }.andExpect { status { isCreated() } }
+        }
+
+        test("게시글을 신고하면 대상 작성자·제목·본문 스냅샷과 RECEIVED 상태가 저장된다") {
+            // Given
+            val (reporterId, token) = loginReporter()
+            val authorId = insertAuthor()
+            val postTitle = "혐오 표현이 담긴 제목"
+            val postContent = "혐오 표현이 담긴 본문"
+            val postId = insertPost(authorId = authorId, title = postTitle, content = postContent)
+            val reason = "HATE"
+
+            // When
+            val result = mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
+                authorization("Bearer $token")
+                content = mapper.writeValueAsString(mapOf("reason" to reason))
+            }.andExpect { status { isCreated() } }.andReturn()
+
+            // Then - 응답 도메인
+            val body = mapper.readTree(result.response.contentAsString)
+            body.get("reportId").asLong() shouldBeGreaterThan 0L
+            body.get("status").asText() shouldBe "RECEIVED"
+
+            // Then - 저장된 신고 시점 스냅샷
+            val stored = findStoredReport(reporterId, "POST", postId)
+            stored.shouldNotBeNull()
+            stored[ReportTable.targetAuthorId] shouldBe authorId
+            stored[ReportTable.targetTitle] shouldBe postTitle
+            stored[ReportTable.targetContent] shouldBe postContent
+            stored[ReportTable.reason] shouldBe reason
+            stored[ReportTable.status] shouldBe "RECEIVED"
         }
 
         test("본인 게시글을 신고하면 400을 반환한다") {
@@ -226,6 +277,56 @@ class ReportIntegrationTest(
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "HARASSMENT"))
             }.andExpect { status { isCreated() } }
+        }
+
+        test("댓글을 신고하면 대상 작성자·내용 스냅샷이 저장되고 제목 스냅샷은 null이다") {
+            // Given
+            val (reporterId, token) = loginReporter()
+            val authorId = insertAuthor(nickname = "댓글작성자")
+            val postId = insertPost(authorId = authorId)
+            val commentContent = "신고 대상 댓글 본문"
+            val commentId = insertComment(postId = postId, authorId = authorId, content = commentContent)
+
+            // When
+            mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
+                authorization("Bearer $token")
+                content = mapper.writeValueAsString(mapOf("reason" to "HARASSMENT", "detail" to "괴롭힘"))
+            }.andExpect { status { isCreated() } }
+
+            // Then
+            val stored = findStoredReport(reporterId, "COMMENT", commentId)
+            stored.shouldNotBeNull()
+            stored[ReportTable.targetAuthorId] shouldBe authorId
+            stored[ReportTable.targetTitle].shouldBeNull()
+            stored[ReportTable.targetContent] shouldBe commentContent
+        }
+
+        test("본인이 작성한 댓글을 신고하면 400을 반환한다") {
+            // Given - 로그인한 회원이 자기 댓글을 신고
+            val (reporterId, token) = loginReporter()
+            val postId = insertPost(authorId = reporterId)
+            val commentId = insertComment(postId = postId, authorId = reporterId)
+
+            // When & Then
+            mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
+                authorization("Bearer $token")
+                content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
+            }.andExpect { status { isBadRequest() } }
+        }
+
+        test("이미 신고한 댓글을 다시 신고하면 409를 반환한다") {
+            // Given - 동일 신고자·대상의 기존 활성 신고 존재
+            val (reporterId, token) = loginReporter()
+            val authorId = insertAuthor()
+            val postId = insertPost(authorId = authorId)
+            val commentId = insertComment(postId = postId, authorId = authorId)
+            insertReport(reporterId, "COMMENT", commentId, authorId)
+
+            // When & Then
+            mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
+                authorization("Bearer $token")
+                content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
+            }.andExpect { status { isConflict() } }
         }
 
         test("존재하지 않는 댓글을 신고하면 404를 반환한다") {
