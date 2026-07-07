@@ -36,7 +36,9 @@ import org.springframework.test.web.servlet.multipart
  * POST/DELETE /api/community/posts/{postId}/image 를 실제 HTTP(multipart) 요청으로
  * 컨트롤러→Service→도메인→인프라→DB 까지 관통 검증한다. (REST Docs 스니펫은 별도 단계)
  * - 최초 업로드 201 / 교체 200, 응답 imageUrl·PostImageTable active 행 검증
- * - 권한/존재: 타인 403, 없는 글 404
+ * - 교체 시 이전 이미지 soft delete(전체 2행·deleted 1행)·삭제 시 soft delete(행 유지·deleted=true·active 0행)는
+ *   응답 body 로 확인 불가하므로 transaction { PostImageTable ... } 직접 읽기로 단언한다.
+ * - 권한/존재: 타인 403, 없는 글 404, 이미지 없는 글 삭제도 204
  * - 입력 검증: 미지원 확장자 400, 위장 파일 400, 10MB 초과 400, 인증 없음 401
  */
 @SpringBootTest
@@ -139,6 +141,10 @@ class PostImageIntegrationTest(
             .toList()
     }
 
+    fun totalImages(postId: Long) = transaction {
+        PostImageTable.selectAll().where { PostImageTable.postId eq postId }.toList()
+    }
+
     context("POST /api/community/posts/{postId}/image") {
 
         test("작성자가 이미지를 업로드하면 201과 함께 active 이미지 1행이 적재되고 응답에 imageUrl 이 담긴다") {
@@ -160,7 +166,7 @@ class PostImageIntegrationTest(
             activeImages(postId).size shouldBe 1
         }
 
-        test("이미지가 있는 글에 다시 업로드하면 200(교체)을 반환하고 active 1행만 유지된다") {
+        test("이미지가 있는 글에 다시 업로드하면 200(교체)을 반환하고 active 1행만 유지되며 이전 이미지는 soft delete 된다") {
             // Given - 최초 업로드
             val email = "image-replace@example.com"
             val authorId = insertMember(email)
@@ -173,8 +179,11 @@ class PostImageIntegrationTest(
             uploadImage(postId, token, imagePart("second.png"))
                 .andExpect { status { isOk() } }
 
-            // Then
+            // Then - active 는 1행(두 번째), 전체는 2행(첫 번째는 soft delete)
             activeImages(postId).size shouldBe 1
+            val total = totalImages(postId)
+            total.size shouldBe 2
+            total.count { it[PostImageTable.deleted] } shouldBe 1
         }
 
         test("타인이 업로드하면 403을 반환한다") {
@@ -266,7 +275,7 @@ class PostImageIntegrationTest(
 
     context("DELETE /api/community/posts/{postId}/image") {
 
-        test("작성자가 삭제하면 204를 반환한다") {
+        test("작성자가 삭제하면 204를 반환하고 active 이미지가 soft delete 된다") {
             // Given
             val email = "image-delete-owner@example.com"
             val authorId = insertMember(email)
@@ -274,6 +283,26 @@ class PostImageIntegrationTest(
             val postId = insertPost(authorId)
             uploadImage(postId, token)
                 .andExpect { status { isCreated() } }
+
+            // When
+            mockMvc.delete("/api/community/posts/{postId}/image", postId) {
+                header("Authorization", "Bearer $token")
+            }
+                .andExpect { status { isNoContent() } }
+
+            // Then - 행은 남되 deleted=true, active 0행
+            activeImages(postId).size shouldBe 0
+            val total = totalImages(postId)
+            total.size shouldBe 1
+            total.first()[PostImageTable.deleted].shouldBeTrue()
+        }
+
+        test("이미지가 없는 글이어도 작성자 삭제는 204로 정상 동작한다") {
+            // Given - 이미지가 없는 게시글
+            val email = "image-delete-empty@example.com"
+            val authorId = insertMember(email)
+            val token = login(email)
+            val postId = insertPost(authorId)
 
             // When & Then
             mockMvc.delete("/api/community/posts/{postId}/image", postId) {
