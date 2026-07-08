@@ -13,6 +13,7 @@ class CommentResponse(
     val remainingReplyCount: Int,
     val likedByMe: Boolean,
     val isMine: Boolean,
+    val blockedAuthor: Boolean,
 ) {
     companion object {
         fun from(commentWithAuthor: CommentWithAuthor): CommentResponse {
@@ -20,13 +21,14 @@ class CommentResponse(
             return CommentResponse(
                 id = comment.id,
                 nickname = commentWithAuthor.nickname,
-                content = comment.displayContent(),
+                content = commentWithAuthor.displayContent(),
                 likes = commentWithAuthor.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(comment.createdDate),
                 replies = commentWithAuthor.replies.map { ReplyResponse.from(it) },
                 remainingReplyCount = commentWithAuthor.remainingReplyCount,
                 likedByMe = commentWithAuthor.likedByMe,
                 isMine = commentWithAuthor.isMine,
+                blockedAuthor = commentWithAuthor.blockedAuthor,
             )
         }
     }

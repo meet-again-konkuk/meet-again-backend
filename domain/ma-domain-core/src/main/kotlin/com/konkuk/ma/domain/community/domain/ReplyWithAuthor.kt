@@ -6,4 +6,7 @@ class ReplyWithAuthor(
     val likeCount: Int,
     val likedByMe: Boolean,
     val isMine: Boolean,
-)
+    val blockedAuthor: Boolean = false,
+) {
+    fun displayContent(): String = comment.displayContent(blockedAuthor)
+}

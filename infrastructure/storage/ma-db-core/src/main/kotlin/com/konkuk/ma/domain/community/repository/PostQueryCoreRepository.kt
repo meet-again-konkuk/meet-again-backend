@@ -14,8 +14,12 @@ import org.springframework.stereotype.Repository
 class PostQueryCoreRepository(
     private val postQueryDao: PostQueryDao,
 ) : PostQueryRepository {
-    override fun find(category: PostCategory?, cursorCondition: CursorIdCondition): CursorResult<List<Post>> {
-        val posts = postQueryDao.find(category?.name, cursorCondition.cursorId, cursorCondition.size)
+    override fun find(
+        category: PostCategory?,
+        cursorCondition: CursorIdCondition,
+        excludedAuthorIds: Set<Long>,
+    ): CursorResult<List<Post>> {
+        val posts = postQueryDao.find(category?.name, cursorCondition.cursorId, cursorCondition.size, excludedAuthorIds)
             .map { it.toDomain() }
 
         return CursorResult.of(posts, cursorCondition.size) { it.id }

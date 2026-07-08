@@ -3,6 +3,7 @@ package com.konkuk.ma.integration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.community.domain.PostDetails
+import com.konkuk.ma.domain.community.entity.table.BlockTable
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
@@ -55,12 +56,13 @@ class PostCommandIntegrationTest(
 
     beforeSpec {
         transaction {
-            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable)
+            SchemaUtils.create(MemberTable, RefreshTokenTable, PostTable, CommentTable, PostLikeTable, CommentLikeTable, BlockTable)
         }
     }
 
     afterEach {
         transaction {
+            BlockTable.deleteAll()
             PostLikeTable.deleteAll()
             CommentLikeTable.deleteAll()
             CommentTable.deleteAll()

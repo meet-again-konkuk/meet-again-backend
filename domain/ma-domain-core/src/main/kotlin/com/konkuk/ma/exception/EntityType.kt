@@ -6,6 +6,8 @@ enum class EntityType(val entityName: String, val keyName: String) {
     REFRESH_TOKEN("RefreshToken", "memberId"),
     COMMUNITY_POST("CommunityPost", "id"),
     COMMUNITY_COMMENT("CommunityComment", "id"),
+    COMMUNITY_REPORT("CommunityReport", "id"),
+    COMMUNITY_BLOCK("CommunityBlock", "id"),
     TARGET_INFO("TargetInfo", "id"),
     XROOM("Xroom", "id"),
     MEMORY("Memory", "id"),
