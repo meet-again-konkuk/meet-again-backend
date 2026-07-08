@@ -41,7 +41,9 @@ class ReportApiTest(
         )
 
         every {
-            reportCommandService.reportPost(1L, 1L, ReportReason.SPAM, "욕설이 포함되어 있습니다.")
+            reportCommandService.reportPost(
+                match { it.targetId == 1L && it.reporterId == 1L && it.reason == ReportReason.SPAM && it.detail == "욕설이 포함되어 있습니다." },
+            )
         } returns Report(
             id = 1L,
             reporterId = 1L,
@@ -83,7 +85,9 @@ class ReportApiTest(
         )
 
         every {
-            reportCommandService.reportComment(1L, 1L, ReportReason.HARASSMENT, "지속적으로 괴롭힙니다.")
+            reportCommandService.reportComment(
+                match { it.targetId == 1L && it.reporterId == 1L && it.reason == ReportReason.HARASSMENT && it.detail == "지속적으로 괴롭힙니다." },
+            )
         } returns Report(
             id = 2L,
             reporterId = 1L,

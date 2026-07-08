@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.api.request
 
+import com.konkuk.ma.domain.community.application.command.ReportCommand
 import com.konkuk.ma.domain.community.domain.report.NewReport
 import com.konkuk.ma.domain.community.domain.report.ReportReason
 import com.konkuk.ma.support.validation.ValidationMessages
@@ -10,4 +11,13 @@ class NewReportRequest(
 
     @field:Size(max = NewReport.MAX_DETAIL_LENGTH, message = ValidationMessages.REPORT_DETAIL_SIZE)
     val detail: String? = null,
-)
+) {
+    fun toReportCommand(targetId: Long, reporterId: Long): ReportCommand {
+        return ReportCommand(
+            targetId = targetId,
+            reporterId = reporterId,
+            reason = reason,
+            detail = detail,
+        )
+    }
+}

@@ -26,7 +26,7 @@ class ReportApi(
         @PathVariable postId: Long,
         @Valid @RequestBody request: NewReportRequest,
     ): ReportResponse {
-        val report = reportCommandService.reportPost(postId, memberInfo.id, request.reason, request.detail)
+        val report = reportCommandService.reportPost(request.toReportCommand(postId, memberInfo.id))
         return ReportResponse.from(report)
     }
 
@@ -37,7 +37,7 @@ class ReportApi(
         @PathVariable commentId: Long,
         @Valid @RequestBody request: NewReportRequest,
     ): ReportResponse {
-        val report = reportCommandService.reportComment(commentId, memberInfo.id, request.reason, request.detail)
+        val report = reportCommandService.reportComment(request.toReportCommand(commentId, memberInfo.id))
         return ReportResponse.from(report)
     }
 }
