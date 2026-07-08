@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc
 /**
  * 차단(REQ-014) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태 계약 검증).
  *
- * POST /author/block(최초 201·재차단 200·본인 400)·GET /blocks(200)·
+ * POST /author/block(최초·재차단 모두 201·본인 400)·GET /blocks(200)·
  * DELETE /blocks/{blockId}(204·타인 403·없음 404)·미인증(401) 상태 매핑을 API → Service → DB 관통으로 검증한다.
  */
 @SpringBootTest
@@ -184,7 +184,7 @@ class BlockIntegrationTest(
             countActiveBlocks(blockerId, authorId) shouldBe 1L
         }
 
-        test("이미 차단한 작성자를 다시 차단하면 200과 함께 기존 blockId를 반환하고 활성 차단은 1건으로 유지된다") {
+        test("이미 차단한 작성자를 다시 차단하면 201과 함께 기존 blockId를 반환하고 활성 차단은 1건으로 유지된다") {
             // Given - 기존 활성 차단 존재
             val (blockerId, token) = loginBlocker()
             val authorId = insertAuthor()
@@ -194,7 +194,7 @@ class BlockIntegrationTest(
             // When
             val result = mockMvc.postJson("/api/community/posts/{postId}/author/block", postId) {
                 authorization("Bearer $token")
-            }.andExpect { status { isOk() } }.andReturn()
+            }.andExpect { status { isCreated() } }.andReturn()
 
             // Then - 멱등: 같은 blockId, 활성 행은 여전히 1개
             mapper.readTree(result.response.contentAsString).get("blockId").asLong() shouldBe existingBlockId

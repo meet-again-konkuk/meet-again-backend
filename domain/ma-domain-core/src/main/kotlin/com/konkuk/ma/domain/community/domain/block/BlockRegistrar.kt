@@ -17,8 +17,8 @@ class BlockRegistrar(
             .findNickname(newBlock.blockedId)
         val existingBlock = blockQueryRepository.findExistingActiveOrNull(newBlock.blockerId, newBlock.blockedId)
         if (existingBlock != null) {
-            return BlockResult(existingBlock.id, nickname, newlyBlocked = false)
+            return BlockResult(existingBlock.id, nickname)
         }
-        return BlockResult(blockCommandRepository.save(newBlock), nickname, newlyBlocked = true)
+        return BlockResult(blockCommandRepository.save(newBlock), nickname)
     }
 }

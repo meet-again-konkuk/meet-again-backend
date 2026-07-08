@@ -41,7 +41,7 @@ class BlockApiTest(
     test("게시글 작성자 차단 API 문서화") {
         // Given
         every { blockCommandService.blockPostAuthor(1L, 1L) } returns
-            BlockResult(blockId = 1L, blockedNickname = "차단된작성자", newlyBlocked = true)
+            BlockResult(blockId = 1L, blockedNickname = "차단된작성자")
 
         // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/author/block", 1L)
@@ -59,20 +59,10 @@ class BlockApiTest(
             )
     }
 
-    test("이미 차단한 게시글 작성자를 다시 차단하면 200을 반환한다") {
-        // Given
-        every { blockCommandService.blockPostAuthor(2L, 1L) } returns
-            BlockResult(blockId = 1L, blockedNickname = "차단된작성자", newlyBlocked = false)
-
-        // When & Then
-        mockMvc.postJson("/api/community/posts/{postId}/author/block", 2L)
-            .andExpect { status { isOk() } }
-    }
-
     test("댓글 작성자 차단 API 문서화") {
         // Given
         every { blockCommandService.blockCommentAuthor(1L, 1L) } returns
-            BlockResult(blockId = 2L, blockedNickname = "차단된작성자", newlyBlocked = true)
+            BlockResult(blockId = 2L, blockedNickname = "차단된작성자")
 
         // When & Then
         mockMvc.postJson("/api/community/comments/{commentId}/author/block", 1L)
