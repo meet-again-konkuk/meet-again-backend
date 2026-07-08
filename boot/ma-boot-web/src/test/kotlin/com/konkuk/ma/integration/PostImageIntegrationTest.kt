@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.multipart
  *
  * POST/DELETE /api/community/posts/{postId}/image 를 실제 HTTP(multipart) 요청으로
  * 컨트롤러→Service→도메인→인프라→DB 까지 관통 검증한다. (REST Docs 스니펫은 별도 단계)
- * - 최초 업로드 201 / 교체 200, 응답 imageUrl·PostImageTable active 행 검증
+ * - 최초 업로드·교체 모두 201, 응답 imageUrl·PostImageTable active 행 검증
  * - 교체 시 이전 이미지 soft delete(전체 2행·deleted 1행)·삭제 시 soft delete(행 유지·deleted=true·active 0행)는
  *   응답 body 로 확인 불가하므로 transaction { PostImageTable ... } 직접 읽기로 단언한다.
  * - 권한/존재: 타인 403, 없는 글 404, 이미지 없는 글 삭제도 204
@@ -166,7 +166,7 @@ class PostImageIntegrationTest(
             activeImages(postId).size shouldBe 1
         }
 
-        test("이미지가 있는 글에 다시 업로드하면 200(교체)을 반환하고 active 1행만 유지되며 이전 이미지는 soft delete 된다") {
+        test("이미지가 있는 글에 다시 업로드하면 201(교체)을 반환하고 active 1행만 유지되며 이전 이미지는 soft delete 된다") {
             // Given - 최초 업로드
             val email = "image-replace@example.com"
             val authorId = insertMember(email)
@@ -177,7 +177,7 @@ class PostImageIntegrationTest(
 
             // When - 재업로드
             uploadImage(postId, token, imagePart("second.png"))
-                .andExpect { status { isOk() } }
+                .andExpect { status { isCreated() } }
 
             // Then - active 는 1행(두 번째), 전체는 2행(첫 번째는 soft delete)
             activeImages(postId).size shouldBe 1

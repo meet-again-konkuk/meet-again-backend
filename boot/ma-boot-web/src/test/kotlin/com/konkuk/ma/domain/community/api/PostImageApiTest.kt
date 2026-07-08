@@ -54,7 +54,6 @@ class PostImageApiTest(
             postId = 1L,
             imageUrl = "/files/community/post/1/image.jpg",
             thumbnailUrl = "/files/community/post/1/thumb.jpg",
-            replaced = false,
         )
 
         // When & Then
@@ -64,40 +63,6 @@ class PostImageApiTest(
             .andExpect(status().isCreated())
             .andDocument(
                 "community/upload-post-image",
-                pathVariables(
-                    postIdPath(),
-                ),
-                requestParts(
-                    partWithName("image").description("업로드할 이미지 파일 (jpg, jpeg, png, svg, webp / 최대 10MB)"),
-                ),
-                responseBody(
-                    postImageMediaId(),
-                    postImagePostId(),
-                    postImageUrl(),
-                    postThumbnailUrl() isOptional true,
-                ),
-            )
-    }
-
-    test("기존 이미지가 있으면 교체되어 200을 반환한다") {
-        // Given
-        every {
-            postImageCommandService.upload(1L, authMemberId, any<PhotoFile>())
-        } returns PostImageUploadResult(
-            mediaId = 11L,
-            postId = 1L,
-            imageUrl = "/files/community/post/1/image.jpg",
-            thumbnailUrl = "/files/community/post/1/thumb.jpg",
-            replaced = true,
-        )
-
-        // When & Then
-        mockMvc.perform(
-            multipart("/api/community/posts/{postId}/image", 1L).file(imagePart()),
-        )
-            .andExpect(status().isOk())
-            .andDocument(
-                "community/replace-post-image",
                 pathVariables(
                     postIdPath(),
                 ),

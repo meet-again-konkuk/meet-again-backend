@@ -5,7 +5,6 @@ import com.konkuk.ma.domain.community.domain.image.PostImageProcessor
 import com.konkuk.ma.domain.community.domain.image.PostImageUploadResult
 import com.konkuk.ma.domain.community.domain.image.PostImageUrlResolver
 import com.konkuk.ma.domain.community.domain.port.PostImageCommandRepository
-import com.konkuk.ma.domain.community.domain.port.PostImageQueryRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class PostImageCommandService(
     private val postImageCommandRepository: PostImageCommandRepository,
-    private val postImageQueryRepository: PostImageQueryRepository,
     private val postImageProcessor: PostImageProcessor,
     private val postImageUrlResolver: PostImageUrlResolver,
     private val postQueryRepository: PostQueryRepository,
@@ -23,7 +21,6 @@ class PostImageCommandService(
         val post = postQueryRepository.findOne(postId)
         post.validateOwnership(memberId)
 
-        val existing = postImageQueryRepository.findOneActiveOrNull(postId)
         val newPostImage = postImageProcessor.process(postId, photoFile)
         postImageCommandRepository.softDeleteByPost(postId, memberId)
         val savedId = postImageCommandRepository.save(newPostImage)
@@ -34,7 +31,6 @@ class PostImageCommandService(
             postId = postId,
             imageUrl = urls.imageUrl,
             thumbnailUrl = urls.thumbnailUrl,
-            replaced = existing != null,
         )
     }
 

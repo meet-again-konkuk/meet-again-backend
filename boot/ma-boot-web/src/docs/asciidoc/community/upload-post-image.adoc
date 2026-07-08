@@ -13,7 +13,7 @@
 
 `multipart/form-data` 의 `image` 파트로 이미지 파일(jpg, jpeg, png, svg, webp / 최대 10MB)을 전송합니다.
 
-최초 업로드 시 `201 Created`, 기존 이미지가 있어 교체된 경우 `200 OK` 로 응답합니다. 응답의 `imageUrl` 은 `/files/` 로 시작하는 서빙 URL 이며, `thumbnailUrl` 은 썸네일이 없으면 null 입니다.
+최초 업로드든 기존 이미지 교체든 항상 `201 Created` 로 응답합니다. 응답의 `imageUrl` 은 `/files/` 로 시작하는 서빙 URL 이며, `thumbnailUrl` 은 썸네일이 없으면 null 입니다.
 
 지원하지 않는 확장자를 전송하면 400, 작성자가 아니면 403, 게시글이 없으면 404 를 반환합니다.
 
@@ -29,14 +29,10 @@ include::{snippets}/community/upload-post-image/path-parameters.adoc[]
 
 include::{snippets}/community/upload-post-image/request-parts.adoc[]
 
-=== 응답 (최초 업로드, 201 Created)
+=== 응답 (201 Created)
 
 include::{snippets}/community/upload-post-image/http-response.adoc[]
 
 === 응답 필드
 
 include::{snippets}/community/upload-post-image/response-fields.adoc[]
-
-=== 응답 (기존 이미지 교체, 200 OK)
-
-include::{snippets}/community/replace-post-image/http-response.adoc[]

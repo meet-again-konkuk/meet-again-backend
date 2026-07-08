@@ -7,7 +7,6 @@ import com.konkuk.ma.support.security.LoginMember
 import com.konkuk.ma.support.security.MemberInfo
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -23,15 +22,15 @@ class PostImageApi(
     private val postImageCommandService: PostImageCommandService,
 ) {
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @ResponseStatus(HttpStatus.CREATED)
     fun upload(
         @LoginMember memberInfo: MemberInfo,
         @PathVariable postId: Long,
         @RequestPart("image") image: MultipartFile,
-    ): ResponseEntity<PostImageUploadResponse> {
+    ): PostImageUploadResponse {
         val photoFile = PhotoFile.create(image.originalFilename, image.size, image.bytes)
         val uploadResult = postImageCommandService.upload(postId, memberInfo.id, photoFile)
-        val status = if (uploadResult.replaced) HttpStatus.OK else HttpStatus.CREATED
-        return ResponseEntity.status(status).body(PostImageUploadResponse.from(uploadResult))
+        return PostImageUploadResponse.from(uploadResult)
     }
 
     @DeleteMapping

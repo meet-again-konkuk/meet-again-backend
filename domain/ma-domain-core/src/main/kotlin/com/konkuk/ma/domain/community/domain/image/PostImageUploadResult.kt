@@ -5,5 +5,4 @@ class PostImageUploadResult(
     val postId: Long,
     val imageUrl: String,
     val thumbnailUrl: String?,
-    val replaced: Boolean,
 )
