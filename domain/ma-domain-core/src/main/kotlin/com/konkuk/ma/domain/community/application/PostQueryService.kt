@@ -19,8 +19,6 @@ import com.konkuk.ma.domain.community.domain.port.PostLikeRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
 import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
-import com.konkuk.ma.exception.EntityNotFoundException
-import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -62,9 +60,7 @@ class PostQueryService(
     fun findDetail(id: Long, viewerId: Long): PostDetail {
         val post = postQueryRepository.findOne(id)
         val blockedMemberIds = BlockedMemberIds(blockQueryRepository.findBlockedMemberIds(viewerId))
-        if (blockedMemberIds.contains(post.authorId)) {
-            throw EntityNotFoundException(EntityType.COMMUNITY_POST, id.toString())
-        }
+        blockedMemberIds.validateNotBlocked(post)
         val comments = Comments(commentQueryRepository.find(id))
         val commentIds = comments.extractIds()
         val authorIds = comments.extractAuthorIds() + post.authorId
