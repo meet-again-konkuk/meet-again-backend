@@ -273,10 +273,10 @@ fun postImageMediaId(fieldName: String = "mediaId") =
 fun postImagePostId(fieldName: String = "postId") =
     fieldName responseType NUMBER means "이미지가 속한 게시글 ID" example "1"
 
-// 이미지 원본 서빙 URL (조회 응답에서는 이미지가 없으면 생략)
+// 이미지 원본 서빙 URL (이미지가 없으면 null)
 fun postImageUrl(fieldName: String = "imageUrl") =
-    fieldName responseType STRING means "이미지 원본 서빙 URL (/files/...)" example "/files/community/post/1/image.jpg"
+    fieldName responseType STRING means "이미지 원본 서빙 URL (/files/...), 없으면 null" example "/files/community/post/1/image.jpg"
 
-// 이미지 썸네일 서빙 URL (없으면 null, 조회 응답에서는 생략)
+// 이미지 썸네일 서빙 URL (이미지가 없으면 null)
 fun postThumbnailUrl(fieldName: String = "thumbnailUrl") =
-    fieldName responseType STRING means "이미지 썸네일 서빙 URL (/files/...), 없으면 생략" example "/files/community/post/1/thumb.jpg"
+    fieldName responseType STRING means "이미지 썸네일 서빙 URL (/files/...), 없으면 null" example "/files/community/post/1/thumb.jpg"

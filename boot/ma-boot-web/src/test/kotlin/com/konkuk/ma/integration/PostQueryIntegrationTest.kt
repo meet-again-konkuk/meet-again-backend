@@ -312,7 +312,7 @@ class PostQueryIntegrationTest(
                 .startsWith("/files/community/post-image/$postId/") shouldBe true
         }
 
-        test("이미지가 없는 게시글은 목록·상세 응답에 imageUrl·thumbnailUrl 필드가 없다") {
+        test("이미지가 없는 게시글은 목록·상세 응답에 imageUrl·thumbnailUrl 필드가 null로 포함된다") {
             // Given - 이미지 없는 게시글
             val accessToken = loginAsViewer()
             val authorId = insertMember(email = "no-image-author@example.com")
@@ -330,14 +330,14 @@ class PostQueryIntegrationTest(
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then - null 필드는 JsonInclude.NON_NULL 로 응답에서 생략된다
+            // Then - 이미지가 없으면 필드는 응답에 포함되고 값은 null 이다
             val listNode = findPostNode(mapper.readTree(listResult.response.contentAsString).get("data"), postId)
-            listNode.has("imageUrl") shouldBe false
-            listNode.has("thumbnailUrl") shouldBe false
+            listNode.get("imageUrl").isNull shouldBe true
+            listNode.get("thumbnailUrl").isNull shouldBe true
 
             val detail = mapper.readTree(detailResult.response.contentAsString)
-            detail.has("imageUrl") shouldBe false
-            detail.has("thumbnailUrl") shouldBe false
+            detail.get("imageUrl").isNull shouldBe true
+            detail.get("thumbnailUrl").isNull shouldBe true
         }
     }
 })
