@@ -4,4 +4,5 @@ enum class StorageDomainType(val path: String) {
     MEMBER("member"),
     MATCHING("matching"),
     MEMORY("memory"),
+    COMMUNITY("community"),
 }

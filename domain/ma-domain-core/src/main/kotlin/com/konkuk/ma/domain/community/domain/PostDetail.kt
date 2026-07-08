@@ -7,4 +7,6 @@ class PostDetail(
     val comments: List<CommentWithAuthor>,
     val likedByMe: Boolean,
     val isMine: Boolean,
+    val imageUrl: String? = null,
+    val thumbnailUrl: String? = null,
 )

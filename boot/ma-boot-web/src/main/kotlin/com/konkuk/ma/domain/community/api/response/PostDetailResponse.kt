@@ -14,6 +14,8 @@ class PostDetailResponse(
     val likedByMe: Boolean,
     val isMine: Boolean,
     val comments: List<CommentResponse>,
+    val imageUrl: String? = null,
+    val thumbnailUrl: String? = null,
 ) {
     companion object {
         fun from(postDetail: PostDetail): PostDetailResponse {
@@ -29,6 +31,8 @@ class PostDetailResponse(
                 likedByMe = postDetail.likedByMe,
                 isMine = postDetail.isMine,
                 comments = postDetail.comments.map { CommentResponse.from(it) },
+                imageUrl = postDetail.imageUrl,
+                thumbnailUrl = postDetail.thumbnailUrl,
             )
         }
     }

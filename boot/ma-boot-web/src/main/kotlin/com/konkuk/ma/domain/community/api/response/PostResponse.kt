@@ -14,6 +14,8 @@ class PostResponse(
     val likedByMe: Boolean,
     val isMine: Boolean,
     val commentCount: Int,
+    val imageUrl: String? = null,
+    val thumbnailUrl: String? = null,
 ) {
     companion object {
         fun from(postWithAuthor: PostWithAuthor): PostResponse {
@@ -29,6 +31,8 @@ class PostResponse(
                 likedByMe = postWithAuthor.likedByMe,
                 isMine = postWithAuthor.isMine,
                 commentCount = postWithAuthor.commentCount,
+                imageUrl = postWithAuthor.imageUrl,
+                thumbnailUrl = postWithAuthor.thumbnailUrl,
             )
         }
     }

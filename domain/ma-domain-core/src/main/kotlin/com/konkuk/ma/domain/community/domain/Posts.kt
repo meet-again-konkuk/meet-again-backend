@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.domain
 
+import com.konkuk.ma.domain.community.domain.image.PostImageUrlsByPost
 import com.konkuk.ma.domain.member.domain.Members
 
 class Posts(val data: List<Post>) {
@@ -17,6 +18,7 @@ class Posts(val data: List<Post>) {
         likeCounts: LikeCounts,
         commentCounts: CommentCounts,
         viewer: Viewer,
+        postImageUrls: PostImageUrlsByPost = PostImageUrlsByPost.empty(),
     ): List<PostWithAuthor> {
         return data.map { post ->
             PostWithAuthor(
@@ -26,6 +28,8 @@ class Posts(val data: List<Post>) {
                 likedByMe = viewer.isLikedByMe(post.id),
                 isMine = viewer.isMine(post.authorId),
                 commentCount = commentCounts.countOf(post.id),
+                imageUrl = postImageUrls.imageUrlOf(post.id),
+                thumbnailUrl = postImageUrls.thumbnailUrlOf(post.id),
             )
         }
     }

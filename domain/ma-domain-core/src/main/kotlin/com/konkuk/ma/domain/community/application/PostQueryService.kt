@@ -12,9 +12,11 @@ import com.konkuk.ma.domain.community.domain.PostWithAuthor
 import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.Viewer
 import com.konkuk.ma.domain.community.domain.block.BlockedMemberIds
+import com.konkuk.ma.domain.community.domain.image.PostImageUrlResolver
 import com.konkuk.ma.domain.community.domain.port.BlockQueryRepository
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
+import com.konkuk.ma.domain.community.domain.port.PostImageQueryRepository
 import com.konkuk.ma.domain.community.domain.port.PostLikeRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
 import com.konkuk.ma.domain.member.domain.Members
@@ -30,6 +32,8 @@ class PostQueryService(
     private val memberQueryRepository: MemberQueryRepository,
     private val postLikeRepository: PostLikeRepository,
     private val commentLikeRepository: CommentLikeRepository,
+    private val postImageQueryRepository: PostImageQueryRepository,
+    private val postImageUrlResolver: PostImageUrlResolver,
     private val blockQueryRepository: BlockQueryRepository,
 ) {
     fun find(
@@ -49,9 +53,10 @@ class PostQueryService(
             LikedIds(postLikeRepository.findLikedPostIds(viewerId, postIds)),
             BlockedMemberIds(blockedMemberIds),
         )
+        val postImageUrls = postImageUrlResolver.resolveByPosts(postImageQueryRepository.findActiveByPosts(postIds))
 
         return CursorResult(
-            data = posts.combineWithAuthors(members, likeCounts, commentCounts, viewer),
+            data = posts.combineWithAuthors(members, likeCounts, commentCounts, viewer, postImageUrls),
             hasNext = cursorResult.hasNext,
             nextCursorId = cursorResult.nextCursorId,
         )
@@ -73,6 +78,7 @@ class PostQueryService(
             LikedIds(commentLikeRepository.findLikedCommentIds(viewerId, commentIds)),
             blockedMemberIds,
         )
+        val imageUrls = postImageQueryRepository.findOneActiveOrNull(post.id)?.let { postImageUrlResolver.resolve(it) }
 
         return PostDetail(
             post = post,
@@ -81,6 +87,8 @@ class PostQueryService(
             comments = comments.groupByRootComment(members, commentLikeCounts, commentLikeViewer),
             likedByMe = postLikeViewer.isLikedByMe(post.id),
             isMine = postLikeViewer.isMine(post.authorId),
+            imageUrl = imageUrls?.imageUrl,
+            thumbnailUrl = imageUrls?.thumbnailUrl,
         )
     }
 }

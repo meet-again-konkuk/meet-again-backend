@@ -173,6 +173,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/toggle-comment-like.html[댓글 좋아요 토글 API,window=_blank]
 
+[[community-upload-post-image]]
+=== 게시글 이미지 업로드
+
+* link:community/upload-post-image.html[게시글 이미지 업로드 API,window=_blank]
+
+[[community-delete-post-image]]
+=== 게시글 이미지 삭제
+
+* link:community/delete-post-image.html[게시글 이미지 삭제 API,window=_blank]
+
 [[community-report]]
 === 신고
 

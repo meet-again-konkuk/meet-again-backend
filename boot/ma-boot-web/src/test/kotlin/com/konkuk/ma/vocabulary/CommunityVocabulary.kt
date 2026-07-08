@@ -267,6 +267,23 @@ fun commentDetailReplyLikedByMe(fieldName: String = "replies[].likedByMe") =
 fun commentDetailReplyIsMine(fieldName: String = "replies[].isMine") =
     fieldName responseType BOOLEAN means "조회자가 작성한 대댓글인지 여부" example "false"
 
+// --- REQ-013: 게시글 이미지 필드 ---
+
+// 게시글 이미지 업로드 응답
+fun postImageMediaId(fieldName: String = "mediaId") =
+    fieldName responseType NUMBER means "생성된 이미지(미디어) ID" example "10"
+
+fun postImagePostId(fieldName: String = "postId") =
+    fieldName responseType NUMBER means "이미지가 속한 게시글 ID" example "1"
+
+// 이미지 원본 서빙 URL (이미지가 없으면 null)
+fun postImageUrl(fieldName: String = "imageUrl") =
+    fieldName responseType STRING means "이미지 원본 서빙 URL (/files/...), 없으면 null" example "/files/community/post/1/image.jpg"
+
+// 이미지 썸네일 서빙 URL (이미지가 없으면 null)
+fun postThumbnailUrl(fieldName: String = "thumbnailUrl") =
+    fieldName responseType STRING means "이미지 썸네일 서빙 URL (/files/...), 없으면 null" example "/files/community/post/1/thumb.jpg"
+
 // --- REQ-014: 차단한 작성자 표식 (댓글/대댓글 공통) ---
 
 // fieldName 파라미터로 comments[]/replies[]/루트 등 위치를 바꿔 재사용한다.

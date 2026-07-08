@@ -7,4 +7,6 @@ class PostWithAuthor(
     val likedByMe: Boolean,
     val isMine: Boolean,
     val commentCount: Int,
+    val imageUrl: String? = null,
+    val thumbnailUrl: String? = null,
 )

@@ -3,6 +3,7 @@ package com.konkuk.ma.domain.community.application
 import com.konkuk.ma.domain.community.domain.NewPost
 import com.konkuk.ma.domain.community.domain.PostDetails
 import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
+import com.konkuk.ma.domain.community.domain.port.PostImageCommandRepository
 import com.konkuk.ma.domain.community.domain.port.PostQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostCommandService(
     private val postCommandRepository: PostCommandRepository,
     private val postQueryRepository: PostQueryRepository,
+    private val postImageCommandRepository: PostImageCommandRepository,
 ) {
     fun create(newPost: NewPost): Long {
         return postCommandRepository.save(newPost)
@@ -27,5 +29,6 @@ class PostCommandService(
         val post = postQueryRepository.findOne(postId)
         post.validateOwnership(memberId)
         postCommandRepository.softDelete(postId, memberId)
+        postImageCommandRepository.softDeleteByPost(postId, memberId)
     }
 }
