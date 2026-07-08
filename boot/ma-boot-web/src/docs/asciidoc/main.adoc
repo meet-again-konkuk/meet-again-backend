@@ -138,6 +138,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/create-post.html[게시글 작성 API,window=_blank]
 
+[[community-update-post]]
+=== 게시글 수정
+
+* link:community/update-post.html[게시글 수정 API,window=_blank]
+
+[[community-delete-post]]
+=== 게시글 삭제
+
+* link:community/delete-post.html[게시글 삭제 API,window=_blank]
+
 [[community-create-comment]]
 === 댓글 작성
 

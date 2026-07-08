@@ -2,6 +2,7 @@ package com.konkuk.ma.vocabulary
 
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.domain.community.domain.NewPost
+import com.konkuk.ma.domain.community.domain.PostDetails
 import com.konkuk.ma.domain.community.domain.report.NewReport
 import com.konkuk.ma.extension.ARRAY
 import com.konkuk.ma.extension.BOOLEAN
@@ -17,15 +18,20 @@ fun newPostCategory(fieldName: String = "category") =
     fieldName responseType STRING means "게시글 카테고리 (SUCCESS_STORY, CHEER, COUNSELING)" example "CHEER"
 
 fun newPostTitle(fieldName: String = "title") =
-    fieldName responseType STRING means "게시글 제목 (최대 ${NewPost.MAX_TITLE_LENGTH}자)" example "안녕하세요"
+    fieldName responseType STRING means "게시글 제목 (최대 ${PostDetails.MAX_TITLE_LENGTH}자)" example "안녕하세요"
 
 fun newPostContent(fieldName: String = "content") =
-    fieldName responseType STRING means "게시글 내용 (최대 ${NewPost.MAX_CONTENT_LENGTH}자)" example "반갑습니다"
+    fieldName responseType STRING means "게시글 내용 (최대 ${PostDetails.MAX_CONTENT_LENGTH}자)" example "반갑습니다"
 
 // --- 게시글 작성 응답 필드 ---
 
 fun newPostId(fieldName: String = "postId") =
     fieldName responseType NUMBER means "생성된 게시글 ID" example "1"
+
+// --- 게시글 수정 응답 필드 ---
+
+fun postUpdated(fieldName: String = "updated") =
+    fieldName responseType BOOLEAN means "수정 성공 여부 (true 고정)" example "true"
 
 // --- 게시글 목록 응답 필드 ---
 

@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 게시글 수정 API
+
+== 게시글 수정
+
+본인이 작성한 커뮤니티 게시글을 수정합니다. 작성자가 아니면 403을 반환합니다.
+
+=== 요청
+
+include::{snippets}/community/update-post/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/update-post/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/update-post/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/update-post/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/community/update-post/response-fields.adoc[]
