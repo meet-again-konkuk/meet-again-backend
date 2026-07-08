@@ -19,6 +19,11 @@ class Comment(
         return content
     }
 
+    fun displayContent(blocked: Boolean): String {
+        if (blocked) return BLOCKED_CONTENT
+        return displayContent()
+    }
+
     fun hasParent(): Boolean = parentCommentId != null
 
     fun validateIsRootComment() {
@@ -35,5 +40,6 @@ class Comment(
 
     companion object {
         private const val DELETED_CONTENT = "삭제된 댓글입니다."
+        private const val BLOCKED_CONTENT = "차단한 사용자의 댓글입니다."
     }
 }

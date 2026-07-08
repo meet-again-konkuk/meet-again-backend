@@ -183,6 +183,16 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/delete-post-image.html[게시글 이미지 삭제 API,window=_blank]
 
+[[community-report]]
+=== 신고
+
+* link:community/report.html[커뮤니티 신고 API,window=_blank]
+
+[[community-block]]
+=== 차단
+
+* link:community/block.html[커뮤니티 차단 API,window=_blank]
+
 [[point]]
 == 포인트
 

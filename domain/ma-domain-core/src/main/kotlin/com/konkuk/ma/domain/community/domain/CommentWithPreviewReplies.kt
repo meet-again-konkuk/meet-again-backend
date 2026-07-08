@@ -20,6 +20,7 @@ class CommentWithPreviewReplies(
             remainingReplyCount = remainingReplyCount,
             likedByMe = viewer.isLikedByMe(parent.id),
             isMine = viewer.isMine(parent.authorId),
+            blockedAuthor = viewer.hasBlocked(parent.authorId),
         )
     }
 }

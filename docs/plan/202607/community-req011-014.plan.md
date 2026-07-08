@@ -240,7 +240,7 @@ DB 스키마 변화 없음. 순수 응답 필드 additive. 프론트는 optional
 | 파일 | 내용 |
 |------|------|
 | `application/ReportCommandService.kt` (신규) | `reportPost(postId, reporterId, reason, detail): ReportResult` / `reportComment(commentId, reporterId, reason, detail)`. 흐름: 대상 findOne(404) → targetAuthorId·**원문 스냅샷(title/content) 확보** → `NewReport`(본인 400) → `reportValidator`(중복 409) → save |
-| `application/BlockCommandService.kt` (신규) | `blockPostAuthor(postId, blockerId): BlockResult` / `blockCommentAuthor(...)`. 흐름: 대상 findOne(404) → blockedId=작성자 → `NewBlock`(본인 400) → 기존 active 있으면 그대로(200), 없으면 save(201) → blockedNickname 조회. `unblock(blockId, blockerId)`: findOne(404)→validateOwnership(403)→softDelete |
+| `application/BlockCommandService.kt` (신규) | `blockPostAuthor(postId, blockerId): BlockResult` / `blockCommentAuthor(...)`. 흐름: 대상 findOne(404) → blockedId=작성자 → `NewBlock`(본인 400) → 기존 active 있으면 그대로 재사용, 없으면 save — 어느 쪽이든 응답은 201 고정(멱등, 2026-07-08 동적 200/201 폐기) → blockedNickname 조회. `unblock(blockId, blockerId)`: findOne(404)→validateOwnership(403)→softDelete |
 | `application/BlockQueryService.kt` (신규) | `findBlocks(blockerId): List<BlockView>` — `Blocks` + `Members` 닉네임 조립 |
 | `domain/report/ReportResult.kt`·`domain/block/{BlockResult,BlockView}.kt` (신규) | reportId/status · (blockId, blockedNickname, newlyBlocked) · (blockId, nickname, blockedAt). **PR #41 컨벤션(application/result 폐기 — 타입은 domain 아니면 boot Response)에 따라 domain 서브패키지 배치** (ChargeResult→point/domain 선례) |
 

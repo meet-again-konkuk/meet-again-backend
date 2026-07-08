@@ -19,6 +19,7 @@ class CommentDetail(
             remainingReplyCount = 0,
             likedByMe = viewer.isLikedByMe(rootComment.id),
             isMine = viewer.isMine(rootComment.authorId),
+            blockedAuthor = viewer.hasBlocked(rootComment.authorId),
         )
     }
 

@@ -11,7 +11,9 @@ import com.konkuk.ma.domain.community.domain.PostDetail
 import com.konkuk.ma.domain.community.domain.PostWithAuthor
 import com.konkuk.ma.domain.community.domain.Posts
 import com.konkuk.ma.domain.community.domain.Viewer
+import com.konkuk.ma.domain.community.domain.block.BlockedMemberIds
 import com.konkuk.ma.domain.community.domain.image.PostImageUrlResolver
+import com.konkuk.ma.domain.community.domain.port.BlockQueryRepository
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.community.domain.port.PostImageQueryRepository
@@ -32,19 +34,25 @@ class PostQueryService(
     private val commentLikeRepository: CommentLikeRepository,
     private val postImageQueryRepository: PostImageQueryRepository,
     private val postImageUrlResolver: PostImageUrlResolver,
+    private val blockQueryRepository: BlockQueryRepository,
 ) {
     fun find(
         category: PostCategory?,
         cursorCondition: CursorIdCondition,
         viewerId: Long,
     ): CursorResult<List<PostWithAuthor>> {
-        val cursorResult = postQueryRepository.find(category, cursorCondition)
+        val blockedMemberIds = blockQueryRepository.findBlockedMemberIds(viewerId)
+        val cursorResult = postQueryRepository.find(category, cursorCondition, blockedMemberIds)
         val posts = Posts(cursorResult.data)
         val postIds = posts.extractIds()
         val members = Members(memberQueryRepository.findByIds(posts.extractAuthorIds()))
         val likeCounts = LikeCounts.from(postLikeRepository.count(postIds))
         val commentCounts = CommentCounts.from(commentQueryRepository.count(postIds))
-        val viewer = Viewer(viewerId, LikedIds(postLikeRepository.findLikedPostIds(viewerId, postIds)))
+        val viewer = Viewer(
+            viewerId,
+            LikedIds(postLikeRepository.findLikedPostIds(viewerId, postIds)),
+            BlockedMemberIds(blockedMemberIds),
+        )
         val postImageUrls = postImageUrlResolver.resolveByPosts(postImageQueryRepository.findActiveByPosts(postIds))
 
         return CursorResult(
@@ -56,6 +64,8 @@ class PostQueryService(
 
     fun findDetail(id: Long, viewerId: Long): PostDetail {
         val post = postQueryRepository.findOne(id)
+        val blockedMemberIds = BlockedMemberIds(blockQueryRepository.findBlockedMemberIds(viewerId))
+        blockedMemberIds.validateNotBlocked(post)
         val comments = Comments(commentQueryRepository.find(id))
         val commentIds = comments.extractIds()
         val authorIds = comments.extractAuthorIds() + post.authorId
@@ -63,7 +73,11 @@ class PostQueryService(
         val postLikeCount = postLikeRepository.count(listOf(post.id))[post.id] ?: 0
         val commentLikeCounts = LikeCounts.from(commentLikeRepository.count(commentIds))
         val postLikeViewer = Viewer(viewerId, LikedIds(postLikeRepository.findLikedPostIds(viewerId, listOf(post.id))))
-        val commentLikeViewer = Viewer(viewerId, LikedIds(commentLikeRepository.findLikedCommentIds(viewerId, commentIds)))
+        val commentLikeViewer = Viewer(
+            viewerId,
+            LikedIds(commentLikeRepository.findLikedCommentIds(viewerId, commentIds)),
+            blockedMemberIds,
+        )
         val imageUrls = postImageQueryRepository.findOneActiveOrNull(post.id)?.let { postImageUrlResolver.resolve(it) }
 
         return PostDetail(

@@ -14,6 +14,7 @@ import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.blockedAuthor
 import com.konkuk.ma.vocabulary.detailCategory
 import com.konkuk.ma.vocabulary.detailCommentContent
 import com.konkuk.ma.vocabulary.detailCommentId
@@ -113,6 +114,7 @@ class PostDetailQueryApiTest(
                     detailCommentTimeAgo(),
                     detailCommentLikedByMe(),
                     detailCommentIsMine(),
+                    blockedAuthor("comments[].blockedAuthor"),
                     detailReplies(),
                     detailReplyId(),
                     detailReplyNickname(),
@@ -121,6 +123,7 @@ class PostDetailQueryApiTest(
                     detailReplyTimeAgo(),
                     detailReplyLikedByMe(),
                     detailReplyIsMine(),
+                    blockedAuthor("comments[].replies[].blockedAuthor"),
                     detailRemainingReplyCount(),
                     postImageUrl() isOptional true,
                     postThumbnailUrl() isOptional true,

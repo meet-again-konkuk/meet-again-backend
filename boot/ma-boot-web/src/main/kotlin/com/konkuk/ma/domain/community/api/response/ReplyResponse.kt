@@ -11,6 +11,7 @@ class ReplyResponse(
     val timeAgo: String,
     val likedByMe: Boolean,
     val isMine: Boolean,
+    val blockedAuthor: Boolean,
 ) {
     companion object {
         fun from(replyWithAuthor: ReplyWithAuthor): ReplyResponse {
@@ -18,11 +19,12 @@ class ReplyResponse(
             return ReplyResponse(
                 id = comment.id,
                 nickname = replyWithAuthor.nickname,
-                content = comment.displayContent(),
+                content = replyWithAuthor.displayContent(),
                 likes = replyWithAuthor.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(comment.createdDate),
                 likedByMe = replyWithAuthor.likedByMe,
                 isMine = replyWithAuthor.isMine,
+                blockedAuthor = replyWithAuthor.blockedAuthor,
             )
         }
     }

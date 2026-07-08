@@ -51,6 +51,31 @@ fun create(...) {
 
 **판단 기준**: Command 메서드에 `if (...) throw ...` 또는 조회-후-분기가 2개 이상 있으면 Validator로 분리 대상.
 
+### 1-2. ⚠️ 도메인 객체 조립은 서비스가 아닌 Request/Command에서
+
+Service 메서드 안에서 `NewXxx(...)` 를 여러 필드 named-arg로 인라인 조립하지 않는다. 허용은 **2~3필드 단순 매핑까지**(예: `NewBlock(blockerId, post.authorId)`).
+
+- **요청 데이터만으로 조립 가능**하면: Request DTO의 `toNewXxx(authId)` 가 도메인 객체를 만든다 (예: `NewPostRequest.toNewPost(authorId)`). Request는 raw 값만 갖고, VO 생성은 도메인 객체(NewXxx) 안에서.
+- **저장소 조회 결과가 조립에 필요**하면: `application/command/XxxCommand` 를 만들고(controller에서 `request.toXxxCommand(pathId, authId)` 변환), Service는 조회한 엔티티를 command에 넘겨 `command.toNewXxx(post)` 로 위임한다 (예: `ReportCommand.toNewReport(post)`, xroom `AddMemoryCommand` 선례).
+
+BAD — Service가 8개 필드를 직접 조립:
+```
+fun reportPost(postId: Long, reporterId: Long, reason: ReportReason, detail: String?): Report {
+    val post = postQueryRepository.findOne(postId)
+    val newReport = NewReport(reporterId = ..., targetType = ..., targetId = ..., /* 5개 더 */)
+    ...
+}
+```
+
+GOOD — Service는 조회와 위임만:
+```
+fun reportPost(command: ReportCommand): Report {
+    val post = postQueryRepository.findOne(command.targetId)
+    val newReport = command.toNewReport(post)
+    ...
+}
+```
+
 ## 2. 도메인 객체에 행위 부여
 
 외부에서 getter로 꺼내서 판단하지 말고, 객체 스스로 판단/행동하게 한다.
