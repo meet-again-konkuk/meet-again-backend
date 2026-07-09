@@ -11,6 +11,7 @@
 | POST | /api/auth/sign-up | 회원가입 |
 | POST | /api/auth/login | 로그인 |
 | POST | /api/auth/refresh-token | 토큰 갱신 |
+| POST | /api/auth/logout | 로그아웃 (refresh token 삭제, 204) |
 | POST | /api/sms/verification-code | SMS 인증코드 전송 |
 | POST | /api/sms/verification-code/confirm | SMS 인증코드 확인 |
 
@@ -49,6 +50,10 @@
 | GET | /api/community/posts | 게시글 목록 조회 |
 | GET | /api/community/posts/{id} | 게시글 상세 조회 |
 | POST | /api/community/posts | 게시글 작성 |
+| PATCH | /api/community/posts/{postId} | 게시글 수정 (REQ-012) |
+| DELETE | /api/community/posts/{postId} | 게시글 삭제 (REQ-012) |
+| POST | /api/community/posts/{postId}/image | 게시글 이미지 업로드/교체 (REQ-013, multipart) |
+| DELETE | /api/community/posts/{postId}/image | 게시글 이미지 삭제 (REQ-013) |
 | POST | /api/community/posts/{postId}/likes | 게시글 좋아요 추가 |
 | DELETE | /api/community/posts/{postId}/likes | 게시글 좋아요 취소 |
 | POST | /api/community/posts/{postId}/comments | 댓글/대댓글 작성 |
@@ -56,6 +61,12 @@
 | DELETE | /api/community/posts/{postId}/comments/{commentId} | 댓글 삭제 |
 | POST | /api/community/comments/{commentId}/likes | 댓글 좋아요 추가 |
 | DELETE | /api/community/comments/{commentId}/likes | 댓글 좋아요 취소 |
+| POST | /api/community/posts/{postId}/reports | 게시글 신고 (REQ-014) |
+| POST | /api/community/comments/{commentId}/reports | 댓글 신고 (REQ-014) |
+| POST | /api/community/posts/{postId}/author/block | 게시글 작성자 차단 (REQ-014) |
+| POST | /api/community/comments/{commentId}/author/block | 댓글 작성자 차단 (REQ-014) |
+| GET | /api/community/blocks | 차단 목록 조회 (REQ-014) |
+| DELETE | /api/community/blocks/{blockId} | 차단 해제 (REQ-014) |
 
 ### 고객지원
 
@@ -164,13 +175,7 @@
 
 ## 기타
 
-### 로그아웃 : POST /api/auth/logout
-
-- **인증**: 필요
-
-**참고사항**:
-- refresh token 삭제로 세션 연장 봉쇄 (`RefreshTokenRepository.delete` 재사용 — 탈퇴 정리에서 사용 중)
-- access token은 stateless JWT라 TTL(1시간)까지 잔존 수용 (탈퇴 로그인 차단과 동일 정책)
+작업할 내용 없음 (로그아웃 구현 완료 — 위 "완료된 API > 인증" 참조)
 
 <!-- 회원 탈퇴는 구현 완료되어 완료된 API 테이블로 이동 (신청 시 비밀번호 검증 포함, PR #17) -->
 
