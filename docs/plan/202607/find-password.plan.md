@@ -26,7 +26,7 @@
 | D4 | 예외 → 상태코드 매핑 | `GlobalExceptionHandler`에 이미 전부 존재. | **신규 예외 클래스 0개.** `SmsNotVerifiedException`→400, `EntityNotFoundException`→404, `MethodArgumentNotValidException`→400 모두 기존 핸들러 재사용. |
 | D5 | 응답 형식 | 성공은 204(본문 없음) → 이메일 노출·마스킹 이슈 없음(find-email의 D2 마스킹 고민 불필요). | **Response DTO 불필요.** 컨트롤러는 `@ResponseStatus(HttpStatus.NO_CONTENT)` + Unit 반환 (logout 선례). |
 | D6 | newPassword 형식 검증 | sign-up과 동일 정책(영문/숫자 8~16). `ValidationPatterns.PASSWORD` / `ValidationMessages.PASSWORD_*` 상수 존재. | **Request DTO에서 `@Pattern(PASSWORD)`+`@NotBlank(PASSWORD_REQUIRED)`로 검증.** 도메인은 이미 암호화된 값만 저장(재검증 없음). |
-| D7 | 클래스 네이밍 (구현 후 사용자 결정으로 개정) | 초안은 URL 미러링 `FindPassword*`/기존 `FindEmail*`. 사용자 피드백: SignUp·Login 같은 굳어진 용어가 아닌 `Find*` 조어를 클래스명에 쓰지 말 것 — 특히 find-password는 실제 행위가 "재설정"이라 이름과 모순. | **클래스는 행위·업계 용어 기반으로 전면 리네임**: `PasswordReset*`(Service/Api/Request/테스트), 기존 find-email도 `EmailRecovery*`로 동반 리네임. URL(`/api/auth/find-password`·`/find-email`)과 REST Docs 스니펫 식별자는 프론트 계약이라 유지(화면 용어 "찾기"는 HTTP 경계까지만). |
+| D7 | 클래스 네이밍 (구현 후 사용자 결정으로 개정) | 초안은 URL 미러링 `FindPassword*`. 사용자 피드백: find-password는 실제 행위가 조회가 아닌 "재설정"이라 클래스명(`FindPasswordService`)과 메서드(`resetPassword`)가 모순. 반면 find-email은 실제로 이메일을 찾아 반환하므로 이름과 행위가 일치. | **`FindPassword*` → `PasswordReset*` 리네임(Service/Api/Request/테스트).** 기존 `FindEmail*`은 행위와 일치하므로 유지. URL(`/api/auth/find-password`)과 REST Docs 스니펫 식별자는 프론트 계약이라 유지. |
 
 ## 영향 범위 분석
 

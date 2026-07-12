@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc
 /**
  * 이메일 찾기(POST /api/auth/find-email) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태/계약 검증).
  *
- * API → EmailRecoveryService → (SMS 인증 확인) + MemberQueryRepository(findOne) → MEMBERS 테이블을
+ * API → FindEmailService → (SMS 인증 확인) + MemberQueryRepository(findOne) → MEMBERS 테이블을
  * 관통하며 아래 확정 계약을 검증한다. (사용자 확정 계약, 2026-07-12)
  *
  * 검증 순서 계약: ① bean validation(400) → ② SMS 인증(400) → ③ 회원 조회(404).
@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.MockMvc
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class EmailRecoveryIntegrationTest(
+class FindEmailIntegrationTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
     private val smsRepository: SmsRepository,
