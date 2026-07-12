@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class FindIdService(
+class FindEmailService(
     private val memberQueryRepository: MemberQueryRepository
 ) {
-    fun findId(name: String, phone: String): Email {
+    fun findEmail(name: String, phone: String): Email {
         val member = memberQueryRepository.findOne(name, PhoneNumber(phone))
         return member.email
     }

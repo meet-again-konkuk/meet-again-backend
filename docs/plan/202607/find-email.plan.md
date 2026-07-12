@@ -1,8 +1,8 @@
-# Plan: 이메일 찾기 API (POST /api/auth/find-id)
+# Plan: 이메일 찾기 API (POST /api/auth/find-email)
 
 - 작성일: 2026-07-10
 - 작업 유형: 기능 개발
-- 브랜치(제안): `feat/auth-find-id`
+- 브랜치(제안): `feat/auth-find-email`
 - 상태: Confirmed (Q1~Q4 사용자 확정 완료, 2026-07-10)
 
 ## 요구사항 요약
@@ -17,7 +17,7 @@
 | # | 쟁점 | 조사 결과 | 권고안 | 확정 필요 |
 |---|------|----------|--------|-----------|
 | D1 | 조회 실패 응답 정책 (404 vs 200 빈 결과) | 프로젝트 관례는 `EntityNotFoundException` → **404** (GlobalExceptionHandler L28~32). `/api/members/email/exists`가 이미 이메일 존재 여부를 public 노출 중이라 enumeration은 앱 전반에서 부분적으로 이미 가능. | **404 유지**(관례 일관성). 단 아래 트레이드오프 기록. | Q1 |
-| D2 | 이메일 노출 범위 (전체 vs 마스킹) | find-id는 name+phone → email을 알려주므로 full email harvesting 리스크가 email-exists보다 큼. | **마스킹 반환**(`Email.masked()` 신설, 도메인 VO 행위로). | Q2 |
+| D2 | 이메일 노출 범위 (전체 vs 마스킹) | find-email는 name+phone → email을 알려주므로 full email harvesting 리스크가 email-exists보다 큼. | **마스킹 반환**(`Email.masked()` 신설, 도메인 VO 행위로). | Q2 |
 | D3 | 탈퇴 유예 중(withdrawalRequestedAt≠null) 회원 처리 | `requestWithdrawal`은 `withdrawalRequestedAt`만 세팅하고 `deleted=false` 유지. 배치가 7일 후 `anonymizeAndSoftDelete`로 `deleted=true` 전환. 유예 회원은 로그인은 막히나 탈퇴 복구(email+password)에는 이메일이 필요. | **포함**(활성 회원 취급) — 복구 흐름을 위해 이메일 회수 허용. | Q3 |
 | D4 | 익명화(soft delete)된 탈퇴 회원 | `activeRows { }` 헬퍼가 `deleted eq false` 자동 필터. 익명화 시 phone은 sentinel(`WithdrawnSentinel.PHONE_NUMBER`)로 치환되어 실제 phone과 매칭 불가. | **자동 제외**(추가 작업 불필요, 신규 DAO 쿼리를 `activeRows`로 작성). | 확정 |
 | D5 | 동일 name+phone 복수 매칭 가능성 | `MEMBERS.PHONE_NUMBER`는 `.index()`(non-unique). 그러나 가입 시 `existsByPhoneNumber`(deleted=false 한정, PR #18)로 앱 레벨 중복 차단 → **활성 회원 중 phone은 사실상 유일**. name은 유일성 없음. | `.limit(1)` + `firstOrNull`로 단건 취급(안전). DB 유니크 미보장은 리스크 섹션에 기록. | 확정 |
@@ -35,25 +35,25 @@
 |---|-----------|----------|----------|
 | 1 | `domain/…/common/domain/Email.kt` | `fun masked(): String` 추가 (VO 행위) | 수정 |
 | 2 | `domain/…/member/domain/port/MemberQueryRepository.kt` | `findOne(name: String, phoneNumber: PhoneNumber): Member` 오버로드 추가 | 수정 |
-| 3 | `domain/…/auth/application/FindIdService.kt` | `findId(name, phone)` 서비스 신설 | 신규 |
+| 3 | `domain/…/auth/application/FindEmailService.kt` | `findEmail(name, phone)` 서비스 신설 | 신규 |
 | 4 | `infrastructure/…/member/dao/MemberQueryDao.kt` | `findByNameAndPhoneNumber(name, phoneNumber): MemberEntity?` 추가 (`activeRows` 사용) | 수정 |
 | 5 | `infrastructure/…/member/repository/MemberQueryCoreRepository.kt` | 신규 포트 메서드 구현 (미존재 시 `EntityNotFoundException`) | 수정 |
-| 6 | `boot/…/auth/api/request/FindIdRequest.kt` | 요청 DTO (name, phone + bean validation) | 신규 |
-| 7 | `boot/…/auth/api/response/FindIdResponse.kt` | 응답 DTO (마스킹된 email) | 신규 |
-| 8 | `boot/…/auth/api/FindIdApi.kt` | 컨트롤러 `POST /api/auth/find-id` | 신규 |
-| 9 | `boot/…/config/SecurityConfig.kt` | `POST /api/auth/find-id` permitAll 등록 | 수정 |
-| 10 | `boot/…/auth/api/FindIdApiTest.kt` | API→DB E2E 테스트 | 신규 |
-| 11 | `boot/…/docs/asciidoc/auth/find-id.adoc` + `main.adoc` + vocabulary | REST Docs (rest-docs-generator 산출) | 신규/수정 |
-| 12 | `docs/api-todo.md` | find-id 항목을 "완료된 API > 인증"으로 이동 | 수정 |
+| 6 | `boot/…/auth/api/request/FindEmailRequest.kt` | 요청 DTO (name, phone + bean validation) | 신규 |
+| 7 | `boot/…/auth/api/response/FindEmailResponse.kt` | 응답 DTO (마스킹된 email) | 신규 |
+| 8 | `boot/…/auth/api/FindEmailApi.kt` | 컨트롤러 `POST /api/auth/find-email` | 신규 |
+| 9 | `boot/…/config/SecurityConfig.kt` | `POST /api/auth/find-email` permitAll 등록 | 수정 |
+| 10 | `boot/…/auth/api/FindEmailApiTest.kt` | API→DB E2E 테스트 | 신규 |
+| 11 | `boot/…/docs/asciidoc/auth/find-email.adoc` + `main.adoc` + vocabulary | REST Docs (rest-docs-generator 산출) | 신규/수정 |
+| 12 | `docs/api-todo.md` | find-email 항목을 "완료된 API > 인증"으로 이동 | 수정 |
 
 ### 의존성 관계 (레이어 호출 흐름)
 
 ```
-[web] FindIdApi  ──(name, phone: raw String)──►  [domain] FindIdService
-   │  @Valid FindIdRequest                              │
+[web] FindEmailApi  ──(name, phone: raw String)──►  [domain] FindEmailService
+   │  @Valid FindEmailRequest                              │
    │  permitAll (SecurityConfig)                         │  PhoneNumber(phone)  ← VO 정규화/검증
    ▼                                                     ▼
-FindIdResponse(email.masked())            MemberQueryRepository.findOne(name, PhoneNumber)  [port]
+FindEmailResponse(email.masked())            MemberQueryRepository.findOne(name, PhoneNumber)  [port]
    ▲  Email.masked()  ← 신규 VO 행위                     │
    │                                                     ▼
    └─────────────── Email(VO) ◄──── Member ◄──── [infra] MemberQueryCoreRepository (adapter)
@@ -95,31 +95,31 @@ FindIdResponse(email.masked())            MemberQueryRepository.findOne(name, Ph
   - 로그(dataMessage)에 **원본 phone 미기록** — `phoneNumber.masked()` 사용(PII 보호).
 - 변경 파일: `MemberQueryDao.kt`, `MemberQueryCoreRepository.kt`
 
-### Step 4: 도메인 서비스 — `FindIdService`
+### Step 4: 도메인 서비스 — `FindEmailService`
 
 - 목표: 유스케이스 오케스트레이션(입력 raw → VO 조립 → 포트 조회 → Email 반환).
-- 시그니처: `fun findId(name: String, phone: String): Email`
+- 시그니처: `fun findEmail(name: String, phone: String): Email`
   - 내부: `val member = memberQueryRepository.findOne(name, PhoneNumber(phone)); return member.email`
 - 관례: `LoginService`/`WithdrawalCancelService`와 동일하게 raw String을 받아 서비스 내부에서 VO(`PhoneNumber`) 조립. `@Service @Transactional`(readOnly는 기존 관례상 미사용 — 기존 서비스도 클래스 레벨 `@Transactional`).
 - 별도 Validator 불필요: 다단계 업무 검증(권한/상태 교차검증)이 없고, 형식 검증은 bean validation + `PhoneNumber` VO init, 존재 검증은 포트가 담당. (XroomValidator 같은 Validator는 repo조회+분기+위임이 있을 때만 도입)
-- 변경 파일: `FindIdService.kt` (신규)
+- 변경 파일: `FindEmailService.kt` (신규)
 
 ### Step 5: 웹 레이어 — Request / Response / Controller
 
-- `FindIdRequest`(요청 DTO, raw 값만 보유 — 도메인 VO 직접 생성 금지):
+- `FindEmailRequest`(요청 DTO, raw 값만 보유 — 도메인 VO 직접 생성 금지):
   - `name: String` — `@field:NotBlank(NAME_REQUIRED)` + `@field:Pattern(ValidationPatterns.NAME, NAME_INVALID)`
   - `phone: String` — `@field:NotBlank(PHONE_NUMBER_REQUIRED)` + `@field:Pattern(ValidationPatterns.PHONE_NUMBER, PHONE_NUMBER_INVALID)`
   - 필드명은 스펙(api-todo)에 맞춰 `phone` 사용(회원가입 DTO의 `phoneNumber`와 명칭 다름 — 프론트 계약 우선).
-- `FindIdResponse`: `class FindIdResponse(val email: String)` + `constructor(email: Email) : this(email = email.masked())`
+- `FindEmailResponse`: `class FindEmailResponse(val email: String)` + `constructor(email: Email) : this(email = email.masked())`
   - `LoginResponse(loginInfo)` 패턴과 동일하게 도메인 타입(Email)을 받아 응답 필드로 매핑. 마스킹은 VO 행위 위임.
-- `FindIdApi`: `@RestController @RequestMapping("/api/auth")`, `@PostMapping("/find-id")`
-  - `fun findId(@Valid @RequestBody request: FindIdRequest): FindIdResponse` → `FindIdResponse(findIdService.findId(request.name, request.phone))`
+- `FindEmailApi`: `@RestController @RequestMapping("/api/auth")`, `@PostMapping("/find-email")`
+  - `fun findEmail(@Valid @RequestBody request: FindEmailRequest): FindEmailResponse` → `FindEmailResponse(findEmailService.findEmail(request.name, request.phone))`
   - 컨트롤러 엔드포인트당 분리 관례 준수(LoginApi/LogoutApi처럼 단일 책임).
-- 변경 파일: `FindIdRequest.kt`, `FindIdResponse.kt`, `FindIdApi.kt` (모두 신규)
+- 변경 파일: `FindEmailRequest.kt`, `FindEmailResponse.kt`, `FindEmailApi.kt` (모두 신규)
 
 ### Step 6: 보안 설정 — permitAll
 
-- `SecurityConfig.filterChain`에 `.requestMatchers(HttpMethod.POST, "/api/auth/find-id").permitAll()` 추가(login/refresh-token/withdrawal-cancellation 인접에 배치).
+- `SecurityConfig.filterChain`에 `.requestMatchers(HttpMethod.POST, "/api/auth/find-email").permitAll()` 추가(login/refresh-token/withdrawal-cancellation 인접에 배치).
 - 변경 파일: `SecurityConfig.kt`
 
 ## 구현 순서 (TDD 파이프라인)
@@ -128,17 +128,17 @@ FindIdResponse(email.masked())            MemberQueryRepository.findOne(name, Ph
 
 | 순서 | 단계 | 대상 | 담당(에이전트) |
 |------|------|------|----------------|
-| 1 | 스켈레톤 | Email.masked, 포트 시그니처, FindIdService, Request/Response/Api, SecurityConfig permitAll(컴파일 통과용 최소 골격) | code-implementer |
-| 2 | E2E 테스트(RED) | `FindIdApiTest` — API→DB E2E, DB에 회원 insert 후 POST | kotest-writer |
-| 3 | 구현(GREEN) | DAO 쿼리, CoreRepository, FindIdService, Email.masked, Request/Response/Api 본구현 | code-implementer |
+| 1 | 스켈레톤 | Email.masked, 포트 시그니처, FindEmailService, Request/Response/Api, SecurityConfig permitAll(컴파일 통과용 최소 골격) | code-implementer |
+| 2 | E2E 테스트(RED) | `FindEmailApiTest` — API→DB E2E, DB에 회원 insert 후 POST | kotest-writer |
+| 3 | 구현(GREEN) | DAO 쿼리, CoreRepository, FindEmailService, Email.masked, Request/Response/Api 본구현 | code-implementer |
 | 4 | 리뷰 | code-implementation-rules / clean-code / clean-architecture 준수 검증 | code-reviewer |
-| 5 | REST Docs | `auth/find-id.adoc` + `main.adoc` 링크 + vocabulary(name/phone 필드) 생성 | rest-docs-generator |
-| 6 | 문서 현행화 | `docs/api-todo.md`의 find-id를 완료 테이블로 이동 | (수동) |
+| 5 | REST Docs | `auth/find-email.adoc` + `main.adoc` 링크 + vocabulary(name/phone 필드) 생성 | rest-docs-generator |
+| 6 | 문서 현행화 | `docs/api-todo.md`의 find-email를 완료 테이블로 이동 | (수동) |
 
 ## 테스트 전략
 
 - **금지**: Service 빈 직접 호출 통합 테스트(`*ServiceIntegrationTest`), 서비스 모킹 기반 검증. → **API→DB E2E(MockMvc)로만** 검증.
-- 테스트 클래스명: `FindIdApiTest` (대상 컨트롤러명 + Test). 케이스는 하나의 스펙에 `context`/`test`로 묶음.
+- 테스트 클래스명: `FindEmailApiTest` (대상 컨트롤러명 + Test). 케이스는 하나의 스펙에 `context`/`test`로 묶음.
 - 요청 본문은 inline `mapOf(...)`로 구성(요청 fixture 금지), 반복 회원 삽입은 `insertMember(...)` 류 DB 헬퍼로.
 - DB 상태 검증이 필요하면 `transaction { }`로 테이블 직접 read.
 - 검증 케이스:
@@ -171,3 +171,4 @@ FindIdResponse(email.masked())            MemberQueryRepository.findOne(name, Ph
 - **Q2 → 마스킹**: `Email.masked()` 신설, `hol***@naver.com` 형식 (local part 앞 3글자 유지, 3글자 이하면 1글자).
 - **Q3 → 포함**: 탈퇴 유예 중(deleted=false) 회원도 이메일 반환 — 탈퇴 복구(email+password) 흐름 지원.
 - **Q4 → 하이픈 없이만 허용**: 기존 `ValidationPatterns.PHONE_NUMBER`(`^010\d{7,8}$`) 재사용, 하이픈 입력은 400. 테스트 케이스 2(하이픈 입력)는 400 검증으로 확정.
+- **Q5 → find-email 전면 리네임 (2026-07-12 추가 확정)**: 원 스펙의 `find-id`(아이디/비밀번호 찾기 관용 표현)를 URL·클래스 전부 `find-email`/`FindEmail*`로 변경. 근거 — 코드베이스 유비쿼터스 언어는 `email`이고 `id`는 member PK(Long)를 가리키는 데 이미 사용되어 혼동 유발. PR 미머지·프론트 미사용 시점이라 계약 파기 없음.

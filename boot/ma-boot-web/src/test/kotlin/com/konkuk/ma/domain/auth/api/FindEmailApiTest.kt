@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.auth.api.request.FindIdRequest
-import com.konkuk.ma.domain.auth.application.FindIdService
+import com.konkuk.ma.domain.auth.api.request.FindEmailRequest
+import com.konkuk.ma.domain.auth.application.FindEmailService
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
@@ -19,23 +19,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
-@WebMvcTest(FindIdApi::class)
+@WebMvcTest(FindEmailApi::class)
 @BaseApiTest
-class FindIdApiTest(
+class FindEmailApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    @MockkBean private val findIdService: FindIdService
+    @MockkBean private val findEmailService: FindEmailService
 ) : FunSpec({
 
     test("이메일 찾기 API 문서화") {
-        val request = FindIdRequest(name = "홍길동", phone = "01012345678")
-        every { findIdService.findId(request.name, request.phone) } returns Email("holeman@naver.com")
+        val request = FindEmailRequest(name = "홍길동", phone = "01012345678")
+        every { findEmailService.findEmail(request.name, request.phone) } returns Email("holeman@naver.com")
 
-        mockMvc.postJson("/api/auth/find-id") { content = mapper.writeValueAsString(request) }
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isOk() } }
             .andExpect { jsonPath("$.email").value("hol***@naver.com") }
             .andDocument(
-                "auth-find-id",
+                "auth-find-email",
                 requestBody(
                     name(),
                     phoneNumber("phone"),
@@ -52,10 +52,10 @@ class FindIdApiTest(
             "phone" to "01012345678"
         )
 
-        mockMvc.postJson("/api/auth/find-id") { content = mapper.writeValueAsString(badRequest) }
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(badRequest) }
             .andExpect { status { isBadRequest() } }
             .andDocument(
-                "auth-find-id-invalid-name",
+                "auth-find-email-invalid-name",
                 requestBody(
                     name() means "잘못된 이름 형식",
                     phoneNumber("phone"),
@@ -69,7 +69,7 @@ class FindIdApiTest(
             "phone" to "010-1234-5678"
         )
 
-        mockMvc.postJson("/api/auth/find-id") { content = mapper.writeValueAsString(badRequest) }
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(badRequest) }
             .andExpect { status { isBadRequest() } }
     }
 })

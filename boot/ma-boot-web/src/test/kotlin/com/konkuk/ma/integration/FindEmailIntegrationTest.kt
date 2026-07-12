@@ -17,9 +17,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 
 /**
- * 이메일 찾기(POST /api/auth/find-id) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태/계약 검증).
+ * 이메일 찾기(POST /api/auth/find-email) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태/계약 검증).
  *
- * API → FindIdService → MemberQueryRepository(findOne) → MemberQueryDao(findOne)
+ * API → FindEmailService → MemberQueryRepository(findOne) → MemberQueryDao(findOne)
  * → MEMBERS 테이블을 관통하며 다음 확정 계약을 검증한다.
  *  - 정상: name+phone 이 일치하는 활성 회원 존재 → 200 + 마스킹된 이메일(`hol***@naver.com` 형식).
  *  - 탈퇴 유예(deleted=false, withdrawalRequestedAt≠null) 회원 → 200(복구 흐름 지원, 포함).
@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.MockMvc
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class FindIdIntegrationTest(
+class FindEmailIntegrationTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
 ) : FunSpec({
@@ -60,7 +60,7 @@ class FindIdIntegrationTest(
 
     fun nextEmail(): String {
         memberSeq += 1
-        return "find-id-test$memberSeq@example.com"
+        return "find-email-test$memberSeq@example.com"
     }
 
     // MEMBERS 에 회원 1건을 직접 삽입한다. phoneNumber 는 저장 형식(fullNumber, 하이픈 없음)으로 넣는다.
@@ -87,13 +87,13 @@ class FindIdIntegrationTest(
         }
     }
 
-    // 인증 없이(permitAll) find-id 를 호출한다. Authorization 헤더를 붙이지 않는다.
-    fun findId(name: String, phone: String) =
-        mockMvc.postJson("/api/auth/find-id") {
+    // 인증 없이(permitAll) find-email 를 호출한다. Authorization 헤더를 붙이지 않는다.
+    fun findEmail(name: String, phone: String) =
+        mockMvc.postJson("/api/auth/find-email") {
             content = mapper.writeValueAsString(mapOf("name" to name, "phone" to phone))
         }
 
-    context("POST /api/auth/find-id") {
+    context("POST /api/auth/find-email") {
 
         context("정상 조회 (200 + 마스킹된 이메일)") {
 
@@ -104,7 +104,7 @@ class FindIdIntegrationTest(
                 insertMember(email = "holeman@naver.com", name = name, phoneNumber = phone)
 
                 // When - 인증 헤더 없이(permitAll) 조회
-                val result = findId(name = name, phone = phone)
+                val result = findEmail(name = name, phone = phone)
                     .andExpect { status { isOk() } }
                     .andReturn()
 
@@ -120,7 +120,7 @@ class FindIdIntegrationTest(
                 insertMember(email = "ab@example.com", name = name, phoneNumber = phone)
 
                 // When
-                val result = findId(name = name, phone = phone)
+                val result = findEmail(name = name, phone = phone)
                     .andExpect { status { isOk() } }
                     .andReturn()
 
@@ -141,7 +141,7 @@ class FindIdIntegrationTest(
                 )
 
                 // When
-                val result = findId(name = name, phone = phone)
+                val result = findEmail(name = name, phone = phone)
                     .andExpect { status { isOk() } }
                     .andReturn()
 
@@ -158,7 +158,7 @@ class FindIdIntegrationTest(
                 insertMember(name = "김철수", phoneNumber = "01012345678")
 
                 // When & Then
-                val result = findId(name = "홍길동", phone = "01099998888")
+                val result = findEmail(name = "홍길동", phone = "01099998888")
                     .andExpect { status { isNotFound() } }
                     .andReturn()
 
@@ -173,7 +173,7 @@ class FindIdIntegrationTest(
                 insertMember(name = name, phoneNumber = "01012345678")
 
                 // When & Then - 이름만 일치
-                findId(name = name, phone = "01099998888")
+                findEmail(name = name, phone = "01099998888")
                     .andExpect { status { isNotFound() } }
             }
 
@@ -183,7 +183,7 @@ class FindIdIntegrationTest(
                 insertMember(name = "김철수", phoneNumber = phone)
 
                 // When & Then - 전화번호만 일치
-                findId(name = "이몽룡", phone = phone)
+                findEmail(name = "이몽룡", phone = phone)
                     .andExpect { status { isNotFound() } }
             }
 
@@ -194,7 +194,7 @@ class FindIdIntegrationTest(
                 insertMember(name = name, phoneNumber = phone, deleted = true)
 
                 // When & Then - name/phone 이 그대로 일치해도 활성 필터에서 제외됨
-                findId(name = name, phone = phone)
+                findEmail(name = name, phone = phone)
                     .andExpect { status { isNotFound() } }
             }
         }
@@ -203,7 +203,7 @@ class FindIdIntegrationTest(
 
             test("이름이 빈 값이면 400을 반환한다") {
                 // When & Then - @NotBlank 위반, 서비스 호출 전 차단
-                val result = findId(name = "", phone = "01012345678")
+                val result = findEmail(name = "", phone = "01012345678")
                     .andExpect { status { isBadRequest() } }
                     .andReturn()
 
@@ -214,55 +214,55 @@ class FindIdIntegrationTest(
 
             test("이름이 1글자면 400을 반환한다") {
                 // When & Then - @Pattern(^[가-힣]{2,10}$) 위반
-                findId(name = "김", phone = "01012345678")
+                findEmail(name = "김", phone = "01012345678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("이름이 11글자면 400을 반환한다") {
                 // When & Then - 최대 10글자 초과
-                findId(name = "김".repeat(11), phone = "01012345678")
+                findEmail(name = "김".repeat(11), phone = "01012345678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("이름이 영문이면 400을 반환한다") {
                 // When & Then - 한글만 허용
-                findId(name = "John", phone = "01012345678")
+                findEmail(name = "John", phone = "01012345678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("이름에 특수문자가 포함되면 400을 반환한다") {
                 // When & Then
-                findId(name = "김철수!", phone = "01012345678")
+                findEmail(name = "김철수!", phone = "01012345678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("전화번호가 빈 값이면 400을 반환한다") {
                 // When & Then - @NotBlank 위반
-                findId(name = "김철수", phone = "")
+                findEmail(name = "김철수", phone = "")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("전화번호에 하이픈이 포함되면 400을 반환한다") {
                 // When & Then - @Pattern(^010\d{7,8}$)은 하이픈 불허
-                findId(name = "김철수", phone = "010-1234-5678")
+                findEmail(name = "김철수", phone = "010-1234-5678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("전화번호가 010으로 시작하지 않으면 400을 반환한다") {
                 // When & Then
-                findId(name = "김철수", phone = "01112345678")
+                findEmail(name = "김철수", phone = "01112345678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("전화번호 자릿수가 부족하면 400을 반환한다") {
                 // When & Then - 010 + 6자리(총 9자리) → 최소 010+7자리 미달
-                findId(name = "김철수", phone = "010123456")
+                findEmail(name = "김철수", phone = "010123456")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("전화번호 자릿수가 초과되면 400을 반환한다") {
                 // When & Then - 010 + 9자리(총 12자리) → 최대 010+8자리 초과
-                findId(name = "김철수", phone = "010123456789")
+                findEmail(name = "김철수", phone = "010123456789")
                     .andExpect { status { isBadRequest() } }
             }
         }

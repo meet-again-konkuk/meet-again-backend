@@ -29,7 +29,7 @@ class SecurityConfig(
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.POST,"/api/auth/find-id").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/auth/find-email").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/auth/refresh-token").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/sms/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
