@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class FindPasswordService(
+class PasswordResetService(
     private val smsVerificationValidator: SmsVerificationValidator,
     private val memberQueryRepository: MemberQueryRepository,
     private val passwordEncryptor: PasswordEncryptor,

@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc
 /**
  * 비밀번호 재설정(POST /api/auth/find-password) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태/DB 상태 검증).
  *
- * API → FindPasswordService → (SMS 인증 확인) + MemberQueryRepository(findOne 3필드) + PasswordEncryptor +
+ * API → PasswordResetService → (SMS 인증 확인) + MemberQueryRepository(findOne 3필드) + PasswordEncryptor +
  * MemberCommandRepository(updatePassword) → MEMBERS 테이블을 관통하며 아래 확정 계약을 검증한다. (2026-07-12 확정)
  *
  * 검증 순서 계약: ① bean validation(400) → ② SMS 인증(400) → ③ email+name+phone 3필드 회원 조회(404) →
@@ -42,7 +42,7 @@ import org.springframework.test.web.servlet.MockMvc
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class FindPasswordIntegrationTest(
+class PasswordResetIntegrationTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
     private val smsRepository: SmsRepository,
@@ -114,7 +114,7 @@ class FindPasswordIntegrationTest(
     fun confirmSms(phone: String) = smsRepository.confirmVerificationCode(phone)
 
     // 인증 없이(permitAll) find-password 를 호출한다. (SMS 인증은 헤더가 아니라 본문 phone 의 confirmed 상태로 판정)
-    fun findPassword(email: String, name: String, phone: String, newPassword: String) =
+    fun resetPassword(email: String, name: String, phone: String, newPassword: String) =
         mockMvc.postJson("/api/auth/find-password") {
             content = mapper.writeValueAsString(
                 mapOf("email" to email, "name" to name, "phone" to phone, "newPassword" to newPassword)
@@ -134,7 +134,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When
-                findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNoContent() } }
 
                 // Then - MEMBERS.PASSWORD 가 새 비밀번호로 갱신되고, 기존 비밀번호로는 더 이상 매칭되지 않는다
@@ -157,7 +157,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When
-                findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNoContent() } }
 
                 // Then
@@ -174,7 +174,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When
-                findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNoContent() } }
 
                 // Then - 저장값은 평문 newPassword 와 달라야 하고(암호화됨), matches 로만 일치한다
@@ -194,7 +194,7 @@ class FindPasswordIntegrationTest(
                 insertMember(email = email, name = name, phoneNumber = phone)
 
                 // When - 인증 게이트에서 400 (회원이 있어도 204 가 아님)
-                val result = findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                val result = resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isBadRequest() } }
                     .andReturn()
 
@@ -207,7 +207,7 @@ class FindPasswordIntegrationTest(
             test("SMS 미인증이면 회원이 존재하지 않아도 404가 아니라 400을 반환한다") {
                 // Given - 회원 없음 + 미인증(confirm 하지 않는 고유 phone). SMS 게이트(②)가 조회(③)보다 먼저 동작함을 검증
                 // When & Then
-                findPassword(email = "nobody@example.com", name = "홍길동", phone = "01066667777", newPassword = newPassword)
+                resetPassword(email = "nobody@example.com", name = "홍길동", phone = "01066667777", newPassword = newPassword)
                     .andExpect { status { isBadRequest() } }
             }
         }
@@ -222,7 +222,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When & Then
-                val result = findPassword(email = "wrong@example.com", name = name, phone = phone, newPassword = newPassword)
+                val result = resetPassword(email = "wrong@example.com", name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNotFound() } }
                     .andReturn()
 
@@ -239,7 +239,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When & Then
-                findPassword(email = email, name = "이몽룡", phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = "이몽룡", phone = phone, newPassword = newPassword)
                     .andExpect { status { isNotFound() } }
             }
 
@@ -252,7 +252,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When & Then
-                findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNotFound() } }
             }
 
@@ -265,7 +265,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When & Then - 3필드가 그대로 일치해도 활성 필터에서 제외됨
-                findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNotFound() } }
             }
         }
@@ -281,7 +281,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When & Then
-                findPassword(email = email, name = name, phone = phone, newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = phone, newPassword = newPassword)
                     .andExpect { status { isNoContent() } }
 
                 passwordEncryptor.matches(newPassword, storedPasswordOf(email)) shouldBe true
@@ -296,7 +296,7 @@ class FindPasswordIntegrationTest(
                 confirmSms(phone)
 
                 // When & Then - 서비스/조회 도달 이전 bean validation 400
-                findPassword(email = email, name = name, phone = "010-1234-5678", newPassword = newPassword)
+                resetPassword(email = email, name = name, phone = "010-1234-5678", newPassword = newPassword)
                     .andExpect { status { isBadRequest() } }
             }
         }
@@ -304,7 +304,7 @@ class FindPasswordIntegrationTest(
         context("요청 형식 검증 (bean validation 최우선 → 400 INVALID_INPUT_VALUE)") {
 
             test("이메일 형식이 올바르지 않으면 SMS/조회 이전에 400을 반환한다") {
-                val result = findPassword(email = "not-an-email", name = "김철수", phone = "01012345678", newPassword = newPassword)
+                val result = resetPassword(email = "not-an-email", name = "김철수", phone = "01012345678", newPassword = newPassword)
                     .andExpect { status { isBadRequest() } }
                     .andReturn()
 
@@ -314,12 +314,12 @@ class FindPasswordIntegrationTest(
 
             test("새 비밀번호가 형식(영문+숫자 8~16)을 위반하면 SMS/조회 이전에 400을 반환한다") {
                 // "12345678" = 숫자만 → 패턴 위반
-                findPassword(email = "member@example.com", name = "김철수", phone = "01012345678", newPassword = "12345678")
+                resetPassword(email = "member@example.com", name = "김철수", phone = "01012345678", newPassword = "12345678")
                     .andExpect { status { isBadRequest() } }
             }
 
             test("이름 형식이 올바르지 않으면 SMS/조회 이전에 400을 반환한다") {
-                findPassword(email = "member@example.com", name = "John", phone = "01012345678", newPassword = newPassword)
+                resetPassword(email = "member@example.com", name = "John", phone = "01012345678", newPassword = newPassword)
                     .andExpect { status { isBadRequest() } }
             }
         }

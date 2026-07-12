@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 
-data class FindPasswordRequest(
+data class PasswordResetRequest(
     @field:NotBlank(message = ValidationMessages.EMAIL_REQUIRED)
     @field:Email(message = ValidationMessages.EMAIL_INVALID)
     val email: String,

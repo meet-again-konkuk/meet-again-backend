@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.auth.api.request.FindEmailRequest
-import com.konkuk.ma.domain.auth.application.FindEmailService
+import com.konkuk.ma.domain.auth.api.request.EmailRecoveryRequest
+import com.konkuk.ma.domain.auth.application.EmailRecoveryService
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.extension.andDocument
@@ -19,17 +19,17 @@ import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 
-@WebMvcTest(FindEmailApi::class)
+@WebMvcTest(EmailRecoveryApi::class)
 @BaseApiTest
-class FindEmailApiTest(
+class EmailRecoveryApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    @MockkBean private val findEmailService: FindEmailService
+    @MockkBean private val emailRecoveryService: EmailRecoveryService
 ) : FunSpec({
 
     test("이메일 찾기 API 문서화") {
-        val request = FindEmailRequest(name = "홍길동", phone = "01012345678")
-        every { findEmailService.findEmail(request.name, request.phone) } returns Email("holeman@naver.com")
+        val request = EmailRecoveryRequest(name = "홍길동", phone = "01012345678")
+        every { emailRecoveryService.findEmail(request.name, request.phone) } returns Email("holeman@naver.com")
 
         mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isOk() } }
@@ -47,9 +47,9 @@ class FindEmailApiTest(
     }
 
     test("이메일 찾기 - SMS 인증이 완료되지 않으면 400을 반환한다") {
-        val request = FindEmailRequest(name = "홍길동", phone = "01012345678")
+        val request = EmailRecoveryRequest(name = "홍길동", phone = "01012345678")
         every {
-            findEmailService.findEmail(request.name, request.phone)
+            emailRecoveryService.findEmail(request.name, request.phone)
         } throws SmsNotVerifiedException(request.phone)
 
         mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }

@@ -5,7 +5,7 @@ import com.konkuk.ma.support.validation.ValidationPatterns
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 
-data class FindEmailRequest(
+data class EmailRecoveryRequest(
     @field:NotBlank(message = ValidationMessages.NAME_REQUIRED)
     @field:Pattern(regexp = ValidationPatterns.NAME, message = ValidationMessages.NAME_INVALID)
     val name: String,

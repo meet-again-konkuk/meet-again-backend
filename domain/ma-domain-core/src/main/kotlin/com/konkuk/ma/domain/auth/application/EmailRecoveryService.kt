@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class FindEmailService(
+class EmailRecoveryService(
     private val smsVerificationValidator: SmsVerificationValidator,
     private val memberQueryRepository: MemberQueryRepository
 ) {

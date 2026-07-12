@@ -2,8 +2,8 @@ package com.konkuk.ma.domain.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
-import com.konkuk.ma.domain.auth.api.request.FindPasswordRequest
-import com.konkuk.ma.domain.auth.application.FindPasswordService
+import com.konkuk.ma.domain.auth.api.request.PasswordResetRequest
+import com.konkuk.ma.domain.auth.application.PasswordResetService
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc
 /**
  * 비밀번호 재설정(POST /api/auth/find-password) API 슬라이스 테스트.
  *
- * FindPasswordService 는 @MockkBean 으로 대체하여 컨트롤러 계약(HTTP 매핑·상태코드·Bean Validation)만 검증한다.
+ * PasswordResetService 는 @MockkBean 으로 대체하여 컨트롤러 계약(HTTP 매핑·상태코드·Bean Validation)만 검증한다.
  * 정상/예외 위임 케이스에는 REST Docs(andDocument) 스니펫(auth-find-password*)을 함께 생성한다.
  *
  * 확정 계약(이 테스트가 명세):
@@ -34,12 +34,12 @@ import org.springframework.test.web.servlet.MockMvc
  *  - Service 가 EntityNotFoundException → 404 (3필드 일치 회원 부재).
  *  - Bean Validation 위반(email/name/phone/newPassword 형식·필수) → 400, Service 도달 이전에 차단.
  */
-@WebMvcTest(FindPasswordApi::class)
+@WebMvcTest(PasswordResetApi::class)
 @BaseApiTest
-class FindPasswordApiTest(
+class PasswordResetApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
-    @MockkBean private val findPasswordService: FindPasswordService,
+    @MockkBean private val passwordResetService: PasswordResetService,
 ) : FunSpec({
 
     val uri = "/api/auth/find-password"
@@ -66,9 +66,9 @@ class FindPasswordApiTest(
 
         test("유효한 요청이면 204 No Content 를 반환한다") {
             // Given - 4필드 raw String 위임, Service 는 정상 수행
-            val request = FindPasswordRequest(validEmail, validName, validPhone, validNewPassword)
+            val request = PasswordResetRequest(validEmail, validName, validPhone, validNewPassword)
             every {
-                findPasswordService.resetPassword(request.email, request.name, request.phone, request.newPassword)
+                passwordResetService.resetPassword(request.email, request.name, request.phone, request.newPassword)
             } just runs
 
             // When & Then
@@ -87,9 +87,9 @@ class FindPasswordApiTest(
 
         test("Service 가 SmsNotVerifiedException 을 던지면 400 을 반환한다") {
             // Given - SMS 인증 미완료
-            val request = FindPasswordRequest(validEmail, validName, validPhone, validNewPassword)
+            val request = PasswordResetRequest(validEmail, validName, validPhone, validNewPassword)
             every {
-                findPasswordService.resetPassword(request.email, request.name, request.phone, request.newPassword)
+                passwordResetService.resetPassword(request.email, request.name, request.phone, request.newPassword)
             } throws SmsNotVerifiedException(request.phone)
 
             // When & Then
@@ -108,9 +108,9 @@ class FindPasswordApiTest(
 
         test("Service 가 EntityNotFoundException 을 던지면 404 를 반환한다") {
             // Given - 3필드 일치 회원 부재
-            val request = FindPasswordRequest(validEmail, validName, validPhone, validNewPassword)
+            val request = PasswordResetRequest(validEmail, validName, validPhone, validNewPassword)
             every {
-                findPasswordService.resetPassword(request.email, request.name, request.phone, request.newPassword)
+                passwordResetService.resetPassword(request.email, request.name, request.phone, request.newPassword)
             } throws EntityNotFoundException(EntityType.MEMBER, request.email)
 
             // When & Then
