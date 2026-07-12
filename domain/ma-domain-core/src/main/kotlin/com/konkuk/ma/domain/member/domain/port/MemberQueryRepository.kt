@@ -11,6 +11,7 @@ interface MemberQueryRepository {
     fun exists(phoneNumber: PhoneNumber): Boolean
     fun findOne(email: Email): Member
     fun findOne(id: Long): Member
+    fun findOne(name: String, phoneNumber: PhoneNumber): Member
     fun findByNames(names: Set<String>): List<Member>
     fun findByIds(ids: Set<Long>): List<Member>
     fun findExpiredWithdrawalRequests(expiredBefore: LocalDateTime, cursorId: Long?, pageSize: Int): List<Member>

@@ -68,6 +68,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:auth/logout.html[로그아웃 API,window=_blank]
 
+[[auth-find-id]]
+=== 이메일 찾기
+
+* link:auth/find-id.html[이메일 찾기 API,window=_blank]
+
 [[matching]]
 == 매칭
 

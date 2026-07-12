@@ -12,6 +12,7 @@
 | POST | /api/auth/login | 로그인 |
 | POST | /api/auth/refresh-token | 토큰 갱신 |
 | POST | /api/auth/logout | 로그아웃 (refresh token 삭제, 204) |
+| POST | /api/auth/find-id | 이메일 찾기 (name+phone, 마스킹된 이메일 반환, public) |
 | POST | /api/sms/verification-code | SMS 인증코드 전송 |
 | POST | /api/sms/verification-code/confirm | SMS 인증코드 확인 |
 
@@ -154,14 +155,7 @@
 
 ## 아이디/비밀번호 찾기
 
-### POST /api/auth/find-id — 이메일 찾기
-
-- **인증**: 불필요
-
-**Request Body**:
-```json
-{ "name": "string", "phone": "string" }
-```
+<!-- 이메일 찾기(POST /api/auth/find-id)는 구현 완료되어 완료된 API 테이블로 이동 -->
 
 ### POST /api/auth/find-password — 비밀번호 재설정 요청
 
