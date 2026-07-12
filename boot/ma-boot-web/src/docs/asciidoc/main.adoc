@@ -73,6 +73,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:auth/find-email.html[이메일 찾기 API,window=_blank]
 
+[[auth-find-password]]
+=== 비밀번호 재설정
+
+* link:auth/find-password.html[비밀번호 재설정 API,window=_blank]
+
 [[matching]]
 == 매칭
 

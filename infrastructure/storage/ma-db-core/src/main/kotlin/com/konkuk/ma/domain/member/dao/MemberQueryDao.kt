@@ -61,6 +61,18 @@ class MemberQueryDao {
             ?.let { RowEntityMapper.toMemberEntity(it) }
     }
 
+    fun findOne(email: String, name: String, phoneNumber: String): MemberEntity? {
+        return MemberTable
+            .activeRows {
+                (MemberTable.email eq email) and
+                    (MemberTable.name eq name) and
+                    (MemberTable.phoneNumber eq phoneNumber)
+            }
+            .limit(1)
+            .firstOrNull()
+            ?.let { RowEntityMapper.toMemberEntity(it) }
+    }
+
     fun findByIds(ids: Set<Long>): List<MemberEntity> {
         if (ids.isEmpty()) return emptyList()
         return MemberTable

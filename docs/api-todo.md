@@ -13,6 +13,7 @@
 | POST | /api/auth/refresh-token | 토큰 갱신 |
 | POST | /api/auth/logout | 로그아웃 (refresh token 삭제, 204) |
 | POST | /api/auth/find-email | 이메일 찾기 (name+phone, SMS 인증 선행 필수, 전체 이메일 반환, public) |
+| POST | /api/auth/find-password | 비밀번호 재설정 (email+name+phone 일치 + SMS 인증 선행 필수, newPassword 직접 설정, 204, public) |
 | POST | /api/sms/verification-code | SMS 인증코드 전송 |
 | POST | /api/sms/verification-code/confirm | SMS 인증코드 확인 |
 
@@ -155,16 +156,10 @@
 
 ## 아이디/비밀번호 찾기
 
+작업할 내용 없음 (이메일 찾기·비밀번호 재설정 모두 구현 완료 — 위 "완료된 API > 인증" 참조)
+
 <!-- 이메일 찾기(POST /api/auth/find-email)는 구현 완료되어 완료된 API 테이블로 이동 -->
-
-### POST /api/auth/find-password — 비밀번호 재설정 요청
-
-- **인증**: 불필요
-
-**Request Body**:
-```json
-{ "email": "string", "name": "string", "phone": "string" }
-```
+<!-- 비밀번호 재설정(POST /api/auth/find-password)은 구현 완료되어 완료된 API 테이블로 이동 (Request Body에 newPassword 추가된 계약으로 확정) -->
 
 ---
 
