@@ -24,6 +24,10 @@ class MemberCommandCoreRepository(
         memberCommandDao.cancelWithdrawal(memberId)
     }
 
+    override fun updatePassword(memberId: Long, encodedPassword: String) {
+        memberCommandDao.updatePassword(memberId, encodedPassword)
+    }
+
     override fun anonymizeAndSoftDelete(member: Member) {
         memberCommandDao.anonymizeAndSoftDelete(member.anonymize())
     }

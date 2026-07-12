@@ -41,6 +41,11 @@ class MemberQueryCoreRepository(
             ?: throw EntityNotFoundException(EntityType.MEMBER, "$name/${phoneNumber.masked()}")
     }
 
+    override fun findOne(email: Email, name: String, phoneNumber: PhoneNumber): Member {
+        return memberQueryDao.findOne(email.value, name, phoneNumber.fullNumber)?.toDomain()
+            ?: throw EntityNotFoundException(EntityType.MEMBER, "${email.value}/$name/${phoneNumber.masked()}")
+    }
+
     override fun findByNames(names: Set<String>): List<Member> {
         return memberQueryDao.findByNames(names)
             .map { it.toDomain() }

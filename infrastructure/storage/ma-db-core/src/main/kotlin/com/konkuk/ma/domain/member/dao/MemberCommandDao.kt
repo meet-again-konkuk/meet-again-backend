@@ -43,6 +43,13 @@ class MemberCommandDao {
         }
     }
 
+    fun updatePassword(memberId: Long, encodedPassword: String) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
+            it[password] = encodedPassword
+            it[lastModifiedBy] = memberId.toString()
+        }
+    }
+
     fun anonymizeAndSoftDelete(anonymized: Member) {
         MemberTable.update({ MemberTable.id eq anonymized.id }) {
             it[email] = anonymized.email.value
