@@ -6,7 +6,7 @@ import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import org.springframework.stereotype.Component
 
 @Component
-class FindEmailValidator(
+class SmsVerificationValidator(
     private val smsRepository: SmsRepository,
 ) {
     fun validate(phoneNumber: PhoneNumber) {

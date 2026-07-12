@@ -15,7 +15,7 @@ class SignUpValidatorTest : FunSpec({
 
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val smsRepository = mockk<SmsRepository>()
-    val signUpValidator = SignUpValidator(memberQueryRepository, smsRepository)
+    val signUpValidator = SignUpValidator(memberQueryRepository, SmsVerificationValidator(smsRepository))
 
     context("validate") {
         test("모든 검증이 통과하면 예외가 발생하지 않는다") {
