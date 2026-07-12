@@ -12,7 +12,7 @@
 | POST | /api/auth/login | 로그인 |
 | POST | /api/auth/refresh-token | 토큰 갱신 |
 | POST | /api/auth/logout | 로그아웃 (refresh token 삭제, 204) |
-| POST | /api/auth/find-email | 이메일 찾기 (name+phone, 마스킹된 이메일 반환, public) |
+| POST | /api/auth/find-email | 이메일 찾기 (name+phone, SMS 인증 선행 필수, 전체 이메일 반환, public) |
 | POST | /api/sms/verification-code | SMS 인증코드 전송 |
 | POST | /api/sms/verification-code/confirm | SMS 인증코드 확인 |
 

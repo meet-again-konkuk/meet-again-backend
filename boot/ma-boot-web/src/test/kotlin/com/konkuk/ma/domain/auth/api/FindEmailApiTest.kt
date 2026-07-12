@@ -5,6 +5,7 @@ import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.auth.api.request.FindEmailRequest
 import com.konkuk.ma.domain.auth.application.FindEmailService
 import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
 import com.konkuk.ma.extension.requestBody
@@ -17,7 +18,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
 @WebMvcTest(FindEmailApi::class)
 @BaseApiTest
@@ -33,7 +33,7 @@ class FindEmailApiTest(
 
         mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }
             .andExpect { status { isOk() } }
-            .andExpect { jsonPath("$.email").value("hol***@naver.com") }
+            .andExpect { jsonPath("$.email") { value("holeman@naver.com") } }
             .andDocument(
                 "auth-find-email",
                 requestBody(
@@ -41,7 +41,24 @@ class FindEmailApiTest(
                     phoneNumber("phone"),
                 ),
                 responseBody(
-                    email() means "마스킹된 이메일",
+                    email() means "조회된 이메일 (아이디)",
+                )
+            )
+    }
+
+    test("이메일 찾기 - SMS 인증이 완료되지 않으면 400을 반환한다") {
+        val request = FindEmailRequest(name = "홍길동", phone = "01012345678")
+        every {
+            findEmailService.findEmail(request.name, request.phone)
+        } throws SmsNotVerifiedException(request.phone)
+
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }
+            .andExpect { status { isBadRequest() } }
+            .andDocument(
+                "auth-find-email-sms-not-verified",
+                requestBody(
+                    name(),
+                    phoneNumber("phone"),
                 )
             )
     }

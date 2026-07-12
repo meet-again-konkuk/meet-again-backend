@@ -1,6 +1,7 @@
 package com.konkuk.ma.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.member.entity.table.MemberTable
 import com.konkuk.ma.extension.postJson
 import io.kotest.core.spec.style.FunSpec
@@ -19,16 +20,21 @@ import org.springframework.test.web.servlet.MockMvc
 /**
  * 이메일 찾기(POST /api/auth/find-email) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태/계약 검증).
  *
- * API → FindEmailService → MemberQueryRepository(findOne) → MemberQueryDao(findOne)
- * → MEMBERS 테이블을 관통하며 다음 확정 계약을 검증한다.
- *  - 정상: name+phone 이 일치하는 활성 회원 존재 → 200 + 마스킹된 이메일(`hol***@naver.com` 형식).
- *  - 탈퇴 유예(deleted=false, withdrawalRequestedAt≠null) 회원 → 200(복구 흐름 지원, 포함).
- *  - 미존재 / name 만 일치 / phone 만 일치 / 익명화(deleted=true) → 404(ENTITY_NOT_FOUND).
- *  - name/phone 형식 위반 → 400(INVALID_INPUT_VALUE, bean validation 이 서비스 호출 전 차단).
- *  - 인증 불필요(permitAll): Authorization 헤더 없이 호출 가능 — 정상 케이스가 이를 겸해 검증한다.
+ * API → FindEmailService → (SMS 인증 확인) + MemberQueryRepository(findOne) → MEMBERS 테이블을
+ * 관통하며 아래 확정 계약을 검증한다. (사용자 확정 계약, 2026-07-12)
  *
- * 마스킹 규칙(확정): local part 앞 3글자 유지 + `***` + `@도메인`. local part 가 3글자 이하이면 앞 1글자 + `***`.
- * 경계값의 상세 검증은 도메인 단위 테스트 EmailTest("masked" context)가 담당한다.
+ * 검증 순서 계약: ① bean validation(400) → ② SMS 인증(400) → ③ 회원 조회(404).
+ *  - ① 요청 name/phone 형식 위반 → 400(INVALID_INPUT_VALUE), SMS/조회 이전에 차단.
+ *  - ② find-email 호출 전 휴대폰 SMS 인증(confirmed)이 없으면 → 400(INVALID_INPUT_VALUE,
+ *       SmsNotVerifiedException). 회원 존재/미존재와 무관하게 조회 이전에 차단(② < ③).
+ *  - ③ SMS 인증 완료 후 name+phone 일치 활성 회원이 없으면 → 404(ENTITY_NOT_FOUND).
+ *  - 정상: SMS 인증 완료 + 일치 활성 회원 → 200 + **전체 이메일**(마스킹 없음 — 인증으로 휴대폰 점유가
+ *       증명되므로 전체 노출).
+ *  - 탈퇴 유예(deleted=false, withdrawalRequestedAt≠null) 회원 → 200(복구 흐름 지원, 포함).
+ *  - 익명화(deleted=true) 회원 → activeRows 필터로 제외되어 404.
+ *
+ * SMS 인증 완료 상태는 실제 /confirm 흐름 대신 SmsRepository.confirmVerificationCode(phone)로 셋업한다
+ * (테스트 셋업이므로 허용 — 서비스 모킹 아님). test 프로파일에서 embedded Redis 가 기동되어 실제 Redis 를 사용한다.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,6 +42,7 @@ import org.springframework.test.web.servlet.MockMvc
 class FindEmailIntegrationTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
+    private val smsRepository: SmsRepository,
 ) : FunSpec({
 
     var memberSeq = 0
@@ -87,7 +94,12 @@ class FindEmailIntegrationTest(
         }
     }
 
-    // 인증 없이(permitAll) find-email 를 호출한다. Authorization 헤더를 붙이지 않는다.
+    // 실제 /confirm 흐름을 대체하는 테스트 셋업 — 해당 phone 을 SMS 인증 완료(confirmed) 상태로 만든다.
+    // confirmed 는 Redis 에 phone 키(TTL 10분)로 남으므로, "미인증" 케이스는 어떤 테스트도 confirm 하지 않는
+    // 고유 phone(01044445555 / 01066667777)을 사용해 인증 상태 누수를 원천 차단한다.
+    fun confirmSms(phone: String) = smsRepository.confirmVerificationCode(phone)
+
+    // 인증 없이(permitAll) find-email 을 호출한다. (SMS 인증은 헤더가 아니라 본문 phone 의 confirmed 상태로 판정)
     fun findEmail(name: String, phone: String) =
         mockMvc.postJson("/api/auth/find-email") {
             content = mapper.writeValueAsString(mapOf("name" to name, "phone" to phone))
@@ -95,50 +107,38 @@ class FindEmailIntegrationTest(
 
     context("POST /api/auth/find-email") {
 
-        context("정상 조회 (200 + 마스킹된 이메일)") {
+        context("정상 조회 (SMS 인증 완료 → 200 + 전체 이메일)") {
 
-            test("이름과 전화번호가 일치하는 회원이 있으면 200과 마스킹된 이메일을 반환한다") {
-                // Given - 이름/전화번호가 일치하는 활성 회원 (로컬파트 7글자)
+            test("SMS 인증 완료 + 이름·전화번호가 일치하는 회원이 있으면 200과 마스킹되지 않은 전체 이메일을 반환한다") {
+                // Given - 일치하는 활성 회원 + 해당 phone SMS 인증 완료
                 val name = "김철수"
                 val phone = "01012345678"
-                insertMember(email = "holeman@naver.com", name = name, phoneNumber = phone)
-
-                // When - 인증 헤더 없이(permitAll) 조회
-                val result = findEmail(name = name, phone = phone)
-                    .andExpect { status { isOk() } }
-                    .andReturn()
-
-                // Then - 앞 3글자만 남고 나머지 마스킹, 도메인은 유지
-                val body = mapper.readTree(result.response.contentAsByteArray)
-                body.get("email").asText() shouldBe "hol***@naver.com"
-            }
-
-            test("로컬파트가 2글자인 이메일 회원도 200과 마스킹된 이메일을 반환한다") {
-                // Given - 로컬파트가 짧은(2글자) 이메일 → 앞 1글자만 유지되어야 함
-                val name = "박영희"
-                val phone = "01022223333"
-                insertMember(email = "ab@example.com", name = name, phoneNumber = phone)
+                val email = "holeman@naver.com"
+                insertMember(email = email, name = name, phoneNumber = phone)
+                confirmSms(phone)
 
                 // When
                 val result = findEmail(name = name, phone = phone)
                     .andExpect { status { isOk() } }
                     .andReturn()
 
-                // Then - 파이프라인이 raw 가 아니라 masked() 결과를 내려주는지 확인
+                // Then - 마스킹(hol***@...) 이 아니라 전체 이메일 그대로
                 val body = mapper.readTree(result.response.contentAsByteArray)
-                body.get("email").asText() shouldBe "a***@example.com"
+                body.get("email").asText() shouldBe email
             }
 
-            test("탈퇴 유예 중(deleted=false, withdrawalRequestedAt 존재)인 회원도 200과 마스킹된 이메일을 반환한다") {
-                // Given - 탈퇴 신청만 한 회원(activeRows 에 포함, 복구 흐름 지원)
+            test("SMS 인증 완료 + 탈퇴 유예 중(deleted=false, withdrawalRequestedAt 존재)인 회원도 200과 전체 이메일을 반환한다") {
+                // Given - 탈퇴 신청만 한 회원(activeRows 포함) + SMS 인증 완료
                 val name = "이몽룡"
                 val phone = "01033334444"
+                val email = "grace@example.com"
                 insertMember(
-                    email = "grace@example.com",
+                    email = email,
                     name = name,
                     phoneNumber = phone,
                     withdrawalRequestedAt = LocalDateTime.now(),
                 )
+                confirmSms(phone)
 
                 // When
                 val result = findEmail(name = name, phone = phone)
@@ -147,18 +147,47 @@ class FindEmailIntegrationTest(
 
                 // Then
                 val body = mapper.readTree(result.response.contentAsByteArray)
-                body.get("email").asText() shouldBe "gra***@example.com"
+                body.get("email").asText() shouldBe email
             }
         }
 
-        context("조회 실패 (404 ENTITY_NOT_FOUND)") {
+        context("SMS 미인증 (조회 이전에 400 INVALID_INPUT_VALUE)") {
 
-            test("이름과 전화번호 모두 일치하는 회원이 없으면 404를 반환한다") {
-                // Given - 일치하지 않는 회원만 존재
+            test("SMS 미인증이면 이름·전화번호가 일치하는 회원이 있어도 400을 반환한다") {
+                // Given - 일치 회원은 존재하지만 phone 은 인증하지 않음
+                val name = "박영희"
+                val phone = "01044445555"
+                insertMember(name = name, phoneNumber = phone)
+
+                // When & Then - 인증 게이트에서 400 (회원이 있어도 200 이 아님)
+                val result = findEmail(name = name, phone = phone)
+                    .andExpect { status { isBadRequest() } }
+                    .andReturn()
+
+                // Then - 에러 응답 body 형식(INVALID_INPUT_VALUE) 확정
+                val body = mapper.readTree(result.response.contentAsByteArray)
+                body.get("code").asText() shouldBe "INVALID_INPUT_VALUE"
+            }
+
+            test("SMS 미인증이면 회원이 존재하지 않아도 404가 아니라 400을 반환한다") {
+                // Given - 회원 없음 + 미인증(confirm 하지 않는 고유 phone). SMS 게이트(②)가 조회(③)보다 먼저 동작함을 검증
+                // When & Then
+                findEmail(name = "홍길동", phone = "01066667777")
+                    .andExpect { status { isBadRequest() } }
+            }
+        }
+
+        context("조회 실패 (SMS 인증 완료 후에도 404 ENTITY_NOT_FOUND)") {
+
+            test("SMS 인증 완료 + 이름과 전화번호 모두 일치하는 회원이 없으면 404를 반환한다") {
+                // Given - 일치하지 않는 회원만 존재 + 조회 phone 인증 완료
                 insertMember(name = "김철수", phoneNumber = "01012345678")
+                val name = "홍길동"
+                val phone = "01099998888"
+                confirmSms(phone)
 
                 // When & Then
-                val result = findEmail(name = "홍길동", phone = "01099998888")
+                val result = findEmail(name = name, phone = phone)
                     .andExpect { status { isNotFound() } }
                     .andReturn()
 
@@ -167,31 +196,35 @@ class FindEmailIntegrationTest(
                 body.get("code").asText() shouldBe "ENTITY_NOT_FOUND"
             }
 
-            test("이름은 일치하지만 전화번호가 다르면 404를 반환한다") {
+            test("SMS 인증 완료 + 이름은 일치하지만 전화번호가 다르면 404를 반환한다") {
                 // Given
                 val name = "김철수"
                 insertMember(name = name, phoneNumber = "01012345678")
+                val phone = "01088887777"
+                confirmSms(phone)
 
                 // When & Then - 이름만 일치
-                findEmail(name = name, phone = "01099998888")
+                findEmail(name = name, phone = phone)
                     .andExpect { status { isNotFound() } }
             }
 
-            test("전화번호는 일치하지만 이름이 다르면 404를 반환한다") {
+            test("SMS 인증 완료 + 전화번호는 일치하지만 이름이 다르면 404를 반환한다") {
                 // Given
                 val phone = "01012345678"
                 insertMember(name = "김철수", phoneNumber = phone)
+                confirmSms(phone)
 
                 // When & Then - 전화번호만 일치
                 findEmail(name = "이몽룡", phone = phone)
                     .andExpect { status { isNotFound() } }
             }
 
-            test("익명화(deleted=true)된 회원의 원래 이름과 전화번호로 조회하면 404를 반환한다") {
-                // Given - soft delete 된 회원 (activeRows 가 deleted=true 를 제외)
+            test("SMS 인증 완료 + 익명화(deleted=true)된 회원의 원래 이름과 전화번호로 조회하면 404를 반환한다") {
+                // Given - soft delete 된 회원 (activeRows 가 deleted=true 를 제외) + 조회 phone 인증 완료
                 val name = "최익명"
                 val phone = "01055556666"
                 insertMember(name = name, phoneNumber = phone, deleted = true)
+                confirmSms(phone)
 
                 // When & Then - name/phone 이 그대로 일치해도 활성 필터에서 제외됨
                 findEmail(name = name, phone = phone)
@@ -199,10 +232,10 @@ class FindEmailIntegrationTest(
             }
         }
 
-        context("요청 형식 검증 (400 INVALID_INPUT_VALUE)") {
+        context("요청 형식 검증 (bean validation 최우선 → 400 INVALID_INPUT_VALUE)") {
 
             test("이름이 빈 값이면 400을 반환한다") {
-                // When & Then - @NotBlank 위반, 서비스 호출 전 차단
+                // When & Then - @NotBlank 위반, SMS/조회 이전에 차단
                 val result = findEmail(name = "", phone = "01012345678")
                     .andExpect { status { isBadRequest() } }
                     .andReturn()

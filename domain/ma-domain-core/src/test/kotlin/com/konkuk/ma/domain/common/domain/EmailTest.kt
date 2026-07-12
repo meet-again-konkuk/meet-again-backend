@@ -76,31 +76,4 @@ class EmailTest : FunSpec({
             Email.withdrawn(42L) shouldBe Email("withdrawn_42@deleted.local")
         }
     }
-
-    context("masked") {
-
-        test("로컬파트가 4글자 이상이면 앞 3글자만 남기고 나머지를 마스킹한다") {
-            Email("holeman@naver.com").masked() shouldBe "hol***@naver.com"
-        }
-
-        test("로컬파트가 정확히 4글자면 앞 3글자를 남긴다") {
-            Email("hole@naver.com").masked() shouldBe "hol***@naver.com"
-        }
-
-        test("로컬파트가 정확히 3글자면 앞 1글자만 남긴다") {
-            Email("abc@naver.com").masked() shouldBe "a***@naver.com"
-        }
-
-        test("로컬파트가 2글자면 앞 1글자만 남긴다") {
-            Email("ab@x.com").masked() shouldBe "a***@x.com"
-        }
-
-        test("로컬파트가 1글자면 앞 1글자만 남긴다") {
-            Email("a@x.com").masked() shouldBe "a***@x.com"
-        }
-
-        test("도메인은 마스킹하지 않고 서브도메인까지 그대로 유지한다") {
-            Email("holeman@mail.example.com").masked() shouldBe "hol***@mail.example.com"
-        }
-    }
 })

@@ -6,6 +6,6 @@ class FindEmailResponse(
     val email: String
 ) {
     constructor(email: Email) : this(
-        email = email.masked()
+        email = email.value
     )
 }
