@@ -5,3 +5,7 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 20MB
+  jackson:
+    deserialization:
+      # 원시 타입 필드에 null이 오면 false/0으로 조용히 강제 변환되는 것을 차단 (역직렬화 실패 → 400)
+      fail-on-null-for-primitives: true
