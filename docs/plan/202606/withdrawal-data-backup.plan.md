@@ -7,7 +7,7 @@
 
 ## ✅ 구현 완료 (2026-06-13, git 미커밋)
 
-Local 어댑터까지 구현 완료. 전 모듈 컴파일·회귀 테스트 통과. **S3 어댑터만 후속 미구현.**
+Local 어댑터까지 구현 완료. 전 모듈 컴파일·회귀 테스트 통과. ~~**S3 어댑터만 후속 미구현.**~~ → S3 어댑터 2026-07-17 구현 완료 (`docs/plan/202607/withdrawal-backup-s3-adapter.plan.md`).
 - 마스킹 확정: `password` 제외, `phoneNumber`→`PhoneNumber.masked()`(`010-****-1234`), name/email/birthDate 보존. `PhoneNumberTest`에 masked 테스트 추가.
 - 조회 포트 보강: point-history/post/comment/post-like/comment-like/xroom에 `find(email)` + DAO/repo. support는 읽기 스택 신설(`Inquiry`/`InquiryEntity`/`InquiryQueryDao`/`InquiryQueryRepository`/`InquiryQueryCoreRepository`). `XroomEntity.from(row)` 신설.
 - 백업 컴포넌트: `MemberWithdrawalBackup`(스냅샷)·`MemberBackupView`(마스킹뷰)·`MemberBackupStorage`/`MemberBackupSerializer`(포트, domain) + `MemberWithdrawalBackupCollector`·`MemberBackupArchiver`(domain @Component) + `LocalMemberBackupStorage`/`JacksonMemberBackupSerializer`(ma-file-storage).
