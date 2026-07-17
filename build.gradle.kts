@@ -18,6 +18,11 @@ subprojects {
 	apply(plugin = "kotlin-spring")
 	apply(plugin = "kotlin-kapt")
 
+	// AWS SDK apache5-client(2.46.x)는 httpclient5 5.4+/httpcore5 5.4+를 요구 —
+	// Spring Boot BOM이 5.3.1/5.2.5로 내리면 S3Client 생성이 NoClassDefFoundError로 실패한다
+	ext["httpclient5.version"] = "5.6.1"
+	ext["httpcore5.version"] = "5.4.3"
+
 	if (project.name != "ma-config-logging") {
 		dependencies {
 			implementation(project(":config:ma-config-logging"))
