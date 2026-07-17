@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -131,7 +132,7 @@ class XroomIntegrationTest(
         registerId: Long,
         targetInfoId: Long,
         targetId: Long,
-        claimed: Boolean = true,
+        claimStatus: ClaimStatus = ClaimStatus.CLAIMED,
     ) {
         transaction {
             MatchingResultTable.insert {
@@ -148,7 +149,7 @@ class XroomIntegrationTest(
                 it[showingExpiryDate] = LocalDateTime.now().plusDays(7)
                 it[matchingExpiryDate] = LocalDate.now().plusDays(30)
                 it[excluded] = false
-                it[MatchingResultTable.claimed] = claimed
+                it[MatchingResultTable.claimStatus] = claimStatus
             }
         }
     }
@@ -427,7 +428,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val accessToken = login(recipientEmail, recipientPassword)
@@ -461,7 +462,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
 
@@ -480,6 +481,34 @@ class XroomIntegrationTest(
             // Then
             val rooms = mapper.readTree(result.response.contentAsByteArray).get("rooms")
             rooms.get(0).get("memoryCount").asInt() shouldBe memoryCount
+        }
+
+        test("수신자가 claim을 거절(REJECTED)하면 해당 방이 수신함에서 제외된다") {
+            // Given
+            val ownerId = insertMember(email = "xroom-rejected-received-owner@example.com")
+            val recipientEmail = "xroom-rejected-received-recipient@example.com"
+            val recipientPassword = "password123"
+            val recipientId = insertMember(email = recipientEmail, rawPassword = recipientPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            insertMatchingResult(
+                registerId = ownerId,
+                targetInfoId = targetInfoId,
+                targetId = recipientId,
+                claimStatus = ClaimStatus.REJECTED,
+            )
+            insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(recipientEmail, recipientPassword)
+
+            // When
+            val result = mockMvc.getJson("/api/xrooms/received") {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isOk() } }
+                .andReturn()
+
+            // Then - 거절한 매칭의 방은 수신함에서 사라진다 (거절 = 연결 해제)
+            val rooms = mapper.readTree(result.response.contentAsByteArray).get("rooms")
+            rooms.size() shouldBe 0
         }
 
         test("수신한 방이 없으면 빈 목록을 반환한다") {
@@ -549,7 +578,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val accessToken = login(recipientEmail, recipientPassword)
@@ -561,6 +590,31 @@ class XroomIntegrationTest(
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
+        }
+
+        test("수신자가 거절(REJECTED)한 방의 상세에 접근하면 403이 반환된다") {
+            // Given
+            val ownerId = insertMember(email = "xroom-rejected-detail-owner@example.com")
+            val recipientEmail = "xroom-rejected-detail-recipient@example.com"
+            val recipientPassword = "password123"
+            val recipientId = insertMember(email = recipientEmail, rawPassword = recipientPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            insertMatchingResult(
+                registerId = ownerId,
+                targetInfoId = targetInfoId,
+                targetId = recipientId,
+                claimStatus = ClaimStatus.REJECTED,
+            )
+            val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
+            val accessToken = login(recipientEmail, recipientPassword)
+
+            val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, xroomId)
+
+            // When & Then - 거절한 수신자는 더 이상 방 상세에 접근할 수 없다
+            mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId) {
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isForbidden() } }
         }
 
         test("작성자도 수신자도 아니면 403이 반환된다") {
@@ -684,7 +738,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val accessToken = login(recipientEmail, recipientPassword)
@@ -820,7 +874,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val memoryId = insertMemory(xroomId)
@@ -1003,7 +1057,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val memoryId = insertMemory(xroomId)
@@ -1172,7 +1226,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val memoryId = insertMemory(xroomId)
@@ -1273,7 +1327,7 @@ class XroomIntegrationTest(
                 registerId = ownerId,
                 targetInfoId = targetInfoId,
                 targetId = recipientId,
-                claimed = true,
+                claimStatus = ClaimStatus.CLAIMED,
             )
             val xroomId = insertXroom(ownerId = ownerId, targetInfoId = targetInfoId)
             val memoryId = insertMemory(xroomId)

@@ -123,6 +123,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/claim-matching-result.html[매칭 결과 Claim API,window=_blank]
 
+[[matching-result-reject]]
+=== 매칭 결과 Claim 거절
+
+* link:matching/reject-matching-result.html[매칭 결과 Claim 거절 API,window=_blank]
+
 [[claimer]]
 == Claimer (X 요청자)
 

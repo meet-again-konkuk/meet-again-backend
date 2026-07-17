@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.entity
 
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -20,7 +21,7 @@ class MatchingResultEntity(
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
     val excluded: Boolean,
-    val claimed: Boolean,
+    val claimStatus: ClaimStatus,
 ) {
     fun toDomain(): MatchingResult {
         return MatchingResult(
@@ -37,7 +38,7 @@ class MatchingResultEntity(
             showingExpiryDate = showingExpiryDate,
             matchingExpiryDate = matchingExpiryDate,
             excluded = excluded,
-            claimed = claimed,
+            claimStatus = claimStatus,
         )
     }
 
@@ -57,7 +58,7 @@ class MatchingResultEntity(
                 showingExpiryDate = row[MatchingResultTable.showingExpiryDate],
                 matchingExpiryDate = row[MatchingResultTable.matchingExpiryDate],
                 excluded = row[MatchingResultTable.excluded],
-                claimed = row[MatchingResultTable.claimed],
+                claimStatus = row[MatchingResultTable.claimStatus],
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.xroom.domain
 
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
@@ -82,7 +83,7 @@ class XroomValidatorTest : FunSpec({
                 MatchingResultFixture.create(
                     targetId = 2L,
                     targetInfoId = 100L,
-                    claimed = true,
+                    claimStatus = ClaimStatus.CLAIMED,
                     showingExpiryDate = LocalDateTime.now().plusDays(29),
                 )
             )
@@ -105,7 +106,7 @@ class XroomValidatorTest : FunSpec({
                 MatchingResultFixture.create(
                     targetId = 2L,
                     targetInfoId = 999L,
-                    claimed = true,
+                    claimStatus = ClaimStatus.CLAIMED,
                     showingExpiryDate = LocalDateTime.now().plusDays(29),
                 )
             )
@@ -121,7 +122,7 @@ class XroomValidatorTest : FunSpec({
                 MatchingResultFixture.create(
                     targetId = 2L,
                     targetInfoId = 100L,
-                    claimed = true,
+                    claimStatus = ClaimStatus.CLAIMED,
                     showingExpiryDate = LocalDateTime.now().plusDays(31),
                 )
             )

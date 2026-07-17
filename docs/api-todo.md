@@ -43,6 +43,7 @@
 | PATCH | /api/matching-results/{id}/exclude | 매칭 상대 제외(차단) |
 | PATCH | /api/matching-results/{id}/include | 매칭 상대 제외 해제 |
 | PATCH | /api/matching-results/{id}/claim | 매칭 결과 Claim |
+| PATCH | /api/matching-results/{id}/reject | 나를 claim한 상대 거절하기 (수신자, CLAIMED→REJECTED) |
 | GET | /api/claimers/me | 나를 Claim한 요청자 목록 조회 |
 
 ### 커뮤니티
@@ -104,13 +105,9 @@
 
 ## 매칭
 
-### X 거절하기
+작업할 내용 없음 (거절하기 구현 완료 — ClaimStatus enum 전환, 거절 시 X룸 연결도 해제. 받아주기(ACCEPTED)는 미도입, 필요 시 `docs/plan/202607/matching-claim-reject.plan.md` §14 참조)
 
-- **인증**: 필요
-
-**참고사항**:
-- 받아주기(claim)는 구현 완료 (`PATCH /api/matching-results/{id}/claim`) — 거절만 남음
-- 착수 전 스펙 결정 필요: 수신자가 claim을 명시적으로 거부하는 별도 상태인지, 등록자 쪽 exclude(제외)로 충분한지 프론트와 확인
+<!-- X 거절하기(PATCH /api/matching-results/{id}/reject)는 구현 완료되어 완료된 API 테이블로 이동 -->
 
 ---
 

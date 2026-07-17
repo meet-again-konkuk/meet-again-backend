@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -221,25 +222,43 @@ class MatchingResultQueryDaoTest(
 
         context("findClaimedByTarget") {
 
-            test("targetId로 claimed=true인 매칭 결과를 조회한다") {
-                insertMatchingResult(claimed = true)
+            test("targetId로 CLAIMED 상태인 매칭 결과를 조회한다") {
+                insertMatchingResult(claimStatus = ClaimStatus.CLAIMED)
 
                 val result = matchingResultQueryDao.findClaimedByTarget(targetId)
 
                 result shouldHaveSize 1
-                result[0].claimed shouldBe true
+                result[0].claimStatus shouldBe ClaimStatus.CLAIMED
             }
 
-            test("claimed=false인 결과는 조회되지 않는다") {
-                insertMatchingResult(claimed = false)
+            test("NONE 상태인 결과는 조회되지 않는다") {
+                insertMatchingResult(claimStatus = ClaimStatus.NONE)
 
                 val result = matchingResultQueryDao.findClaimedByTarget(targetId)
 
                 result shouldHaveSize 0
             }
 
+            test("REJECTED 상태인 결과는 조회되지 않는다") {
+                insertMatchingResult(claimStatus = ClaimStatus.REJECTED)
+
+                val result = matchingResultQueryDao.findClaimedByTarget(targetId)
+
+                result shouldHaveSize 0
+            }
+
+            test("CLAIMED와 REJECTED가 섞여 있으면 CLAIMED만 조회한다") {
+                insertMatchingResult(claimStatus = ClaimStatus.CLAIMED)
+                insertMatchingResult(claimStatus = ClaimStatus.REJECTED)
+
+                val result = matchingResultQueryDao.findClaimedByTarget(targetId)
+
+                result shouldHaveSize 1
+                result[0].claimStatus shouldBe ClaimStatus.CLAIMED
+            }
+
             test("다른 회원이 target인 결과는 조회되지 않는다") {
-                insertMatchingResult(claimed = true)
+                insertMatchingResult(claimStatus = ClaimStatus.CLAIMED)
 
                 val result = matchingResultQueryDao.findClaimedByTarget(9999L)
 
@@ -275,7 +294,7 @@ class MatchingResultQueryDaoTest(
 
     private fun insertMatchingResult(
         excluded: Boolean = false,
-        claimed: Boolean = false,
+        claimStatus: ClaimStatus = ClaimStatus.NONE,
         registerId: Long = this.registerId,
         targetId: Long = this.targetId,
     ) {
@@ -293,7 +312,7 @@ class MatchingResultQueryDaoTest(
             it[showingExpiryDate] = LocalDateTime.now().plusDays(30)
             it[matchingExpiryDate] = LocalDate.now().plusDays(210)
             it[MatchingResultTable.excluded] = excluded
-            it[MatchingResultTable.claimed] = claimed
+            it[MatchingResultTable.claimStatus] = claimStatus
         }
     }
 }

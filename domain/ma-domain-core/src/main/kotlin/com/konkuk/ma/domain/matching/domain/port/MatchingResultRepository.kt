@@ -12,7 +12,7 @@ interface MatchingResultRepository {
     fun find(memberId: Long, excluded: Boolean = false): List<MatchingResult>
     fun findOne(matchingResultId: Long): MatchingResult
     fun updateExcluded(matchingResult: MatchingResult)
-    fun updateClaimed(matchingResult: MatchingResult)
+    fun updateClaimStatus(matchingResult: MatchingResult)
     fun findClaimedByTarget(memberId: Long): List<MatchingResult>
     fun exists(targetInfoId: Long): Boolean
     fun delete(targetInfoId: Long, memberId: Long)

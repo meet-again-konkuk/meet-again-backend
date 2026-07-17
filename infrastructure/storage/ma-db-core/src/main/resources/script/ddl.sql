@@ -108,7 +108,7 @@ CREATE TABLE MATCHING_RESULTS
     SHOWING_EXPIRY_DATE   DATETIME     NOT NULL,
     MATCHING_EXPIRY_DATE  DATE         NOT NULL,
     EXCLUDED              BOOLEAN      DEFAULT FALSE,
-    CLAIMED               BOOLEAN      DEFAULT FALSE,
+    CLAIM_STATUS          VARCHAR(20)  NOT NULL DEFAULT 'NONE',
 
     -- BaseTable 공통 컬럼들
     CREATED_DATE          DATETIME     DEFAULT CURRENT_TIMESTAMP,
@@ -122,7 +122,7 @@ CREATE TABLE MATCHING_RESULTS
     -- 인덱스
     INDEX idx_matching_register_id (REGISTER_ID),
     INDEX idx_matching_target_info_id (TARGET_INFO_ID),
-    INDEX idx_matching_target_id (TARGET_ID)
+    INDEX idx_matching_target_id_claim_status (TARGET_ID, CLAIM_STATUS)
 );
 
 -- MEMBER PHOTOS

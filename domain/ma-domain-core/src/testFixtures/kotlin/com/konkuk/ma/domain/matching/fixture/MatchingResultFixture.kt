@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.fixture
 
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import java.time.LocalDate
@@ -20,7 +21,7 @@ object MatchingResultFixture {
         showingExpiryDate: LocalDateTime = LocalDateTime.now().plusDays(30),
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
         excluded: Boolean = false,
-        claimed: Boolean = false,
+        claimStatus: ClaimStatus = ClaimStatus.NONE,
     ): MatchingResult {
         return MatchingResult(
             id = id,
@@ -36,7 +37,7 @@ object MatchingResultFixture {
             showingExpiryDate = showingExpiryDate,
             matchingExpiryDate = matchingExpiryDate,
             excluded = excluded,
-            claimed = claimed,
+            claimStatus = claimStatus,
         )
     }
 }
