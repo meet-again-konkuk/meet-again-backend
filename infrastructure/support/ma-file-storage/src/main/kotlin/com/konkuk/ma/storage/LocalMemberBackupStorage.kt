@@ -4,9 +4,11 @@ import com.konkuk.ma.domain.withdrawal.domain.port.MemberBackupStorage
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnProperty(name = ["backup.storage.mode"], havingValue = "local", matchIfMissing = true)
 class LocalMemberBackupStorage(
     @Value("\${backup.local.base-path:backups}")
     private val basePath: String,
