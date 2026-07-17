@@ -70,6 +70,16 @@
 | POST | /api/community/comments/{commentId}/author/block | 댓글 작성자 차단 (REQ-014) |
 | GET | /api/community/blocks | 차단 목록 조회 (REQ-014) |
 | DELETE | /api/community/blocks/{blockId} | 차단 해제 (REQ-014) |
+| PATCH | /api/community/posts/{postId}/comment-notification | 게시글 댓글 알림 on/off (기본 on, opt-out) |
+
+### 알림
+
+| Method | Endpoint | 용도 |
+|--------|----------|------|
+| GET | /api/notifications | 알림 목록 조회 (커서 페이징, actor 닉네임 포함) |
+| GET | /api/notifications/unread-count | 안읽음 알림 카운트 |
+| PATCH | /api/notifications/{notificationId}/read | 알림 단건 읽음 처리 |
+| PATCH | /api/notifications/read-all | 알림 전체 읽음 처리 |
 
 ### 고객지원
 
@@ -113,7 +123,9 @@
 
 ## 커뮤니티
 
-### 게시글에 댓글 알림 설정
+작업할 내용 없음 (댓글 인앱 알림 구현 완료 — 게시글별 opt-out 설정 + 댓글/대댓글 알림 생성 + 목록/읽음 API. 푸시(FCM)는 후속, `docs/plan/202607/comment-notification.plan.md` §16 참조)
+
+<!-- 게시글에 댓글 알림 설정은 구현 완료되어 완료된 API 테이블(커뮤니티·알림)로 이동 -->
 
 ---
 

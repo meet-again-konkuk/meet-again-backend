@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.community.domain.CommentNotificationRegistrar
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
@@ -23,10 +24,12 @@ class CommentCommandServiceTest : FunSpec({
     val commentCommandRepository = mockk<CommentCommandRepository>()
     val commentQueryRepository = mockk<CommentQueryRepository>()
     val commentValidator = mockk<CommentValidator>()
+    val commentNotificationRegistrar = mockk<CommentNotificationRegistrar>(relaxUnitFun = true)
     val service = CommentCommandService(
         commentCommandRepository,
         commentQueryRepository,
         commentValidator,
+        commentNotificationRegistrar,
     )
 
     beforeEach {
@@ -50,6 +53,21 @@ class CommentCommandServiceTest : FunSpec({
             result shouldBe expectedCommentId
             verify { commentValidator.validate(newComment) }
             verify { commentCommandRepository.save(newComment) }
+        }
+
+        test("댓글을 저장한 뒤 생성된 ID로 알림 등록을 호출한다") {
+            // Given
+            val newComment = NewCommentFixture.create()
+            val expectedCommentId = 1L
+
+            every { commentValidator.validate(newComment) } just runs
+            every { commentCommandRepository.save(any()) } returns expectedCommentId
+
+            // When
+            service.create(newComment)
+
+            // Then
+            verify { commentNotificationRegistrar.register(newComment, expectedCommentId) }
         }
 
         test("검증 실패 시 예외가 전파된다") {

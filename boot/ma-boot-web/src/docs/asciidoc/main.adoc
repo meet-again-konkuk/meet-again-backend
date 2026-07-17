@@ -213,6 +213,36 @@ Meet Again 서비스 Backend API 문서
 
 * link:community/block.html[커뮤니티 차단 API,window=_blank]
 
+[[community-comment-notification-setting]]
+=== 게시글 댓글 알림 설정
+
+* link:community/set-comment-notification.html[게시글 댓글 알림 설정 API,window=_blank]
+
+[[notification]]
+== 알림
+
+인앱 알림 관련 API 입니다.
+
+[[notification-find]]
+=== 알림 목록 조회
+
+* link:notification/find-notifications.html[알림 목록 조회 API,window=_blank]
+
+[[notification-unread-count]]
+=== 안읽음 알림 카운트
+
+* link:notification/unread-count.html[안읽음 알림 카운트 API,window=_blank]
+
+[[notification-read]]
+=== 알림 읽음 처리
+
+* link:notification/read-notification.html[알림 읽음 처리 API,window=_blank]
+
+[[notification-read-all]]
+=== 알림 전체 읽음 처리
+
+* link:notification/read-all-notifications.html[알림 전체 읽음 처리 API,window=_blank]
+
 [[point]]
 == 포인트
 

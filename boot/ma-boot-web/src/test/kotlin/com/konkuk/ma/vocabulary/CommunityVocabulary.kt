@@ -339,3 +339,8 @@ fun blocksBlockedAt(fieldName: String = "blocks[].blockedAt") =
 
 fun blockIdPath(fieldName: String = "blockId") =
     fieldName requestParam "차단 ID"
+
+// --- 게시글 댓글 알림 설정 요청 필드 ---
+
+fun commentNotificationEnabled(fieldName: String = "enabled") =
+    fieldName responseType BOOLEAN means "댓글 알림 수신 여부 (true: 알림 on, false: 알림 off)" example "true"

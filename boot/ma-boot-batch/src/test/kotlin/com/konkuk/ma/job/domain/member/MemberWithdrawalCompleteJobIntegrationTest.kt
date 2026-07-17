@@ -2,10 +2,12 @@ package com.konkuk.ma.job.domain.member
 
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
+import com.konkuk.ma.domain.community.entity.table.CommentNotificationSettingTable
 import com.konkuk.ma.domain.community.entity.table.CommentTable
 import com.konkuk.ma.domain.community.entity.table.PostLikeTable
 import com.konkuk.ma.domain.community.entity.table.PostTable
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
+import com.konkuk.ma.domain.notification.entity.table.NotificationTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -60,6 +62,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         MemberPointTable, PointHistoryTable, PostTable, CommentTable,
         PostLikeTable, CommentLikeTable, InquiryTable, XroomTable, MemberPhotoTable,
         MemoryTable, MemoryEmotionTagTable, MemoryMediaTable,
+        NotificationTable, CommentNotificationSettingTable,
     )
 
     // inputDate(2026-06-17) - 유예 7일 → cutoff 2026-06-10. 그 이전이면 만료.
@@ -179,8 +182,9 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         }
     }
 
-    test("하드 삭제 대상(좋아요·리프레시토큰)을 물리 삭제한다") {
+    test("하드 삭제 대상(좋아요·리프레시토큰·알림·알림설정)을 물리 삭제한다") {
         val memberId = insertExpiredMember()
+        val otherMemberId = 999L
         transaction {
             RefreshTokenTable.insert {
                 it[RefreshTokenTable.memberId] = memberId
@@ -189,6 +193,24 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             }
             PostLikeTable.insert { it[postId] = 1L; it[PostLikeTable.memberId] = memberId }
             CommentLikeTable.insert { it[commentId] = 1L; it[CommentLikeTable.memberId] = memberId }
+            NotificationTable.insert {
+                it[recipientId] = memberId
+                it[type] = "COMMENT_ON_POST"
+                it[actorId] = otherMemberId
+                it[postId] = 1L
+                it[commentId] = 1L
+            }
+            NotificationTable.insert {
+                it[recipientId] = otherMemberId
+                it[type] = "COMMENT_ON_POST"
+                it[actorId] = memberId
+                it[postId] = 2L
+                it[commentId] = 2L
+            }
+            CommentNotificationSettingTable.insert {
+                it[CommentNotificationSettingTable.memberId] = memberId
+                it[postId] = 1L
+            }
         }
 
         runCleanupJob(3L) shouldBe BatchStatus.COMPLETED
@@ -197,6 +219,10 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             RefreshTokenTable.selectAll().where { RefreshTokenTable.memberId eq memberId }.count() shouldBe 0L
             PostLikeTable.selectAll().where { PostLikeTable.memberId eq memberId }.count() shouldBe 0L
             CommentLikeTable.selectAll().where { CommentLikeTable.memberId eq memberId }.count() shouldBe 0L
+            NotificationTable.selectAll().where { NotificationTable.recipientId eq memberId }.count() shouldBe 0L
+            NotificationTable.selectAll().where { NotificationTable.recipientId eq otherMemberId }.count() shouldBe 1L
+            CommentNotificationSettingTable.selectAll()
+                .where { CommentNotificationSettingTable.memberId eq memberId }.count() shouldBe 0L
         }
     }
 

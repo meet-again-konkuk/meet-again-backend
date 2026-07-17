@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 전체 알림 읽음 처리 API
+
+== 전체 알림 읽음 처리
+
+내 모든 알림을 읽음 상태로 변경합니다.
+
+=== 요청
+
+include::{snippets}/notification/read-all-notifications/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/notification/read-all-notifications/http-response.adoc[]

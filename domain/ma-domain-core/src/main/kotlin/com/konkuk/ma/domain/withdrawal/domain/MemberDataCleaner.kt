@@ -2,12 +2,14 @@ package com.konkuk.ma.domain.withdrawal.domain
 
 import com.konkuk.ma.domain.auth.domain.port.RefreshTokenRepository
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
+import com.konkuk.ma.domain.community.domain.port.CommentNotificationSettingRepository
 import com.konkuk.ma.domain.community.domain.port.PostLikeRepository
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoCommandRepository
 import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.photo.MemberPhotoCleaner
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
+import com.konkuk.ma.domain.notification.domain.port.NotificationCommandRepository
 import com.konkuk.ma.domain.point.domain.port.MemberPointRepository
 import com.konkuk.ma.domain.xroom.domain.XroomCleaner
 import org.springframework.stereotype.Component
@@ -21,6 +23,8 @@ class MemberDataCleaner(
     private val memberPointRepository: MemberPointRepository,
     private val postLikeRepository: PostLikeRepository,
     private val commentLikeRepository: CommentLikeRepository,
+    private val notificationCommandRepository: NotificationCommandRepository,
+    private val commentNotificationSettingRepository: CommentNotificationSettingRepository,
     private val xroomCleaner: XroomCleaner,
     private val memberPhotoCleaner: MemberPhotoCleaner
 ) {
@@ -30,6 +34,7 @@ class MemberDataCleaner(
         cleanMatching(member)
         cleanPoint(member)
         cleanCommunity(member)
+        cleanNotification(member)
         cleanXroom(member)
         cleanPhoto(member)
         anonymizeMember(member)
@@ -55,6 +60,11 @@ class MemberDataCleaner(
         // 글·댓글은 authorId(비PII) 참조라 익명화 불필요(소프트삭제 회원은 조회 시 "알 수 없음"); 좋아요만 삭제.
         postLikeRepository.deleteByMember(member.id)
         commentLikeRepository.deleteByMember(member.id)
+    }
+
+    private fun cleanNotification(member: Member) {
+        notificationCommandRepository.deleteByMember(member.id)
+        commentNotificationSettingRepository.deleteByMember(member.id)
     }
 
     private fun cleanXroom(member: Member) {
