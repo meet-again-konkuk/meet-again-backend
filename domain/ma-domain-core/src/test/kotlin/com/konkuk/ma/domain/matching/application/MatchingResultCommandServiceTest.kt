@@ -1,10 +1,12 @@
 package com.konkuk.ma.domain.matching.application
 
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
+import com.konkuk.ma.exception.InvalidStateException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -99,6 +101,78 @@ class MatchingResultCommandServiceTest : FunSpec({
             // When & Then
             shouldThrow<AccessDeniedException> {
                 service.include(matchingResultId, otherId)
+            }
+        }
+    }
+
+    context("reject") {
+
+        test("수신자가 CLAIMED 매칭을 거절하면 REJECTED로 변경하고 저장한다") {
+            // Given
+            val matchingResultId = 1L
+            val targetMemberId = 2L
+            val matchingResult = MatchingResultFixture.create(
+                targetId = targetMemberId,
+                claimStatus = ClaimStatus.CLAIMED,
+            )
+
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
+
+            // When
+            service.reject(matchingResultId, targetMemberId)
+
+            // Then
+            matchingResult.claimStatus shouldBe ClaimStatus.REJECTED
+            verify { matchingResultRepository.updateClaimStatus(matchingResult) }
+        }
+
+        test("수신자가 아니면 AccessDeniedException이 전파되고 저장하지 않는다") {
+            // Given
+            val matchingResultId = 1L
+            val targetMemberId = 2L
+            val otherMemberId = 3L
+            val matchingResult = MatchingResultFixture.create(
+                targetId = targetMemberId,
+                claimStatus = ClaimStatus.CLAIMED,
+            )
+
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
+
+            // When & Then
+            shouldThrow<AccessDeniedException> {
+                service.reject(matchingResultId, otherMemberId)
+            }
+            verify(exactly = 0) { matchingResultRepository.updateClaimStatus(any()) }
+        }
+
+        test("CLAIMED 상태가 아니면 InvalidStateException이 전파되고 저장하지 않는다") {
+            // Given
+            val matchingResultId = 1L
+            val targetMemberId = 2L
+            val matchingResult = MatchingResultFixture.create(
+                targetId = targetMemberId,
+                claimStatus = ClaimStatus.NONE,
+            )
+
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
+
+            // When & Then
+            shouldThrow<InvalidStateException> {
+                service.reject(matchingResultId, targetMemberId)
+            }
+            verify(exactly = 0) { matchingResultRepository.updateClaimStatus(any()) }
+        }
+
+        test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
+            // Given
+            val nonExistentId = 999L
+            val targetMemberId = 2L
+
+            every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
+
+            // When & Then
+            shouldThrow<EntityNotFoundException> {
+                service.reject(nonExistentId, targetMemberId)
             }
         }
     }

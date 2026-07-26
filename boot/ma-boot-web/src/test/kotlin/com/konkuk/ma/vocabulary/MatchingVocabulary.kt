@@ -51,7 +51,7 @@ fun matchRate(fieldName: String = "matchingResults[].matchRate") =
     fieldName responseType NUMBER means "매칭률 (%)" example "75"
 
 fun claimed(fieldName: String = "matchingResults[].claimed") =
-    fieldName responseType BOOLEAN means "claim 여부" example "false"
+    fieldName responseType BOOLEAN means "claim 진행 여부 (거절된 경우 포함, NONE이 아니면 true)" example "false"
 
 // --- 매칭 결과 상세 고유 필드 ---
 

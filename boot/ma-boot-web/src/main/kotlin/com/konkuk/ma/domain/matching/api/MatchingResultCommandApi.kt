@@ -38,4 +38,12 @@ class MatchingResultCommandApi(
     ) {
         matchingResultCommandService.claim(matchingResultId, memberInfo.id)
     }
+
+    @PatchMapping("/{matchingResultId}/reject")
+    fun reject(
+        @LoginMember memberInfo: MemberInfo,
+        @PathVariable @DecryptId(ObfuscationType.MATCHING_RESULT) matchingResultId: Long,
+    ) {
+        matchingResultCommandService.reject(matchingResultId, memberInfo.id)
+    }
 }

@@ -28,7 +28,7 @@ class MatchingResultResponse(
                 remainingDays = result.matchingResult.getRemainingDays(),
                 matchRate = result.matchingResult.matchRate,
                 isWithdrawn = result.isWithdrawn,
-                claimed = result.matchingResult.claimed,
+                claimed = result.matchingResult.isClaimed(),
             )
         }
     }

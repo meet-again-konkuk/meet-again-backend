@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 매칭 결과 Claim 거절 API
+
+== 매칭 결과 Claim 거절
+
+나를 claim한 상대(등록자)의 요청을 수신자가 거절합니다. 거절은 수신자 본인만 할 수 있으며, CLAIMED 상태의 매칭 결과에만 가능합니다.
+
+=== 요청
+
+include::{snippets}/matching/reject-matching-result/http-request.adoc[]
+
+=== Path Parameters
+
+include::{snippets}/matching/reject-matching-result/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/reject-matching-result/http-response.adoc[]

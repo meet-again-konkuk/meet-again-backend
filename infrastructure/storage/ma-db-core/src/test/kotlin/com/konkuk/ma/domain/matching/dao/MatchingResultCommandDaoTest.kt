@@ -2,6 +2,8 @@ package com.konkuk.ma.domain.matching.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
+import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import com.konkuk.ma.domain.matching.entity.table.TargetInfoTable
 import com.konkuk.ma.domain.member.entity.table.MemberTable
@@ -226,6 +228,59 @@ class MatchingResultCommandDaoTest(
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
             }
         }
+
+        context("updateClaimStatus") {
+
+            test("REJECTED로 갱신하면 DB에 REJECTED로 저장된다") {
+                // Given
+                insertMatchingResult()
+                val id = MatchingResultTable.selectAll().first()[MatchingResultTable.id].value
+                val matchingResult = buildMatchingResult(id = id, claimStatus = ClaimStatus.REJECTED)
+
+                // When
+                matchingResultCommandDao.updateClaimStatus(matchingResult)
+
+                // Then
+                val savedStatus = MatchingResultTable.selectAll().first()[MatchingResultTable.claimStatus]
+                savedStatus shouldBe ClaimStatus.REJECTED
+            }
+
+            test("CLAIMED로 갱신하면 DB에 CLAIMED로 저장된다") {
+                // Given
+                insertMatchingResult()
+                val id = MatchingResultTable.selectAll().first()[MatchingResultTable.id].value
+                val matchingResult = buildMatchingResult(id = id, claimStatus = ClaimStatus.CLAIMED)
+
+                // When
+                matchingResultCommandDao.updateClaimStatus(matchingResult)
+
+                // Then
+                val savedStatus = MatchingResultTable.selectAll().first()[MatchingResultTable.claimStatus]
+                savedStatus shouldBe ClaimStatus.CLAIMED
+            }
+        }
+    }
+
+    private fun buildMatchingResult(
+        id: Long,
+        claimStatus: ClaimStatus,
+    ): MatchingResult {
+        return MatchingResult(
+            id = id,
+            registerId = registerId,
+            targetInfoId = targetInfoId,
+            targetId = targetId,
+            middleNumberMatched = true,
+            lastNumberMatched = true,
+            yearMatched = true,
+            monthMatched = true,
+            dayMatched = true,
+            regionMatched = true,
+            showingExpiryDate = LocalDateTime.now().plusDays(30),
+            matchingExpiryDate = LocalDate.now().plusDays(210),
+            excluded = false,
+            claimStatus = claimStatus,
+        )
     }
 
     private fun insertTestMember(email: String): Long {

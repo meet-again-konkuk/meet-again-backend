@@ -27,6 +27,13 @@ class MatchingResultCommandService(
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
         matchingResult.validateOwnership(memberId)
         matchingResult.claim()
-        matchingResultRepository.updateClaimed(matchingResult)
+        matchingResultRepository.updateClaimStatus(matchingResult)
+    }
+
+    fun reject(matchingResultId: Long, memberId: Long) {
+        val matchingResult = matchingResultRepository.findOne(matchingResultId)
+        matchingResult.validateTargetOwnership(memberId)
+        matchingResult.reject()
+        matchingResultRepository.updateClaimStatus(matchingResult)
     }
 }

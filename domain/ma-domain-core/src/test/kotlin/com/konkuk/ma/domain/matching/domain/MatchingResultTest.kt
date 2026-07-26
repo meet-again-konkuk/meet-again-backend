@@ -118,20 +118,93 @@ class MatchingResultTest : FunSpec({
 
     context("claim") {
 
-        test("claim 호출 시 claimed가 true가 된다") {
-            val matchingResult = MatchingResultFixture.create()
+        test("NONE 상태에서 claim하면 CLAIMED가 된다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.NONE)
 
             matchingResult.claim()
 
-            matchingResult.claimed shouldBe true
+            matchingResult.claimStatus shouldBe ClaimStatus.CLAIMED
         }
 
-        test("이미 claimed된 상태에서 claim하면 예외가 발생한다") {
-            val matchingResult = MatchingResultFixture.create(claimed = true)
+        test("이미 CLAIMED된 상태에서 claim하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.CLAIMED)
 
             shouldThrow<InvalidStateException> {
                 matchingResult.claim()
             }
+        }
+
+        test("REJECTED 상태에서 claim하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.REJECTED)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.claim()
+            }
+        }
+    }
+
+    context("reject") {
+
+        test("CLAIMED 상태에서 reject하면 REJECTED가 된다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.CLAIMED)
+
+            matchingResult.reject()
+
+            matchingResult.claimStatus shouldBe ClaimStatus.REJECTED
+        }
+
+        test("NONE 상태에서 reject하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.NONE)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.reject()
+            }.message shouldBe "허용되지 않는 상태입니다."
+        }
+
+        test("이미 REJECTED된 상태에서 reject하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.REJECTED)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.reject()
+            }.message shouldBe "허용되지 않는 상태입니다."
+        }
+    }
+
+    context("validateTargetOwnership") {
+
+        test("수신자 본인이면 예외 없이 통과한다") {
+            val matchingResult = MatchingResultFixture.create(targetId = 2L)
+
+            matchingResult.validateTargetOwnership(2L)
+        }
+
+        test("수신자가 아니면 AccessDeniedException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(targetId = 2L)
+
+            shouldThrow<AccessDeniedException> {
+                matchingResult.validateTargetOwnership(1L)
+            }
+        }
+    }
+
+    context("isClaimed") {
+
+        test("NONE 상태이면 false를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.NONE)
+
+            matchingResult.isClaimed() shouldBe false
+        }
+
+        test("CLAIMED 상태이면 true를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.CLAIMED)
+
+            matchingResult.isClaimed() shouldBe true
+        }
+
+        test("REJECTED 상태이면 true를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.REJECTED)
+
+            matchingResult.isClaimed() shouldBe true
         }
     }
 

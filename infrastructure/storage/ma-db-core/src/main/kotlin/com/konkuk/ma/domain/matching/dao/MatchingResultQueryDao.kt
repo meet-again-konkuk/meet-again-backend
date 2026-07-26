@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.dao
 
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.entity.MatchingResultEntity
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -32,7 +33,7 @@ class MatchingResultQueryDao {
 
     fun findClaimedByTarget(memberId: Long): List<MatchingResultEntity> {
         return MatchingResultTable
-            .activeRows { (MatchingResultTable.targetId eq memberId) and (MatchingResultTable.claimed eq true) }
+            .activeRows { (MatchingResultTable.targetId eq memberId) and (MatchingResultTable.claimStatus eq ClaimStatus.CLAIMED) }
             .map { row -> MatchingResultEntity.from(row) }
     }
 

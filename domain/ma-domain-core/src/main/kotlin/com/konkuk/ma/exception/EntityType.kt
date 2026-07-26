@@ -15,4 +15,5 @@ enum class EntityType(val entityName: String, val keyName: String) {
     POINT_PRODUCT("PointProduct", "id"),
     POINT_HISTORY("PointHistory", "idempotencyKey"),
     MEMBER_POINT("MemberPoint", "email"),
+    NOTIFICATION("Notification", "id"),
 }

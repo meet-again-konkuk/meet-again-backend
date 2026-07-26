@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 단건 알림 읽음 처리 API
+
+== 단건 알림 읽음 처리
+
+특정 알림을 읽음 상태로 변경합니다.
+
+=== 요청
+
+include::{snippets}/notification/read-notification/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/notification/read-notification/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/notification/read-notification/http-response.adoc[]

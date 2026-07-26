@@ -17,6 +17,7 @@ import com.konkuk.ma.support.payload.response.ApiError
 import com.konkuk.ma.support.payload.response.ErrorCode
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -81,6 +82,12 @@ class GlobalExceptionHandler {
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ApiError> {
         val message = e.bindingResult.allErrors.mapNotNull { it.defaultMessage }.joinToString(", ")
         val error = ApiError(ErrorCode.INVALID_INPUT_VALUE, message)
+        return ResponseEntity.badRequest().body(error)
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ResponseEntity<ApiError> {
+        val error = ApiError(ErrorCode.INVALID_TYPE_VALUE)
         return ResponseEntity.badRequest().body(error)
     }
 

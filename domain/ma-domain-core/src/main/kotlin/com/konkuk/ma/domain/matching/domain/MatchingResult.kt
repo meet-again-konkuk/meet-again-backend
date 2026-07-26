@@ -26,11 +26,11 @@ class MatchingResult(
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
     excluded: Boolean,
-    claimed: Boolean = false,
+    claimStatus: ClaimStatus = ClaimStatus.NONE,
 ) : HasMatchingKey {
     var excluded: Boolean = excluded
         private set
-    var claimed: Boolean = claimed
+    var claimStatus: ClaimStatus = claimStatus
         private set
     val matchRate: Int by lazy {
         MatchRateCalculator(
@@ -58,6 +58,12 @@ class MatchingResult(
         }
     }
 
+    fun validateTargetOwnership(memberId: Long) {
+        if (targetId != memberId) {
+            throw AccessDeniedException(EntityType.MATCHING_RESULT, targetId.toString(), memberId.toString())
+        }
+    }
+
     fun exclude() {
         excluded = true
     }
@@ -67,13 +73,18 @@ class MatchingResult(
     }
 
     fun claim() {
-        validateNotClaimed()
-        claimed = true
+        if (claimStatus != ClaimStatus.NONE) {
+            throw InvalidStateException(MatchingResult::class, id, "이미 claim 처리된 매칭 결과입니다.")
+        }
+        claimStatus = ClaimStatus.CLAIMED
     }
 
-    private fun validateNotClaimed() {
-        if (claimed) {
-            throw InvalidStateException(MatchingResult::class, id, "이미 claim된 매칭 결과입니다.")
+    fun reject() {
+        if (claimStatus != ClaimStatus.CLAIMED) {
+            throw InvalidStateException(MatchingResult::class, id, "claim 상태가 아니어서 거절할 수 없습니다.")
         }
+        claimStatus = ClaimStatus.REJECTED
     }
+
+    fun isClaimed(): Boolean = claimStatus != ClaimStatus.NONE
 }

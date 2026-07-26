@@ -51,8 +51,8 @@ class MatchingResultCoreRepository(
         matchingResultCommandDao.updateExcluded(matchingResult)
     }
 
-    override fun updateClaimed(matchingResult: MatchingResult) {
-        matchingResultCommandDao.updateClaimed(matchingResult)
+    override fun updateClaimStatus(matchingResult: MatchingResult) {
+        matchingResultCommandDao.updateClaimStatus(matchingResult)
     }
 
     override fun findClaimedByTarget(memberId: Long): List<MatchingResult> {

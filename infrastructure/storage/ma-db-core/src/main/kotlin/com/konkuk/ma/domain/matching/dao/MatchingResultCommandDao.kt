@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.matching.dao
 
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.entity.table.MatchingResultTable
@@ -42,7 +43,7 @@ class MatchingResultCommandDao {
             this[MatchingResultTable.createdBy] = it.registerId.toString()
             this[MatchingResultTable.lastModifiedBy] = it.registerId.toString()
             this[MatchingResultTable.excluded] = false
-            this[MatchingResultTable.claimed] = false
+            this[MatchingResultTable.claimStatus] = ClaimStatus.NONE
         }
     }
 
@@ -52,9 +53,9 @@ class MatchingResultCommandDao {
         }
     }
 
-    fun updateClaimed(matchingResult: MatchingResult) {
+    fun updateClaimStatus(matchingResult: MatchingResult) {
         MatchingResultTable.update({ MatchingResultTable.id eq matchingResult.id }) {
-            it[claimed] = matchingResult.claimed
+            it[claimStatus] = matchingResult.claimStatus
         }
     }
 
