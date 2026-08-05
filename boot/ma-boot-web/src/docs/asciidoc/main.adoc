@@ -268,6 +268,11 @@ X룸 도메인과 관련된 API 입니다.
 
 * link:xroom/create-xroom.html[X룸 생성 API,window=_blank]
 
+[[xroom-create-with-memories]]
+=== X룸 기억 일괄 생성
+
+* link:xroom/create-xroom-with-memories.html[X룸 기억 일괄 생성 API,window=_blank]
+
 [[xroom-update-final-message]]
 === X룸 마지막 메시지 수정
 

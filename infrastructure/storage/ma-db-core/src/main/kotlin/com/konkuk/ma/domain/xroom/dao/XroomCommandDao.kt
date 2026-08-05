@@ -33,4 +33,8 @@ class XroomCommandDao {
     fun delete(ownerId: Long) {
         XroomTable.softDelete({ XroomTable.ownerId eq ownerId }, ownerId.toString())
     }
+
+    fun deleteById(xroomId: Long, memberId: Long) {
+        XroomTable.softDelete({ XroomTable.id eq xroomId }, memberId.toString())
+    }
 }

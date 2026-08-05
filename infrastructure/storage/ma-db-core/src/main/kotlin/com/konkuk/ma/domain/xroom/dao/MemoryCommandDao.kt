@@ -28,6 +28,10 @@ class MemoryCommandDao {
         return memoryId
     }
 
+    fun saveAll(newMemories: List<NewMemory>): List<Long> {
+        return newMemories.map { save(it) }
+    }
+
     fun update(memory: Memory, memberId: Long) {
         MemoryTable.update({ MemoryTable.id eq memory.id }) {
             it[title] = memory.titleValue

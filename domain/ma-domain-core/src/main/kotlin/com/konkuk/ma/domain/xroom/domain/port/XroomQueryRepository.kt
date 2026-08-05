@@ -11,5 +11,7 @@ interface XroomQueryRepository {
 
     fun findByTargetInfoIds(targetInfoIds: Set<Long>): List<Xroom>
 
+    fun findByTargetInfoIdOrNull(targetInfoId: Long): Xroom?
+
     fun findOne(xroomId: Long): Xroom
 }

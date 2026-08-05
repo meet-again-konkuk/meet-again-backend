@@ -2,8 +2,10 @@ package com.konkuk.ma.domain.xroom.api
 
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.xroom.api.request.CreateXroomRequest
+import com.konkuk.ma.domain.xroom.api.request.CreateXroomWithMemoriesRequest
 import com.konkuk.ma.domain.xroom.api.request.UpdateFinalMessageRequest
 import com.konkuk.ma.domain.xroom.api.response.XroomResponse
+import com.konkuk.ma.domain.xroom.api.response.XroomWithMemoriesResponse
 import com.konkuk.ma.domain.xroom.application.XroomCommandService
 import com.konkuk.ma.support.id.DecryptId
 import com.konkuk.ma.support.security.LoginMember
@@ -30,6 +32,21 @@ class XroomCommandApi(
     ): XroomResponse {
         val xroomId = xroomCommandService.create(request.targetInfoId, memberInfo.id, request.finalMessage)
         return XroomResponse(xroomId = xroomId)
+    }
+
+    @PostMapping("/with-memories")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createWithMemories(
+        @LoginMember memberInfo: MemberInfo,
+        @RequestBody request: CreateXroomWithMemoriesRequest,
+    ): XroomWithMemoriesResponse {
+        val created = xroomCommandService.createWithMemories(
+            memberInfo.id,
+            request.targetInfoId,
+            request.finalMessage,
+            request.toNewMemories(),
+        )
+        return XroomWithMemoriesResponse.from(created)
     }
 
     @PatchMapping("/{xroomId}")

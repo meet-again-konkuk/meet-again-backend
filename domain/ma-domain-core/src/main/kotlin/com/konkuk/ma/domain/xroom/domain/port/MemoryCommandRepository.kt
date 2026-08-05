@@ -6,6 +6,8 @@ import com.konkuk.ma.domain.xroom.domain.memory.NewMemory
 interface MemoryCommandRepository {
     fun save(newMemory: NewMemory): Long
 
+    fun saveAll(newMemories: List<NewMemory>): List<Long>
+
     fun update(memory: Memory, memberId: Long)
 
     fun delete(memoryId: Long, memberId: Long)

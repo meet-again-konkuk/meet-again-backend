@@ -6,6 +6,7 @@ import com.konkuk.ma.domain.matching.domain.port.TargetInfoQueryRepository
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.xroom.domain.port.MemoryQueryRepository
+import com.konkuk.ma.domain.xroom.domain.port.XroomCommandRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
 import com.konkuk.ma.domain.xroom.fixture.XroomFixture
@@ -16,16 +17,23 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import java.time.LocalDateTime
 
 class XroomValidatorTest : FunSpec({
 
     val targetInfoQueryRepository = mockk<TargetInfoQueryRepository>()
     val xroomQueryRepository = mockk<XroomQueryRepository>()
+    val xroomCommandRepository = mockk<XroomCommandRepository>()
     val memoryQueryRepository = mockk<MemoryQueryRepository>()
     val matchingResultRepository = mockk<MatchingResultRepository>()
-    val xroomValidator =
-        XroomValidator(targetInfoQueryRepository, xroomQueryRepository, memoryQueryRepository, matchingResultRepository)
+    val xroomValidator = XroomValidator(
+        targetInfoQueryRepository,
+        xroomQueryRepository,
+        xroomCommandRepository,
+        memoryQueryRepository,
+        matchingResultRepository,
+    )
 
     context("validate") {
 
@@ -65,6 +73,79 @@ class XroomValidatorTest : FunSpec({
 
             shouldThrow<DuplicateException> {
                 xroomValidator.validate(newXroom)
+            }
+        }
+    }
+
+    context("validateAfterRemovingEmptyRoom") {
+
+        test("같은 TargetInfo의 활성 방이 없으면 예외 없이 통과한다") {
+            val targetInfo = TargetInfoFixture.create(targetInfoId = 100L, registerId = 1L)
+            val newXroom = NewXroom(
+                ownerId = targetInfo.registerId,
+                targetInfoId = targetInfo.targetInfoId,
+            )
+            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
+            every { xroomQueryRepository.findByTargetInfoIdOrNull(targetInfo.targetInfoId) } returns null
+
+            xroomValidator.validateAfterRemovingEmptyRoom(newXroom)
+        }
+
+        test("활성 방이 있고 기억이 0개면 기존 방을 삭제하고 통과한다") {
+            val targetInfo = TargetInfoFixture.create(targetInfoId = 200L, registerId = 1L)
+            val emptyXroom = XroomFixture.create(
+                id = 10L,
+                ownerId = targetInfo.registerId,
+                targetInfoId = targetInfo.targetInfoId,
+            )
+            val newXroom = NewXroom(
+                ownerId = emptyXroom.ownerId,
+                targetInfoId = targetInfo.targetInfoId,
+            )
+            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
+            every { xroomQueryRepository.findByTargetInfoIdOrNull(targetInfo.targetInfoId) } returns emptyXroom
+            // 기억이 0건이면 group by 결과에 해당 방의 키 자체가 없다
+            every { memoryQueryRepository.count(setOf(emptyXroom.id)) } returns emptyMap()
+            every { xroomCommandRepository.deleteById(emptyXroom.id, newXroom.ownerId) } returns Unit
+
+            xroomValidator.validateAfterRemovingEmptyRoom(newXroom)
+
+            verify { xroomCommandRepository.deleteById(emptyXroom.id, newXroom.ownerId) }
+        }
+
+        test("활성 방이 있고 기억이 1개 이상이면 DuplicateException이 발생하고 기존 방을 삭제하지 않는다") {
+            val targetInfo = TargetInfoFixture.create(targetInfoId = 300L, registerId = 1L)
+            val filledXroom = XroomFixture.create(
+                id = 20L,
+                ownerId = targetInfo.registerId,
+                targetInfoId = targetInfo.targetInfoId,
+            )
+            val newXroom = NewXroom(
+                ownerId = filledXroom.ownerId,
+                targetInfoId = targetInfo.targetInfoId,
+            )
+            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
+            every { xroomQueryRepository.findByTargetInfoIdOrNull(targetInfo.targetInfoId) } returns filledXroom
+            every { memoryQueryRepository.count(setOf(filledXroom.id)) } returns mapOf(filledXroom.id to 1)
+
+            shouldThrow<DuplicateException> {
+                xroomValidator.validateAfterRemovingEmptyRoom(newXroom)
+            }
+
+            verify(exactly = 0) { xroomCommandRepository.deleteById(filledXroom.id, newXroom.ownerId) }
+        }
+
+        test("본인 소유가 아닌 TargetInfo이면 방을 조회하기 전에 AccessDeniedException이 발생한다") {
+            val targetInfo = TargetInfoFixture.create(targetInfoId = 400L, registerId = 1L)
+            val newXroom = NewXroom(
+                ownerId = targetInfo.registerId + 1,
+                targetInfoId = targetInfo.targetInfoId,
+            )
+            every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
+            // findByTargetInfoIdOrNull 은 일부러 스텁하지 않는다 - 호출되면 mock 이 답을 못 찾아 실패한다
+
+            shouldThrow<AccessDeniedException> {
+                xroomValidator.validateAfterRemovingEmptyRoom(newXroom)
             }
         }
     }
