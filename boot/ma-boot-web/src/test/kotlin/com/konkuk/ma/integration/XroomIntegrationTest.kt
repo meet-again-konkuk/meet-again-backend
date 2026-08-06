@@ -19,6 +19,7 @@ import com.konkuk.ma.extension.postJson
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
@@ -368,6 +369,374 @@ class XroomIntegrationTest(
 
             // When & Then
             mockMvc.postJson("/api/xrooms") {
+                content = mapper.writeValueAsString(request)
+            }
+                .andExpect { status { isUnauthorized() } }
+        }
+    }
+
+    context("POST /api/xrooms/with-memories") {
+
+        fun xroomRows(targetInfoId: Long) = transaction {
+            XroomTable.selectAll().where { XroomTable.targetInfoId eq targetInfoId }.toList()
+        }
+
+        fun activeMemories(xroomId: Long) = transaction {
+            MemoryTable.selectAll()
+                .where { (MemoryTable.xroomId eq xroomId) and (MemoryTable.deleted eq false) }
+                .toList()
+        }
+
+        fun emotionTagsOf(memoryId: Long) = transaction {
+            MemoryEmotionTagTable.selectAll()
+                .where { MemoryEmotionTagTable.memoryId eq memoryId }
+                .map { it[MemoryEmotionTagTable.tag] }
+        }
+
+        fun totalXroomCount() = transaction { XroomTable.selectAll().count() }
+
+        test("방과 기억 2개를 일괄 생성하면 201과 함께 방·기억·감정태그가 모두 저장된다") {
+            // Given
+            val email = "xroom-bulk-create@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val accessToken = login(email, password)
+
+            val firstTitle = "첫 만남"
+            val firstTags = listOf("설렘", "행복")
+            val secondTitle = "마지막 인사"
+            val secondTags = listOf("그리움")
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to listOf(
+                    mapOf(
+                        "title" to firstTitle,
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "location" to "연남동 카페",
+                        "emotionTags" to firstTags,
+                        "text" to "그날의 기억",
+                    ),
+                    mapOf(
+                        "title" to secondTitle,
+                        "eventDate" to "2020-08-15",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to secondTags,
+                        "letter" to "보고 싶었어",
+                    ),
+                ),
+            )
+
+            // When
+            val result = mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isCreated() } }
+                .andReturn()
+
+            // Then - 응답에 암호화된 xroomId와 요청 개수만큼의 memoryIds가 담긴다
+            val body = mapper.readTree(result.response.contentAsString)
+            body.get("xroomId").asText().isNotBlank() shouldBe true
+            body.get("memoryIds").size() shouldBe 2
+
+            // Then - XROOMS 1건이 응답의 xroomId로 저장된다
+            val activeXrooms = xroomRows(targetInfoId).filterNot { it[XroomTable.deleted] }
+            activeXrooms.size shouldBe 1
+            val xroomId = activeXrooms.single()[XroomTable.id].value
+            idObfuscator.decode(ObfuscationType.XROOM, body.get("xroomId").asText()) shouldBe xroomId
+
+            // Then - MEMORIES 2건이 그 방에 저장된다
+            val memories = activeMemories(xroomId)
+            memories.size shouldBe 2
+            memories.map { it[MemoryTable.title] } shouldContainExactlyInAnyOrder listOf(firstTitle, secondTitle)
+
+            // Then - MEMORY_EMOTION_TAGS 에 각 기억의 태그가 반영된다
+            val firstMemoryId = memories.single { it[MemoryTable.title] == firstTitle }[MemoryTable.id].value
+            val secondMemoryId = memories.single { it[MemoryTable.title] == secondTitle }[MemoryTable.id].value
+            emotionTagsOf(firstMemoryId) shouldContainExactlyInAnyOrder firstTags
+            emotionTagsOf(secondMemoryId) shouldContainExactlyInAnyOrder secondTags
+        }
+
+        test("응답 memoryIds의 순서는 요청 memories의 순서와 같다") {
+            // Given
+            val email = "xroom-bulk-order@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val accessToken = login(email, password)
+
+            // 시점을 뒤섞어 넣어, 응답이 시점 정렬이 아니라 요청 순서를 따르는지 드러낸다
+            val titles = listOf("세 번째 만남", "첫 만남", "두 번째 만남")
+            val eventDates = listOf("2021-03-03", "2019-01-01", "2020-02-02")
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to titles.indices.map { index ->
+                    mapOf(
+                        "title" to titles[index],
+                        "eventDate" to eventDates[index],
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    )
+                },
+            )
+
+            // When
+            val result = mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isCreated() } }
+                .andReturn()
+
+            // Then - 응답의 암호화 memoryId를 복호화해 DB의 title과 대조하면 요청 순서와 같다
+            val body = mapper.readTree(result.response.contentAsString)
+            val memoryIds = body.get("memoryIds").map { idObfuscator.decode(ObfuscationType.MEMORY, it.asText()) }
+            memoryIds.size shouldBe titles.size
+
+            val titleById = transaction {
+                MemoryTable.selectAll()
+                    .where { MemoryTable.deleted eq false }
+                    .associate { it[MemoryTable.id].value to it[MemoryTable.title] }
+            }
+            memoryIds.map { titleById[it] } shouldBe titles
+        }
+
+        test("기억 하나의 eventDate 형식이 잘못되면 400이 반환되고 XROOMS row가 남지 않는다") {
+            // Given
+            val email = "xroom-bulk-invalid-date@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val accessToken = login(email, password)
+
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to listOf(
+                    mapOf(
+                        "title" to "첫 만남",
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    ),
+                    // DAY 정밀도인데 일자 세그먼트가 없다
+                    mapOf(
+                        "title" to "두 번째 만남",
+                        "eventDate" to "2020-08",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("그리움"),
+                        "text" to "바뀐 기억",
+                    ),
+                ),
+            )
+
+            // When & Then
+            mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isBadRequest() } }
+
+            // Then - 방이 절반만 만들어져 남는 일이 없어야 한다 (핵심 회귀 방지)
+            totalXroomCount() shouldBe 0L
+        }
+
+        test("memories가 빈 배열이면 400이 반환되고 XROOMS row가 남지 않는다") {
+            // Given
+            val email = "xroom-bulk-empty@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val accessToken = login(email, password)
+
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to emptyList<Map<String, Any?>>(),
+            )
+
+            // When & Then
+            mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isBadRequest() } }
+
+            totalXroomCount() shouldBe 0L
+        }
+
+        test("memories가 상한(50개)을 초과하면 400이 반환되고 XROOMS row가 남지 않는다") {
+            // Given
+            val email = "xroom-bulk-over-limit@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val accessToken = login(email, password)
+
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to (1..51).map {
+                    mapOf(
+                        "title" to "기억 $it",
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    )
+                },
+            )
+
+            // When & Then
+            mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isBadRequest() } }
+
+            totalXroomCount() shouldBe 0L
+        }
+
+        test("같은 TargetInfo에 기억이 있는 활성 방이 있으면 409가 반환된다") {
+            // Given
+            val email = "xroom-bulk-duplicate@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val existingXroomId = insertXroom(ownerId = memberId, targetInfoId = targetInfoId)
+            insertMemory(existingXroomId)
+            val accessToken = login(email, password)
+
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to listOf(
+                    mapOf(
+                        "title" to "첫 만남",
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    ),
+                ),
+            )
+
+            // When & Then
+            mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isConflict() } }
+
+            // Then - 기존 방은 그대로 살아있고 새 방은 생기지 않는다
+            val rows = xroomRows(targetInfoId)
+            rows.size shouldBe 1
+            rows.single()[XroomTable.deleted] shouldBe false
+        }
+
+        test("같은 TargetInfo에 기억이 0개인 활성 방이 있으면 기존 방을 정리하고 201로 새 방을 만든다") {
+            // Given - 과거 저장 실패로 남은 빈 방
+            val email = "xroom-bulk-empty-room@example.com"
+            val password = "password123"
+            val memberId = insertMember(email = email, rawPassword = password)
+            val targetInfoId = insertTargetInfo(registerId = memberId)
+            val emptyXroomId = insertXroom(ownerId = memberId, targetInfoId = targetInfoId)
+            val accessToken = login(email, password)
+
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to listOf(
+                    mapOf(
+                        "title" to "첫 만남",
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    ),
+                ),
+            )
+
+            // When
+            val result = mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isCreated() } }
+                .andReturn()
+
+            // Then - 기존 빈 방은 soft delete, 활성 방은 새로 만들어진 1건뿐이다
+            val rows = xroomRows(targetInfoId)
+            rows.size shouldBe 2
+            rows.single { it[XroomTable.id].value == emptyXroomId }[XroomTable.deleted] shouldBe true
+
+            val activeXrooms = rows.filterNot { it[XroomTable.deleted] }
+            activeXrooms.size shouldBe 1
+            val newXroomId = activeXrooms.single()[XroomTable.id].value
+            newXroomId shouldNotBe emptyXroomId
+
+            val body = mapper.readTree(result.response.contentAsString)
+            idObfuscator.decode(ObfuscationType.XROOM, body.get("xroomId").asText()) shouldBe newXroomId
+            activeMemories(newXroomId).size shouldBe 1
+        }
+
+        test("남의 TargetInfo로 일괄 생성하면 403이 반환된다") {
+            // Given
+            val ownerId = insertMember(email = "xroom-bulk-forbidden-owner@example.com")
+            val strangerEmail = "xroom-bulk-forbidden-stranger@example.com"
+            val strangerPassword = "password123"
+            insertMember(email = strangerEmail, rawPassword = strangerPassword)
+            val targetInfoId = insertTargetInfo(registerId = ownerId)
+            val accessToken = login(strangerEmail, strangerPassword)
+
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId),
+                "finalMessage" to "고마웠어",
+                "memories" to listOf(
+                    mapOf(
+                        "title" to "첫 만남",
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    ),
+                ),
+            )
+
+            // When & Then
+            mockMvc.postJson("/api/xrooms/with-memories") {
+                content = mapper.writeValueAsString(request)
+                authorization("Bearer $accessToken")
+            }
+                .andExpect { status { isForbidden() } }
+
+            totalXroomCount() shouldBe 0L
+        }
+
+        test("인증 토큰 없이 일괄 생성하면 401이 반환된다") {
+            // Given
+            val request = mapOf(
+                "targetInfoId" to idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L),
+                "finalMessage" to "고마웠어",
+                "memories" to listOf(
+                    mapOf(
+                        "title" to "첫 만남",
+                        "eventDate" to "2019-05-10",
+                        "eventDatePrecision" to "DAY",
+                        "emotionTags" to listOf("설렘"),
+                        "text" to "그날의 기억",
+                    ),
+                ),
+            )
+
+            // When & Then
+            mockMvc.postJson("/api/xrooms/with-memories") {
                 content = mapper.writeValueAsString(request)
             }
                 .andExpect { status { isUnauthorized() } }

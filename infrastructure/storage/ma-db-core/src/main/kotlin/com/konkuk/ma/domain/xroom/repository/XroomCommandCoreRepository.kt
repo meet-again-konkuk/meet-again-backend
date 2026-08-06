@@ -21,4 +21,8 @@ class XroomCommandCoreRepository(
     override fun delete(ownerId: Long) {
         xroomCommandDao.delete(ownerId)
     }
+
+    override fun deleteById(xroomId: Long, memberId: Long) {
+        xroomCommandDao.deleteById(xroomId, memberId)
+    }
 }

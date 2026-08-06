@@ -9,4 +9,6 @@ interface XroomCommandRepository {
     fun updateFinalMessage(xroom: Xroom)
 
     fun delete(ownerId: Long)
+
+    fun deleteById(xroomId: Long, memberId: Long)
 }

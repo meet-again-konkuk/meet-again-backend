@@ -1,0 +1,38 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= X룸 기억 일괄 생성 API
+
+== X룸 기억 일괄 생성
+
+지정한 Target-Info 대상으로 X룸과 기억 N개를 한 번에 생성한다.
+
+방·기억·감정태그 저장이 **단일 트랜잭션**으로 묶여 있어, 기억 하나라도 실패하면 방을 포함해 전부 롤백된다. 저장 실패로 기억 0개짜리 방이 남는 일이 없다.
+
+응답 `memoryIds` 의 순서는 요청 `memories` 배열의 순서와 동일하다 (프론트가 인덱스로 사진 업로드 대상을 매칭하므로 **순서 보장은 계약**이다).
+
+사진은 이 API의 범위 밖이다. 기억 생성 후 응답으로 받은 `memoryIds` 로 기존 기억 사진 업로드 API(`POST /api/xrooms/{xroomId}/memories/{memoryId}/photo`)를 호출한다.
+
+`memories` 는 최소 1개, 최대 50개까지 보낼 수 있다. 범위를 벗어나면 400을 반환한다.
+
+같은 Target-Info 에 **기억이 0개인 활성 방**이 이미 있으면 그 방을 자동으로 정리(soft delete)한 뒤 새 방을 생성한다. 기억이 하나라도 있는 활성 방이 있으면 409를 반환한다.
+
+=== 요청
+
+include::{snippets}/xroom/create-xroom-with-memories/http-request.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/xroom/create-xroom-with-memories/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/xroom/create-xroom-with-memories/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/xroom/create-xroom-with-memories/response-fields.adoc[]

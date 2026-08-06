@@ -14,6 +14,10 @@ class MemoryCommandCoreRepository(
         return memoryCommandDao.save(newMemory)
     }
 
+    override fun saveAll(newMemories: List<NewMemory>): List<Long> {
+        return memoryCommandDao.saveAll(newMemories)
+    }
+
     override fun update(memory: Memory, memberId: Long) {
         memoryCommandDao.update(memory, memberId)
     }

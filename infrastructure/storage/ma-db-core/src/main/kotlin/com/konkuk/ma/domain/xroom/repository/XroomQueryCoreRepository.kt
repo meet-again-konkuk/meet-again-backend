@@ -19,6 +19,10 @@ class XroomQueryCoreRepository(
         return xroomQueryDao.findByTargetInfoIds(targetInfoIds).map { it.toDomain() }
     }
 
+    override fun findByTargetInfoIdOrNull(targetInfoId: Long): Xroom? {
+        return xroomQueryDao.findByTargetInfoId(targetInfoId)?.toDomain()
+    }
+
     override fun findOne(xroomId: Long): Xroom {
         return xroomQueryDao.findOne(xroomId)?.toDomain()
             ?: throw EntityNotFoundException(EntityType.XROOM, xroomId.toString())

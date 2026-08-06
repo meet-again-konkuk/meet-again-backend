@@ -99,6 +99,7 @@
 | Method | Endpoint | 용도 |
 |--------|----------|------|
 | POST | /api/xrooms | 방 생성 |
+| POST | /api/xrooms/with-memories | 방 + 기억 N개 원자적 일괄 생성 (REQ-015, 단일 트랜잭션, memoryIds 순서 = 요청 순서, 기억 0개 활성방은 자동 정리) |
 | GET | /api/xrooms/me | 내가 만든 방 목록 조회 |
 | GET | /api/xrooms/received | 내가 수신한 방 목록 조회 |
 | GET | /api/xrooms/{xroomId} | 방 상세 조회 (기억·사진 포함) |
@@ -131,7 +132,9 @@
 
 ## X룸 (기억의 방)
 
-작업할 내용 없음 (기억의 방 재설계 Phase 0~3 완료 — 위 "완료된 API" 참조)
+작업할 내용 없음 (기억의 방 재설계 Phase 0~3 완료 + REQ-015 원자적 일괄 생성 완료 — 위 "완료된 API" 참조)
+
+<!-- REQ-015(POST /api/xrooms/with-memories)는 구현 완료되어 완료된 API 테이블로 이동. 기존 POST /api/xrooms, POST /api/xrooms/{xroomId}/memories 는 작성자 수정 화면용으로 호환 유지 -->
 
 ---
 

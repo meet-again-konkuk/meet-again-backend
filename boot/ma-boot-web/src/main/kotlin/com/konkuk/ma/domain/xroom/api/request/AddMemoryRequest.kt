@@ -12,18 +12,19 @@ class AddMemoryRequest(
     val text: String? = null,
     val letter: String? = null,
 ) {
-    fun toNewMemory(xroomId: Long): NewMemory {
-        return NewMemory(
-            xroomId = xroomId,
-            details = MemoryDetails.of(
-                title = title,
-                eventDate = eventDate,
-                eventDatePrecision = eventDatePrecision,
-                location = location,
-                emotionTags = emotionTags,
-                text = text,
-                letter = letter,
-            ),
+    fun toMemoryDetails(): MemoryDetails {
+        return MemoryDetails.of(
+            title = title,
+            eventDate = eventDate,
+            eventDatePrecision = eventDatePrecision,
+            location = location,
+            emotionTags = emotionTags,
+            text = text,
+            letter = letter,
         )
+    }
+
+    fun toNewMemory(xroomId: Long): NewMemory {
+        return NewMemory(xroomId = xroomId, details = toMemoryDetails())
     }
 }

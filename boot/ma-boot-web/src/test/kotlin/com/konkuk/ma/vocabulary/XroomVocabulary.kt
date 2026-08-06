@@ -40,10 +40,16 @@ fun template(fieldName: String = "template") =
 fun xroomMemories(fieldName: String = "memories") =
     fieldName responseType ARRAY means "방에 담긴 기억 목록"
 
+fun newMemories(fieldName: String = "memories") =
+    fieldName responseType ARRAY means "함께 생성할 기억 목록 (최소 1개, 최대 50개)"
+
 // --- 기억(Memory) 관련 필드 ---
 
 fun memoryId(fieldName: String = "memoryId") =
     fieldName responseType STRING means "기억 ID (인코딩)" example "mem123"
+
+fun memoryIds(fieldName: String = "memoryIds") =
+    fieldName responseType ARRAY means "생성된 기억 ID 목록 (인코딩). 요청 memories 배열과 순서가 동일하다" example "[\"mem123\", \"mem456\"]"
 
 fun memoryTitle(fieldName: String = "title") =
     fieldName responseType STRING means "기억 제목" example "첫 만남"
