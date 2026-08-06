@@ -18,7 +18,7 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 
 	implementation(project(":domain:ma-domain-core"))
-	runtimeOnly(project(":config:ma-config-yaml-importer"))
+	runtimeOnly("com.github.holeman79:spring-yaml-importer:1.0.0")
 	runtimeOnly(project(":infrastructure:support:ma-sms-sender"))
 	runtimeOnly(project(":infrastructure:support:ma-crypto-core"))
 	runtimeOnly(project(":infrastructure:support:ma-jwt-core"))
