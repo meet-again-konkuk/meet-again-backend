@@ -3,7 +3,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     
     implementation(project(":domain:ma-domain-core"))
-    runtimeOnly(project(":config:ma-config-yaml-importer"))
+    runtimeOnly("com.github.holeman79:spring-yaml-importer:1.0.0")
     runtimeOnly(project(":config:ma-config-logging"))
     runtimeOnly(project(":infrastructure:storage:ma-db-core"))
     runtimeOnly(project(":infrastructure:support:ma-file-storage"))
