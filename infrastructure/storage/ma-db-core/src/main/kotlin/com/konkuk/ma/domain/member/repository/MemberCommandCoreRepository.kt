@@ -28,6 +28,10 @@ class MemberCommandCoreRepository(
         memberCommandDao.updatePassword(memberId, encodedPassword)
     }
 
+    override fun updateProfile(member: Member) {
+        memberCommandDao.updateProfile(member)
+    }
+
     override fun anonymizeAndSoftDelete(member: Member) {
         memberCommandDao.anonymizeAndSoftDelete(member.anonymize())
     }

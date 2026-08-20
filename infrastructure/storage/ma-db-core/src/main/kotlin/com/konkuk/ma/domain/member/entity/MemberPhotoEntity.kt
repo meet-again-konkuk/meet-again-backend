@@ -8,19 +8,19 @@ import org.jetbrains.exposed.sql.ResultRow
 class MemberPhotoEntity(
     val id: Long,
     val memberId: Long,
-    val filePath: String,
+    val storageKey: String,
     val originalFileName: String,
     val approvalStatus: String,
-    val thumbnailPath: String?
+    val thumbnailKey: String?
 ) {
     fun toDomain(): MemberPhoto {
         return MemberPhoto(
             id = id,
             memberId = memberId,
-            filePath = filePath,
+            storageKey = storageKey,
             originalFileName = originalFileName,
             approvalStatus = ApprovalStatus.valueOf(approvalStatus),
-            thumbnailPath = thumbnailPath
+            thumbnailKey = thumbnailKey
         )
     }
 
@@ -29,10 +29,10 @@ class MemberPhotoEntity(
             return MemberPhotoEntity(
                 id = row[MemberPhotoTable.id].value,
                 memberId = row[MemberPhotoTable.memberId],
-                filePath = row[MemberPhotoTable.filePath],
+                storageKey = row[MemberPhotoTable.storageKey],
                 originalFileName = row[MemberPhotoTable.originalFileName],
                 approvalStatus = row[MemberPhotoTable.approvalStatus],
-                thumbnailPath = row[MemberPhotoTable.thumbnailPath]
+                thumbnailKey = row[MemberPhotoTable.thumbnailKey]
             )
         }
     }

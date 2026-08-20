@@ -25,7 +25,7 @@ class MemberQueryDaoTest(
 
     private fun insertMember(
         email: String = "test@example.com",
-        nickname: String = "testNickname",
+        nickname: String = "nick_$email",
         phoneNumber: String = "01012345678",
         deleted: Boolean = false,
         withdrawalRequestedAt: LocalDateTime? = null
@@ -63,6 +63,18 @@ class MemberQueryDaoTest(
 
             // Then
             result shouldBe true
+        }
+
+        test("existsByNickname - 소프트 삭제된 회원의 닉네임은 존재하지 않는 것으로 본다") {
+            // Given — 탈퇴 완료 회원이 남긴 행은 중복 검사 대상이 아니다
+            val nickname = "탈퇴한회원_1"
+            insertMember(email = "withdrawn@example.com", nickname = nickname, deleted = true)
+
+            // When
+            val result = memberQueryDao.existsByNickname(nickname)
+
+            // Then
+            result shouldBe false
         }
 
         test("existsByNickname - 닉네임이 존재하지 않는 경우 false를 반환한다") {

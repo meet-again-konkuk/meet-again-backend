@@ -3,7 +3,9 @@ package com.konkuk.ma.domain.matching.application
 import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
+import com.konkuk.ma.domain.common.domain.file.port.FileUrlResolver
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotoUrlResolver
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
@@ -23,13 +25,20 @@ class MatchingResultQueryServiceTest : FunSpec({
     val matchingResultRepository = mockk<MatchingResultRepository>()
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val memberPhotoRepository = mockk<MemberPhotoRepository>()
+    val fileUrlResolver = mockk<FileUrlResolver>()
+    val memberPhotoUrlResolver = MemberPhotoUrlResolver(fileUrlResolver)
     val xroomQueryRepository = mockk<XroomQueryRepository>()
     val service = MatchingResultQueryService(
-        matchingResultRepository, memberQueryRepository, memberPhotoRepository, xroomQueryRepository
+        matchingResultRepository,
+        memberQueryRepository,
+        memberPhotoRepository,
+        memberPhotoUrlResolver,
+        xroomQueryRepository,
     )
 
     beforeEach {
         clearAllMocks()
+        every { fileUrlResolver.resolve(any()) } answers { "/files/${firstArg<String>()}" }
     }
 
     context("find") {
@@ -45,7 +54,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val member = MemberFixture.create(id = 2L, email = "target@example.com")
             val photo = MemberPhotoFixture.create(
                 memberId = member.id,
-                thumbnailPath = "thumb/photo.jpg"
+                thumbnailKey = "member/thumbnail/${member.id}/thumb_photo.jpg"
             )
 
             every { matchingResultRepository.find(any(), eq(false)) } returns listOf(matchingResult)
@@ -59,7 +68,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             result.data shouldHaveSize 1
             result.data[0].targetName shouldBe member.name
             result.data[0].targetNickname shouldBe member.nickname
-            result.data[0].profileImageUrl shouldBe photo.thumbnailPath
+            result.data[0].profileImageUrl shouldBe "/files/${photo.thumbnailKey}"
         }
 
         test("excluded=true로 조회하면 제외된 매칭결과를 반환한다") {
@@ -73,7 +82,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             val member = MemberFixture.create(id = 2L, email = "target@example.com")
             val photo = MemberPhotoFixture.create(
                 memberId = member.id,
-                thumbnailPath = "thumb/photo.jpg"
+                thumbnailKey = "member/thumbnail/${member.id}/thumb_photo.jpg"
             )
 
             every { matchingResultRepository.find(any(), eq(true)) } returns listOf(matchingResult)
@@ -87,7 +96,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             result.data shouldHaveSize 1
             result.data[0].targetName shouldBe member.name
             result.data[0].targetNickname shouldBe member.nickname
-            result.data[0].profileImageUrl shouldBe photo.thumbnailPath
+            result.data[0].profileImageUrl shouldBe "/files/${photo.thumbnailKey}"
         }
 
         test("매칭결과가 없으면 빈 결과를 반환한다") {
@@ -171,7 +180,7 @@ class MatchingResultQueryServiceTest : FunSpec({
             )
             val member1 = MemberFixture.create(id = 100L, email = "claimer1@a.com", name = "갑")
             val member2 = MemberFixture.create(id = 200L, email = "claimer2@a.com", name = "을")
-            val photo1 = MemberPhotoFixture.create(memberId = member1.id, thumbnailPath = "thumb/1.jpg")
+            val photo1 = MemberPhotoFixture.create(memberId = member1.id, thumbnailKey = "member/thumbnail/${member1.id}/thumb_1.jpg")
 
             every { matchingResultRepository.findClaimedByTarget(myId) } returns listOf(claimer1, claimer2)
             every { memberQueryRepository.findByIds(any()) } returns listOf(member1, member2)
@@ -182,7 +191,7 @@ class MatchingResultQueryServiceTest : FunSpec({
 
             profiles.data shouldHaveSize 2
             profiles.data[0].name shouldBe "갑"
-            profiles.data[0].profileImageUrl shouldBe "thumb/1.jpg"
+            profiles.data[0].profileImageUrl shouldBe "/files/${photo1.thumbnailKey}"
             profiles.data[0].hasXroom shouldBe true
             profiles.data[1].name shouldBe "을"
             profiles.data[1].hasXroom shouldBe false

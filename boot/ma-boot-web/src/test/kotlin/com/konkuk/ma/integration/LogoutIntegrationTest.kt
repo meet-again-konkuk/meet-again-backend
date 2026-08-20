@@ -63,7 +63,7 @@ class LogoutIntegrationTest(
         return "logout-test$memberSeq@example.com"
     }
 
-    fun insertMember(email: String, rawPassword: String, nickname: String = "로그아웃유저"): Long {
+    fun insertMember(email: String, rawPassword: String, nickname: String = "로그아웃유저-$email"): Long {
         return transaction {
             MemberTable.insertAndGetId {
                 it[MemberTable.email] = email

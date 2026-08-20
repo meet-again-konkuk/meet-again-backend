@@ -58,7 +58,7 @@ class MatchingResultQueryApiTest(
                     targetMemberId = 1L,
                     targetName = "김만남",
                     targetNickname = "테스트닉네임",
-                    profileImageUrl = "https://example.com/image.jpg",
+                    profileImageUrl = "/files/member/thumbnail/1/thumb_photo.jpg",
                 )
             )
         )
@@ -101,7 +101,7 @@ class MatchingResultQueryApiTest(
                     targetMemberId = 1L,
                     targetName = "김만남",
                     targetNickname = "테스트닉네임",
-                    profileImageUrl = "https://example.com/image.jpg",
+                    profileImageUrl = "/files/member/thumbnail/1/thumb_photo.jpg",
                 )
             )
         )

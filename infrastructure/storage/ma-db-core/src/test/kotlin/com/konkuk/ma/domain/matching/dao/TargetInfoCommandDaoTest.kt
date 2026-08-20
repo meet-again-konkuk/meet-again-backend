@@ -108,7 +108,7 @@ class TargetInfoCommandDaoTest(
         return MemberTable.insertAndGetId {
             it[MemberTable.email] = email
             it[password] = "password123"
-            it[nickname] = "nickname"
+            it[nickname] = "nickname_$email"
             it[gender] = "MALE"
             it[phoneNumber] = "01012345678"
             it[name] = "테스트"

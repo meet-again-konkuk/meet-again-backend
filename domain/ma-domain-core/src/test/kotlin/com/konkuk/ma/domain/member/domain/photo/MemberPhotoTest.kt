@@ -2,56 +2,48 @@ package com.konkuk.ma.domain.member.domain.photo
 
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
 
 class MemberPhotoTest : FunSpec({
 
-    context("belongsTo") {
-        test("동일한 memberId면 true를 반환한다") {
+    context("pickImageKey") {
+        test("썸네일이 있으면 썸네일 키를 고른다") {
             // Given
-            val photo = MemberPhotoFixture.create(memberId = 1L)
+            val photo = MemberPhotoFixture.create(
+                storageKey = "member/profile/1/photo.jpg",
+                thumbnailKey = "member/thumbnail/1/thumb_photo.jpg"
+            )
 
             // When
-            val result = photo.belongsTo(1L)
+            val result = photo.pickImageKey()
 
             // Then
-            result.shouldBeTrue()
+            result shouldBe photo.thumbnailKey
         }
 
-        test("다른 memberId면 false를 반환한다") {
+        test("썸네일이 없으면 원본 키를 고른다") {
             // Given
-            val photo = MemberPhotoFixture.create(memberId = 1L)
+            val photo = MemberPhotoFixture.create(
+                storageKey = "member/profile/1/photo.jpg",
+                thumbnailKey = null
+            )
 
             // When
-            val result = photo.belongsTo(2L)
+            val result = photo.pickImageKey()
 
             // Then
-            result.shouldBeFalse()
-        }
-    }
-
-    context("hasThumbnail") {
-        test("thumbnailPath가 존재하면 true를 반환한다") {
-            // Given
-            val photo = MemberPhotoFixture.create(thumbnailPath = "member/thumbnail/thumb_photo.jpg")
-
-            // When
-            val result = photo.hasThumbnail()
-
-            // Then
-            result.shouldBeTrue()
+            result shouldBe photo.storageKey
         }
 
-        test("thumbnailPath가 null이면 false를 반환한다") {
-            // Given
-            val photo = MemberPhotoFixture.create(thumbnailPath = null)
+        test("썸네일이 빈 문자열이면 null이 아니므로 썸네일 키를 그대로 고른다") {
+            // Given - 빈 문자열은 "없음"이 아니다. null 여부만으로 판단한다
+            val photo = MemberPhotoFixture.create(thumbnailKey = "")
 
             // When
-            val result = photo.hasThumbnail()
+            val result = photo.pickImageKey()
 
             // Then
-            result.shouldBeFalse()
+            result shouldBe ""
         }
     }
 })

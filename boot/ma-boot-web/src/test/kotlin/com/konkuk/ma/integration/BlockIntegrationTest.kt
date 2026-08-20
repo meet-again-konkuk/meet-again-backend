@@ -71,7 +71,7 @@ class BlockIntegrationTest(
         return "$prefix$memberSeq@example.com"
     }
 
-    fun insertMember(email: String, rawPassword: String? = null, nickname: String = "회원"): Long {
+    fun insertMember(email: String, rawPassword: String? = null, nickname: String = "회원-$email"): Long {
         return transaction {
             MemberTable.insertAndGetId {
                 it[MemberTable.email] = email
@@ -86,8 +86,9 @@ class BlockIntegrationTest(
         }
     }
 
-    fun insertAuthor(nickname: String = "작성자"): Long {
-        return insertMember(email = nextEmail("author"), nickname = nickname)
+    fun insertAuthor(nickname: String? = null): Long {
+        val email = nextEmail("author")
+        return insertMember(email = email, nickname = nickname ?: "작성자-$email")
     }
 
     fun insertPost(authorId: Long): Long {

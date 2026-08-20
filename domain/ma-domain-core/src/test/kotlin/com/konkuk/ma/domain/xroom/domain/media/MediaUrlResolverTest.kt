@@ -60,8 +60,8 @@ class MediaUrlResolverTest : FunSpec({
             val photoUrls = resolver.resolveByMemory(listOf(first, second))
 
             // Then
-            photoUrls.photoUrlOf(first.memoryId) shouldBe "/resolved/${first.storageKey}"
-            photoUrls.photoUrlOf(second.memoryId) shouldBe "/resolved/${second.storageKey}"
+            photoUrls.urlOf(first.memoryId) shouldBe "/resolved/${first.storageKey}"
+            photoUrls.urlOf(second.memoryId) shouldBe "/resolved/${second.storageKey}"
         }
 
         test("빈 목록이면 어떤 기억의 URL도 없다") {
@@ -69,7 +69,7 @@ class MediaUrlResolverTest : FunSpec({
             val photoUrls = resolver.resolveByMemory(emptyList())
 
             // Then
-            photoUrls.photoUrlOf(1L).shouldBeNull()
+            photoUrls.urlOf(1L).shouldBeNull()
         }
     }
 })

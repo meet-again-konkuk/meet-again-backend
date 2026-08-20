@@ -67,7 +67,7 @@ class CommentLikeIntegrationTest(
     fun insertMember(
         email: String,
         rawPassword: String = "password123",
-        nickname: String = "테스터",
+        nickname: String = "테스터-$email",
     ) {
         transaction {
             MemberTable.insert {

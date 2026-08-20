@@ -82,7 +82,7 @@ class FindEmailIntegrationTest(
             MemberTable.insert {
                 it[MemberTable.email] = email
                 it[password] = "password"
-                it[nickname] = "테스터"
+                it[nickname] = "테스터-$email"
                 it[gender] = "MALE"
                 it[MemberTable.phoneNumber] = phoneNumber
                 it[MemberTable.name] = name

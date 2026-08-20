@@ -11,9 +11,9 @@ class MemberPhotoCommandDao {
     fun save(newPhoto: NewPhoto): Long {
         return MemberPhotoTable.insertAndGetId {
             it[memberId] = newPhoto.memberId
-            it[filePath] = newPhoto.filePath
+            it[storageKey] = newPhoto.storageKey
             it[originalFileName] = newPhoto.originalFileName
-            it[thumbnailPath] = newPhoto.thumbnailPath
+            it[thumbnailKey] = newPhoto.thumbnailKey
             it[createdBy] = newPhoto.memberId.toString()
             it[lastModifiedBy] = newPhoto.memberId.toString()
         }.value

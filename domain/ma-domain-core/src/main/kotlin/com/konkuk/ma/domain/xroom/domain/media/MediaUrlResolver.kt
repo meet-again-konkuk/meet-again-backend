@@ -1,5 +1,6 @@
 package com.konkuk.ma.domain.xroom.domain.media
 
+import com.konkuk.ma.domain.common.domain.file.FileUrls
 import com.konkuk.ma.domain.common.domain.file.port.FileUrlResolver
 import org.springframework.stereotype.Component
 
@@ -14,7 +15,7 @@ class MediaUrlResolver(
         )
     }
 
-    fun resolveByMemory(medias: List<Media>): MemoryPhotoUrls {
-        return MemoryPhotoUrls(medias.associate { it.memoryId to fileUrlResolver.resolve(it.storageKey) })
+    fun resolveByMemory(medias: List<Media>): FileUrls {
+        return FileUrls(medias.associate { it.memoryId to fileUrlResolver.resolve(it.storageKey) })
     }
 }

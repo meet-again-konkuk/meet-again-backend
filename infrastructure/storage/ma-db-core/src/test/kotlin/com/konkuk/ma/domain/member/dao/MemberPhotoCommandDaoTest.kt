@@ -49,9 +49,9 @@ class MemberPhotoCommandDaoTest(
                 // Given
                 val newPhoto = createNewPhoto(
                     memberId = 42L,
-                    filePath = "/uploads/photo.jpg",
+                    storageKey = "member/profile/42/photo.jpg",
                     originalFileName = "원본사진.jpg",
-                    thumbnailPath = "/uploads/thumb.jpg"
+                    thumbnailKey = "member/thumbnail/42/thumb_photo.jpg"
                 )
 
                 // When
@@ -60,14 +60,14 @@ class MemberPhotoCommandDaoTest(
                 // Then
                 val row = MemberPhotoTable.selectAll().first()
                 row[MemberPhotoTable.memberId] shouldBe newPhoto.memberId
-                row[MemberPhotoTable.filePath] shouldBe newPhoto.filePath
+                row[MemberPhotoTable.storageKey] shouldBe newPhoto.storageKey
                 row[MemberPhotoTable.originalFileName] shouldBe newPhoto.originalFileName
-                row[MemberPhotoTable.thumbnailPath] shouldBe newPhoto.thumbnailPath
+                row[MemberPhotoTable.thumbnailKey] shouldBe newPhoto.thumbnailKey
             }
 
-            test("thumbnailPath가 null인 사진을 저장한다") {
+            test("thumbnailKey가 null인 사진을 저장한다") {
                 // Given
-                val newPhoto = createNewPhoto(thumbnailPath = null)
+                val newPhoto = createNewPhoto(thumbnailKey = null)
 
                 // When
                 val id = memberPhotoCommandDao.save(newPhoto)
@@ -75,7 +75,7 @@ class MemberPhotoCommandDaoTest(
                 // Then
                 id shouldBeGreaterThan 0L
                 val row = MemberPhotoTable.selectAll().first()
-                row[MemberPhotoTable.thumbnailPath] shouldBe null
+                row[MemberPhotoTable.thumbnailKey] shouldBe null
             }
         }
 
@@ -99,8 +99,8 @@ class MemberPhotoCommandDaoTest(
             test("같은 회원의 사진이 여러 개이면 모두 soft delete 처리한다") {
                 // Given
                 val memberId = 1L
-                insertMemberPhoto(memberId = memberId, filePath = "/uploads/1.jpg")
-                insertMemberPhoto(memberId = memberId, filePath = "/uploads/2.jpg")
+                insertMemberPhoto(memberId = memberId, storageKey = "member/profile/1/1.jpg")
+                insertMemberPhoto(memberId = memberId, storageKey = "member/profile/1/2.jpg")
 
                 // When
                 memberPhotoCommandDao.delete(memberId)
@@ -138,25 +138,25 @@ class MemberPhotoCommandDaoTest(
 
     private fun createNewPhoto(
         memberId: Long = 1L,
-        filePath: String = "/uploads/photo.jpg",
+        storageKey: String = "member/profile/1/photo.jpg",
         originalFileName: String = "원본.jpg",
-        thumbnailPath: String? = "/uploads/thumb.jpg",
+        thumbnailKey: String? = "member/thumbnail/1/thumb_photo.jpg",
     ): NewPhoto {
         return NewPhoto(
             memberId = memberId,
-            filePath = filePath,
+            storageKey = storageKey,
             originalFileName = originalFileName,
-            thumbnailPath = thumbnailPath
+            thumbnailKey = thumbnailKey
         )
     }
 
     private fun insertMemberPhoto(
         memberId: Long = 1L,
-        filePath: String = "/uploads/photo.jpg",
+        storageKey: String = "member/profile/1/photo.jpg",
     ) {
         MemberPhotoTable.insert {
             it[MemberPhotoTable.memberId] = memberId
-            it[MemberPhotoTable.filePath] = filePath
+            it[MemberPhotoTable.storageKey] = storageKey
             it[originalFileName] = "원본.jpg"
         }
     }

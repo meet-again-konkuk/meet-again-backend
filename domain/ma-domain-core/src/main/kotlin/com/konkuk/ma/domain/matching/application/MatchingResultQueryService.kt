@@ -6,7 +6,7 @@ import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.MatchingResultsWithProfiles
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.member.domain.Members
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotoUrlResolver
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
@@ -19,6 +19,7 @@ class MatchingResultQueryService(
     private val matchingResultRepository: MatchingResultRepository,
     private val memberQueryRepository: MemberQueryRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val memberPhotoUrlResolver: MemberPhotoUrlResolver,
     private val xroomQueryRepository: XroomQueryRepository,
 ) {
     fun find(memberId: Long, excluded: Boolean = false): MatchingResultsWithProfiles {
@@ -26,9 +27,9 @@ class MatchingResultQueryService(
         val targetIds = matchingResults.extractTargetIds()
 
         val members = Members(memberQueryRepository.findByIds(targetIds))
-        val photos = MemberPhotos(memberPhotoRepository.find(members.extractIds()))
+        val photos = memberPhotoRepository.find(members.extractIds())
 
-        return matchingResults.combineWithProfiles(members, photos)
+        return matchingResults.combineWithProfiles(members, memberPhotoUrlResolver.resolveByMember(photos))
     }
 
     fun findDetail(matchingResultId: Long, memberId: Long): MatchingResult {
@@ -42,10 +43,14 @@ class MatchingResultQueryService(
         val registerIds = matchingResults.extractRegisterIds()
 
         val members = Members(memberQueryRepository.findByIds(registerIds))
-        val photos = MemberPhotos(memberPhotoRepository.find(members.extractIds()))
+        val photos = memberPhotoRepository.find(members.extractIds())
 
         val xroomExistTargetInfoIds = xroomQueryRepository.exists(matchingResults.extractTargetInfoIds())
 
-        return matchingResults.toClaimerProfiles(members, photos, xroomExistTargetInfoIds)
+        return matchingResults.toClaimerProfiles(
+            members,
+            memberPhotoUrlResolver.resolveByMember(photos),
+            xroomExistTargetInfoIds,
+        )
     }
 }

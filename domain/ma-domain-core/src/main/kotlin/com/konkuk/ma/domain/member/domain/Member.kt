@@ -15,16 +15,28 @@ class Member(
     val id: Long = 0L,
     val email: Email,
     val password: String,
-    val nickname: String,
+    nickname: String,
     val gender: Gender,
     val phoneNumber: PhoneNumber,
     val name: String,
-    val region: Region,
+    region: Region,
     val birthDate: LocalDate,
-    val highSchool: String?,
-    val university: String?,
+    highSchool: String?,
+    university: String?,
     withdrawalRequestedAt: LocalDateTime? = null,
 ) {
+    var nickname: String = nickname
+        private set
+
+    var region: Region = region
+        private set
+
+    var highSchool: String? = highSchool
+        private set
+
+    var university: String? = university
+        private set
+
     var withdrawalRequestedAt: LocalDateTime? = withdrawalRequestedAt
         private set
 
@@ -72,6 +84,15 @@ class Member(
 
     fun getDay(): Day {
         return Day(birthDate.dayOfMonth)
+    }
+
+    fun hasNickname(nickname: String): Boolean = this.nickname == nickname
+
+    fun changeProfile(changes: ProfileChanges) {
+        changes.nickname?.let { nickname = it }
+        changes.region?.let { region = it }
+        changes.highSchool?.let { highSchool = it.value }
+        changes.university?.let { university = it.value }
     }
 
     fun requestWithdrawal(now: LocalDateTime = LocalDateTime.now()): LocalDateTime {

@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.auth.domain
 
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
+import com.konkuk.ma.domain.member.domain.NicknameValidator
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
 import com.konkuk.ma.domain.member.fixture.NewMemberFixture
@@ -15,7 +16,11 @@ class SignUpValidatorTest : FunSpec({
 
     val memberQueryRepository = mockk<MemberQueryRepository>()
     val smsRepository = mockk<SmsRepository>()
-    val signUpValidator = SignUpValidator(memberQueryRepository, SmsVerificationValidator(smsRepository))
+    val signUpValidator = SignUpValidator(
+        memberQueryRepository,
+        NicknameValidator(memberQueryRepository),
+        SmsVerificationValidator(smsRepository),
+    )
 
     context("validate") {
         test("모든 검증이 통과하면 예외가 발생하지 않는다") {

@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.xroom.api
 
 import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.common.domain.file.FileUrls
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.xroom.application.XroomQueryService
@@ -9,7 +10,6 @@ import com.konkuk.ma.domain.xroom.domain.MyXrooms
 import com.konkuk.ma.domain.xroom.domain.ReceivedXroom
 import com.konkuk.ma.domain.xroom.domain.ReceivedXrooms
 import com.konkuk.ma.domain.xroom.domain.XroomDetail
-import com.konkuk.ma.domain.xroom.domain.media.MemoryPhotoUrls
 import com.konkuk.ma.domain.xroom.domain.memory.Memories
 import com.konkuk.ma.domain.xroom.fixture.MemoryFixture
 import com.konkuk.ma.domain.xroom.fixture.MyXroomFixture
@@ -123,7 +123,7 @@ class XroomQueryApiTest(
             xroom = XroomFixture.create(id = 1L, finalMessage = FinalMessage("고마웠어")),
             recipientName = "김만남",
             memoriesCollection = Memories(listOf(MemoryFixture.create(id = 1L, xroomId = 1L))),
-            photoUrls = MemoryPhotoUrls(emptyMap()),
+            photoUrls = FileUrls(emptyMap()),
         )
         every { xroomQueryService.findDetail(1L, authMemberId) } returns xroomDetail
 
