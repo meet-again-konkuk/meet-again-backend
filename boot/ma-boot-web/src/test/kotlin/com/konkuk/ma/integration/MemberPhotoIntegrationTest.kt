@@ -7,6 +7,9 @@ import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldEndWith
+import io.kotest.matchers.string.shouldNotContain
+import io.kotest.matchers.string.shouldStartWith
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
@@ -83,7 +86,7 @@ class MemberPhotoIntegrationTest(
             MemberTable.insertAndGetId {
                 it[MemberTable.email] = email
                 it[password] = passwordEncoder.encode(rawPassword)
-                it[nickname] = "포토테스터"
+                it[nickname] = "포토테스터-$email"
                 it[gender] = "MALE"
                 it[phoneNumber] = "01012345678"
                 it[name] = "김테스트"
@@ -148,8 +151,14 @@ class MemberPhotoIntegrationTest(
 
             savedPhoto shouldNotBe null
             savedPhoto!![MemberPhotoTable.originalFileName] shouldBe "test-photo.png"
-            savedPhoto[MemberPhotoTable.filePath].isNotBlank() shouldBe true
-            savedPhoto[MemberPhotoTable.thumbnailPath]?.isNotBlank() shouldBe true
+
+            // DB에는 서버 파일시스템 절대경로가 아니라 상대 storageKey 만 담긴다
+            val storageKey = savedPhoto[MemberPhotoTable.storageKey]
+            storageKey shouldStartWith "member/profile/$memberId/"
+            storageKey shouldEndWith ".png"
+            storageKey shouldNotContain testUploadDir.toString()
+
+            savedPhoto[MemberPhotoTable.thumbnailKey] shouldBe "member/thumbnail/$memberId/thumb_test-photo.png"
         }
 
         test("기존 사진이 있을 때 새 사진을 업로드하면 기존 사진이 교체된다") {

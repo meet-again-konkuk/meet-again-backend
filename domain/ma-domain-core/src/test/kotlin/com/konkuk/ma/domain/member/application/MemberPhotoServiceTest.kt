@@ -43,8 +43,8 @@ class MemberPhotoServiceTest : FunSpec({
             service.upload(memberId, photoFile)
 
             // Then
-            capturedNewPhoto.captured.filePath shouldBe processed.filePath
-            capturedNewPhoto.captured.thumbnailPath shouldBe processed.thumbnailPath
+            capturedNewPhoto.captured.storageKey shouldBe processed.storageKey
+            capturedNewPhoto.captured.thumbnailKey shouldBe processed.thumbnailKey
             capturedNewPhoto.captured.memberId shouldBe memberId
         }
 
@@ -54,7 +54,7 @@ class MemberPhotoServiceTest : FunSpec({
             val photoFile = PhotoFileFixture.create()
             val existingPhoto = MemberPhotoFixture.create(
                 memberId = memberId,
-                thumbnailPath = "old/thumb.jpg"
+                thumbnailKey = "old/thumb.jpg"
             )
             val processed = ProcessedPhoto("new/path.jpg", "new/thumb.jpg")
 

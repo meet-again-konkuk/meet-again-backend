@@ -234,7 +234,7 @@ class MemberWithdrawalCompleteJobIntegrationTest(
             XroomTable.insert { it[ownerId] = memberId; it[targetInfoId] = 1L; it[template] = "chat_memory"; it[title] = "기억의 방" }
             MemberPhotoTable.insert {
                 it[MemberPhotoTable.memberId] = memberId
-                it[filePath] = "member/profile/$memberId/photo.jpg"
+                it[storageKey] = "member/profile/$memberId/photo.jpg"
                 it[originalFileName] = "photo.jpg"
             }
         }

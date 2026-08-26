@@ -81,7 +81,7 @@ class PostCommandIntegrationTest(
         }
     }
 
-    fun insertMember(email: String, rawPassword: String = "password123", nickname: String = "테스터"): Long {
+    fun insertMember(email: String, rawPassword: String = "password123", nickname: String = "테스터-$email"): Long {
         return transaction {
             MemberTable.insertAndGetId {
                 it[MemberTable.email] = email

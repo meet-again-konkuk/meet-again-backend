@@ -50,7 +50,7 @@ class LoginIntegrationTest(
     fun insertMember(
         email: String = "test@example.com",
         rawPassword: String = "password123",
-        nickname: String = "테스터"
+        nickname: String = "테스터-$email"
     ) {
         transaction {
             MemberTable.insert {

@@ -34,6 +34,7 @@ CREATE TABLE MEMBERS
 
     -- 인덱스
     UNIQUE INDEX idx_member_email (EMAIL),
+    UNIQUE INDEX idx_member_nickname (NICKNAME),
     INDEX idx_member_phone_number (PHONE_NUMBER),
     INDEX idx_member_withdrawal_requested_at (WITHDRAWAL_REQUESTED_AT)
 );
@@ -132,10 +133,10 @@ CREATE TABLE MEMBER_PHOTOS
 
     -- MemberPhotoTable 특화 컬럼들
     MEMBER_ID          BIGINT       NOT NULL,
-    FILE_PATH          VARCHAR(512) NOT NULL,
+    STORAGE_KEY        VARCHAR(512) NOT NULL,
     ORIGINAL_FILE_NAME VARCHAR(255) NOT NULL,
     APPROVAL_STATUS    VARCHAR(32)  NOT NULL DEFAULT 'PENDING',
-    THUMBNAIL_PATH     VARCHAR(512) NULL,
+    THUMBNAIL_KEY      VARCHAR(512) NULL,
 
     -- BaseTable 공통 컬럼들
     CREATED_DATE       DATETIME     DEFAULT CURRENT_TIMESTAMP,

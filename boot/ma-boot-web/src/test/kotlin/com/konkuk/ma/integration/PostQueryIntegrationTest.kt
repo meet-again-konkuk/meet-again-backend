@@ -75,7 +75,7 @@ class PostQueryIntegrationTest(
         }
     }
 
-    fun insertMember(email: String, nickname: String = "작성자", rawPassword: String? = null): Long {
+    fun insertMember(email: String, nickname: String = "작성자-$email", rawPassword: String? = null): Long {
         return transaction {
             MemberTable.insertAndGetId {
                 it[MemberTable.email] = email

@@ -1,10 +1,9 @@
 package com.konkuk.ma.domain.matching.domain
 
+import com.konkuk.ma.domain.common.domain.file.FileUrls
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
-import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
@@ -85,19 +84,16 @@ class MatchingResultsTest : FunSpec({
             val matchingResults = MatchingResults(listOf(matchingResult))
 
             val member = MemberFixture.create(id = 10L, email = "target@example.com", name = "홍길동", nickname = "닉네임")
-            val photo = MemberPhotoFixture.create(
-                memberId = member.id,
-                thumbnailPath = "thumb/photo.jpg"
-            )
+            val imageUrl = "/files/member/thumbnail/${member.id}/thumb_photo.jpg"
 
             val result = matchingResults.combineWithProfiles(
-                Members(listOf(member)), MemberPhotos(listOf(photo))
+                Members(listOf(member)), FileUrls(mapOf(member.id to imageUrl))
             )
 
             result.data shouldHaveSize 1
             result.data[0].targetName shouldBe member.name
             result.data[0].targetNickname shouldBe member.nickname
-            result.data[0].profileImageUrl shouldBe photo.thumbnailPath
+            result.data[0].profileImageUrl shouldBe imageUrl
         }
 
         test("탈퇴한 회원도 결과에 포함되며 isWithdrawn이 true이다") {
@@ -108,7 +104,7 @@ class MatchingResultsTest : FunSpec({
             val activeMember = MemberFixture.create(id = 10L, email = "active@example.com")
 
             val result = matchingResults.combineWithProfiles(
-                Members(listOf(activeMember)), MemberPhotos(emptyList())
+                Members(listOf(activeMember)), FileUrls(emptyMap())
             )
 
             result.data shouldHaveSize 2
@@ -126,7 +122,19 @@ class MatchingResultsTest : FunSpec({
             val member = MemberFixture.create(id = 10L, email = "target@example.com")
 
             val result = matchingResults.combineWithProfiles(
-                Members(listOf(member)), MemberPhotos(emptyList())
+                Members(listOf(member)), FileUrls(emptyMap())
+            )
+
+            result.data shouldHaveSize 1
+            result.data[0].profileImageUrl shouldBe null
+        }
+
+        test("탈퇴해 조회되지 않는 회원은 URL이 있어도 profileImageUrl이 null이다") {
+            val matchingResult = MatchingResultFixture.create(targetId = 10L)
+            val matchingResults = MatchingResults(listOf(matchingResult))
+
+            val result = matchingResults.combineWithProfiles(
+                Members(emptyList()), FileUrls(mapOf(10L to "/files/member/profile/10/photo.jpg"))
             )
 
             result.data shouldHaveSize 1
@@ -137,7 +145,7 @@ class MatchingResultsTest : FunSpec({
             val matchingResults = MatchingResults(emptyList())
 
             val result = matchingResults.combineWithProfiles(
-                Members(emptyList()), MemberPhotos(emptyList())
+                Members(emptyList()), FileUrls(emptyMap())
             )
 
             result.data shouldHaveSize 0
@@ -150,15 +158,15 @@ class MatchingResultsTest : FunSpec({
 
             val memberA = MemberFixture.create(id = 10L, email = "a@example.com", name = "김철수", nickname = "철수")
             val memberB = MemberFixture.create(id = 20L, email = "b@example.com", name = "이영희", nickname = "영희")
-            val photoA = MemberPhotoFixture.create(memberId = memberA.id, thumbnailPath = "thumb/a.jpg")
+            val urlOfA = "/files/member/thumbnail/${memberA.id}/thumb_a.jpg"
 
             val result = matchingResults.combineWithProfiles(
-                Members(listOf(memberA, memberB)), MemberPhotos(listOf(photoA))
+                Members(listOf(memberA, memberB)), FileUrls(mapOf(memberA.id to urlOfA))
             )
 
             result.data shouldHaveSize 2
             result.data[0].targetName shouldBe memberA.name
-            result.data[0].profileImageUrl shouldBe photoA.thumbnailPath
+            result.data[0].profileImageUrl shouldBe urlOfA
             result.data[1].targetName shouldBe memberB.name
             result.data[1].profileImageUrl shouldBe null
         }
@@ -203,17 +211,17 @@ class MatchingResultsTest : FunSpec({
 
             val member1 = MemberFixture.create(id = 100L, email = "claimer1@a.com", name = "갑", nickname = "gap")
             val member2 = MemberFixture.create(id = 200L, email = "claimer2@a.com", name = "을", nickname = "eul")
-            val photo1 = MemberPhotoFixture.create(memberId = member1.id, thumbnailPath = "thumb/1.jpg")
+            val urlOf1 = "/files/member/thumbnail/${member1.id}/thumb_1.jpg"
 
             val profiles = matchingResults.toClaimerProfiles(
                 Members(listOf(member1, member2)),
-                MemberPhotos(listOf(photo1)),
+                FileUrls(mapOf(member1.id to urlOf1)),
                 xroomExistTargetInfoIds = setOf(10L),
             )
 
             profiles.data shouldHaveSize 2
             profiles.data[0].name shouldBe "갑"
-            profiles.data[0].profileImageUrl shouldBe "thumb/1.jpg"
+            profiles.data[0].profileImageUrl shouldBe urlOf1
             profiles.data[0].hasXroom shouldBe true
             profiles.data[1].name shouldBe "을"
             profiles.data[1].profileImageUrl shouldBe null
@@ -226,7 +234,7 @@ class MatchingResultsTest : FunSpec({
 
             val profiles = matchingResults.toClaimerProfiles(
                 Members(listOf(MemberFixture.create(id = 100L, email = "c@a.com"))),
-                MemberPhotos(emptyList()),
+                FileUrls(emptyMap()),
                 xroomExistTargetInfoIds = emptySet(),
             )
 
@@ -239,7 +247,7 @@ class MatchingResultsTest : FunSpec({
 
             val profiles = matchingResults.toClaimerProfiles(
                 Members(emptyList()),
-                MemberPhotos(emptyList()),
+                FileUrls(emptyMap()),
                 xroomExistTargetInfoIds = emptySet(),
             )
 
@@ -252,7 +260,7 @@ class MatchingResultsTest : FunSpec({
 
             val profiles = matchingResults.toClaimerProfiles(
                 Members(emptyList()),
-                MemberPhotos(emptyList()),
+                FileUrls(emptyMap()),
                 xroomExistTargetInfoIds = emptySet(),
             )
 

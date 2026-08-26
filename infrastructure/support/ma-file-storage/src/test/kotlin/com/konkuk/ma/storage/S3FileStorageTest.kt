@@ -69,27 +69,6 @@ class S3FileStorageTest : FunSpec({
         }
     }
 
-    context("delete") {
-
-        test("주어진 filePath를 키로 deleteObject를 호출한다") {
-            // Given
-            val filePath = "memory/memory-photo/1/photo.jpg"
-            val requestSlot = slot<DeleteObjectRequest>()
-            every {
-                s3Client.deleteObject(capture(requestSlot))
-            } returns DeleteObjectResponse.builder().build()
-
-            // When
-            storage.delete(filePath)
-
-            // Then
-            val captured = requestSlot.captured
-            captured.bucket() shouldBe bucket
-            captured.key() shouldBe filePath
-            verify(exactly = 1) { s3Client.deleteObject(any<DeleteObjectRequest>()) }
-        }
-    }
-
     context("deleteByKey") {
 
         test("주어진 storageKey를 키로 deleteObject를 호출한다") {

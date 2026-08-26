@@ -21,6 +21,8 @@
 
 | Method | Endpoint | 용도 |
 |--------|----------|------|
+| GET | /api/members/me | 내 프로필 조회 (11필드, profileImageUrl 포함) |
+| PATCH | /api/members/me | 내 프로필 부분 수정 (nickname·region·highSchool·university. 생략=변경없음, highSchool·university 에 명시적 null=비우기. name·gender 는 매칭 하드 필터라 제외) |
 | POST | /api/members/nickname/exists | 닉네임 중복 확인 |
 | POST | /api/members/email/exists | 이메일 중복 확인 |
 | POST | /api/members/photos | 프로필 사진 업로드 |
@@ -113,6 +115,26 @@
 ---
 
 # 📋 TODO
+
+## 회원
+
+### 제목 : `MEMBERS.PROFILE_IMAGE_URL` 죽은 컬럼 제거
+- **인증**: 불필요 (DB 스키마 정리)
+
+**상세내용**:
+- 읽는 코드 0건. `MemberCommandDao.anonymizeAndSoftDelete` 에서 null 을 대입하는 것이 유일한 사용처다.
+- 프로필 사진은 `MEMBER_PHOTOS` 가 담당하며, URL 은 `MemberPhotoUrlResolver` 가 `storageKey` 로부터 만든다.
+- REQ-016(2026-08-20) 에서 범위 밖으로 남긴 별건.
+
+### 제목 : 프로필 사진 `APPROVAL_STATUS` 승인 워크플로
+- **인증**: 필요
+
+**상세내용**:
+- `MEMBER_PHOTOS.APPROVAL_STATUS` 컬럼과 `ApprovalStatus` enum 은 있으나 **어디서도 검사하지 않는다.**
+- 매칭 응답·내 프로필 응답 모두 승인 여부와 무관하게 사진을 노출한다. REQ-016 도 기존 동작을 그대로 유지했다.
+- 승인 워크플로가 필요하면 검사 지점(매칭 응답 / `/api/members/me` / 정적 서빙)과 미승인 시 대체 이미지 정책을 함께 정해야 한다.
+
+---
 
 ## 매칭
 

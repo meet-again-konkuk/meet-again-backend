@@ -56,28 +56,6 @@ class LocalFileStorageTest : FunSpec({
         }
     }
 
-    context("delete") {
-
-        test("존재하는 파일을 삭제한다") {
-            val content = "to-delete".toByteArray()
-            val photoFile = PhotoFile(
-                originalFileName = "delete-me.jpg",
-                extension = AllowedExtension.from("delete-me.jpg"),
-                sizeInBytes = content.size.toLong(),
-                content = content,
-            )
-            val storedPath = storage.store("temp", photoFile)
-
-            storage.delete(storedPath)
-
-            Files.exists(Paths.get(storedPath)) shouldBe false
-        }
-
-        test("존재하지 않는 파일 경로로 삭제해도 예외가 발생하지 않는다") {
-            storage.delete("/non/existent/path/file.jpg")
-        }
-    }
-
     context("deleteByKey") {
 
         test("basePath 아래 상대 storageKey의 파일을 삭제한다") {

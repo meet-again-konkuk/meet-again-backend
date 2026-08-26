@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 object MemberTable : BaseTable("MEMBERS", "MEMBER_ID") {
     val email = varchar("EMAIL", 255).uniqueIndex()
     val password = varchar("PASSWORD", 255)
-    val nickname = varchar("NICKNAME", 255)
+    val nickname = varchar("NICKNAME", 255).uniqueIndex()
     val gender = varchar("GENDER", 32)
     val phoneNumber = varchar("PHONE_NUMBER", 255).index()
     val name = varchar("NAME", 255)

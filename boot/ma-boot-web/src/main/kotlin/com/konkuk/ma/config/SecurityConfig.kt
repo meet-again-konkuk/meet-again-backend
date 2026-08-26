@@ -40,6 +40,7 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.GET, "/api/members/regions").permitAll()
                     .requestMatchers(HttpMethod.GET, "/files/memory/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/files/community/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/files/member/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/points").authenticated()
                     .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()

@@ -31,8 +31,6 @@ class S3FileStorage(
         return key
     }
 
-    override fun delete(filePath: String) = deleteObject(filePath)
-
     override fun deleteByKey(storageKey: String) = deleteObject(storageKey)
 
     private fun putObject(key: String, bytes: ByteArray, mimeType: String?) {

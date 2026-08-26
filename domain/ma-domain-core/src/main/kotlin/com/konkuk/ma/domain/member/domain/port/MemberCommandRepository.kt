@@ -9,6 +9,7 @@ interface MemberCommandRepository {
     fun requestWithdrawal(memberId: Long, requestedAt: LocalDateTime = LocalDateTime.now())
     fun cancelWithdrawal(memberId: Long)
     fun updatePassword(memberId: Long, encodedPassword: String)
+    fun updateProfile(member: Member)
     fun anonymizeAndSoftDelete(member: Member)
 }
 

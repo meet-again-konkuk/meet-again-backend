@@ -16,7 +16,7 @@ class MemberPhotoService(
     fun upload(memberId: Long, photoFile: PhotoFile) {
         delete(memberId)
         val processed = memberPhotoProcessor.process(memberId, photoFile)
-        val newPhoto = NewPhoto.create(memberId, processed.filePath, photoFile.originalFileName, processed.thumbnailPath)
+        val newPhoto = NewPhoto.create(memberId, processed.storageKey, photoFile.originalFileName, processed.thumbnailKey)
         memberPhotoRepository.save(newPhoto)
     }
 

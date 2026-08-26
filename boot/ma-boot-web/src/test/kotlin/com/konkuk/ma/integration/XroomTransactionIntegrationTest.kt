@@ -98,7 +98,7 @@ class XroomTransactionIntegrationTest(
             MemberTable.insertAndGetId {
                 it[MemberTable.email] = email
                 it[password] = passwordEncoder.encode(rawPassword)
-                it[nickname] = "테스터"
+                it[nickname] = "테스터-$email"
                 it[gender] = "MALE"
                 it[phoneNumber] = "01012345678"
                 it[name] = "김테스트"

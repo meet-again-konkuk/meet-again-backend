@@ -17,6 +17,7 @@ import com.konkuk.ma.domain.xroom.domain.memory.Memory
 /**
  * 탈퇴 정리(삭제·익명화) 직전에 보존하는 회원 전체 스냅샷.
  * 분쟁 대응 근거 자료로 저장소에 업로드된다.
+ * photo 의 키는 2026-08-20 이전 백업 파일에서는 상대 storageKey 가 아니라 서버 절대경로다.
  */
 class MemberWithdrawalBackup(
     val member: MemberBackupView,

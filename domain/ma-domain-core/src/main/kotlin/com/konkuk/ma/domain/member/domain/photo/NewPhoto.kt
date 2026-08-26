@@ -2,22 +2,22 @@ package com.konkuk.ma.domain.member.domain.photo
 
 class NewPhoto(
     val memberId: Long,
-    val filePath: String,
+    val storageKey: String,
     val originalFileName: String,
-    val thumbnailPath: String? = null
+    val thumbnailKey: String? = null
 ) {
     companion object {
         fun create(
             memberId: Long,
-            filePath: String,
+            storageKey: String,
             originalFileName: String,
-            thumbnailPath: String? = null
+            thumbnailKey: String? = null
         ): NewPhoto {
             return NewPhoto(
                 memberId = memberId,
-                filePath = filePath,
+                storageKey = storageKey,
                 originalFileName = originalFileName,
-                thumbnailPath = thumbnailPath
+                thumbnailKey = thumbnailKey
             )
         }
     }

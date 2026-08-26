@@ -123,11 +123,11 @@ class MemberPhotoQueryDaoTest(
 
     private fun insertMemberPhoto(
         memberId: Long = 1L,
-        filePath: String = "/uploads/photo.jpg",
+        storageKey: String = "member/profile/1/photo.jpg",
     ) {
         MemberPhotoTable.insert {
             it[MemberPhotoTable.memberId] = memberId
-            it[MemberPhotoTable.filePath] = filePath
+            it[MemberPhotoTable.storageKey] = storageKey
             it[originalFileName] = "원본.jpg"
         }
     }

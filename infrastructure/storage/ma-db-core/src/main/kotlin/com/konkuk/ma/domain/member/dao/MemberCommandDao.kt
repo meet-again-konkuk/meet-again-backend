@@ -50,6 +50,16 @@ class MemberCommandDao {
         }
     }
 
+    fun updateProfile(member: Member) {
+        MemberTable.update({ MemberTable.id eq member.id }) {
+            it[nickname] = member.nickname
+            it[region] = member.region.name
+            it[highSchool] = member.highSchool
+            it[university] = member.university
+            it[lastModifiedBy] = member.id.toString()
+        }
+    }
+
     fun anonymizeAndSoftDelete(anonymized: Member) {
         MemberTable.update({ MemberTable.id eq anonymized.id }) {
             it[email] = anonymized.email.value

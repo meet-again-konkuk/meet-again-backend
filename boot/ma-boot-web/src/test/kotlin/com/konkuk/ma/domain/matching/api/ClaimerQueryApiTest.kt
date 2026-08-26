@@ -33,7 +33,7 @@ class ClaimerQueryApiTest(
                     memberId = 1L,
                     name = "김클레임",
                     nickname = "클레이머닉네임",
-                    profileImageUrl = "https://example.com/claimer.jpg",
+                    profileImageUrl = "/files/member/thumbnail/1/thumb_claimer.jpg",
                     hasXroom = true,
                 ),
                 ClaimerProfile(
