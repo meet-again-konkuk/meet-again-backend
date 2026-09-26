@@ -13,21 +13,23 @@ plan 문서 경로: $ARGUMENTS
 2. 브랜치명 규칙: `feat/{feature-name}` (plan 문서의 기능명을 kebab-case로, `backend/` 접두사 없음)
 3. `git checkout -b {브랜치명}`
 
-## 3단계: 구현 + 테스트 (단일 에이전트 1회 호출)
+## 3단계: 구현 → 테스트 (에이전트 2회 호출)
 
-code-implementer 에이전트를 **한 번** 호출한다. 프롬프트에 다음을 명시:
+1. **code-implementer** 에이전트를 **한 번** 호출한다. 프롬프트에 다음을 명시:
+   - plan 문서 전체 구현 (Phase 1~N, 구현 순서 준수)
+   - 테스트 코드는 쓰지 않는다 (전역 code-implementer 규칙 — 테스트는 다음 호출이 맡는다)
+   - 필수 참조 스킬: `clean-code`, `code-implementation-rules` 두 SKILL.md를 모두 Read
+   - 완료 기준: `./gradlew compileKotlin compileTestKotlin` 통과
+2. 이어서 **kotest-writer** 에이전트를 **한 번** 호출해 해당 PR 범위의 테스트를 작성한다:
+   - 도메인 단위 테스트 (VO, 도메인 객체, Validator)
+   - Service 테스트 (Mockk)
+   - 인프라 통합 테스트 (Repository/Dao)
+   - Mock 어댑터 등 Boot 테스트
+   - REST Docs 테스트는 제외 (다음 단계에서 별도 처리)
+   - 필수 참조 스킬: `kotest-writing`
+   - 완료 기준: `./gradlew test` 전체 그린
 
-- plan 문서 전체 구현 (Phase 1~N, 구현 순서 준수)
-- 구현 직후 **해당 PR 범위의 모든 테스트를 연속 작성**:
-  - 도메인 단위 테스트 (VO, 도메인 객체, Validator)
-  - Service 테스트 (Mockk)
-  - 인프라 통합 테스트 (Repository/Dao)
-  - Mock 어댑터 등 Boot 테스트
-- REST Docs 테스트는 제외 (다음 단계에서 별도 처리)
-- 필수 참조 스킬: `clean-code`, `code-implementation-rules`, `kotest-writing` 세 SKILL.md를 모두 Read
-- 완료 기준: `./gradlew test` 전체 그린
-
-구현과 테스트를 동일 에이전트에서 연속 수행해 스킬·컨벤션 재로드 비용을 제거한다. kotest-writer로 분리 호출 금지.
+테스트 작성자와 구현자를 분리한다 — 전역 code-implementer 는 테스트를 만들지 않는다.
 
 ## 4단계: REST Docs (API가 있는 경우만, rest-docs-generator 1회 호출)
 
