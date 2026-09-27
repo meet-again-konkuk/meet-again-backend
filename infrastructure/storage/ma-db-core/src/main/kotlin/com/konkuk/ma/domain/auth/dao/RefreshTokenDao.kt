@@ -4,8 +4,8 @@ import com.konkuk.ma.domain.auth.domain.RefreshToken
 import com.konkuk.ma.domain.auth.entity.RefreshTokenEntity
 import com.konkuk.ma.domain.auth.entity.table.RefreshTokenTable
 import com.konkuk.ma.domain.common.RowEntityMapper
-import com.konkuk.ma.exception.EntityNotFoundException
-import com.konkuk.ma.exception.EntityType
+
+
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -16,26 +16,25 @@ import org.springframework.stereotype.Component
 class RefreshTokenDao {
     fun save(refreshToken: RefreshToken) {
         RefreshTokenTable.insert {
-            it[email] = refreshToken.email.value
+            it[memberId] = refreshToken.memberId
             it[token] = refreshToken.token
             it[expirationDate] = refreshToken.expirationDate
-            it[createdBy] = refreshToken.email.value
-            it[lastModifiedBy] = refreshToken.email.value
+            it[createdBy] = refreshToken.memberId.toString()
+            it[lastModifiedBy] = refreshToken.memberId.toString()
         }
     }
 
-    fun delete(email: String) {
+    fun delete(memberId: Long) {
         RefreshTokenTable.deleteWhere {
-            RefreshTokenTable.email eq email
+            RefreshTokenTable.memberId eq memberId
         }
     }
 
-    fun findOne(email: String): RefreshTokenEntity {
+    fun findOne(memberId: Long): RefreshTokenEntity? {
         return RefreshTokenTable.selectAll()
-            .where { RefreshTokenTable.email eq email }
+            .where { RefreshTokenTable.memberId eq memberId }
             .limit(1)
             .firstOrNull()
             ?.let { RowEntityMapper.toRefreshTokenEntity(it) }
-            ?: throw EntityNotFoundException(EntityType.REFRESH_TOKEN, email)
     }
 }

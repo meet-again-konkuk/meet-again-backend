@@ -1,0 +1,29 @@
+package com.konkuk.ma.domain.support.domain
+
+import com.konkuk.ma.exception.InvalidValueException
+
+class NewInquiry(
+    val authorId: Long,
+    val title: String,
+    val content: String,
+) {
+    init {
+        validateTitle()
+        validateContent()
+    }
+
+    private fun validateTitle() {
+        if (title.isBlank()) throw InvalidValueException(NewInquiry::class, title, "문의 제목은 비어있을 수 없습니다.")
+        if (title.length > MAX_TITLE_LENGTH) throw InvalidValueException(NewInquiry::class, title, "문의 제목은 ${MAX_TITLE_LENGTH}자 이하여야 합니다.")
+    }
+
+    private fun validateContent() {
+        if (content.isBlank()) throw InvalidValueException(NewInquiry::class, content, "문의 내용은 비어있을 수 없습니다.")
+        if (content.length > MAX_CONTENT_LENGTH) throw InvalidValueException(NewInquiry::class, content, "문의 내용은 ${MAX_CONTENT_LENGTH}자 이하여야 합니다.")
+    }
+
+    companion object {
+        const val MAX_TITLE_LENGTH = 50
+        const val MAX_CONTENT_LENGTH = 500
+    }
+}

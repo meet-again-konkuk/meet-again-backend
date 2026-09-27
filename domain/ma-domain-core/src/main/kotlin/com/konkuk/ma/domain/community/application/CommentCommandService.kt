@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.CommentValidator
+import com.konkuk.ma.domain.community.domain.CommentNotificationRegistrar
 import com.konkuk.ma.domain.community.domain.NewComment
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
@@ -14,15 +14,18 @@ class CommentCommandService(
     private val commentCommandRepository: CommentCommandRepository,
     private val commentQueryRepository: CommentQueryRepository,
     private val commentValidator: CommentValidator,
+    private val commentNotificationRegistrar: CommentNotificationRegistrar,
 ) {
     fun create(newComment: NewComment): Long {
         commentValidator.validate(newComment)
-        return commentCommandRepository.save(newComment)
+        val commentId = commentCommandRepository.save(newComment)
+        commentNotificationRegistrar.register(newComment, commentId)
+        return commentId
     }
 
-    fun delete(commentId: Long, email: String) {
+    fun delete(commentId: Long, memberId: Long) {
         val comment = commentQueryRepository.findOne(commentId)
-        comment.validateOwnership(Email(email))
+        comment.validateOwnership(memberId)
         commentCommandRepository.delete(commentId)
     }
 }

@@ -11,6 +11,11 @@ class PostResponse(
     val content: String,
     val likes: Int,
     val timeAgo: String,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
+    val commentCount: Int,
+    val imageUrl: String? = null,
+    val thumbnailUrl: String? = null,
 ) {
     companion object {
         fun from(postWithAuthor: PostWithAuthor): PostResponse {
@@ -21,8 +26,13 @@ class PostResponse(
                 category = post.category.name,
                 title = post.title,
                 content = post.content,
-                likes = post.likes,
+                likes = postWithAuthor.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
+                likedByMe = postWithAuthor.likedByMe,
+                isMine = postWithAuthor.isMine,
+                commentCount = postWithAuthor.commentCount,
+                imageUrl = postWithAuthor.imageUrl,
+                thumbnailUrl = postWithAuthor.thumbnailUrl,
             )
         }
     }

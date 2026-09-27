@@ -1,0 +1,190 @@
+package com.konkuk.ma.domain.xroom.dao
+
+import com.konkuk.ma.config.DatabaseTest
+import com.konkuk.ma.config.TestDatabaseConfig
+import com.konkuk.ma.domain.xroom.domain.NewXroom
+import com.konkuk.ma.domain.xroom.entity.table.XroomTable
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.spring.SpringExtension
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.springframework.test.context.ContextConfiguration
+
+@ContextConfiguration(classes = [TestDatabaseConfig::class, XroomCommandDao::class, XroomQueryDao::class])
+@DatabaseTest
+class XroomDaoTest(
+    private val xroomCommandDao: XroomCommandDao,
+    private val xroomQueryDao: XroomQueryDao,
+) : FunSpec() {
+
+    override fun extensions() = listOf(SpringExtension)
+
+    init {
+        beforeEach {
+            SchemaUtils.create(XroomTable)
+        }
+
+        afterEach {
+            SchemaUtils.drop(XroomTable)
+        }
+
+        context("save") {
+
+            test("방을 저장하고 ID를 반환한다") {
+                val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
+
+                val id = xroomCommandDao.save(newXroom)
+
+                id shouldNotBe null
+                id shouldBe 1L
+            }
+        }
+
+        context("find") {
+
+            test("ownerId의 활성 방 목록을 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 2L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 3L))
+
+                val found = xroomQueryDao.find(1L)
+
+                found.map { it.targetInfoId } shouldContainExactlyInAnyOrder listOf(1L, 2L)
+            }
+
+            test("조회 결과는 도메인으로 변환되며 updatedAt이 채워진다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+
+                val xroom = xroomQueryDao.find(1L).first().toDomain()
+
+                xroom.updatedAt shouldNotBe null
+            }
+
+            test("soft-deleted 방은 제외된다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 2L))
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
+
+                xroomQueryDao.find(1L).map { it.targetInfoId } shouldContainExactlyInAnyOrder listOf(2L)
+            }
+
+            test("ownerId의 방이 없으면 빈 목록을 반환한다") {
+                xroomQueryDao.find(999L).shouldBeEmpty()
+            }
+        }
+
+        context("exists") {
+
+            test("해당 targetInfoId의 방이 존재하면 true를 반환한다") {
+                val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
+                xroomCommandDao.save(newXroom)
+
+                xroomQueryDao.exists(1L).shouldBeTrue()
+            }
+
+            test("해당 targetInfoId의 방이 없으면 false를 반환한다") {
+                xroomQueryDao.exists(999L).shouldBeFalse()
+            }
+
+            test("deleted=true인 방은 존재하지 않는 것으로 판단한다") {
+                val newXroom = NewXroom(ownerId = 1L, targetInfoId = 1L)
+                xroomCommandDao.save(newXroom)
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
+
+                xroomQueryDao.exists(1L).shouldBeFalse()
+            }
+        }
+
+        context("exists (복수)") {
+
+            test("일부만 존재하면 존재하는 targetInfoId만 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 2L))
+
+                xroomQueryDao.exists(setOf(1L, 2L, 999L)) shouldContainExactlyInAnyOrder setOf(1L, 2L)
+            }
+
+            test("빈 Set이 입력되면 빈 Set을 반환한다") {
+                xroomQueryDao.exists(emptySet()).shouldBeEmpty()
+            }
+
+            test("soft-deleted는 결과에서 제외된다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 2L))
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
+
+                xroomQueryDao.exists(setOf(1L, 2L)) shouldContainExactlyInAnyOrder setOf(2L)
+            }
+        }
+
+        context("findByTargetInfoIds") {
+
+            test("주어진 targetInfoId 집합의 활성 방을 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 2L))
+                xroomCommandDao.save(NewXroom(ownerId = 3L, targetInfoId = 3L))
+
+                val found = xroomQueryDao.findByTargetInfoIds(setOf(1L, 2L))
+
+                found.map { it.targetInfoId } shouldContainExactlyInAnyOrder listOf(1L, 2L)
+            }
+
+            test("soft-deleted 방은 제외된다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                xroomCommandDao.save(NewXroom(ownerId = 2L, targetInfoId = 2L))
+                XroomTable.softDelete({ XroomTable.targetInfoId eq 1L }, "1")
+
+                xroomQueryDao.findByTargetInfoIds(setOf(1L, 2L))
+                    .map { it.targetInfoId } shouldContainExactlyInAnyOrder listOf(2L)
+            }
+
+            test("빈 Set이 입력되면 빈 리스트를 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+
+                xroomQueryDao.findByTargetInfoIds(emptySet()).shouldBeEmpty()
+            }
+
+            test("매칭되는 방이 없으면 빈 리스트를 반환한다") {
+                xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+
+                xroomQueryDao.findByTargetInfoIds(setOf(999L)).shouldBeEmpty()
+            }
+        }
+
+        context("findOne") {
+
+            test("ID로 활성 방을 조회한다") {
+                val id = xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+
+                val found = xroomQueryDao.findOne(id)
+
+                found shouldNotBe null
+                found!!.id shouldBe id
+            }
+
+            test("soft-deleted 방은 조회되지 않는다") {
+                val id = xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                XroomTable.softDelete({ XroomTable.id eq id }, "1")
+
+                xroomQueryDao.findOne(id) shouldBe null
+            }
+        }
+
+        context("updateFinalMessage") {
+
+            test("마지막 메시지를 수정한다") {
+                val id = xroomCommandDao.save(NewXroom(ownerId = 1L, targetInfoId = 1L))
+                val xroom = xroomQueryDao.findOne(id)!!.toDomain().updateFinalMessage("고마웠어")
+
+                xroomCommandDao.updateFinalMessage(xroom)
+
+                xroomQueryDao.findOne(id)!!.finalMessage shouldBe "고마웠어"
+            }
+        }
+    }
+}

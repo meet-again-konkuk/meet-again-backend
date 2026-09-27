@@ -37,7 +37,7 @@ class RefreshTokenApiTest(
             email = Email("user@example.com"),
             nickname = "tester",
             accessToken = "new-access-token",
-            refreshToken = RefreshToken(Email("user@example.com"), LocalDateTime.now().plusDays(7), "new-refresh-token")
+            refreshToken = RefreshToken(memberId = 1L, LocalDateTime.now().plusDays(7), "new-refresh-token")
         )
         every { refreshTokenService.refreshToken(request.refreshToken) } returns loginInfo
 

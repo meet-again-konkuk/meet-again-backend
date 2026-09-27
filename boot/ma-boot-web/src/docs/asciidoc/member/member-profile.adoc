@@ -1,0 +1,120 @@
+= 내 프로필 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 내 프로필 조회 API
+
+로그인한 회원 본인의 프로필 전체를 조회합니다.
+인증이 필요합니다 (`Authorization: Bearer <액세스 토큰>`).
+
+`gender` 는 `MALE` / `FEMALE`, `region` 은 `Region` enum 코드(`SEOUL` 등)로 내려갑니다.
+`region` 의 선택지와 화면 표시명은 `GET /api/members/regions` 를 사용하세요.
+`birthDate` 는 `yyyy-MM-dd`, `phoneNumber` 는 하이픈 없는 숫자열입니다.
+`profileImageUrl` 은 `/files/member/...` 형태이며 인증 헤더 없이 접근할 수 있습니다.
+
+=== 요청
+
+include::{snippets}/member-profile-me/http-request.adoc[]
+
+=== 요청 헤더
+
+include::{snippets}/member-profile-me/request-headers.adoc[]
+
+=== 응답
+
+include::{snippets}/member-profile-me/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/member-profile-me/response-fields.adoc[]
+
+=== 학교 정보와 프로필 사진이 없는 경우
+
+`highSchool` · `university` · `profileImageUrl` 세 필드는 값이 없으면 `null` 로 내려갑니다.
+
+include::{snippets}/member-profile-me-empty-optional/http-response.adoc[]
+
+== 내 프로필 수정 API
+
+로그인한 회원 본인의 프로필을 **부분 수정** 합니다.
+인증이 필요합니다 (`Authorization: Bearer <액세스 토큰>`).
+
+수정할 수 있는 필드는 `nickname` · `region` · `highSchool` · `university` 4개이며 전부 선택적입니다.
+`name` · `gender` 는 매칭 후보를 거르는 값이라 수정 대상에서 제외했고,
+`email` · `birthDate` · `phoneNumber` 는 읽기 전용입니다.
+
+.필드별 동작
+|===
+| 필드 | 생략 | `null` | 값
+
+| `nickname`
+| 변경 없음
+| 400
+| 형식 검증(`+^[a-zA-Z가-힣0-9]{2,8}$+`) + 중복 검사 후 변경
+
+| `region`
+| 변경 없음
+| 400
+| enum 검증 후 변경
+
+| `highSchool`
+| 변경 없음
+| 비우기
+| 변경
+
+| `university`
+| 변경 없음
+| 비우기
+| 변경
+|===
+
+응답은 조회 API 와 동일한 11개 필드이며, 수정이 반영된 값입니다.
+
+=== 요청
+
+include::{snippets}/member-profile-update/http-request.adoc[]
+
+=== 요청 헤더
+
+include::{snippets}/member-profile-update/request-headers.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/member-profile-update/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/member-profile-update/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/member-profile-update/response-fields.adoc[]
+
+=== 일부 필드만 보내는 경우 (생략 = 변경 없음)
+
+보내지 않은 필드는 기존 값이 그대로 유지됩니다.
+
+include::{snippets}/member-profile-update-partial/http-request.adoc[]
+
+include::{snippets}/member-profile-update-partial/http-response.adoc[]
+
+=== 학교 정보를 비우는 경우 (명시적 null = 비우기)
+
+`highSchool` · `university` 에 `null` 을 명시하면 값이 비워집니다.
+`nickname` · `region` 에 `null` 을 보내면 400 입니다.
+
+include::{snippets}/member-profile-update-clear/http-request.adoc[]
+
+include::{snippets}/member-profile-update-clear/request-fields.adoc[]
+
+include::{snippets}/member-profile-update-clear/http-response.adoc[]
+
+=== 유효하지 않은 닉네임 형식으로 요청 시
+
+include::{snippets}/member-profile-update-invalid-nickname/http-request.adoc[]
+
+include::{snippets}/member-profile-update-invalid-nickname/http-response.adoc[]

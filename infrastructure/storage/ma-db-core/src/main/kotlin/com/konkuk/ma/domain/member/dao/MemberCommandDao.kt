@@ -1,13 +1,17 @@
 package com.konkuk.ma.domain.member.dao
 
+import com.konkuk.ma.domain.member.domain.Member
 import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class MemberCommandDao {
-    
+
     fun save(newMember: NewMember): Long {
         return MemberTable.insertAndGetId {
             it[email] = newMember.email.value
@@ -24,4 +28,52 @@ class MemberCommandDao {
             it[lastModifiedBy] = newMember.email.value
         }.value
     }
-} 
+
+    fun requestWithdrawal(memberId: Long, requestedAt: LocalDateTime) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
+            it[withdrawalRequestedAt] = requestedAt
+            it[lastModifiedBy] = memberId.toString()
+        }
+    }
+
+    fun cancelWithdrawal(memberId: Long) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
+            it[withdrawalRequestedAt] = null
+            it[lastModifiedBy] = memberId.toString()
+        }
+    }
+
+    fun updatePassword(memberId: Long, encodedPassword: String) {
+        MemberTable.update({ MemberTable.id eq memberId }) {
+            it[password] = encodedPassword
+            it[lastModifiedBy] = memberId.toString()
+        }
+    }
+
+    fun updateProfile(member: Member) {
+        MemberTable.update({ MemberTable.id eq member.id }) {
+            it[nickname] = member.nickname
+            it[region] = member.region.name
+            it[highSchool] = member.highSchool
+            it[university] = member.university
+            it[lastModifiedBy] = member.id.toString()
+        }
+    }
+
+    fun anonymizeAndSoftDelete(anonymized: Member) {
+        MemberTable.update({ MemberTable.id eq anonymized.id }) {
+            it[email] = anonymized.email.value
+            it[password] = anonymized.password
+            it[nickname] = anonymized.nickname
+            it[name] = anonymized.name
+            it[phoneNumber] = anonymized.phoneNumber.fullNumber
+            it[birthDate] = anonymized.birthDate
+            it[region] = anonymized.region.name
+            it[highSchool] = anonymized.highSchool
+            it[university] = anonymized.university
+            it[profileImageUrl] = null
+            it[deleted] = true
+            it[lastModifiedBy] = anonymized.id.toString()
+        }
+    }
+}

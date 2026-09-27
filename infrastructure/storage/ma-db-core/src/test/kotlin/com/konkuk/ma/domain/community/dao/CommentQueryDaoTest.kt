@@ -132,10 +132,10 @@ class CommentQueryDaoTest(
     }
 
     private fun insertPost(
-        authorEmail: String = "author@example.com",
+        authorId: Long = 1L,
     ) {
         PostTable.insert {
-            it[PostTable.authorEmail] = authorEmail
+            it[PostTable.authorId] = authorId
             it[category] = "CHEER"
             it[title] = "테스트 게시글"
             it[content] = "내용"
@@ -145,11 +145,12 @@ class CommentQueryDaoTest(
     private fun insertComment(
         content: String = "테스트 댓글",
         parentCommentId: Long? = null,
+        authorId: Long = 2L,
     ) {
         val postId = PostTable.selectAll().first()[PostTable.id].value
         CommentTable.insert {
             it[CommentTable.postId] = postId
-            it[authorEmail] = "commenter@example.com"
+            it[CommentTable.authorId] = authorId
             it[CommentTable.content] = content
             it[CommentTable.parentCommentId] = parentCommentId
         }

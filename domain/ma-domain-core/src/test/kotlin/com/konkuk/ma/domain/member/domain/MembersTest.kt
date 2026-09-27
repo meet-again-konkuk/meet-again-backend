@@ -1,0 +1,161 @@
+package com.konkuk.ma.domain.member.domain
+
+import com.konkuk.ma.domain.matching.fixture.MemberFixture
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+
+class MembersTest : FunSpec({
+
+    context("findOne") {
+
+        test("id로 회원을 찾으면 해당 회원을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findOne(member.id)
+
+            // Then
+            result shouldBe member
+        }
+
+        test("여러 회원 중 id로 정확한 회원을 찾는다") {
+            // Given
+            val member1 = MemberFixture.create(id = 1L, email = "a@example.com")
+            val member2 = MemberFixture.create(id = 2L, email = "b@example.com")
+            val members = Members(listOf(member1, member2))
+
+            // When
+            val result = members.findOne(member2.id)
+
+            // Then
+            result shouldBe member2
+        }
+
+        test("존재하지 않는 id이면 null을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findOne(999L)
+
+            // Then
+            result shouldBe null
+        }
+
+        test("빈 목록에서 조회하면 null을 반환한다") {
+            // Given
+            val members = Members(emptyList())
+
+            // When
+            val result = members.findOne(1L)
+
+            // Then
+            result shouldBe null
+        }
+    }
+
+    context("findNickname") {
+
+        test("id로 닉네임을 찾으면 해당 닉네임을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L, nickname = "테스트닉네임")
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findNickname(member.id)
+
+            // Then
+            result shouldBe member.nickname
+        }
+
+        test("여러 회원 중 정확한 id의 닉네임을 반환한다") {
+            // Given
+            val member1 = MemberFixture.create(id = 1L, nickname = "닉네임A")
+            val member2 = MemberFixture.create(id = 2L, nickname = "닉네임B")
+            val members = Members(listOf(member1, member2))
+
+            // When
+            val result = members.findNickname(member2.id)
+
+            // Then
+            result shouldBe member2.nickname
+        }
+
+        test("존재하지 않는 id이면 '알 수 없음'을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findNickname(999L)
+
+            // Then
+            result shouldBe "알 수 없음"
+        }
+
+        test("빈 목록에서 조회하면 '알 수 없음'을 반환한다") {
+            // Given
+            val members = Members(emptyList())
+
+            // When
+            val result = members.findNickname(1L)
+
+            // Then
+            result shouldBe "알 수 없음"
+        }
+    }
+
+    context("findName") {
+
+        test("id로 이름을 찾으면 해당 이름을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L, name = "홍길동")
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findName(member.id)
+
+            // Then
+            result shouldBe member.name
+        }
+
+        test("여러 회원 중 정확한 id의 이름을 반환한다") {
+            // Given
+            val member1 = MemberFixture.create(id = 1L, name = "이름A")
+            val member2 = MemberFixture.create(id = 2L, name = "이름B")
+            val members = Members(listOf(member1, member2))
+
+            // When
+            val result = members.findName(member2.id)
+
+            // Then
+            result shouldBe member2.name
+        }
+
+        test("존재하지 않는 id이면 '알 수 없음'을 반환한다") {
+            // Given
+            val member = MemberFixture.create(id = 1L)
+            val members = Members(listOf(member))
+
+            // When
+            val result = members.findName(999L)
+
+            // Then
+            result shouldBe "알 수 없음"
+        }
+
+        test("빈 목록에서 조회하면 '알 수 없음'을 반환한다") {
+            // Given
+            val members = Members(emptyList())
+
+            // When
+            val result = members.findName(1L)
+
+            // Then
+            result shouldBe "알 수 없음"
+        }
+    }
+})

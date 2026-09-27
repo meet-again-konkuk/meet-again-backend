@@ -8,5 +8,6 @@ class SmsVerificationConfirmRequest(
     @field:Pattern(regexp = ValidationPatterns.PHONE_NUMBER_11, message = ValidationMessages.PHONE_NUMBER_INVALID)
     val phoneNumber: String,
 
-    val verificationCode: Int
+    @field:Pattern(regexp = ValidationPatterns.VERIFICATION_CODE, message = ValidationMessages.VERIFICATION_CODE_INVALID)
+    val verificationCode: String
 )

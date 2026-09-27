@@ -1,7 +1,7 @@
 package com.konkuk.ma.domain.member.domain.photo
 
 import com.konkuk.ma.domain.common.domain.file.AllowedExtension
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -79,6 +79,24 @@ class AllowedExtensionTest : BehaviorSpec({
                     shouldThrow<InvalidValueException> {
                         AllowedExtension.from(fileName)
                     }
+                }
+            }
+        }
+    }
+
+    Given("허용된 확장자 파일명이 주어졌을 때 mimeType 매핑") {
+        listOf(
+            "photo.jpg" to "image/jpeg",
+            "photo.jpeg" to "image/jpeg",
+            "photo.png" to "image/png",
+            "photo.svg" to "image/svg+xml",
+            "photo.webp" to "image/webp",
+        ).forEach { (fileName, expectedMimeType) ->
+            When("${fileName} 파일명으로 생성하면") {
+                val extension = AllowedExtension.from(fileName)
+
+                Then("mimeType는 ${expectedMimeType}로 매핑된다") {
+                    extension.mimeType shouldBe expectedMimeType
                 }
             }
         }

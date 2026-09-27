@@ -1,6 +1,6 @@
 package com.konkuk.ma.support.id
 
-import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
+import com.konkuk.ma.exception.InvalidObfuscatedIdException
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import org.hashids.Hashids

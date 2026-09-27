@@ -11,43 +11,17 @@ class CommentCommandDao {
     fun save(newComment: NewComment): Long {
         return CommentTable.insertAndGetId {
             it[postId] = newComment.postId
-            it[authorEmail] = newComment.authorEmail.value
+            it[authorId] = newComment.authorId
             it[content] = newComment.content
             it[parentCommentId] = newComment.parentCommentId
-            it[createdBy] = newComment.authorEmail.value
-            it[lastModifiedBy] = newComment.authorEmail.value
+            it[createdBy] = newComment.authorId.toString()
+            it[lastModifiedBy] = newComment.authorId.toString()
         }.value
-    }
-
-    fun increaseLikes(commentId: Long): Int {
-        CommentTable.update({ CommentTable.id eq commentId }) {
-            with(org.jetbrains.exposed.sql.SqlExpressionBuilder) {
-                it[likes] = likes + 1
-            }
-        }
-        return findLikeCount(commentId)
-    }
-
-    fun decreaseLikes(commentId: Long): Int {
-        CommentTable.update({ CommentTable.id eq commentId }) {
-            with(org.jetbrains.exposed.sql.SqlExpressionBuilder) {
-                it[likes] = likes - 1
-            }
-        }
-        return findLikeCount(commentId)
     }
 
     fun delete(id: Long) {
         CommentTable.update({ CommentTable.id eq id }) {
             it[deleted] = true
         }
-    }
-
-    private fun findLikeCount(commentId: Long): Int {
-        return CommentTable
-            .select(CommentTable.likes)
-            .where { CommentTable.id eq commentId }
-            .map { row -> row[CommentTable.likes] }
-            .single()
     }
 }

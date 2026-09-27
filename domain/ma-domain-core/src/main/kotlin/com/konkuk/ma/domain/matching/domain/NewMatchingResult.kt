@@ -1,13 +1,12 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class NewMatchingResult(
-    val registerEmail: Email,
+    val registerId: Long,
     override val targetInfoId: Long,
-    override val targetEmail: Email,
+    override val targetId: Long,
 
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,
@@ -23,7 +22,7 @@ class NewMatchingResult(
         .plusDays(MATCHING_EXPIRY_DAYS),
 ) : HasMatchingKey {
     companion object {
-        private const val SHOWING_EXPIRY_DAYS = 30L
+        const val SHOWING_EXPIRY_DAYS = 30L
         private const val MATCHING_EXPIRY_DAYS = 210L
         private const val SHOWING_START_HOUR = 11
     }

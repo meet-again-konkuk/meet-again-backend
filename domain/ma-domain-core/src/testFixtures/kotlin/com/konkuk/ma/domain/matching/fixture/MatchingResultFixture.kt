@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.matching.fixture
 
-import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import java.time.LocalDate
@@ -9,24 +9,25 @@ import java.time.LocalDateTime
 object MatchingResultFixture {
     fun create(
         id: Long = 1L,
-        registerEmail: String = "register@example.com",
+        registerId: Long = 1L,
         targetInfoId: Long = 1L,
-        targetEmail: String = "target@example.com",
+        targetId: Long = 2L,
         middleNumberMatched: Boolean = true,
         lastNumberMatched: Boolean = true,
         yearMatched: Boolean = true,
         monthMatched: Boolean = true,
         dayMatched: Boolean = true,
         regionMatched: Boolean = true,
-        showingExpiryDate: LocalDateTime = LocalDate.now().atTime(11, 0).plusDays(30),
+        showingExpiryDate: LocalDateTime = LocalDateTime.now().plusDays(30),
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
         excluded: Boolean = false,
+        claimStatus: ClaimStatus = ClaimStatus.NONE,
     ): MatchingResult {
         return MatchingResult(
             id = id,
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetInfoId = targetInfoId,
-            targetEmail = Email(targetEmail),
+            targetId = targetId,
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,
@@ -36,28 +37,29 @@ object MatchingResultFixture {
             showingExpiryDate = showingExpiryDate,
             matchingExpiryDate = matchingExpiryDate,
             excluded = excluded,
+            claimStatus = claimStatus,
         )
     }
 }
 
 object NewMatchingResultFixture {
     fun create(
-        registerEmail: String = "register@example.com",
+        registerId: Long = 1L,
         targetInfoId: Long = 1L,
-        targetEmail: String = "target@example.com",
+        targetId: Long = 2L,
         middleNumberMatched: Boolean = true,
         lastNumberMatched: Boolean = true,
         yearMatched: Boolean = true,
         monthMatched: Boolean = true,
         dayMatched: Boolean = true,
         regionMatched: Boolean = true,
-        showingExpiryDate: LocalDateTime = LocalDate.now().atTime(11, 0).plusDays(30),
+        showingExpiryDate: LocalDateTime = LocalDateTime.now().plusDays(30),
         matchingExpiryDate: LocalDate = LocalDate.now().plusDays(210),
     ): NewMatchingResult {
         return NewMatchingResult(
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetInfoId = targetInfoId,
-            targetEmail = Email(targetEmail),
+            targetId = targetId,
             middleNumberMatched = middleNumberMatched,
             lastNumberMatched = lastNumberMatched,
             yearMatched = yearMatched,

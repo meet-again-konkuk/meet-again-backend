@@ -2,7 +2,13 @@ package com.konkuk.ma.domain.community.application
 
 import com.konkuk.ma.domain.community.domain.CommentDetail
 import com.konkuk.ma.domain.community.domain.CommentWithAuthor
+import com.konkuk.ma.domain.community.domain.LikeCounts
+import com.konkuk.ma.domain.community.domain.LikedIds
 import com.konkuk.ma.domain.community.domain.Replies
+import com.konkuk.ma.domain.community.domain.Viewer
+import com.konkuk.ma.domain.community.domain.block.BlockedMemberIds
+import com.konkuk.ma.domain.community.domain.port.BlockQueryRepository
+import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
 import com.konkuk.ma.domain.member.domain.Members
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
@@ -14,14 +20,24 @@ import org.springframework.transaction.annotation.Transactional
 class CommentQueryService(
     private val commentQueryRepository: CommentQueryRepository,
     private val memberQueryRepository: MemberQueryRepository,
+    private val commentLikeRepository: CommentLikeRepository,
+    private val blockQueryRepository: BlockQueryRepository,
 ) {
-    fun findDetail(commentId: Long): CommentWithAuthor {
+    fun findDetail(commentId: Long, viewerId: Long): CommentWithAuthor {
         val rootComment = commentQueryRepository.findOne(commentId)
         rootComment.validateIsRootComment()
         val replies = Replies(commentQueryRepository.findReplies(commentId))
         val commentDetail = CommentDetail(rootComment, replies)
-        val members = Members(memberQueryRepository.findByEmails(commentDetail.extractAuthorEmails()))
+        val commentIds = commentDetail.extractIds()
+        val members = Members(memberQueryRepository.findByIds(commentDetail.extractAuthorIds()))
+        val likeCounts = LikeCounts.from(commentLikeRepository.count(commentIds))
+        val blockedMemberIds = BlockedMemberIds(blockQueryRepository.findBlockedMemberIds(viewerId))
+        val viewer = Viewer(
+            viewerId,
+            LikedIds(commentLikeRepository.findLikedCommentIds(viewerId, commentIds)),
+            blockedMemberIds,
+        )
 
-        return commentDetail.combineWithAuthor(members)
+        return commentDetail.combineWithAuthor(members, likeCounts, viewer)
     }
 }

@@ -43,6 +43,30 @@ class TargetInfosTest : FunSpec({
         }
     }
 
+    context("findName") {
+
+        test("targetInfoId에 해당하는 이름을 반환한다") {
+            val targetInfos = TargetInfos(
+                listOf(
+                    TargetInfoFixture.create(targetInfoId = 1L, targetName = "홍길동"),
+                    TargetInfoFixture.create(targetInfoId = 2L, targetName = "김철수")
+                )
+            )
+
+            targetInfos.findName(2L) shouldBe "김철수"
+        }
+
+        test("해당하는 targetInfoId가 없으면 '알 수 없음'을 반환한다") {
+            val targetInfos = TargetInfos(
+                listOf(
+                    TargetInfoFixture.create(targetInfoId = 1L, targetName = "홍길동")
+                )
+            )
+
+            targetInfos.findName(999L) shouldBe "알 수 없음"
+        }
+    }
+
     context("makeMatchingResults") {
 
         test("모든 TargetInfo에 대해 매칭 결과를 생성하고 병합한다") {

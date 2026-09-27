@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.entity
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.entity.table.CommentLikeTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -8,13 +7,13 @@ import org.jetbrains.exposed.sql.ResultRow
 class CommentLikeEntity(
     val id: Long,
     val commentId: Long,
-    val memberEmail: String,
+    val memberId: Long,
 ) {
     fun toDomain(): CommentLike {
         return CommentLike(
             id = id,
             commentId = commentId,
-            memberEmail = Email(memberEmail),
+            memberId = memberId,
         )
     }
 
@@ -23,7 +22,7 @@ class CommentLikeEntity(
             return CommentLikeEntity(
                 id = row[CommentLikeTable.id].value,
                 commentId = row[CommentLikeTable.commentId],
-                memberEmail = row[CommentLikeTable.memberEmail],
+                memberId = row[CommentLikeTable.memberId],
             )
         }
     }

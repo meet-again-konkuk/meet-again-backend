@@ -1,0 +1,92 @@
+package com.konkuk.ma.domain.auth.api
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.konkuk.ma.config.BaseApiTest
+import com.konkuk.ma.domain.auth.api.request.FindEmailRequest
+import com.konkuk.ma.domain.auth.application.FindEmailService
+import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.postJson
+import com.konkuk.ma.extension.requestBody
+import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.email
+import com.konkuk.ma.vocabulary.name
+import com.konkuk.ma.vocabulary.phoneNumber
+import com.ninjasquad.springmockk.MockkBean
+import io.kotest.core.spec.style.FunSpec
+import io.mockk.every
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.test.web.servlet.MockMvc
+
+@WebMvcTest(FindEmailApi::class)
+@BaseApiTest
+class FindEmailApiTest(
+    private val mockMvc: MockMvc,
+    private val mapper: ObjectMapper,
+    @MockkBean private val findEmailService: FindEmailService
+) : FunSpec({
+
+    test("이메일 찾기 API 문서화") {
+        val request = FindEmailRequest(name = "홍길동", phone = "01012345678")
+        every { findEmailService.findEmail(request.name, request.phone) } returns Email("holeman@naver.com")
+
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }
+            .andExpect { status { isOk() } }
+            .andExpect { jsonPath("$.email") { value("holeman@naver.com") } }
+            .andDocument(
+                "auth-find-email",
+                requestBody(
+                    name(),
+                    phoneNumber("phone"),
+                ),
+                responseBody(
+                    email() means "조회된 이메일 (아이디)",
+                )
+            )
+    }
+
+    test("이메일 찾기 - SMS 인증이 완료되지 않으면 400을 반환한다") {
+        val request = FindEmailRequest(name = "홍길동", phone = "01012345678")
+        every {
+            findEmailService.findEmail(request.name, request.phone)
+        } throws SmsNotVerifiedException(request.phone)
+
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(request) }
+            .andExpect { status { isBadRequest() } }
+            .andDocument(
+                "auth-find-email-sms-not-verified",
+                requestBody(
+                    name(),
+                    phoneNumber("phone"),
+                )
+            )
+    }
+
+    test("이메일 찾기 - 이름 형식이 올바르지 않으면 400을 반환한다") {
+        val badRequest = mapOf(
+            "name" to "A",
+            "phone" to "01012345678"
+        )
+
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(badRequest) }
+            .andExpect { status { isBadRequest() } }
+            .andDocument(
+                "auth-find-email-invalid-name",
+                requestBody(
+                    name() means "잘못된 이름 형식",
+                    phoneNumber("phone"),
+                )
+            )
+    }
+
+    test("이메일 찾기 - 휴대폰 번호에 하이픈이 포함되면 400을 반환한다") {
+        val badRequest = mapOf(
+            "name" to "홍길동",
+            "phone" to "010-1234-5678"
+        )
+
+        mockMvc.postJson("/api/auth/find-email") { content = mapper.writeValueAsString(badRequest) }
+            .andExpect { status { isBadRequest() } }
+    }
+})

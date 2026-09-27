@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 찾는 사람 상세 조회 API
+
+== 찾는 사람 상세 조회
+
+인증된 사용자가 자신이 등록한 찾는 사람 정보를 상세 조회합니다.
+
+=== 요청
+
+include::{snippets}/matching/find-target-info-detail/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/matching/find-target-info-detail/http-response.adoc[]
+
+=== 응답 필드
+
+include::{snippets}/matching/find-target-info-detail/response-fields.adoc[]

@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.community.domain
 
 import com.konkuk.ma.domain.community.fixture.CommentFixture
+import com.konkuk.ma.domain.community.fixture.ViewerFixture
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.member.domain.Members
 import io.kotest.core.spec.style.FunSpec
@@ -87,18 +88,18 @@ class RepliesTest : FunSpec({
 
         test("대댓글에 작성자 닉네임이 매핑된다") {
             // Given
-            val reply1 = CommentFixture.create(id = 2L, authorEmail = "reply1@example.com", parentCommentId = 1L)
-            val reply2 = CommentFixture.create(id = 3L, authorEmail = "reply2@example.com", parentCommentId = 1L)
+            val reply1 = CommentFixture.create(id = 2L, authorId = 2L, parentCommentId = 1L)
+            val reply2 = CommentFixture.create(id = 3L, authorId = 3L, parentCommentId = 1L)
             val replies = Replies(listOf(reply1, reply2))
             val members = Members(
                 listOf(
-                    MemberFixture.create(email = reply1.authorEmail.value, nickname = "대댓글작성자1"),
-                    MemberFixture.create(email = reply2.authorEmail.value, nickname = "대댓글작성자2"),
+                    MemberFixture.create(id = reply1.authorId, nickname = "대댓글작성자1"),
+                    MemberFixture.create(id = reply2.authorId, nickname = "대댓글작성자2"),
                 )
             )
 
             // When
-            val result = replies.combineWithAuthors(members)
+            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 2
@@ -110,12 +111,12 @@ class RepliesTest : FunSpec({
 
         test("탈퇴한 회원의 닉네임은 '알 수 없음'으로 표시된다") {
             // Given
-            val reply = CommentFixture.create(id = 2L, authorEmail = "deleted@example.com", parentCommentId = 1L)
+            val reply = CommentFixture.create(id = 2L, authorId = 99L, parentCommentId = 1L)
             val replies = Replies(listOf(reply))
             val members = Members(emptyList())
 
             // When
-            val result = replies.combineWithAuthors(members)
+            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 1
@@ -128,7 +129,7 @@ class RepliesTest : FunSpec({
             val members = Members(emptyList())
 
             // When
-            val result = replies.combineWithAuthors(members)
+            val result = replies.combineWithAuthors(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
             // Then
             result shouldHaveSize 0

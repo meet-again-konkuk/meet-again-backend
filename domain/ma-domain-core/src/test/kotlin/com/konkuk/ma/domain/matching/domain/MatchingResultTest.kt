@@ -1,8 +1,8 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.InvalidStateException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
@@ -63,18 +63,37 @@ class MatchingResultTest : FunSpec({
 
     context("validateOwnership") {
 
-        test("본인 이메일이면 예외 없이 통과한다") {
-            val matchingResult = MatchingResultFixture.create(registerEmail = "owner@example.com")
+        test("본인이면 예외 없이 통과한다") {
+            val matchingResult = MatchingResultFixture.create(registerId = 1L)
 
-            matchingResult.validateOwnership(Email("owner@example.com"))
+            matchingResult.validateOwnership(1L)
         }
 
-        test("다른 이메일이면 MatchingResultAccessDeniedException이 발생한다") {
-            val matchingResult = MatchingResultFixture.create(registerEmail = "owner@example.com")
+        test("다른 회원이면 AccessDeniedException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(registerId = 1L)
 
-            shouldThrow<MatchingResultAccessDeniedException> {
-                matchingResult.validateOwnership(Email("other@example.com"))
-            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
+            shouldThrow<AccessDeniedException> {
+                matchingResult.validateOwnership(2L)
+            }
+        }
+    }
+
+    context("isVisible") {
+
+        test("공개 시작 시각이 지났으면 true를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(
+                showingExpiryDate = LocalDateTime.now().plusDays(29),
+            )
+
+            matchingResult.isVisible() shouldBe true
+        }
+
+        test("공개 시작 시각 전이면 false를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(
+                showingExpiryDate = LocalDateTime.now().plusDays(31),
+            )
+
+            matchingResult.isVisible() shouldBe false
         }
     }
 
@@ -94,6 +113,98 @@ class MatchingResultTest : FunSpec({
             matchingResult.include()
 
             matchingResult.excluded shouldBe false
+        }
+    }
+
+    context("claim") {
+
+        test("NONE 상태에서 claim하면 CLAIMED가 된다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.NONE)
+
+            matchingResult.claim()
+
+            matchingResult.claimStatus shouldBe ClaimStatus.CLAIMED
+        }
+
+        test("이미 CLAIMED된 상태에서 claim하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.CLAIMED)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.claim()
+            }
+        }
+
+        test("REJECTED 상태에서 claim하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.REJECTED)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.claim()
+            }
+        }
+    }
+
+    context("reject") {
+
+        test("CLAIMED 상태에서 reject하면 REJECTED가 된다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.CLAIMED)
+
+            matchingResult.reject()
+
+            matchingResult.claimStatus shouldBe ClaimStatus.REJECTED
+        }
+
+        test("NONE 상태에서 reject하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.NONE)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.reject()
+            }.message shouldBe "허용되지 않는 상태입니다."
+        }
+
+        test("이미 REJECTED된 상태에서 reject하면 InvalidStateException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.REJECTED)
+
+            shouldThrow<InvalidStateException> {
+                matchingResult.reject()
+            }.message shouldBe "허용되지 않는 상태입니다."
+        }
+    }
+
+    context("validateTargetOwnership") {
+
+        test("수신자 본인이면 예외 없이 통과한다") {
+            val matchingResult = MatchingResultFixture.create(targetId = 2L)
+
+            matchingResult.validateTargetOwnership(2L)
+        }
+
+        test("수신자가 아니면 AccessDeniedException이 발생한다") {
+            val matchingResult = MatchingResultFixture.create(targetId = 2L)
+
+            shouldThrow<AccessDeniedException> {
+                matchingResult.validateTargetOwnership(1L)
+            }
+        }
+    }
+
+    context("isClaimed") {
+
+        test("NONE 상태이면 false를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.NONE)
+
+            matchingResult.isClaimed() shouldBe false
+        }
+
+        test("CLAIMED 상태이면 true를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.CLAIMED)
+
+            matchingResult.isClaimed() shouldBe true
+        }
+
+        test("REJECTED 상태이면 true를 반환한다") {
+            val matchingResult = MatchingResultFixture.create(claimStatus = ClaimStatus.REJECTED)
+
+            matchingResult.isClaimed() shouldBe true
         }
     }
 

@@ -28,6 +28,11 @@ Meet Again 서비스 Backend API 문서
 
 * link:member/member-query.html[회원 Query API,window=_blank]
 
+[[member-profile]]
+=== 내 프로필 조회 / 수정
+
+* link:member/member-profile.html[내 프로필 API,window=_blank]
+
 [[member-photo]]
 === 회원 사진
 
@@ -37,6 +42,11 @@ Meet Again 서비스 Backend API 문서
 === 회원 enum 정보 조회
 
 * link:member/member-enum.html[회원 Enum API,window=_blank]
+
+[[member-withdrawal]]
+=== 회원 탈퇴 / 복구
+
+* link:member/member-withdrawal.html[회원 탈퇴 API,window=_blank]
 
 [[auth]]
 == 인증
@@ -58,6 +68,21 @@ Meet Again 서비스 Backend API 문서
 
 * link:auth/refresh-token.html[리프레시 토큰 재발급 API,window=_blank]
 
+[[auth-logout]]
+=== 로그아웃
+
+* link:auth/logout.html[로그아웃 API,window=_blank]
+
+[[auth-find-email]]
+=== 이메일 찾기
+
+* link:auth/find-email.html[이메일 찾기 API,window=_blank]
+
+[[auth-find-password]]
+=== 비밀번호 재설정
+
+* link:auth/find-password.html[비밀번호 재설정 API,window=_blank]
+
 [[matching]]
 == 매칭
 
@@ -68,6 +93,26 @@ Meet Again 서비스 Backend API 문서
 
 * link:matching/register-target-info.html[찾는 사람 정보 등록 API,window=_blank]
 
+[[matching-target-info-query]]
+=== 찾는 사람 목록 조회
+
+* link:matching/find-my-target-infos.html[찾는 사람 목록 조회 API,window=_blank]
+
+[[matching-target-info-detail]]
+=== 찾는 사람 상세 조회
+
+* link:matching/find-target-info-detail.html[찾는 사람 상세 조회 API,window=_blank]
+
+[[matching-target-info-update]]
+=== 찾는 사람 정보 수정
+
+* link:matching/update-target-info.html[찾는 사람 정보 수정 API,window=_blank]
+
+[[matching-target-info-delete]]
+=== 찾는 사람 정보 삭제
+
+* link:matching/delete-target-info.html[찾는 사람 정보 삭제 API,window=_blank]
+
 [[matching-result-query]]
 === 매칭 결과 목록 조회
 
@@ -77,6 +122,26 @@ Meet Again 서비스 Backend API 문서
 === 매칭 결과 제외/해제
 
 * link:matching/exclude-matching-result.html[매칭 결과 제외/해제 API,window=_blank]
+
+[[matching-result-claim]]
+=== 매칭 결과 Claim
+
+* link:matching/claim-matching-result.html[매칭 결과 Claim API,window=_blank]
+
+[[matching-result-reject]]
+=== 매칭 결과 Claim 거절
+
+* link:matching/reject-matching-result.html[매칭 결과 Claim 거절 API,window=_blank]
+
+[[claimer]]
+== Claimer (X 요청자)
+
+나를 X로 지목한 요청자 관련 API 입니다.
+
+[[claimer-find-my]]
+=== 나를 Claim한 요청자 목록 조회
+
+* link:claimer/find-my-claimers.html[나를 Claim한 요청자 목록 조회 API,window=_blank]
 
 [[community]]
 == 커뮤니티
@@ -97,6 +162,16 @@ Meet Again 서비스 Backend API 문서
 === 게시글 작성
 
 * link:community/create-post.html[게시글 작성 API,window=_blank]
+
+[[community-update-post]]
+=== 게시글 수정
+
+* link:community/update-post.html[게시글 수정 API,window=_blank]
+
+[[community-delete-post]]
+=== 게시글 삭제
+
+* link:community/delete-post.html[게시글 삭제 API,window=_blank]
 
 [[community-create-comment]]
 === 댓글 작성
@@ -122,4 +197,139 @@ Meet Again 서비스 Backend API 문서
 === 댓글 좋아요 토글
 
 * link:community/toggle-comment-like.html[댓글 좋아요 토글 API,window=_blank]
+
+[[community-upload-post-image]]
+=== 게시글 이미지 업로드
+
+* link:community/upload-post-image.html[게시글 이미지 업로드 API,window=_blank]
+
+[[community-delete-post-image]]
+=== 게시글 이미지 삭제
+
+* link:community/delete-post-image.html[게시글 이미지 삭제 API,window=_blank]
+
+[[community-report]]
+=== 신고
+
+* link:community/report.html[커뮤니티 신고 API,window=_blank]
+
+[[community-block]]
+=== 차단
+
+* link:community/block.html[커뮤니티 차단 API,window=_blank]
+
+[[community-comment-notification-setting]]
+=== 게시글 댓글 알림 설정
+
+* link:community/set-comment-notification.html[게시글 댓글 알림 설정 API,window=_blank]
+
+[[notification]]
+== 알림
+
+인앱 알림 관련 API 입니다.
+
+[[notification-find]]
+=== 알림 목록 조회
+
+* link:notification/find-notifications.html[알림 목록 조회 API,window=_blank]
+
+[[notification-unread-count]]
+=== 안읽음 알림 카운트
+
+* link:notification/unread-count.html[안읽음 알림 카운트 API,window=_blank]
+
+[[notification-read]]
+=== 알림 읽음 처리
+
+* link:notification/read-notification.html[알림 읽음 처리 API,window=_blank]
+
+[[notification-read-all]]
+=== 알림 전체 읽음 처리
+
+* link:notification/read-all-notifications.html[알림 전체 읽음 처리 API,window=_blank]
+
+[[point]]
+== 포인트
+
+포인트(인연) 도메인과 관련된 API 입니다.
+
+[[point-find-products]]
+=== 포인트 상품 목록 조회
+
+* link:point/find-products.html[포인트 상품 목록 조회 API,window=_blank]
+
+[[point-charge]]
+=== 인연 충전
+
+* link:point/charge.html[인연 충전 API,window=_blank]
+
+[[xroom]]
+== X룸
+
+X룸 도메인과 관련된 API 입니다.
+
+[[xroom-create]]
+=== X룸 생성
+
+* link:xroom/create-xroom.html[X룸 생성 API,window=_blank]
+
+[[xroom-create-with-memories]]
+=== X룸 기억 일괄 생성
+
+* link:xroom/create-xroom-with-memories.html[X룸 기억 일괄 생성 API,window=_blank]
+
+[[xroom-update-final-message]]
+=== X룸 마지막 메시지 수정
+
+* link:xroom/update-final-message.html[X룸 마지막 메시지 수정 API,window=_blank]
+
+[[xroom-find-my-rooms]]
+=== 내가 만든 X룸 목록 조회
+
+* link:xroom/find-my-rooms.html[내가 만든 X룸 목록 조회 API,window=_blank]
+
+[[xroom-find-received]]
+=== 수신한 X룸 목록 조회
+
+* link:xroom/received.html[수신한 X룸 목록 조회 API,window=_blank]
+
+[[xroom-detail]]
+=== X룸 상세 조회
+
+* link:xroom/xroom-detail.html[X룸 상세 조회 API,window=_blank]
+
+[[xroom-add-memory]]
+=== 기억 추가
+
+* link:xroom/add-memory.html[기억 추가 API,window=_blank]
+
+[[xroom-update-memory]]
+=== 기억 수정
+
+* link:xroom/update-memory.html[기억 수정 API,window=_blank]
+
+[[xroom-delete-memory]]
+=== 기억 삭제
+
+* link:xroom/delete-memory.html[기억 삭제 API,window=_blank]
+
+[[xroom-upload-memory-photo]]
+=== 기억 사진 업로드
+
+* link:xroom/upload-memory-photo.html[기억 사진 업로드 API,window=_blank]
+
+[[xroom-delete-memory-photo]]
+=== 기억 사진 삭제
+
+* link:xroom/delete-memory-photo.html[기억 사진 삭제 API,window=_blank]
+
+[[support]]
+== 고객지원
+
+고객지원 도메인과 관련된 API 입니다.
+
+[[support-create-inquiry]]
+=== 1:1 문의 접수
+
+* link:support/create-inquiry.html[1:1 문의 접수 API,window=_blank]
 

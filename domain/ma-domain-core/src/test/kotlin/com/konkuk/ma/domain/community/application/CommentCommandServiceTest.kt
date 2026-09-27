@@ -1,13 +1,12 @@
 package com.konkuk.ma.domain.community.application
 
+import com.konkuk.ma.domain.community.domain.CommentNotificationRegistrar
 import com.konkuk.ma.domain.community.domain.CommentValidator
 import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
 import com.konkuk.ma.domain.community.domain.port.CommentQueryRepository
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
-import com.konkuk.ma.domain.community.exception.PostNotFoundException
 import com.konkuk.ma.domain.community.fixture.CommentFixture
 import com.konkuk.ma.domain.community.fixture.NewCommentFixture
+import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import io.kotest.assertions.throwables.shouldThrow
@@ -25,10 +24,12 @@ class CommentCommandServiceTest : FunSpec({
     val commentCommandRepository = mockk<CommentCommandRepository>()
     val commentQueryRepository = mockk<CommentQueryRepository>()
     val commentValidator = mockk<CommentValidator>()
+    val commentNotificationRegistrar = mockk<CommentNotificationRegistrar>(relaxUnitFun = true)
     val service = CommentCommandService(
         commentCommandRepository,
         commentQueryRepository,
         commentValidator,
+        commentNotificationRegistrar,
     )
 
     beforeEach {
@@ -54,17 +55,32 @@ class CommentCommandServiceTest : FunSpec({
             verify { commentCommandRepository.save(newComment) }
         }
 
+        test("댓글을 저장한 뒤 생성된 ID로 알림 등록을 호출한다") {
+            // Given
+            val newComment = NewCommentFixture.create()
+            val expectedCommentId = 1L
+
+            every { commentValidator.validate(newComment) } just runs
+            every { commentCommandRepository.save(any()) } returns expectedCommentId
+
+            // When
+            service.create(newComment)
+
+            // Then
+            verify { commentNotificationRegistrar.register(newComment, expectedCommentId) }
+        }
+
         test("검증 실패 시 예외가 전파된다") {
             // Given
             val newComment = NewCommentFixture.create(postId = 999L)
 
             every { commentValidator.validate(newComment) } throws
-                PostNotFoundException(newComment.postId)
+                EntityNotFoundException(EntityType.COMMUNITY_POST, newComment.postId.toString())
 
             // When & Then
-            shouldThrow<PostNotFoundException> {
+            shouldThrow<EntityNotFoundException> {
                 service.create(newComment)
-            }.message shouldBe "존재하지 않는 게시글에는 댓글을 달 수 없습니다."
+            }
         }
     }
 
@@ -78,23 +94,23 @@ class CommentCommandServiceTest : FunSpec({
             every { commentCommandRepository.delete(comment.id) } just runs
 
             // When
-            service.delete(comment.id, comment.authorEmail.value)
+            service.delete(comment.id, comment.authorId)
 
             // Then
             verify { commentCommandRepository.delete(comment.id) }
         }
 
-        test("소유권이 없는 댓글을 삭제하면 CommentAccessDeniedException이 발생한다") {
+        test("소유권이 없는 댓글을 삭제하면 AccessDeniedException이 발생한다") {
             // Given
             val comment = CommentFixture.create()
-            val otherEmail = "other@example.com"
+            val otherMemberId = comment.authorId + 1
 
             every { commentQueryRepository.findOne(comment.id) } returns comment
 
             // When & Then
-            shouldThrow<CommentAccessDeniedException> {
-                service.delete(comment.id, otherEmail)
-            }.message shouldBe "댓글에 대한 접근 권한이 없습니다."
+            shouldThrow<AccessDeniedException> {
+                service.delete(comment.id, otherMemberId)
+            }
         }
 
         test("존재하지 않는 댓글을 삭제하면 EntityNotFoundException이 발생한다") {
@@ -106,8 +122,8 @@ class CommentCommandServiceTest : FunSpec({
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.delete(nonExistentId, "any@example.com")
-            }.message shouldBe "CommunityComment을(를) 찾을 수 없습니다."
+                service.delete(nonExistentId, 1L)
+            }
         }
     }
 })

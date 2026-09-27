@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.common.domain.date
 
-import com.konkuk.ma.domain.common.exception.InvalidValueException
+import com.konkuk.ma.exception.InvalidValueException
 
 data class Month(
     val value: Int,

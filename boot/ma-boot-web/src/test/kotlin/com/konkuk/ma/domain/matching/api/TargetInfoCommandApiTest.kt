@@ -4,10 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.konkuk.ma.config.BaseApiTest
 import com.konkuk.ma.domain.matching.application.TargetInfoCommandService
 import com.konkuk.ma.domain.member.domain.Region
+import com.konkuk.ma.domain.common.domain.date.Day
+import com.konkuk.ma.domain.common.domain.date.Month
+import com.konkuk.ma.domain.common.domain.date.Year
+import com.konkuk.ma.domain.matching.domain.TargetInfo
+import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
+import com.konkuk.ma.domain.member.domain.FourDigit
+import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.extension.andDocument
 import com.konkuk.ma.extension.postJson
+import com.konkuk.ma.extension.deleteJson
+import com.konkuk.ma.extension.putJson
 import com.konkuk.ma.extension.requestBody
 import com.konkuk.ma.extension.responseBody
+import com.konkuk.ma.vocabulary.targetGender
 import com.konkuk.ma.vocabulary.day
 import com.konkuk.ma.vocabulary.lastNumber
 import com.konkuk.ma.vocabulary.middleNumber
@@ -17,20 +27,18 @@ import com.konkuk.ma.vocabulary.targetInfoId
 import com.konkuk.ma.vocabulary.targetName
 import com.konkuk.ma.vocabulary.targetRegion
 import com.konkuk.ma.vocabulary.year
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
-import com.konkuk.ma.support.security.WithAuthMember
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
+import io.mockk.justRun
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
 @WebMvcTest(TargetInfoCommandApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class TargetInfoCommandApiTest(
     private val mockMvc: MockMvc,
     private val mapper: ObjectMapper,
@@ -55,7 +63,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == Email("test@example.com") &&
+                    it.registerId == 1L &&
                     it.targetName == "김만남" &&
                     it.middleNumber?.value == "1234" &&
                     it.lastNumber?.value == "5678" &&
@@ -111,7 +119,7 @@ class TargetInfoCommandApiTest(
         every {
             targetInfoCommandService.register(
                 match {
-                    it.registerEmail == Email("test@example.com") &&
+                    it.registerId == 1L &&
                     it.targetName == "이재회" &&
                     it.middleNumber == null &&
                     it.lastNumber == null &&
@@ -171,6 +179,76 @@ class TargetInfoCommandApiTest(
                     lastNumber(),
                 )
             )
+    }
+
+    test("찾는 사람 정보 수정 API 문서화") {
+        // Given
+        val id = 1L
+        val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
+        val request = mapOf(
+            "middleNumber" to "4321",
+            "lastNumber" to "8765",
+            "year" to 1996,
+            "month" to 3,
+            "day" to 20,
+            "region" to "BUSAN",
+        )
+
+        every {
+            targetInfoCommandService.update(id, 1L, any<UpdateTargetInfo>())
+        } returns TargetInfo(
+            targetInfoId = id,
+            registerId = 1L,
+            targetName = "박수정",
+            targetGender = Gender.FEMALE,
+            middleNumber = FourDigit("4321"),
+            lastNumber = FourDigit("8765"),
+            year = Year(1996),
+            month = Month(3),
+            day = Day(20),
+            region = Region.BUSAN,
+        )
+
+        // When & Then
+        mockMvc.putJson("/api/target-infos/$encodedId") {
+            content = mapper.writeValueAsString(request)
+        }
+            .andExpect { status { isOk() } }
+            .andDocument(
+                "matching/update-target-info",
+                requestBody(
+                    middleNumber() isOptional true,
+                    lastNumber() isOptional true,
+                    year() isOptional true,
+                    month() isOptional true,
+                    day() isOptional true,
+                    targetRegion() isOptional true,
+                ),
+                responseBody(
+                    targetInfoId(),
+                    targetName("targetName"),
+                    targetGender(),
+                    middleNumber() isOptional true,
+                    lastNumber() isOptional true,
+                    year() isOptional true,
+                    month() isOptional true,
+                    day() isOptional true,
+                    targetRegion() isOptional true,
+                ),
+            )
+    }
+
+    test("찾는 사람 정보 삭제 API 문서화") {
+        // Given
+        val id = 1L
+        val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
+
+        justRun { targetInfoCommandService.delete(id, 1L) }
+
+        // When & Then
+        mockMvc.deleteJson("/api/target-infos/$encodedId")
+            .andExpect { status { isNoContent() } }
+            .andDocument("matching/delete-target-info")
     }
 
     test("찾는 사람 정보 등록 - 유효하지 않은 생년월일") {

@@ -1,11 +1,12 @@
 package com.konkuk.ma.domain.matching.application
 
-import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.matching.domain.ClaimStatus
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
+import com.konkuk.ma.exception.AccessDeniedException
 import com.konkuk.ma.domain.matching.fixture.MatchingResultFixture
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
+import com.konkuk.ma.exception.InvalidStateException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -28,45 +29,45 @@ class MatchingResultCommandServiceTest : FunSpec({
         test("매칭 결과를 제외 처리한다") {
             // Given
             val matchingResultId = 1L
-            val email = "owner@example.com"
-            val matchingResult = MatchingResultFixture.create(registerEmail = email)
+            val memberId = 1L
+            val matchingResult = MatchingResultFixture.create(registerId = memberId)
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
-            service.exclude(matchingResultId, email)
+            service.exclude(matchingResultId, memberId)
 
             // Then
             matchingResult.excluded shouldBe true
             verify { matchingResultRepository.updateExcluded(matchingResult) }
         }
 
-        test("소유권이 없는 경우 MatchingResultAccessDeniedException이 발생한다") {
+        test("소유권이 없는 경우 AccessDeniedException이 발생한다") {
             // Given
             val matchingResultId = 1L
-            val ownerEmail = "owner@example.com"
-            val otherEmail = "other@example.com"
-            val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail)
+            val ownerId = 1L
+            val otherId = 2L
+            val matchingResult = MatchingResultFixture.create(registerId = ownerId)
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
-            shouldThrow<MatchingResultAccessDeniedException> {
-                service.exclude(matchingResultId, otherEmail)
-            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
+            shouldThrow<AccessDeniedException> {
+                service.exclude(matchingResultId, otherId)
+            }
         }
 
         test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
             // Given
             val nonExistentId = 999L
-            val email = "owner@example.com"
+            val memberId = 1L
 
             every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
 
             // When & Then
             shouldThrow<EntityNotFoundException> {
-                service.exclude(nonExistentId, email)
-            }.message shouldBe "MatchingResult을(를) 찾을 수 없습니다."
+                service.exclude(nonExistentId, memberId)
+            }
         }
     }
 
@@ -75,32 +76,104 @@ class MatchingResultCommandServiceTest : FunSpec({
         test("제외된 매칭 결과를 해제 처리한다") {
             // Given
             val matchingResultId = 1L
-            val email = "owner@example.com"
-            val matchingResult = MatchingResultFixture.create(registerEmail = email, excluded = true)
+            val memberId = 1L
+            val matchingResult = MatchingResultFixture.create(registerId = memberId, excluded = true)
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When
-            service.include(matchingResultId, email)
+            service.include(matchingResultId, memberId)
 
             // Then
             matchingResult.excluded shouldBe false
             verify { matchingResultRepository.updateExcluded(matchingResult) }
         }
 
-        test("소유권이 없는 경우 MatchingResultAccessDeniedException이 발생한다") {
+        test("소유권이 없는 경우 AccessDeniedException이 발생한다") {
             // Given
             val matchingResultId = 1L
-            val ownerEmail = "owner@example.com"
-            val otherEmail = "other@example.com"
-            val matchingResult = MatchingResultFixture.create(registerEmail = ownerEmail, excluded = true)
+            val ownerId = 1L
+            val otherId = 2L
+            val matchingResult = MatchingResultFixture.create(registerId = ownerId, excluded = true)
 
             every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
 
             // When & Then
-            shouldThrow<MatchingResultAccessDeniedException> {
-                service.include(matchingResultId, otherEmail)
-            }.message shouldBe "매칭 결과에 대한 접근 권한이 없습니다."
+            shouldThrow<AccessDeniedException> {
+                service.include(matchingResultId, otherId)
+            }
+        }
+    }
+
+    context("reject") {
+
+        test("수신자가 CLAIMED 매칭을 거절하면 REJECTED로 변경하고 저장한다") {
+            // Given
+            val matchingResultId = 1L
+            val targetMemberId = 2L
+            val matchingResult = MatchingResultFixture.create(
+                targetId = targetMemberId,
+                claimStatus = ClaimStatus.CLAIMED,
+            )
+
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
+
+            // When
+            service.reject(matchingResultId, targetMemberId)
+
+            // Then
+            matchingResult.claimStatus shouldBe ClaimStatus.REJECTED
+            verify { matchingResultRepository.updateClaimStatus(matchingResult) }
+        }
+
+        test("수신자가 아니면 AccessDeniedException이 전파되고 저장하지 않는다") {
+            // Given
+            val matchingResultId = 1L
+            val targetMemberId = 2L
+            val otherMemberId = 3L
+            val matchingResult = MatchingResultFixture.create(
+                targetId = targetMemberId,
+                claimStatus = ClaimStatus.CLAIMED,
+            )
+
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
+
+            // When & Then
+            shouldThrow<AccessDeniedException> {
+                service.reject(matchingResultId, otherMemberId)
+            }
+            verify(exactly = 0) { matchingResultRepository.updateClaimStatus(any()) }
+        }
+
+        test("CLAIMED 상태가 아니면 InvalidStateException이 전파되고 저장하지 않는다") {
+            // Given
+            val matchingResultId = 1L
+            val targetMemberId = 2L
+            val matchingResult = MatchingResultFixture.create(
+                targetId = targetMemberId,
+                claimStatus = ClaimStatus.NONE,
+            )
+
+            every { matchingResultRepository.findOne(matchingResultId) } returns matchingResult
+
+            // When & Then
+            shouldThrow<InvalidStateException> {
+                service.reject(matchingResultId, targetMemberId)
+            }
+            verify(exactly = 0) { matchingResultRepository.updateClaimStatus(any()) }
+        }
+
+        test("존재하지 않는 ID이면 EntityNotFoundException이 발생한다") {
+            // Given
+            val nonExistentId = 999L
+            val targetMemberId = 2L
+
+            every { matchingResultRepository.findOne(nonExistentId) } throws EntityNotFoundException(EntityType.MATCHING_RESULT, nonExistentId.toString())
+
+            // When & Then
+            shouldThrow<EntityNotFoundException> {
+                service.reject(nonExistentId, targetMemberId)
+            }
         }
     }
 })

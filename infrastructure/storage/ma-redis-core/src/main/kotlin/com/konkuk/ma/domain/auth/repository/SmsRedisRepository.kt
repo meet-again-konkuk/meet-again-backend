@@ -1,6 +1,7 @@
 package com.konkuk.ma.domain.auth.repository
 
 import com.konkuk.ma.domain.auth.domain.SmsVerification
+import com.konkuk.ma.domain.auth.domain.VerificationCode
 import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.auth.dao.SmsVerificationFindDao
 import com.konkuk.ma.domain.auth.dao.SmsVerificationSaveDao
@@ -16,7 +17,7 @@ class SmsRedisRepository(
         smsVerificationSaveDao.save(smsVerification)
     }
 
-    override fun findOrNull(phoneNumber: String): Int? {
+    override fun findOrNull(phoneNumber: String): VerificationCode? {
         return smsVerificationFindDao.findOne(phoneNumber)
     }
 

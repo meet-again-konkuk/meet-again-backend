@@ -1,9 +1,7 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.domain.CommentLike
 import com.konkuk.ma.domain.community.domain.CommentLikeResult
-import com.konkuk.ma.domain.community.domain.port.CommentCommandRepository
+import com.konkuk.ma.domain.community.domain.CommentLiker
 import com.konkuk.ma.domain.community.domain.port.CommentLikeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,18 +9,16 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class CommentLikeService(
+    private val commentLiker: CommentLiker,
     private val commentLikeRepository: CommentLikeRepository,
-    private val commentCommandRepository: CommentCommandRepository,
 ) {
-    fun like(commentId: Long, memberEmail: String): CommentLikeResult {
-        commentLikeRepository.save(CommentLike(commentId = commentId, memberEmail = Email(memberEmail)))
-        val likeCount = commentCommandRepository.increaseLikes(commentId)
-        return CommentLikeResult.liked(likeCount)
+    fun like(commentId: Long, memberId: Long): CommentLikeResult {
+        commentLiker.like(commentId, memberId)
+        return CommentLikeResult.liked(commentLikeRepository.count(commentId))
     }
 
-    fun unlike(commentId: Long, memberEmail: String): CommentLikeResult {
-        commentLikeRepository.delete(commentId, Email(memberEmail))
-        val likeCount = commentCommandRepository.decreaseLikes(commentId)
-        return CommentLikeResult.unliked(likeCount)
+    fun unlike(commentId: Long, memberId: Long): CommentLikeResult {
+        commentLikeRepository.delete(commentId, memberId)
+        return CommentLikeResult.unliked(commentLikeRepository.count(commentId))
     }
 }

@@ -1,40 +1,36 @@
 package com.konkuk.ma.domain.auth.domain
 
-import com.konkuk.ma.domain.auth.domain.port.SmsRepository
 import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.NewMember
+import com.konkuk.ma.domain.member.domain.NicknameValidator
+import com.konkuk.ma.domain.member.domain.PhoneNumber
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
-import com.konkuk.ma.domain.member.exception.DuplicateEmailException
-import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
-import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.exception.DuplicateException
+import com.konkuk.ma.exception.EntityType
 import org.springframework.stereotype.Component
 
 @Component
 class SignUpValidator(
     private val memberQueryRepository: MemberQueryRepository,
-    private val smsRepository: SmsRepository,
+    private val nicknameValidator: NicknameValidator,
+    private val smsVerificationValidator: SmsVerificationValidator,
 ) {
     fun validate(newMember: NewMember) {
-        checkDuplicatedNickname(newMember.nickname)
+        nicknameValidator.validate(newMember.nickname)
         checkDuplicatedEmail(newMember.email)
-        checkSmsVerification(newMember.phoneNumber.fullNumber)
-    }
-
-    private fun checkDuplicatedNickname(nickname: String) {
-        if (memberQueryRepository.existsByNickname(nickname)) {
-            throw DuplicateNicknameException(nickname)
-        }
+        checkDuplicatedPhoneNumber(newMember.phoneNumber)
+        smsVerificationValidator.validate(newMember.phoneNumber)
     }
 
     private fun checkDuplicatedEmail(email: Email) {
-        if (memberQueryRepository.existsByEmail(email)) {
-            throw DuplicateEmailException(email)
+        if (memberQueryRepository.exists(email)) {
+            throw DuplicateException(EntityType.MEMBER, "email", email.value)
         }
     }
 
-    private fun checkSmsVerification(phoneNumber: String) {
-        if (!smsRepository.getConfirmed(phoneNumber)) {
-            throw SmsNotVerifiedException(phoneNumber)
+    private fun checkDuplicatedPhoneNumber(phoneNumber: PhoneNumber) {
+        if (memberQueryRepository.exists(phoneNumber)) {
+            throw DuplicateException(EntityType.MEMBER, "phoneNumber", phoneNumber.fullNumber)
         }
     }
 }

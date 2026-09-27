@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.repository
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.dao.MatchingResultCommandDao
 import com.konkuk.ma.domain.matching.dao.MatchingResultQueryDao
 import com.konkuk.ma.domain.matching.domain.MatchingResult
@@ -8,8 +7,8 @@ import com.konkuk.ma.domain.matching.domain.NewMatchingResult
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
-import org.springframework.stereotype.Repository
 import java.time.LocalDate
+import org.springframework.stereotype.Repository
 
 @Repository
 class MatchingResultCoreRepository(
@@ -33,8 +32,8 @@ class MatchingResultCoreRepository(
         return matchingResultCommandDao.deleteExcludedExpired(baseDate)
     }
 
-    override fun find(email: Email, excluded: Boolean): List<MatchingResult> {
-        return matchingResultQueryDao.find(email.value, excluded)
+    override fun find(memberId: Long, excluded: Boolean): List<MatchingResult> {
+        return matchingResultQueryDao.find(memberId, excluded)
             .map { it.toDomain() }
     }
 
@@ -44,7 +43,28 @@ class MatchingResultCoreRepository(
             ?: throw EntityNotFoundException(EntityType.MATCHING_RESULT, matchingResultId.toString())
     }
 
+    override fun exists(targetInfoId: Long): Boolean {
+        return matchingResultQueryDao.exists(targetInfoId)
+    }
+
     override fun updateExcluded(matchingResult: MatchingResult) {
         matchingResultCommandDao.updateExcluded(matchingResult)
+    }
+
+    override fun updateClaimStatus(matchingResult: MatchingResult) {
+        matchingResultCommandDao.updateClaimStatus(matchingResult)
+    }
+
+    override fun findClaimedByTarget(memberId: Long): List<MatchingResult> {
+        return matchingResultQueryDao.findClaimedByTarget(memberId)
+            .map { it.toDomain() }
+    }
+
+    override fun delete(targetInfoId: Long, memberId: Long) {
+        matchingResultCommandDao.delete(targetInfoId, memberId)
+    }
+
+    override fun deleteByRegister(memberId: Long) {
+        matchingResultCommandDao.deleteByRegister(memberId)
     }
 }

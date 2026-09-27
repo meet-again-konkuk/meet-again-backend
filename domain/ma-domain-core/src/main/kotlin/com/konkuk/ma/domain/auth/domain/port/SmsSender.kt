@@ -1,9 +1,9 @@
 package com.konkuk.ma.domain.auth.domain.port
 
-import com.konkuk.ma.domain.auth.domain.SmsVerification
+import com.konkuk.ma.domain.auth.domain.VerificationCode
 import org.springframework.stereotype.Component
 
 @Component
 interface SmsSender {
-    fun sendSmsVerificationCode(phoneNumber: String): SmsVerification
+    fun send(phoneNumber: String, code: VerificationCode)
 }

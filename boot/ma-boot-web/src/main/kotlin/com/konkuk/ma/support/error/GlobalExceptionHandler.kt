@@ -1,21 +1,23 @@
 package com.konkuk.ma.support.error
 
 import com.konkuk.ma.domain.auth.exception.RefreshTokenExpiredException
-import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
-import com.konkuk.ma.domain.community.exception.CommentAccessDeniedException
-import com.konkuk.ma.domain.common.exception.InvalidValueException
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
-import com.konkuk.ma.domain.member.exception.DuplicateEmailException
-import com.konkuk.ma.domain.member.exception.DuplicateNicknameException
+import com.konkuk.ma.domain.point.exception.PaymentApprovalFailedException
+import com.konkuk.ma.exception.InvalidObfuscatedIdException
+import com.konkuk.ma.exception.InvalidValueException
 import com.konkuk.ma.domain.auth.exception.PasswordMismatchException
 import com.konkuk.ma.domain.member.exception.SmsNotVerifiedException
+import com.konkuk.ma.domain.member.exception.WithdrawalPendingLoginException
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.InvalidStateException
 import com.konkuk.ma.exception.BusinessException
+import com.konkuk.ma.exception.DuplicateException
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.logger
 import com.konkuk.ma.support.payload.response.ApiError
 import com.konkuk.ma.support.payload.response.ErrorCode
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -30,8 +32,8 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error)
     }
 
-    @ExceptionHandler(DuplicateNicknameException::class, DuplicateEmailException::class)
-    fun handleDuplicateException(e: BusinessException): ResponseEntity<ApiError> {
+    @ExceptionHandler(DuplicateException::class)
+    fun handleDuplicateException(e: DuplicateException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.ENTITY_DUPLICATION)
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error)
     }
@@ -42,20 +44,28 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
     }
 
-    @ExceptionHandler(
-        MatchingResultAccessDeniedException::class,
-        CommentAccessDeniedException::class,
-    )
-    fun handleAccessDeniedException(e: BusinessException): ResponseEntity<ApiError> {
+    @ExceptionHandler(PaymentApprovalFailedException::class)
+    fun handlePaymentApprovalFailedException(e: PaymentApprovalFailedException): ResponseEntity<ApiError> {
+        val error = ApiError(ErrorCode.PAYMENT_APPROVAL_FAILED)
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(error)
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.ACCESS_DENIED)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error)
     }
 
+    @ExceptionHandler(WithdrawalPendingLoginException::class)
+    fun handleWithdrawalPendingLoginException(e: WithdrawalPendingLoginException): ResponseEntity<ApiError> {
+        val error = ApiError(ErrorCode.WITHDRAWAL_PENDING)
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error)
+    }
+
     @ExceptionHandler(
         InvalidValueException::class,
+        InvalidStateException::class,
         SmsNotVerifiedException::class,
-        com.konkuk.ma.domain.community.exception.PostNotFoundException::class,
-        com.konkuk.ma.domain.community.exception.ReplyDepthExceededException::class,
     )
     fun handleBadRequestException(e: BusinessException): ResponseEntity<ApiError> {
         val error = ApiError(ErrorCode.INVALID_INPUT_VALUE)
@@ -72,6 +82,12 @@ class GlobalExceptionHandler {
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ApiError> {
         val message = e.bindingResult.allErrors.mapNotNull { it.defaultMessage }.joinToString(", ")
         val error = ApiError(ErrorCode.INVALID_INPUT_VALUE, message)
+        return ResponseEntity.badRequest().body(error)
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ResponseEntity<ApiError> {
+        val error = ApiError(ErrorCode.INVALID_TYPE_VALUE)
         return ResponseEntity.badRequest().body(error)
     }
 

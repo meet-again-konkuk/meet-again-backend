@@ -11,17 +11,22 @@ import com.konkuk.ma.domain.community.fixture.PostFixture
 import com.konkuk.ma.exception.EntityNotFoundException
 import com.konkuk.ma.exception.EntityType
 import com.konkuk.ma.extension.andDocument
+import com.konkuk.ma.extension.getJson
 import com.konkuk.ma.extension.pathVariables
 import com.konkuk.ma.extension.responseBody
-import com.konkuk.ma.support.security.WithAuthMember
+import com.konkuk.ma.vocabulary.blockedAuthor
 import com.konkuk.ma.vocabulary.detailCategory
 import com.konkuk.ma.vocabulary.detailCommentContent
 import com.konkuk.ma.vocabulary.detailCommentId
+import com.konkuk.ma.vocabulary.detailCommentIsMine
+import com.konkuk.ma.vocabulary.detailCommentLikedByMe
 import com.konkuk.ma.vocabulary.detailCommentLikes
 import com.konkuk.ma.vocabulary.detailCommentNickname
 import com.konkuk.ma.vocabulary.detailCommentTimeAgo
 import com.konkuk.ma.vocabulary.detailComments
 import com.konkuk.ma.vocabulary.detailContent
+import com.konkuk.ma.vocabulary.detailIsMine
+import com.konkuk.ma.vocabulary.detailLikedByMe
 import com.konkuk.ma.vocabulary.detailLikes
 import com.konkuk.ma.vocabulary.detailNickname
 import com.konkuk.ma.vocabulary.detailPostId
@@ -29,24 +34,24 @@ import com.konkuk.ma.vocabulary.detailRemainingReplyCount
 import com.konkuk.ma.vocabulary.detailReplies
 import com.konkuk.ma.vocabulary.detailReplyContent
 import com.konkuk.ma.vocabulary.detailReplyId
+import com.konkuk.ma.vocabulary.detailReplyIsMine
+import com.konkuk.ma.vocabulary.detailReplyLikedByMe
 import com.konkuk.ma.vocabulary.detailReplyLikes
 import com.konkuk.ma.vocabulary.detailReplyNickname
 import com.konkuk.ma.vocabulary.detailReplyTimeAgo
 import com.konkuk.ma.vocabulary.detailTimeAgo
 import com.konkuk.ma.vocabulary.detailTitle
 import com.konkuk.ma.vocabulary.postDetailIdPath
+import com.konkuk.ma.vocabulary.postImageUrl
+import com.konkuk.ma.vocabulary.postThumbnailUrl
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(PostQueryApi::class)
 @BaseApiTest
-@WithAuthMember(email = "test@example.com")
 class PostDetailQueryApiTest(
     private val mockMvc: MockMvc,
     @MockkBean private val postQueryService: PostQueryService,
@@ -57,27 +62,35 @@ class PostDetailQueryApiTest(
         val reply = ReplyWithAuthor(
             comment = CommentFixture.create(id = 2L, parentCommentId = 1L, content = "감사합니다!"),
             nickname = "대댓글작성자",
+            likeCount = 1,
+            likedByMe = false,
+            isMine = false,
         )
         val commentWithAuthor = CommentWithAuthor(
             comment = CommentFixture.create(id = 1L, content = "좋은 글이네요!"),
             nickname = "댓글작성자",
+            likeCount = 2,
             replies = listOf(reply),
             remainingReplyCount = 3,
+            likedByMe = true,
+            isMine = false,
         )
         val postDetail = PostDetail(
-            post = PostFixture.create(category = PostCategory.CHEER, title = "안녕하세요", content = "반갑습니다", likes = 5),
+            post = PostFixture.create(category = PostCategory.CHEER, title = "안녕하세요", content = "반갑습니다"),
             nickname = "테스트닉네임",
+            likeCount = 5,
             comments = listOf(commentWithAuthor),
+            likedByMe = true,
+            isMine = true,
+            imageUrl = "/files/community/post/1/image.jpg",
+            thumbnailUrl = "/files/community/post/1/thumb.jpg",
         )
 
-        every { postQueryService.findDetail(1L) } returns postDetail
+        every { postQueryService.findDetail(1L, any<Long>()) } returns postDetail
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.get("/api/community/posts/{id}", 1L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk)
+        mockMvc.getJson("/api/community/posts/{id}", 1L)
+            .andExpect { status { isOk() } }
             .andDocument(
                 "community/find-post-detail",
                 pathVariables(
@@ -91,33 +104,40 @@ class PostDetailQueryApiTest(
                     detailContent(),
                     detailLikes(),
                     detailTimeAgo(),
+                    detailLikedByMe(),
+                    detailIsMine(),
                     detailComments(),
                     detailCommentId(),
                     detailCommentNickname(),
                     detailCommentContent(),
                     detailCommentLikes(),
                     detailCommentTimeAgo(),
+                    detailCommentLikedByMe(),
+                    detailCommentIsMine(),
+                    blockedAuthor("comments[].blockedAuthor"),
                     detailReplies(),
                     detailReplyId(),
                     detailReplyNickname(),
                     detailReplyContent(),
                     detailReplyLikes(),
                     detailReplyTimeAgo(),
+                    detailReplyLikedByMe(),
+                    detailReplyIsMine(),
+                    blockedAuthor("comments[].replies[].blockedAuthor"),
                     detailRemainingReplyCount(),
+                    postImageUrl() isOptional true,
+                    postThumbnailUrl() isOptional true,
                 ),
             )
     }
 
     test("존재하지 않는 게시글 조회 시 404를 반환한다") {
         // Given
-        every { postQueryService.findDetail(999L) } throws
+        every { postQueryService.findDetail(999L, any<Long>()) } throws
             EntityNotFoundException(EntityType.COMMUNITY_POST, "999")
 
         // When & Then
-        mockMvc.perform(
-            RestDocumentationRequestBuilders.get("/api/community/posts/{id}", 999L)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isNotFound)
+        mockMvc.getJson("/api/community/posts/{id}", 999L)
+            .andExpect { status { isNotFound() } }
     }
 })

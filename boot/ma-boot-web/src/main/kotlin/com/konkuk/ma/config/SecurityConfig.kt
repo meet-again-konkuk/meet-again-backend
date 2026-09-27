@@ -29,10 +29,19 @@ class SecurityConfig(
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/auth/find-email").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/auth/find-password").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/auth/refresh-token").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/sms/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/members/duplicated-**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/members/nickname/exists").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/members/email/exists").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/members/withdrawal/cancellation").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/members/regions").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/files/memory/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/files/community/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/files/member/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/points").authenticated()
                     .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()
             }

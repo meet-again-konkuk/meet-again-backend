@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 커뮤니티 게시글 이미지 삭제 API
+
+== 게시글 이미지 삭제
+
+본인이 작성한 커뮤니티 게시글의 이미지를 삭제합니다. 작성자가 아니면 403을 반환합니다. 성공 시 204 No Content 로 응답하며 본문은 없습니다.
+
+=== 요청
+
+include::{snippets}/community/delete-post-image/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/delete-post-image/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/community/delete-post-image/http-response.adoc[]

@@ -12,10 +12,10 @@ class NewCommentRequest(
 
     val parentCommentId: Long? = null,
 ) {
-    fun toNewComment(authorEmail: String, postId: Long): NewComment {
+    fun toNewComment(authorId: Long, postId: Long): NewComment {
         return NewComment(
             postId = postId,
-            authorEmail = authorEmail,
+            authorId = authorId,
             content = content,
             parentCommentId = parentCommentId,
         )

@@ -6,3 +6,7 @@ spring:
 file:
   upload:
     base-path: ${user.home}/meet-again/uploads
+
+backup:
+  local:
+    base-path: ${user.home}/meet-again/backups

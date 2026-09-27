@@ -1,16 +1,12 @@
 package com.konkuk.ma.domain.member.domain.photo
 
-import com.konkuk.ma.domain.common.domain.Email
-
 class MemberPhoto(
     val id: Long,
-    val memberEmail: Email,
-    val filePath: String,
+    val memberId: Long,
+    val storageKey: String,
     val originalFileName: String,
     val approvalStatus: ApprovalStatus,
-    val thumbnailPath: String? = null
+    val thumbnailKey: String? = null
 ) {
-    fun belongsTo(email: Email): Boolean = memberEmail == email
-
-    fun hasThumbnail(): Boolean = thumbnailPath != null
+    fun pickImageKey(): String = thumbnailKey ?: storageKey
 }

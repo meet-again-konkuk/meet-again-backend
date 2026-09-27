@@ -7,9 +7,14 @@ import com.konkuk.ma.domain.member.entity.table.MemberTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldEndWith
+import io.kotest.matchers.string.shouldNotContain
+import io.kotest.matchers.string.shouldStartWith
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -18,10 +23,10 @@ import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import com.konkuk.ma.extension.deleteJson
+import com.konkuk.ma.extension.postJson
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.multipart
-import org.springframework.test.web.servlet.post
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
@@ -76,25 +81,24 @@ class MemberPhotoIntegrationTest(
     fun insertMember(
         email: String = "photo-test@example.com",
         rawPassword: String = "password123"
-    ) {
-        transaction {
-            MemberTable.insert {
+    ): Long {
+        return transaction {
+            MemberTable.insertAndGetId {
                 it[MemberTable.email] = email
                 it[password] = passwordEncoder.encode(rawPassword)
-                it[nickname] = "포토테스터"
+                it[nickname] = "포토테스터-$email"
                 it[gender] = "MALE"
                 it[phoneNumber] = "01012345678"
                 it[name] = "김테스트"
                 it[birthDate] = LocalDate.of(1990, 1, 1)
                 it[region] = "SEOUL"
-            }
+            }.value
         }
     }
 
     fun login(email: String, password: String): String {
         val request = mapOf("email" to email, "password" to password)
-        val result = mockMvc.post("/api/auth/login") {
-            contentType = MediaType.APPLICATION_JSON
+        val result = mockMvc.postJson("/api/auth/login") {
             content = mapper.writeValueAsString(request)
         }
             .andExpect { status { isOk() } }
@@ -120,7 +124,7 @@ class MemberPhotoIntegrationTest(
             // Given
             val email = "photo-test@example.com"
             val password = "password123"
-            insertMember(email = email, rawPassword = password)
+            val memberId = insertMember(email = email, rawPassword = password)
             val accessToken = login(email, password)
 
             val pngBytes = createTestPngBytes()
@@ -141,21 +145,27 @@ class MemberPhotoIntegrationTest(
             // Then - DB에 사진 레코드가 저장되었는지 확인
             val savedPhoto = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq email }
+                    .where { MemberPhotoTable.memberId eq memberId }
                     .singleOrNull()
             }
 
             savedPhoto shouldNotBe null
             savedPhoto!![MemberPhotoTable.originalFileName] shouldBe "test-photo.png"
-            savedPhoto[MemberPhotoTable.filePath].isNotBlank() shouldBe true
-            savedPhoto[MemberPhotoTable.thumbnailPath]?.isNotBlank() shouldBe true
+
+            // DB에는 서버 파일시스템 절대경로가 아니라 상대 storageKey 만 담긴다
+            val storageKey = savedPhoto[MemberPhotoTable.storageKey]
+            storageKey shouldStartWith "member/profile/$memberId/"
+            storageKey shouldEndWith ".png"
+            storageKey shouldNotContain testUploadDir.toString()
+
+            savedPhoto[MemberPhotoTable.thumbnailKey] shouldBe "member/thumbnail/$memberId/thumb_test-photo.png"
         }
 
         test("기존 사진이 있을 때 새 사진을 업로드하면 기존 사진이 교체된다") {
             // Given
             val email = "photo-replace@example.com"
             val password = "password123"
-            insertMember(email = email, rawPassword = password)
+            val memberId = insertMember(email = email, rawPassword = password)
             val accessToken = login(email, password)
 
             val pngBytes = createTestPngBytes()
@@ -174,15 +184,15 @@ class MemberPhotoIntegrationTest(
                 header("Authorization", "Bearer $accessToken")
             }.andExpect { status { isCreated() } }
 
-            // Then - DB에 사진 레코드가 1개만 존재
-            val photos = transaction {
+            // Then - 활성 사진은 1개, 기존 사진은 soft delete
+            val activePhotos = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq email }
+                    .where { (MemberPhotoTable.memberId eq memberId) and (MemberPhotoTable.deleted eq false) }
                     .toList()
             }
 
-            photos.size shouldBe 1
-            photos[0][MemberPhotoTable.originalFileName] shouldBe "second.png"
+            activePhotos.size shouldBe 1
+            activePhotos[0][MemberPhotoTable.originalFileName] shouldBe "second.png"
         }
 
         test("인증 토큰 없이 사진을 업로드하면 401이 반환된다") {
@@ -199,11 +209,11 @@ class MemberPhotoIntegrationTest(
 
     context("DELETE /api/members/photos") {
 
-        test("업로드된 사진을 삭제하면 DB에서 제거된다") {
+        test("업로드된 사진을 삭제하면 soft delete 처리된다") {
             // Given
             val email = "photo-delete@example.com"
             val password = "password123"
-            insertMember(email = email, rawPassword = password)
+            val memberId = insertMember(email = email, rawPassword = password)
             val accessToken = login(email, password)
 
             val pngBytes = createTestPngBytes()
@@ -214,18 +224,21 @@ class MemberPhotoIntegrationTest(
             }.andExpect { status { isCreated() } }
 
             // When
-            mockMvc.delete("/api/members/photos") {
-                header("Authorization", "Bearer $accessToken")
+            mockMvc.deleteJson("/api/members/photos") {
+                authorization("Bearer $accessToken")
             }.andExpect { status { isOk() } }
 
             // Then
             val photo = transaction {
                 MemberPhotoTable.selectAll()
-                    .where { MemberPhotoTable.memberEmail eq email }
+                    .where { MemberPhotoTable.memberId eq memberId }
                     .singleOrNull()
             }
 
-            photo shouldBe null
+            photo shouldNotBe null
+            photo!![MemberPhotoTable.deleted] shouldBe true
+            photo[MemberPhotoTable.deletedBy] shouldBe memberId.toString()
+            photo[MemberPhotoTable.deletedDate] shouldNotBe null
         }
     }
 })

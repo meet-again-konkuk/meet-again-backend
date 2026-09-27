@@ -1,11 +1,10 @@
 package com.konkuk.ma.domain.auth.entity
 
 import com.konkuk.ma.domain.auth.domain.RefreshToken
-import com.konkuk.ma.domain.common.domain.Email
 import java.time.LocalDateTime
 
 class RefreshTokenEntity(
-    val email: String,
+    val memberId: Long,
 
     val expirationDate: LocalDateTime,
 
@@ -13,7 +12,7 @@ class RefreshTokenEntity(
 ) {
     fun toDomain(): RefreshToken {
         return RefreshToken(
-            email = Email(email),
+            memberId = memberId,
             expirationDate = expirationDate,
             token = token
         )

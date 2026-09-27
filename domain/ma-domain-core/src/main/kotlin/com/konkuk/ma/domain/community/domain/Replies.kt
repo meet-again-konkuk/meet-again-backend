@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.community.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.Members
 
 class Replies(val data: List<Comment>) {
@@ -19,15 +18,27 @@ class Replies(val data: List<Comment>) {
     private fun findReplies(parentId: Long): List<Comment> = byParentId[parentId].orEmpty()
         .sortedByDescending { it.createdDate }
 
-    fun extractAuthorEmails(): Set<Email> {
-        return data.map { it.authorEmail }.toSet()
+    fun extractAuthorIds(): Set<Long> {
+        return data.map { it.authorId }.toSet()
     }
 
-    fun combineWithAuthors(members: Members): List<ReplyWithAuthor> {
+    fun extractIds(): List<Long> {
+        return data.map { it.id }
+    }
+
+    fun combineWithAuthors(
+        members: Members,
+        likeCounts: LikeCounts,
+        viewer: Viewer,
+    ): List<ReplyWithAuthor> {
         return data.map { reply ->
             ReplyWithAuthor(
                 comment = reply,
-                nickname = members.findNickname(reply.authorEmail),
+                nickname = members.findNickname(reply.authorId),
+                likeCount = likeCounts.countOf(reply.id),
+                likedByMe = viewer.isLikedByMe(reply.id),
+                isMine = viewer.isMine(reply.authorId),
+                blockedAuthor = viewer.hasBlocked(reply.authorId),
             )
         }
     }

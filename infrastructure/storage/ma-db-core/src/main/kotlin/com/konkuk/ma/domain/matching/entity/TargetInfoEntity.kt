@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.matching.entity
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.common.domain.date.Day
 import com.konkuk.ma.domain.common.domain.date.Month
 import com.konkuk.ma.domain.common.domain.date.Year
@@ -12,7 +11,7 @@ import java.time.LocalDateTime
 
 class TargetInfoEntity(
     val id: Long,
-    val registerEmail: String,
+    val registerId: Long,
     val name: String,
     val targetGender: Gender,
     val middleNumber: String?,
@@ -27,7 +26,7 @@ class TargetInfoEntity(
     fun toDomain(): TargetInfo {
         return TargetInfo(
             targetInfoId = id,
-            registerEmail = Email(registerEmail),
+            registerId = registerId,
             targetName = name,
             targetGender = targetGender,
             middleNumber = middleNumber?.let { FourDigit(it) },
@@ -35,7 +34,8 @@ class TargetInfoEntity(
             year = year?.let { Year(it) },
             month = month?.let { Month(it) },
             day = day?.let { Day(it) },
-            region = region
+            region = region,
+            createdDate = createdDate,
         )
     }
 }

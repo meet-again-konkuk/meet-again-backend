@@ -2,13 +2,13 @@ package com.konkuk.ma.domain.member.dao
 
 import com.konkuk.ma.config.DatabaseTest
 import com.konkuk.ma.config.TestDatabaseConfig
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.photo.NewPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -48,10 +48,10 @@ class MemberPhotoCommandDaoTest(
             test("저장된 사진의 필드 값이 정확히 일치한다") {
                 // Given
                 val newPhoto = createNewPhoto(
-                    memberEmail = "photo@example.com",
-                    filePath = "/uploads/photo.jpg",
+                    memberId = 42L,
+                    storageKey = "member/profile/42/photo.jpg",
                     originalFileName = "원본사진.jpg",
-                    thumbnailPath = "/uploads/thumb.jpg"
+                    thumbnailKey = "member/thumbnail/42/thumb_photo.jpg"
                 )
 
                 // When
@@ -59,15 +59,15 @@ class MemberPhotoCommandDaoTest(
 
                 // Then
                 val row = MemberPhotoTable.selectAll().first()
-                row[MemberPhotoTable.memberEmail] shouldBe newPhoto.memberEmail.value
-                row[MemberPhotoTable.filePath] shouldBe newPhoto.filePath
+                row[MemberPhotoTable.memberId] shouldBe newPhoto.memberId
+                row[MemberPhotoTable.storageKey] shouldBe newPhoto.storageKey
                 row[MemberPhotoTable.originalFileName] shouldBe newPhoto.originalFileName
-                row[MemberPhotoTable.thumbnailPath] shouldBe newPhoto.thumbnailPath
+                row[MemberPhotoTable.thumbnailKey] shouldBe newPhoto.thumbnailKey
             }
 
-            test("thumbnailPath가 null인 사진을 저장한다") {
+            test("thumbnailKey가 null인 사진을 저장한다") {
                 // Given
-                val newPhoto = createNewPhoto(thumbnailPath = null)
+                val newPhoto = createNewPhoto(thumbnailKey = null)
 
                 // When
                 val id = memberPhotoCommandDao.save(newPhoto)
@@ -75,53 +75,60 @@ class MemberPhotoCommandDaoTest(
                 // Then
                 id shouldBeGreaterThan 0L
                 val row = MemberPhotoTable.selectAll().first()
-                row[MemberPhotoTable.thumbnailPath] shouldBe null
+                row[MemberPhotoTable.thumbnailKey] shouldBe null
             }
         }
 
         context("delete") {
 
-            test("해당 이메일의 사진을 삭제한다") {
+            test("해당 회원의 사진을 soft delete 처리한다") {
                 // Given
-                val email = "user@example.com"
-                insertMemberPhoto(memberEmail = email)
+                val memberId = 1L
+                insertMemberPhoto(memberId = memberId)
 
                 // When
-                memberPhotoCommandDao.delete(email)
+                memberPhotoCommandDao.delete(memberId)
 
                 // Then
-                MemberPhotoTable.selectAll().count() shouldBe 0
+                val photo = MemberPhotoTable.selectAll().first()
+                photo[MemberPhotoTable.deleted] shouldBe true
+                photo[MemberPhotoTable.deletedBy] shouldBe memberId.toString()
+                photo[MemberPhotoTable.deletedDate] shouldNotBe null
             }
 
-            test("같은 이메일의 사진이 여러 개이면 모두 삭제한다") {
+            test("같은 회원의 사진이 여러 개이면 모두 soft delete 처리한다") {
                 // Given
-                val email = "user@example.com"
-                insertMemberPhoto(memberEmail = email, filePath = "/uploads/1.jpg")
-                insertMemberPhoto(memberEmail = email, filePath = "/uploads/2.jpg")
+                val memberId = 1L
+                insertMemberPhoto(memberId = memberId, storageKey = "member/profile/1/1.jpg")
+                insertMemberPhoto(memberId = memberId, storageKey = "member/profile/1/2.jpg")
 
                 // When
-                memberPhotoCommandDao.delete(email)
+                memberPhotoCommandDao.delete(memberId)
 
                 // Then
-                MemberPhotoTable.selectAll().count() shouldBe 0
+                val photos = MemberPhotoTable.selectAll().toList()
+                photos.size shouldBe 2
+                photos.all { it[MemberPhotoTable.deleted] } shouldBe true
             }
 
-            test("다른 이메일의 사진은 삭제하지 않는다") {
+            test("다른 회원의 사진은 soft delete 처리하지 않는다") {
                 // Given
-                insertMemberPhoto(memberEmail = "user1@example.com")
-                insertMemberPhoto(memberEmail = "user2@example.com")
+                insertMemberPhoto(memberId = 1L)
+                insertMemberPhoto(memberId = 2L)
 
                 // When
-                memberPhotoCommandDao.delete("user1@example.com")
+                memberPhotoCommandDao.delete(1L)
 
                 // Then
-                MemberPhotoTable.selectAll().count() shouldBe 1
-                MemberPhotoTable.selectAll().first()[MemberPhotoTable.memberEmail] shouldBe "user2@example.com"
+                val otherPhoto = MemberPhotoTable.selectAll()
+                    .where { MemberPhotoTable.memberId eq 2L }
+                    .first()
+                otherPhoto[MemberPhotoTable.deleted] shouldBe false
             }
 
-            test("존재하지 않는 이메일로 삭제해도 예외가 발생하지 않는다") {
+            test("존재하지 않는 회원으로 삭제해도 예외가 발생하지 않는다") {
                 // When
-                memberPhotoCommandDao.delete("nobody@example.com")
+                memberPhotoCommandDao.delete(99L)
 
                 // Then
                 MemberPhotoTable.selectAll().count() shouldBe 0
@@ -130,26 +137,26 @@ class MemberPhotoCommandDaoTest(
     }
 
     private fun createNewPhoto(
-        memberEmail: String = "user@example.com",
-        filePath: String = "/uploads/photo.jpg",
+        memberId: Long = 1L,
+        storageKey: String = "member/profile/1/photo.jpg",
         originalFileName: String = "원본.jpg",
-        thumbnailPath: String? = "/uploads/thumb.jpg",
+        thumbnailKey: String? = "member/thumbnail/1/thumb_photo.jpg",
     ): NewPhoto {
         return NewPhoto(
-            memberEmail = Email(memberEmail),
-            filePath = filePath,
+            memberId = memberId,
+            storageKey = storageKey,
             originalFileName = originalFileName,
-            thumbnailPath = thumbnailPath
+            thumbnailKey = thumbnailKey
         )
     }
 
     private fun insertMemberPhoto(
-        memberEmail: String = "user@example.com",
-        filePath: String = "/uploads/photo.jpg",
+        memberId: Long = 1L,
+        storageKey: String = "member/profile/1/photo.jpg",
     ) {
         MemberPhotoTable.insert {
-            it[MemberPhotoTable.memberEmail] = memberEmail
-            it[MemberPhotoTable.filePath] = filePath
+            it[MemberPhotoTable.memberId] = memberId
+            it[MemberPhotoTable.storageKey] = storageKey
             it[originalFileName] = "원본.jpg"
         }
     }

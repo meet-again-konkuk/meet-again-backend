@@ -9,6 +9,7 @@ import java.time.LocalDate
 
 object MemberFixture {
     fun create(
+        id: Long = 0L,
         email: String = "target@example.com",
         password: String = "password",
         nickname: String = "nickname",
@@ -21,6 +22,7 @@ object MemberFixture {
         university: String? = null
     ): Member {
         return Member(
+            id = id,
             email = Email(email),
             password = password,
             nickname = nickname,

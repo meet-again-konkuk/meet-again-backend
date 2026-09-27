@@ -2,15 +2,28 @@ package com.konkuk.ma.domain.matching.repository
 
 import com.konkuk.ma.domain.matching.dao.TargetInfoCommandDao
 import com.konkuk.ma.domain.matching.domain.NewTargetInfo
+import com.konkuk.ma.domain.matching.domain.UpdateTargetInfo
 import com.konkuk.ma.domain.matching.domain.port.TargetInfoCommandRepository
 import com.konkuk.ma.domain.member.domain.Gender
 import org.springframework.stereotype.Repository
 
 @Repository
 class TargetInfoCommandCoreRepository(
-    private val targetInfoCommandDao: TargetInfoCommandDao
+    private val targetInfoCommandDao: TargetInfoCommandDao,
 ) : TargetInfoCommandRepository {
     override fun save(newTargetInfo: NewTargetInfo, targetGender: Gender): Long {
         return targetInfoCommandDao.save(newTargetInfo, targetGender)
+    }
+
+    override fun update(id: Long, memberId: Long, updateTargetInfo: UpdateTargetInfo) {
+        targetInfoCommandDao.update(id, memberId, updateTargetInfo)
+    }
+
+    override fun delete(id: Long, memberId: Long) {
+        targetInfoCommandDao.delete(id, memberId)
+    }
+
+    override fun delete(memberId: Long) {
+        targetInfoCommandDao.delete(memberId)
     }
 }

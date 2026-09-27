@@ -24,12 +24,15 @@ REST Docs 관련 내용은 별도 스킬에서 다루므로 여기서는 제외�
 ## 테스트 파일 구조
 
 ### 기본 구조
-```kotlin
-class SomeServiceTest : FunSpec({
 
-    // 1. mock 선언
+> **🚫 Service(application 계층) 클래스는 이 모킹 단위 테스트로 작성하지 않는다 — 통합 테스트로 대체한다.** 아래 구조는 도메인 모델/Value Object/유틸/도메인 컴포넌트 등 **단위 테스트 대상**에 적용한다. (이유·대상 구분은 '테스트 대상 선정 기준' 참조)
+
+```kotlin
+class SomeDomainPolicyTest : FunSpec({
+
+    // 1. mock 선언 (도메인 컴포넌트가 협력하는 포트 등)
     val mockRepository = mockk<SomeRepository>()
-    val service = SomeService(mockRepository)
+    val sut = SomeDomainPolicy(mockRepository)
 
     // 2. context로 메서드/시나리오 그룹핑
     context("메서드명 또는 시나리오") {
@@ -39,7 +42,7 @@ class SomeServiceTest : FunSpec({
             every { mockRepository.findById(1L) } returns someEntity
 
             // When
-            val result = service.doSomething(1L)
+            val result = sut.doSomething(1L)
 
             // Then
             result shouldBe expected
@@ -49,7 +52,7 @@ class SomeServiceTest : FunSpec({
             every { mockRepository.findById(999L) } returns null
 
             shouldThrow<IllegalArgumentException> {
-                service.doSomething(999L)
+                sut.doSomething(999L)
             }.message shouldBe "존재하지 않는 엔티티입니다."
         }
     }
@@ -60,16 +63,18 @@ class SomeServiceTest : FunSpec({
 
 테스트는 **비즈니스 로직이 있는 코드에만** 작성한다. 단순 값 매핑, 위임만 하는 코드는 테스트하지 않는다.
 
+> **🚫 Service(application 계층)는 모킹 단위 테스트(`*ServiceTest`) 대상이 아니다 — 통합 테스트로 대체한다.** Service의 가치는 여러 협력 객체를 오케스트레이션하는 데 있는데, 모킹 단위 테스트는 실제 연동·쿼리 정합성을 검증하지 못해 "통과해도 운영에서 깨지는" 사각지대를 만든다. 조합 로직이 있는 Service(`PostQueryService.find()` 등)는 **API→DB E2E 통합 테스트(`@SpringBootTest` + 실제 H2, `boot/ma-boot-web/.../integration/` 패턴)**로 검증한다 — Service만 와이어링한 중간 레벨이 아니라 실제 HTTP 요청으로 전 계층을 관통한다.
+
 | 테스트 여부 | 대상 | 예시 |
 |:-:|------|------|
 | O | DAO (DB 통합 테스트) | `PostLikeDao`, `CommentCommandDao` — 실제 DB 쿼리가 의도대로 동작하는지 검증 |
 | O | 값 변환/계산이 있는 코드 | `TimeAgoCalculator.calculate()`, `PostResponse.from(postWithAuthor)` (timeAgo 변환) |
 | O | 유효성 검증이 있는 도메인 객체 | `FourDigit`, `Year`, `Comment.validateCanBeParent()` |
-| O | 조합 로직이 있는 Service | `PostQueryService.find()` (조회 + 닉네임 조합) |
 | O | 분기/판단이 있는 도메인 컴포넌트 | `CommentValidator.validatePostExists()` |
+| O (통합으로) | 조합 로직이 있는 Service | `PostQueryService.find()` (조회 + 닉네임 조합) — **모킹 단위 테스트가 아니라 통합 테스트로** |
+| X (모킹 단위) | **모든 Service (application 계층)** | 조합 로직 유무와 무관하게 `*ServiceTest` 모킹 단위 테스트는 작성하지 않는다 — 통합 테스트로 대체. 예: `PostQueryService`, `PostLikeService.like()`, `CommentLikeService.unlike()` |
 | X | 단순 값 매핑만 하는 Response DTO | `PostLikeResponse.from(result)` — liked, likeCount를 그대로 옮기기만 함 |
 | X | 생성자 호출만 하는 팩토리 메서드 | `PostLikeResult.liked(likeCount)` — 인자를 그대로 전달 |
-| X | 비즈니스 로직 없는 Service | 포트 호출 → 결과 반환만 하는 Service. mock verify만으로 구성된 테스트는 가치 없음. `PostLikeService.like()`, `CommentLikeService.unlike()` 등 |
 | X | 단순 위임만 하는 Repository | DAO 호출 + toDomain() 변환만 하는 포트 구현체 |
 
 **판단 기준: "이 코드가 잘못 구현되면 테스트 없이도 바로 알 수 있는가?"** 단순 매핑은 컴파일러가 잡아주므로 테스트가 불필요하다.
@@ -83,7 +88,7 @@ class SomeServiceTest : FunSpec({
 | DAO (DB 통합) | CRUD 동작 검증, 조건 쿼리 결과 | 존재하지 않는 데이터 조회, 유니크 제약 위반 |
 | 도메인 모델 생성 | 정상 생성 + 필드 검증 | 유효성 검증 실패 (빈값, 초과, 형식 오류) |
 | 도메인 행위 메서드 | 정상 동작 | 예외 발생 조건 |
-| Service | 정상 흐름 (조합 결과) | 의존 포트에서 예외 전파 |
+| Service (통합 테스트로) | 정상 흐름 (조합 결과) | 의존 포트에서 예외 전파 — **모킹 단위 테스트 아님** |
 | API Controller | 정상 요청 → 2xx | 유효성 검증 실패 → 400, 인증 실패 → 401 등 |
 | Value Object | 유효한 값 생성 | 경계값 실패, 형식 오류 |
 

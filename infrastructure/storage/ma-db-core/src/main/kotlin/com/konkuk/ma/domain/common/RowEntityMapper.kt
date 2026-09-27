@@ -8,6 +8,8 @@ import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
 import com.konkuk.ma.domain.member.entity.MemberEntity
 import com.konkuk.ma.domain.member.entity.table.MemberTable
+import com.konkuk.ma.domain.point.entity.PointProductEntity
+import com.konkuk.ma.domain.point.entity.table.PointProductTable
 import org.jetbrains.exposed.sql.ResultRow
 
 object RowEntityMapper {
@@ -22,18 +24,19 @@ object RowEntityMapper {
         region = enumValueOf(row[MemberTable.region]),
         birthDate = row[MemberTable.birthDate],
         highSchool = row[MemberTable.highSchool],
-        university = row[MemberTable.university]
+        university = row[MemberTable.university],
+        withdrawalRequestedAt = row[MemberTable.withdrawalRequestedAt]
     )
 
     fun toRefreshTokenEntity(row: ResultRow) = RefreshTokenEntity(
-        email = row[RefreshTokenTable.email],
+        memberId = row[RefreshTokenTable.memberId],
         expirationDate = row[RefreshTokenTable.expirationDate],
         token = row[RefreshTokenTable.token],
     )
 
     fun toTargetInfoEntity(row: ResultRow) = TargetInfoEntity(
         id = row[TargetInfoTable.id].value,
-        registerEmail = row[TargetInfoTable.registerEmail],
+        registerId = row[TargetInfoTable.registerId],
         name = row[TargetInfoTable.name],
         targetGender = Gender.valueOf(row[TargetInfoTable.targetGender]),
         middleNumber = row[TargetInfoTable.middleNumber],
@@ -44,5 +47,14 @@ object RowEntityMapper {
         region = row[TargetInfoTable.region]?.let { Region.valueOf(it) },
         createdDate = row[TargetInfoTable.createdDate],
         lastModifiedDate = row[TargetInfoTable.lastModifiedDate]
+    )
+
+    fun toPointProductEntity(row: ResultRow) = PointProductEntity(
+        id = row[PointProductTable.id].value,
+        name = row[PointProductTable.name],
+        quantity = row[PointProductTable.quantity],
+        price = row[PointProductTable.price],
+        displayOrder = row[PointProductTable.displayOrder],
+        discountPolicyId = row[PointProductTable.discountPolicyId],
     )
 }

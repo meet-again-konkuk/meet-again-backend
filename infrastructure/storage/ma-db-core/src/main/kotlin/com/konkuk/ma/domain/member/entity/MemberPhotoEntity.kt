@@ -1,6 +1,5 @@
 package com.konkuk.ma.domain.member.entity
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.domain.photo.ApprovalStatus
 import com.konkuk.ma.domain.member.domain.photo.MemberPhoto
 import com.konkuk.ma.domain.member.entity.table.MemberPhotoTable
@@ -8,20 +7,20 @@ import org.jetbrains.exposed.sql.ResultRow
 
 class MemberPhotoEntity(
     val id: Long,
-    val memberEmail: String,
-    val filePath: String,
+    val memberId: Long,
+    val storageKey: String,
     val originalFileName: String,
     val approvalStatus: String,
-    val thumbnailPath: String?
+    val thumbnailKey: String?
 ) {
     fun toDomain(): MemberPhoto {
         return MemberPhoto(
             id = id,
-            memberEmail = Email(memberEmail),
-            filePath = filePath,
+            memberId = memberId,
+            storageKey = storageKey,
             originalFileName = originalFileName,
             approvalStatus = ApprovalStatus.valueOf(approvalStatus),
-            thumbnailPath = thumbnailPath
+            thumbnailKey = thumbnailKey
         )
     }
 
@@ -29,11 +28,11 @@ class MemberPhotoEntity(
         fun from(row: ResultRow): MemberPhotoEntity {
             return MemberPhotoEntity(
                 id = row[MemberPhotoTable.id].value,
-                memberEmail = row[MemberPhotoTable.memberEmail],
-                filePath = row[MemberPhotoTable.filePath],
+                memberId = row[MemberPhotoTable.memberId],
+                storageKey = row[MemberPhotoTable.storageKey],
                 originalFileName = row[MemberPhotoTable.originalFileName],
                 approvalStatus = row[MemberPhotoTable.approvalStatus],
-                thumbnailPath = row[MemberPhotoTable.thumbnailPath]
+                thumbnailKey = row[MemberPhotoTable.thumbnailKey]
             )
         }
     }

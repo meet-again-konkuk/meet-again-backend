@@ -72,7 +72,7 @@ class EncryptIdRequestBodyIntegrationTest(
                 }
         }
 
-        test("잘못된 인코딩 ID가 포함된 JSON이면 에러 응답이 반환된다") {
+        test("잘못된 인코딩 ID가 포함된 JSON이면 400을 반환한다") {
             val requestBody = mapper.writeValueAsString(
                 mapOf(
                     "id" to "!@#invalid",
@@ -84,7 +84,7 @@ class EncryptIdRequestBodyIntegrationTest(
                 content = requestBody
             }
                 .andExpect {
-                    status { is5xxServerError() }
+                    status { isBadRequest() }
                 }
         }
     }

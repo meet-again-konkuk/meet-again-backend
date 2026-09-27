@@ -1,69 +1,49 @@
 package com.konkuk.ma.domain.member.domain.photo
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.member.fixture.MemberPhotoFixture
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
 
 class MemberPhotoTest : FunSpec({
 
-    context("belongsTo") {
-        test("동일한 이메일이면 true를 반환한다") {
+    context("pickImageKey") {
+        test("썸네일이 있으면 썸네일 키를 고른다") {
             // Given
-            val photo = MemberPhotoFixture.create(memberEmail = "owner@example.com")
+            val photo = MemberPhotoFixture.create(
+                storageKey = "member/profile/1/photo.jpg",
+                thumbnailKey = "member/thumbnail/1/thumb_photo.jpg"
+            )
 
             // When
-            val result = photo.belongsTo(Email("owner@example.com"))
+            val result = photo.pickImageKey()
 
             // Then
-            result.shouldBeTrue()
+            result shouldBe photo.thumbnailKey
         }
 
-        test("다른 이메일이면 false를 반환한다") {
+        test("썸네일이 없으면 원본 키를 고른다") {
             // Given
-            val photo = MemberPhotoFixture.create(memberEmail = "owner@example.com")
+            val photo = MemberPhotoFixture.create(
+                storageKey = "member/profile/1/photo.jpg",
+                thumbnailKey = null
+            )
 
             // When
-            val result = photo.belongsTo(Email("other@example.com"))
+            val result = photo.pickImageKey()
 
             // Then
-            result.shouldBeFalse()
+            result shouldBe photo.storageKey
         }
 
-        test("다른 이메일이면 false를 반환한다 - 다른 도메인") {
-            // Given
-            val photo = MemberPhotoFixture.create(memberEmail = "owner@example.com")
+        test("썸네일이 빈 문자열이면 null이 아니므로 썸네일 키를 그대로 고른다") {
+            // Given - 빈 문자열은 "없음"이 아니다. null 여부만으로 판단한다
+            val photo = MemberPhotoFixture.create(thumbnailKey = "")
 
             // When
-            val result = photo.belongsTo(Email("owner@other.com"))
+            val result = photo.pickImageKey()
 
             // Then
-            result.shouldBeFalse()
-        }
-    }
-
-    context("hasThumbnail") {
-        test("thumbnailPath가 존재하면 true를 반환한다") {
-            // Given
-            val photo = MemberPhotoFixture.create(thumbnailPath = "member/thumbnail/thumb_photo.jpg")
-
-            // When
-            val result = photo.hasThumbnail()
-
-            // Then
-            result.shouldBeTrue()
-        }
-
-        test("thumbnailPath가 null이면 false를 반환한다") {
-            // Given
-            val photo = MemberPhotoFixture.create(thumbnailPath = null)
-
-            // When
-            val result = photo.hasThumbnail()
-
-            // Then
-            result.shouldBeFalse()
+            result shouldBe ""
         }
     }
 })

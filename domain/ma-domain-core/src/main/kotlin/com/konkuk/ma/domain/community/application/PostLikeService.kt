@@ -1,9 +1,7 @@
 package com.konkuk.ma.domain.community.application
 
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.community.domain.PostLike
 import com.konkuk.ma.domain.community.domain.PostLikeResult
-import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
+import com.konkuk.ma.domain.community.domain.PostLiker
 import com.konkuk.ma.domain.community.domain.port.PostLikeRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,18 +9,16 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class PostLikeService(
+    private val postLiker: PostLiker,
     private val postLikeRepository: PostLikeRepository,
-    private val postCommandRepository: PostCommandRepository,
 ) {
-    fun like(postId: Long, memberEmail: String): PostLikeResult {
-        postLikeRepository.save(PostLike(postId = postId, memberEmail = Email(memberEmail)))
-        val likeCount = postCommandRepository.increaseLikes(postId)
-        return PostLikeResult.liked(likeCount)
+    fun like(postId: Long, memberId: Long): PostLikeResult {
+        postLiker.like(postId, memberId)
+        return PostLikeResult.liked(postLikeRepository.count(postId))
     }
 
-    fun unlike(postId: Long, memberEmail: String): PostLikeResult {
-        postLikeRepository.delete(postId, Email(memberEmail))
-        val likeCount = postCommandRepository.decreaseLikes(postId)
-        return PostLikeResult.unliked(likeCount)
+    fun unlike(postId: Long, memberId: Long): PostLikeResult {
+        postLikeRepository.delete(postId, memberId)
+        return PostLikeResult.unliked(postLikeRepository.count(postId))
     }
 }

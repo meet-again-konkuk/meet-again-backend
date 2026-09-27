@@ -2,6 +2,7 @@ package com.konkuk.ma.domain.community.repository
 
 import com.konkuk.ma.domain.community.dao.PostCommandDao
 import com.konkuk.ma.domain.community.domain.NewPost
+import com.konkuk.ma.domain.community.domain.PostDetails
 import com.konkuk.ma.domain.community.domain.port.PostCommandRepository
 import org.springframework.stereotype.Repository
 
@@ -13,11 +14,11 @@ class PostCommandCoreRepository(
         return postCommandDao.save(newPost)
     }
 
-    override fun increaseLikes(postId: Long): Int {
-        return postCommandDao.increaseLikes(postId)
+    override fun update(postId: Long, details: PostDetails) {
+        postCommandDao.update(postId, details)
     }
 
-    override fun decreaseLikes(postId: Long): Int {
-        return postCommandDao.decreaseLikes(postId)
+    override fun softDelete(postId: Long, memberId: Long) {
+        postCommandDao.softDelete(postId, memberId)
     }
 }

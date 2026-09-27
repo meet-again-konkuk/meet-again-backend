@@ -1,18 +1,20 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
-import com.konkuk.ma.domain.matching.exception.MatchingResultAccessDeniedException
+import com.konkuk.ma.domain.common.domain.date.remainingDays
+import com.konkuk.ma.domain.matching.domain.NewMatchingResult.Companion.SHOWING_EXPIRY_DAYS
+import com.konkuk.ma.exception.AccessDeniedException
+import com.konkuk.ma.exception.EntityType
+import com.konkuk.ma.exception.InvalidStateException
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 
 
 class MatchingResult(
     val id: Long,
-    val registerEmail: Email,
+    val registerId: Long,
     override val targetInfoId: Long,
-    override val targetEmail: Email,
+    override val targetId: Long,
 
     val middleNumberMatched: Boolean,
     val lastNumberMatched: Boolean,
@@ -24,8 +26,11 @@ class MatchingResult(
     val showingExpiryDate: LocalDateTime,
     val matchingExpiryDate: LocalDate,
     excluded: Boolean,
+    claimStatus: ClaimStatus = ClaimStatus.NONE,
 ) : HasMatchingKey {
     var excluded: Boolean = excluded
+        private set
+    var claimStatus: ClaimStatus = claimStatus
         private set
     val matchRate: Int by lazy {
         MatchRateCalculator(
@@ -38,15 +43,24 @@ class MatchingResult(
     }
 
 
-    fun getRemainingDays(): Long {
-        val now = LocalDate.now()
-        return ChronoUnit.DAYS.between(now, showingExpiryDate)
-            .coerceAtLeast(0)
+    fun isVisible(): Boolean {
+        val showingStartDate = showingExpiryDate.minusDays(SHOWING_EXPIRY_DAYS)
+        return LocalDateTime.now().isAfter(showingStartDate)
     }
 
-    fun validateOwnership(email: Email) {
-        if (registerEmail != email) {
-            throw MatchingResultAccessDeniedException(id, registerEmail, email)
+    fun getRemainingDays(): Long {
+        return showingExpiryDate.remainingDays()
+    }
+
+    fun validateOwnership(memberId: Long) {
+        if (registerId != memberId) {
+            throw AccessDeniedException(EntityType.MATCHING_RESULT, registerId.toString(), memberId.toString())
+        }
+    }
+
+    fun validateTargetOwnership(memberId: Long) {
+        if (targetId != memberId) {
+            throw AccessDeniedException(EntityType.MATCHING_RESULT, targetId.toString(), memberId.toString())
         }
     }
 
@@ -57,4 +71,20 @@ class MatchingResult(
     fun include() {
         excluded = false
     }
+
+    fun claim() {
+        if (claimStatus != ClaimStatus.NONE) {
+            throw InvalidStateException(MatchingResult::class, id, "이미 claim 처리된 매칭 결과입니다.")
+        }
+        claimStatus = ClaimStatus.CLAIMED
+    }
+
+    fun reject() {
+        if (claimStatus != ClaimStatus.CLAIMED) {
+            throw InvalidStateException(MatchingResult::class, id, "claim 상태가 아니어서 거절할 수 없습니다.")
+        }
+        claimStatus = ClaimStatus.REJECTED
+    }
+
+    fun isClaimed(): Boolean = claimStatus != ClaimStatus.NONE
 }

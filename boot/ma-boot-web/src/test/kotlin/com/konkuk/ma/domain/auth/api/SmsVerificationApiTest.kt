@@ -71,10 +71,10 @@ class SmsVerificationApiTest(
         // Given
         val request = mapOf(
             "phoneNumber" to "01012345678",
-            "verificationCode" to 123456
+            "verificationCode" to "123456"
         )
 
-        every { smsVerificationService.confirmVerificationCode("01012345678", 123456) } returns true
+        every { smsVerificationService.confirmVerificationCode("01012345678", "123456") } returns true
 
         // When & Then
         mockMvc.postJson("/api/sms/verification-code/confirm")
@@ -82,7 +82,7 @@ class SmsVerificationApiTest(
             .andExpect {
                 status { isOk() }
                 jsonPath("$.phoneNumber").value("01012345678")
-                jsonPath("$.verificationCode").value(123456)
+                jsonPath("$.verificationCode").value("123456")
                 jsonPath("$.verified").value(true)
             }
             .andDocument(
@@ -103,10 +103,10 @@ class SmsVerificationApiTest(
         // Given
         val request = mapOf(
             "phoneNumber" to "01012345678",
-            "verificationCode" to 999999
+            "verificationCode" to "999999"
         )
 
-        every { smsVerificationService.confirmVerificationCode("01012345678", 999999) } returns false
+        every { smsVerificationService.confirmVerificationCode("01012345678", "999999") } returns false
 
         // When & Then
         mockMvc.postJson("/api/sms/verification-code/confirm")
@@ -114,7 +114,7 @@ class SmsVerificationApiTest(
             .andExpect {
                 status { isOk() }
                 jsonPath("$.phoneNumber").value("01012345678")
-                jsonPath("$.verificationCode").value(999999)
+                jsonPath("$.verificationCode").value("999999")
                 jsonPath("$.verified").value(false)
             }
             .andDocument(
@@ -135,7 +135,7 @@ class SmsVerificationApiTest(
         // Given
         val request = mapOf(
             "phoneNumber" to "invalid-phone",
-            "verificationCode" to 123456
+            "verificationCode" to "123456"
         )
 
         // When & Then

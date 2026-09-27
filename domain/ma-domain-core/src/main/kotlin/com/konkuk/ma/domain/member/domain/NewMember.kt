@@ -14,4 +14,47 @@ class NewMember(
     val region: Region,
     val highSchool: String?,
     val university: String?
-)
+) {
+    fun withEncodedPassword(encodedPassword: String): NewMember {
+        return NewMember(
+            email = email,
+            password = encodedPassword,
+            nickname = nickname,
+            gender = gender,
+            phoneNumber = phoneNumber,
+            name = name,
+            birthDate = birthDate,
+            region = region,
+            highSchool = highSchool,
+            university = university
+        )
+    }
+
+    companion object {
+        fun of(
+            email: String,
+            password: String,
+            nickname: String,
+            gender: Gender,
+            phoneNumber: String,
+            name: String,
+            birthDate: LocalDate,
+            region: Region,
+            highSchool: String?,
+            university: String?
+        ): NewMember {
+            return NewMember(
+                email = Email(email),
+                password = password,
+                nickname = nickname,
+                gender = gender,
+                phoneNumber = PhoneNumber(phoneNumber),
+                name = name,
+                birthDate = birthDate,
+                region = region,
+                highSchool = highSchool,
+                university = university
+            )
+        }
+    }
+}

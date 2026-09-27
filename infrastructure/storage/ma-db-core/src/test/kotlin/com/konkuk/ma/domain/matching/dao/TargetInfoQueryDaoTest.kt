@@ -10,8 +10,11 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.update
 import org.springframework.test.context.ContextConfiguration
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ContextConfiguration(classes = [TestDatabaseConfig::class, TargetInfoQueryDao::class])
 @DatabaseTest
@@ -21,10 +24,12 @@ class TargetInfoQueryDaoTest(
 
     override fun extensions() = listOf(SpringExtension)
 
+    private var registerId: Long = 0L
+
     init {
         beforeEach {
             SchemaUtils.create(MemberTable, TargetInfoTable)
-            insertMember()
+            registerId = insertMember()
         }
 
         afterEach {
@@ -106,28 +111,49 @@ class TargetInfoQueryDaoTest(
                 result[0].id shouldBe result.minOf { it.id }
                 result[2].id shouldBe result.maxOf { it.id }
             }
+
+            test("탈퇴 신청한 등록 회원의 타겟은 제외되고 활성 회원의 타겟만 조회된다") {
+                // Given
+                val activeMemberId = insertMember("active@example.com")
+                insertTargetInfo(registerId = activeMemberId, name = "활성타겟")
+                insertTargetInfo(registerId = registerId, name = "탈퇴타겟")
+                markWithdrawalPending("test@example.com")
+
+                // When
+                val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 10)
+
+                // Then
+                result shouldHaveSize 1
+                result[0].name shouldBe "활성타겟"
+            }
         }
     }
 
-    private fun insertMember(email: String = "test@example.com") {
-        MemberTable.insert {
+    private fun insertMember(email: String = "test@example.com"): Long {
+        return MemberTable.insertAndGetId {
             it[MemberTable.email] = email
             it[password] = "password123"
-            it[nickname] = "nickname"
+            it[nickname] = "nickname_$email"
             it[gender] = "MALE"
             it[phoneNumber] = "01012345678"
             it[MemberTable.name] = "테스트"
             it[birthDate] = LocalDate.of(1990, 1, 1)
             it[region] = "SEOUL"
+        }.value
+    }
+
+    private fun markWithdrawalPending(email: String) {
+        MemberTable.update({ MemberTable.email eq email }) {
+            it[withdrawalRequestedAt] = LocalDateTime.now()
         }
     }
 
     private fun insertTargetInfo(
-        registerEmail: String = "test@example.com",
+        registerId: Long = this.registerId,
         name: String = "타겟이름",
     ) {
         TargetInfoTable.insert {
-            it[TargetInfoTable.registerEmail] = registerEmail
+            it[TargetInfoTable.registerId] = registerId
             it[TargetInfoTable.name] = name
             it[targetGender] = "FEMALE"
         }

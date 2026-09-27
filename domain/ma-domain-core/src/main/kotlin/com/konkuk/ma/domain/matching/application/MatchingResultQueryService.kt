@@ -1,14 +1,15 @@
 package com.konkuk.ma.domain.matching.application
 
-import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.matching.domain.ClaimerProfiles
 import com.konkuk.ma.domain.matching.domain.MatchingResult
 import com.konkuk.ma.domain.matching.domain.MatchingResults
 import com.konkuk.ma.domain.matching.domain.MatchingResultsWithProfiles
 import com.konkuk.ma.domain.matching.domain.port.MatchingResultRepository
 import com.konkuk.ma.domain.member.domain.Members
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
+import com.konkuk.ma.domain.member.domain.photo.MemberPhotoUrlResolver
 import com.konkuk.ma.domain.member.domain.port.MemberPhotoRepository
 import com.konkuk.ma.domain.member.domain.port.MemberQueryRepository
+import com.konkuk.ma.domain.xroom.domain.port.XroomQueryRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,21 +19,38 @@ class MatchingResultQueryService(
     private val matchingResultRepository: MatchingResultRepository,
     private val memberQueryRepository: MemberQueryRepository,
     private val memberPhotoRepository: MemberPhotoRepository,
+    private val memberPhotoUrlResolver: MemberPhotoUrlResolver,
+    private val xroomQueryRepository: XroomQueryRepository,
 ) {
-    fun find(email: String, excluded: Boolean = false): MatchingResultsWithProfiles {
-        val domainEmail = Email(email)
-        val matchingResults = MatchingResults(matchingResultRepository.find(domainEmail, excluded))
-        val targetEmails = matchingResults.extractTargetEmails()
+    fun find(memberId: Long, excluded: Boolean = false): MatchingResultsWithProfiles {
+        val matchingResults = MatchingResults(matchingResultRepository.find(memberId, excluded))
+        val targetIds = matchingResults.extractTargetIds()
 
-        val members = Members(memberQueryRepository.findByEmails(targetEmails))
-        val photos = MemberPhotos(memberPhotoRepository.find(targetEmails))
+        val members = Members(memberQueryRepository.findByIds(targetIds))
+        val photos = memberPhotoRepository.find(members.extractIds())
 
-        return matchingResults.combineWithProfiles(members, photos)
+        return matchingResults.combineWithProfiles(members, memberPhotoUrlResolver.resolveByMember(photos))
     }
 
-    fun findDetail(matchingResultId: Long, email: String): MatchingResult {
+    fun findDetail(matchingResultId: Long, memberId: Long): MatchingResult {
         val matchingResult = matchingResultRepository.findOne(matchingResultId)
-        matchingResult.validateOwnership(Email(email))
+        matchingResult.validateOwnership(memberId)
         return matchingResult
+    }
+
+    fun findClaimedBy(memberId: Long): ClaimerProfiles {
+        val matchingResults = MatchingResults(matchingResultRepository.findClaimedByTarget(memberId))
+        val registerIds = matchingResults.extractRegisterIds()
+
+        val members = Members(memberQueryRepository.findByIds(registerIds))
+        val photos = memberPhotoRepository.find(members.extractIds())
+
+        val xroomExistTargetInfoIds = xroomQueryRepository.exists(matchingResults.extractTargetInfoIds())
+
+        return matchingResults.toClaimerProfiles(
+            members,
+            memberPhotoUrlResolver.resolveByMember(photos),
+            xroomExistTargetInfoIds,
+        )
     }
 }

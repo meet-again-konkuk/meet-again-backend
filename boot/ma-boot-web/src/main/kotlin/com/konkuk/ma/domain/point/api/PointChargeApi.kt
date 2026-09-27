@@ -1,0 +1,37 @@
+package com.konkuk.ma.domain.point.api
+
+import com.konkuk.ma.domain.point.api.request.ChargePointRequest
+import com.konkuk.ma.domain.point.api.response.ChargePointResponse
+import com.konkuk.ma.domain.point.application.PointChargeService
+import com.konkuk.ma.support.security.LoginMember
+import com.konkuk.ma.support.security.MemberInfo
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/points")
+class PointChargeApi(
+    private val pointChargeService: PointChargeService,
+) {
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    fun charge(
+        @LoginMember memberInfo: MemberInfo,
+        @Valid @RequestBody request: ChargePointRequest,
+    ): ChargePointResponse {
+        val result = pointChargeService.charge(
+            ownerId = memberInfo.id,
+            pointProductId = request.pointProductId,
+            paymentMethod = request.paymentMethod,
+            paymentToken = request.paymentToken,
+            orderPointPrice = request.orderPointPrice,
+            idempotencyKey = request.idempotencyKey,
+        )
+        return ChargePointResponse.from(result)
+    }
+}

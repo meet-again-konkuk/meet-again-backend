@@ -11,7 +11,11 @@ class PostDetailResponse(
     val content: String,
     val likes: Int,
     val timeAgo: String,
+    val likedByMe: Boolean,
+    val isMine: Boolean,
     val comments: List<CommentResponse>,
+    val imageUrl: String? = null,
+    val thumbnailUrl: String? = null,
 ) {
     companion object {
         fun from(postDetail: PostDetail): PostDetailResponse {
@@ -22,9 +26,13 @@ class PostDetailResponse(
                 category = post.category.name,
                 title = post.title,
                 content = post.content,
-                likes = post.likes,
+                likes = postDetail.likeCount,
                 timeAgo = TimeAgoCalculator.calculate(post.createdDate),
+                likedByMe = postDetail.likedByMe,
+                isMine = postDetail.isMine,
                 comments = postDetail.comments.map { CommentResponse.from(it) },
+                imageUrl = postDetail.imageUrl,
+                thumbnailUrl = postDetail.thumbnailUrl,
             )
         }
     }

@@ -1,7 +1,6 @@
 package com.konkuk.ma.domain.auth.exception
 
 import com.konkuk.ma.exception.BusinessException
-import kotlin.reflect.KFunction
 
 class AuthTokenException(
     token: String,
@@ -11,12 +10,9 @@ class AuthTokenException(
     throwable: Throwable? = null,
 
     logLevel: LogLevel = LogLevel.INFO,
-
-    callerFunction: KFunction<*>? = null
 ) : BusinessException(
     message = jwtExceptionType.message,
     dataMessage = "jwtExceptionType: ${jwtExceptionType.name}, token: $token",
-    callerFunction = callerFunction,
     cause = throwable,
     logLevel = logLevel
 ) {

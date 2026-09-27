@@ -1,0 +1,25 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 로그아웃 API 문서
+
+== 로그아웃
+
+로그인된 회원을 로그아웃 처리합니다. 요청 시 `Authorization` 헤더에 액세스 토큰을 포함해야 합니다.
+요청 본문과 응답 본문은 없으며, 성공 시 `204 No Content`를 반환합니다.
+
+=== 요청
+
+include::{snippets}/auth-logout/http-request.adoc[]
+
+=== 요청 헤더
+
+include::{snippets}/auth-logout/request-headers.adoc[]
+
+=== 응답
+
+include::{snippets}/auth-logout/http-response.adoc[]

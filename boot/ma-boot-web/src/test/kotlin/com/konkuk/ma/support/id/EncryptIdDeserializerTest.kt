@@ -3,7 +3,7 @@ package com.konkuk.ma.support.id
 import com.fasterxml.jackson.core.JsonParser
 import com.konkuk.ma.domain.common.domain.id.ObfuscationType
 import com.konkuk.ma.domain.common.domain.id.port.IdObfuscator
-import com.konkuk.ma.domain.common.exception.InvalidObfuscatedIdException
+import com.konkuk.ma.exception.InvalidObfuscatedIdException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

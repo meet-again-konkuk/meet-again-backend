@@ -1,28 +1,54 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
+import com.konkuk.ma.domain.common.domain.file.FileUrls
 import com.konkuk.ma.domain.member.domain.Members
-import com.konkuk.ma.domain.member.domain.photo.MemberPhotos
 
 class MatchingResults(
-    val data: List<MatchingResult>
+    data: List<MatchingResult>
 ) {
-    fun extractTargetEmails(): Set<Email> {
-        return data.map { it.targetEmail }.toSet()
+    val data: List<MatchingResult> = data.filter { it.isVisible() }
+
+    fun extractTargetIds(): Set<Long> {
+        return data.map { it.targetId }.toSet()
     }
 
-    fun combineWithProfiles(members: Members, photos: MemberPhotos): MatchingResultsWithProfiles {
+    fun extractRegisterIds(): Set<Long> {
+        return data.map { it.registerId }.toSet()
+    }
+
+    fun extractTargetInfoIds(): Set<Long> {
+        return data.map { it.targetInfoId }.toSet()
+    }
+
+    fun combineWithProfiles(members: Members, imageUrls: FileUrls): MatchingResultsWithProfiles {
         val combined = data.map { result ->
-            val member = members.findOne(result.targetEmail)
-            val photo = photos.findOne(result.targetEmail)
+            val member = members.findOne(result.targetId)
             MatchingResultWithProfile(
                 matchingResult = result,
                 targetMemberId = member?.id,
                 targetName = member?.name,
                 targetNickname = member?.nickname,
-                profileImageUrl = photo?.thumbnailPath,
+                profileImageUrl = member?.let { imageUrls.urlOf(it.id) },
             )
         }
         return MatchingResultsWithProfiles(combined)
+    }
+
+    fun toClaimerProfiles(
+        members: Members,
+        imageUrls: FileUrls,
+        xroomExistTargetInfoIds: Set<Long>,
+    ): ClaimerProfiles {
+        val profiles = data.map { result ->
+            val member = members.findOne(result.registerId)
+            ClaimerProfile(
+                memberId = member?.id,
+                name = member?.name,
+                nickname = member?.nickname,
+                profileImageUrl = member?.let { imageUrls.urlOf(it.id) },
+                hasXroom = xroomExistTargetInfoIds.contains(result.targetInfoId),
+            )
+        }
+        return ClaimerProfiles(profiles)
     }
 }

@@ -3,6 +3,16 @@ package com.konkuk.ma.vocabulary
 import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
+import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
+import org.springframework.restdocs.snippet.Snippet
+
+// --- 공통 요청 헤더 ---
+
+fun authorizationHeader(description: String = "Bearer 액세스 토큰"): Snippet =
+    requestHeaders(
+        headerWithName("Authorization").description(description)
+    )
 
 // --- 공통 필드 ---
 

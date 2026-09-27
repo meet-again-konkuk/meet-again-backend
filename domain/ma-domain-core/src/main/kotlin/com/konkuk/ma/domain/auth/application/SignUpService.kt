@@ -1,8 +1,8 @@
 package com.konkuk.ma.domain.auth.application
 
-import com.konkuk.ma.domain.auth.application.command.SignUpCommand
 import com.konkuk.ma.domain.auth.domain.SignUpValidator
 import com.konkuk.ma.domain.auth.domain.port.PasswordEncryptor
+import com.konkuk.ma.domain.member.domain.NewMember
 import com.konkuk.ma.domain.member.domain.port.MemberCommandRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,9 +14,9 @@ class SignUpService(
     private val signUpValidator: SignUpValidator,
     private val passwordEncryptor: PasswordEncryptor
 ) {
-    fun signUp(signUpCommand: SignUpCommand): Long {
-        val newMember = signUpCommand.toNewMember(passwordEncryptor)
-        signUpValidator.validate(newMember)
-        return memberCommandRepository.save(newMember)
+    fun signUp(newMember: NewMember): Long {
+        val securedMember = newMember.withEncodedPassword(passwordEncryptor.encode(newMember.password))
+        signUpValidator.validate(securedMember)
+        return memberCommandRepository.save(securedMember)
     }
 }

@@ -6,3 +6,7 @@ spring:
 file:
   upload:
     base-path: ${java.io.tmpdir}/meet-again-test/uploads
+
+backup:
+  local:
+    base-path: ${java.io.tmpdir}/meet-again-test/backups

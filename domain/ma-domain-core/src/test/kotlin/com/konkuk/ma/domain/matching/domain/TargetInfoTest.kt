@@ -1,15 +1,17 @@
 package com.konkuk.ma.domain.matching.domain
 
-import com.konkuk.ma.domain.common.domain.Email
 import com.konkuk.ma.domain.matching.fixture.MemberFixture
 import com.konkuk.ma.domain.matching.fixture.TargetInfoFixture
 import com.konkuk.ma.domain.member.domain.FourDigit
 import com.konkuk.ma.domain.member.domain.Gender
 import com.konkuk.ma.domain.member.domain.Region
+import com.konkuk.ma.exception.InvalidStateException
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class TargetInfoTest : FunSpec({
 
@@ -34,6 +36,7 @@ class TargetInfoTest : FunSpec({
 
         test("모든 비교 필드가 일치하면 모든 matched 플래그가 true") {
             val targetInfo = TargetInfoFixture.create(
+                registerId = 1L,
                 middleNumber = FourDigit("1234"),
                 lastNumber = FourDigit("5678"),
                 region = Region.SEOUL
@@ -41,6 +44,7 @@ class TargetInfoTest : FunSpec({
 
             val targets = Targets.from(listOf(
                 MemberFixture.create(
+                    id = 2L,
                     email = "target@example.com",
                     phoneNumber = "01012345678",
                     birthDate = LocalDate.of(1999, 12, 31),
@@ -52,8 +56,8 @@ class TargetInfoTest : FunSpec({
             results.data shouldHaveSize 1
 
             val result = results.data.first()
-            result.registerEmail shouldBe Email("register@example.com")
-            result.targetEmail shouldBe Email("target@example.com")
+            result.registerId shouldBe 1L
+            result.targetId shouldBe 2L
             result.middleNumberMatched shouldBe true
             result.lastNumberMatched shouldBe true
             result.regionMatched shouldBe true
@@ -101,6 +105,43 @@ class TargetInfoTest : FunSpec({
             result.monthMatched shouldBe false
             result.dayMatched shouldBe false
             result.regionMatched shouldBe false
+        }
+    }
+
+    context("validateUpdatable") {
+
+        test("매칭 결과가 없고 생성 후 24시간 이내이면 정상 통과한다") {
+            val targetInfo = TargetInfoFixture.create(createdDate = LocalDateTime.now())
+
+            targetInfo.validateUpdatable(hasMatchingResult = false)
+        }
+
+        test("매칭 결과가 존재하면 InvalidStateException이 발생한다") {
+            val targetInfo = TargetInfoFixture.create(createdDate = LocalDateTime.now())
+
+            shouldThrow<InvalidStateException> {
+                targetInfo.validateUpdatable(hasMatchingResult = true)
+            }
+        }
+
+        test("생성 후 24시간이 경과하면 InvalidStateException이 발생한다") {
+            val targetInfo = TargetInfoFixture.create(
+                createdDate = LocalDateTime.now().minusDays(2),
+            )
+
+            shouldThrow<InvalidStateException> {
+                targetInfo.validateUpdatable(hasMatchingResult = false)
+            }
+        }
+
+        test("매칭 결과가 존재하고 24시간도 경과하면 매칭 결과 사유로 예외가 발생한다") {
+            val targetInfo = TargetInfoFixture.create(
+                createdDate = LocalDateTime.now().minusDays(2),
+            )
+
+            shouldThrow<InvalidStateException> {
+                targetInfo.validateUpdatable(hasMatchingResult = true)
+            }
         }
     }
 })

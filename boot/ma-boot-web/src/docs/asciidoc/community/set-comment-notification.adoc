@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+= 게시글 댓글 알림 설정 API
+
+== 게시글 댓글 알림 설정
+
+특정 게시글의 댓글 알림 수신 여부를 on/off 합니다.
+
+=== 요청
+
+include::{snippets}/community/set-comment-notification/http-request.adoc[]
+
+=== Path Variable
+
+include::{snippets}/community/set-comment-notification/path-parameters.adoc[]
+
+=== 요청 필드
+
+include::{snippets}/community/set-comment-notification/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/community/set-comment-notification/http-response.adoc[]
