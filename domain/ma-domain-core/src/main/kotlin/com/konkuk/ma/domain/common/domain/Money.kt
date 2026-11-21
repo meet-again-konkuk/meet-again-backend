@@ -22,10 +22,6 @@ class Money private constructor(
 
     fun isZero(): Boolean = amount.compareTo(BigDecimal.ZERO) == 0
 
-    /**
-     * 이 금액이 base 금액에서 차지하는 비율을 퍼센트(%)로 반환한다.
-     * base가 0이면 0을 반환한다. 소수점 둘째 자리에서 반올림(HALF_UP), 스케일 2.
-     */
     fun percentageOf(base: Money): BigDecimal {
         if (base.isZero()) return BigDecimal.ZERO
         return amount.multiply(BigDecimal(100))

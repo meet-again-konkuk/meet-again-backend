@@ -43,7 +43,6 @@ class PostQueryApiTest(
 ) : FunSpec({
 
     test("커뮤니티 게시글 목록 조회 API 문서화") {
-        // Given
         val postWithAuthor = PostWithAuthor(
             post = PostFixture.create(category = PostCategory.CHEER),
             nickname = "테스트닉네임",
@@ -62,7 +61,6 @@ class PostQueryApiTest(
 
         every { postQueryService.find(PostCategory.CHEER, CursorIdCondition(null, 20), any<Long>()) } returns cursorResult
 
-        // When & Then
         mockMvc.getJson("/api/community/posts") {
             param("category", "CHEER")
             param("size", "20")
@@ -95,7 +93,6 @@ class PostQueryApiTest(
     }
 
     test("게시글이 없는 경우 빈 목록 반환") {
-        // Given
         val cursorResult: CursorResult<List<PostWithAuthor>> = CursorResult(
             data = emptyList(),
             hasNext = false,
@@ -104,7 +101,6 @@ class PostQueryApiTest(
 
         every { postQueryService.find(PostCategory.SUCCESS_STORY, CursorIdCondition(null, 20), any<Long>()) } returns cursorResult
 
-        // When & Then
         mockMvc.getJson("/api/community/posts") {
             param("category", "SUCCESS_STORY")
         }

@@ -38,7 +38,6 @@ class PostCommandApiTest(
 ) : FunSpec({
 
     test("커뮤니티 게시글 작성 API 문서화") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "안녕하세요",
@@ -54,7 +53,6 @@ class PostCommandApiTest(
             })
         } returns 1L
 
-        // When & Then
         mockMvc.postJson("/api/community/posts") {
             content = mapper.writeValueAsString(request)
         }
@@ -73,14 +71,12 @@ class PostCommandApiTest(
     }
 
     test("제목이 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "가".repeat(PostDetails.MAX_TITLE_LENGTH + 1),
             "content" to "내용",
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/posts") {
             content = mapper.writeValueAsString(request)
         }
@@ -88,14 +84,12 @@ class PostCommandApiTest(
     }
 
     test("내용이 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "제목",
             "content" to "가".repeat(PostDetails.MAX_CONTENT_LENGTH + 1),
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/posts") {
             content = mapper.writeValueAsString(request)
         }
@@ -103,14 +97,12 @@ class PostCommandApiTest(
     }
 
     test("제목이 비어있으면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "",
             "content" to "내용",
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/posts") {
             content = mapper.writeValueAsString(request)
         }
@@ -118,14 +110,12 @@ class PostCommandApiTest(
     }
 
     test("내용이 비어있으면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "제목",
             "content" to "",
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/posts") {
             content = mapper.writeValueAsString(request)
         }
@@ -133,7 +123,6 @@ class PostCommandApiTest(
     }
 
     test("커뮤니티 게시글 수정 API 문서화") {
-        // Given
         val request = mapOf(
             "category" to "COUNSELING",
             "title" to "제목을 수정합니다",
@@ -142,7 +131,6 @@ class PostCommandApiTest(
 
         every { postCommandService.update(1L, 1L, any()) } just runs
 
-        // When & Then
         mockMvc.patchJson("/api/community/posts/{postId}", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -165,14 +153,12 @@ class PostCommandApiTest(
     }
 
     test("수정 시 제목이 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "가".repeat(PostDetails.MAX_TITLE_LENGTH + 1),
             "content" to "내용",
         )
 
-        // When & Then
         mockMvc.patchJson("/api/community/posts/{postId}", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -180,7 +166,6 @@ class PostCommandApiTest(
     }
 
     test("소유권이 없는 게시글 수정 시 403을 반환한다") {
-        // Given
         val request = mapOf(
             "category" to "CHEER",
             "title" to "제목",
@@ -190,7 +175,6 @@ class PostCommandApiTest(
         every { postCommandService.update(any(), any(), any()) } throws
             AccessDeniedException(EntityType.COMMUNITY_POST, "owner@example.com", "holeman@naver.com")
 
-        // When & Then
         mockMvc.patchJson("/api/community/posts/{postId}", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -198,10 +182,8 @@ class PostCommandApiTest(
     }
 
     test("커뮤니티 게시글 삭제 API 문서화") {
-        // Given
         every { postCommandService.delete(1L, 1L) } just runs
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}", 1L)
             .andExpect { status { isNoContent() } }
             .andDocument(
@@ -213,11 +195,9 @@ class PostCommandApiTest(
     }
 
     test("소유권이 없는 게시글 삭제 시 403을 반환한다") {
-        // Given
         every { postCommandService.delete(any(), any()) } throws
             AccessDeniedException(EntityType.COMMUNITY_POST, "owner@example.com", "holeman@naver.com")
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}", 1L)
             .andExpect { status { isForbidden() } }
     }

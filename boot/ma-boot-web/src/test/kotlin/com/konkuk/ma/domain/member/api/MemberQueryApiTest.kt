@@ -25,10 +25,8 @@ class MemberQueryApiTest(
 ) : FunSpec({
 
     test("닉네임 중복 확인 API 문서화") {
-        // Given
         val nickname = "테스트닉네임"
 
-        // When & Then
         every { memberQueryService.checkDuplicatedNickname(nickname) } returns false
 
         mockMvc.postJson("/api/members/nickname/exists")
@@ -50,10 +48,8 @@ class MemberQueryApiTest(
     }
 
     test("유효하지 않은 닉네임 형식으로 요청 시 실패") {
-        // Given
         val invalidNickname = "a"
 
-        // When & Then
         mockMvc.postJson("/api/members/nickname/exists")
         { content = """{"nickname":"$invalidNickname"}""" }
             .andExpect { status { isBadRequest() } }
@@ -66,10 +62,8 @@ class MemberQueryApiTest(
     }
 
     test("이메일 중복 확인 API 문서화") {
-        // Given
         val email = "test@example.com"
 
-        // When & Then
         every { memberQueryService.checkDuplicatedEmail(email) } returns false
 
         mockMvc.postJson("/api/members/email/exists")
@@ -91,10 +85,8 @@ class MemberQueryApiTest(
     }
 
     test("유효하지 않은 이메일 형식으로 요청 시 실패") {
-        // Given
         val invalidEmail = "invalid-email"
 
-        // When & Then
         mockMvc.postJson("/api/members/email/exists")
         { content = """{"email":"$invalidEmail"}""" }
             .andExpect { status { isBadRequest() } }

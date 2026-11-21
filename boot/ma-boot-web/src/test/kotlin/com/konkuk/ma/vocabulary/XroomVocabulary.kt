@@ -8,8 +8,6 @@ import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseType
 
-// --- X룸 관련 필드 ---
-
 fun xroomId(fieldName: String = "xroomId") =
     fieldName responseType STRING means "X룸 ID (인코딩)" example "abc123"
 
@@ -42,8 +40,6 @@ fun xroomMemories(fieldName: String = "memories") =
 
 fun newMemories(fieldName: String = "memories") =
     fieldName responseType ARRAY means "함께 생성할 기억 목록 (최소 1개, 최대 50개)"
-
-// --- 기억(Memory) 관련 필드 ---
 
 fun memoryId(fieldName: String = "memoryId") =
     fieldName responseType STRING means "기억 ID (인코딩)" example "mem123"
@@ -78,8 +74,6 @@ fun photoUrl(fieldName: String = "photoUrl") =
 fun deleted(fieldName: String = "deleted") =
     fieldName responseType BOOLEAN means "삭제 여부 (true 고정)" example "true"
 
-// --- 기억 사진(Media) 관련 필드 ---
-
 fun mediaId(fieldName: String = "mediaId") =
     fieldName responseType STRING means "미디어(사진) ID (인코딩)" example "media123"
 
@@ -88,8 +82,6 @@ fun thumbnailUrl(fieldName: String = "thumbnailUrl") =
 
 fun photoDeleted(fieldName: String = "photoDeleted") =
     fieldName responseType BOOLEAN means "사진 삭제 여부 (true 고정)" example "true"
-
-// --- X룸 관련 Path Variable ---
 
 fun xroomIdPath(fieldName: String = "xroomId") =
     fieldName requestParam "X룸 ID (인코딩)"

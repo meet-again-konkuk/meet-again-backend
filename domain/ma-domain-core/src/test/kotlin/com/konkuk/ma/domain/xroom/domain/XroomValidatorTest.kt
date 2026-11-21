@@ -104,7 +104,6 @@ class XroomValidatorTest : FunSpec({
             )
             every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
             every { xroomQueryRepository.findByTargetInfoIdOrNull(targetInfo.targetInfoId) } returns emptyXroom
-            // 기억이 0건이면 group by 결과에 해당 방의 키 자체가 없다
             every { memoryQueryRepository.count(setOf(emptyXroom.id)) } returns emptyMap()
             every { xroomCommandRepository.deleteById(emptyXroom.id, newXroom.ownerId) } returns Unit
 
@@ -142,7 +141,6 @@ class XroomValidatorTest : FunSpec({
                 targetInfoId = targetInfo.targetInfoId,
             )
             every { targetInfoQueryRepository.findOne(targetInfo.targetInfoId) } returns targetInfo
-            // findByTargetInfoIdOrNull 은 일부러 스텁하지 않는다 - 호출되면 mock 이 답을 못 찾아 실패한다
 
             shouldThrow<AccessDeniedException> {
                 xroomValidator.validateAfterRemovingEmptyRoom(newXroom)

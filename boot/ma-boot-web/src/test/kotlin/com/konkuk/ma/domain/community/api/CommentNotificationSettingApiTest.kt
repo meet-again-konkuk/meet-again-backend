@@ -28,12 +28,10 @@ class CommentNotificationSettingApiTest(
 ) : FunSpec({
 
     test("게시글 댓글 알림 설정 API 문서화") {
-        // Given
         val request = mapOf("enabled" to true)
 
         every { commentNotificationSettingCommandService.set(any(), any(), any()) } just runs
 
-        // When & Then
         mockMvc.patchJson("/api/community/posts/{postId}/comment-notification", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -50,13 +48,11 @@ class CommentNotificationSettingApiTest(
     }
 
     test("존재하지 않는 게시글이면 404를 반환한다") {
-        // Given
         val request = mapOf("enabled" to true)
 
         every { commentNotificationSettingCommandService.set(any(), any(), any()) } throws
             EntityNotFoundException(EntityType.COMMUNITY_POST, "999")
 
-        // When & Then
         mockMvc.patchJson("/api/community/posts/{postId}/comment-notification", 999L) {
             content = mapper.writeValueAsString(request)
         }
@@ -64,10 +60,8 @@ class CommentNotificationSettingApiTest(
     }
 
     test("enabled 값이 없으면 400을 반환한다") {
-        // Given
         val request = mapOf("enabled" to null)
 
-        // When & Then
         mockMvc.patchJson("/api/community/posts/{postId}/comment-notification", 1L) {
             content = mapper.writeValueAsString(request)
         }

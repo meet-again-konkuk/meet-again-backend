@@ -45,7 +45,6 @@ class MatchingResultQueryApiTest(
 ) : FunSpec({
 
     test("매칭 결과 목록 조회 API 문서화") {
-        // Given
         val matchingResult = MatchingResultFixture.create(
             registerId = 1L,
             monthMatched = false,
@@ -65,7 +64,6 @@ class MatchingResultQueryApiTest(
 
         every { matchingResultQueryService.find(1L, false) } returns resultsWithProfiles
 
-        // When & Then
         mockMvc.getJson("/api/matching-results") {}
             .andExpect { status { isOk() } }
             .andDocument(
@@ -88,7 +86,6 @@ class MatchingResultQueryApiTest(
     }
 
     test("excluded=true로 제외된 매칭 결과 목록 조회 API 문서화") {
-        // Given
         val matchingResult = MatchingResultFixture.create(
             registerId = 1L,
             monthMatched = false,
@@ -108,7 +105,6 @@ class MatchingResultQueryApiTest(
 
         every { matchingResultQueryService.find(1L, true) } returns resultsWithProfiles
 
-        // When & Then
         mockMvc.getJson("/api/matching-results") {
             param("excluded", "true")
         }
@@ -133,12 +129,10 @@ class MatchingResultQueryApiTest(
     }
 
     test("매칭 결과가 없는 경우 빈 목록 반환") {
-        // Given
         val emptyResults = MatchingResultsWithProfiles(data = emptyList())
 
         every { matchingResultQueryService.find(1L, false) } returns emptyResults
 
-        // When & Then
         mockMvc.getJson("/api/matching-results") {}
             .andExpect { status { isOk() } }
             .andDocument(
@@ -147,7 +141,6 @@ class MatchingResultQueryApiTest(
     }
 
     test("매칭 결과 상세 조회 API 문서화") {
-        // Given
         val matchingResultId = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.MATCHING_RESULT, matchingResultId)
         val matchingResult = MatchingResultFixture.create(
@@ -159,7 +152,6 @@ class MatchingResultQueryApiTest(
 
         every { matchingResultQueryService.findDetail(matchingResultId, 1L) } returns matchingResult
 
-        // When & Then
         mockMvc.getJson("/api/matching-results/$encodedId") {}
             .andExpect { status { isOk() } }
             .andDocument(

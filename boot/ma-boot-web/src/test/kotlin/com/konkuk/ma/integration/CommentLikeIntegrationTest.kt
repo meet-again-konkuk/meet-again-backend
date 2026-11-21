@@ -24,14 +24,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 
-/**
- * 댓글 좋아요 E2E 통합 테스트.
- *
- * 비정규화 카운터 제거 → 좋아요 행(CommentLikeTable) COUNT 도출 리팩터를
- * API(POST/DELETE /api/community/comments/{commentId}/likes) → Service → DB까지 관통하여 검증한다.
- *
- * 핵심 검증: 여러 명 좋아요/취소 후에도 응답 likeCount가 실제 좋아요 행 수와 항상 일치한다.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -126,21 +118,18 @@ class CommentLikeIntegrationTest(
     context("POST /api/community/comments/{commentId}/likes") {
 
         test("로그인 후 좋아요를 누르면 likeCount=1을 반환하고 좋아요 행이 1개 생성된다") {
-            // Given
             val email = "comment-like-e2e@example.com"
             insertMember(email = email)
             val accessToken = login(email)
             val postId = insertPost()
             val commentId = insertComment(postId)
 
-            // When
             val result = mockMvc.postJson("/api/community/comments/{commentId}/likes", commentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isCreated() } }
                 .andReturn()
 
-            // Then
             val response = mapper.readTree(result.response.contentAsString)
             response.get("liked").asBoolean() shouldBe true
             response.get("likeCount").asInt() shouldBe 1
@@ -148,12 +137,10 @@ class CommentLikeIntegrationTest(
         }
 
         test("서로 다른 회원 3명이 좋아요를 누르면 likeCount=3이고 좋아요 행도 3개다") {
-            // Given
             val postId = insertPost()
             val commentId = insertComment(postId)
             val emails = listOf("cliker1@example.com", "cliker2@example.com", "cliker3@example.com")
 
-            // When
             emails.forEachIndexed { index, email ->
                 insertMember(email = email)
                 val accessToken = login(email)
@@ -168,16 +155,13 @@ class CommentLikeIntegrationTest(
                 likeCount shouldBe (index + 1)
             }
 
-            // Then
             countActiveLikes(commentId) shouldBe emails.size.toLong()
         }
 
         test("인증 토큰 없이 좋아요를 누르면 401이 반환된다") {
-            // Given
             val postId = insertPost()
             val commentId = insertComment(postId)
 
-            // When & Then
             mockMvc.postJson("/api/community/comments/{commentId}/likes", commentId)
                 .andExpect { status { isUnauthorized() } }
         }
@@ -186,7 +170,6 @@ class CommentLikeIntegrationTest(
     context("DELETE /api/community/comments/{commentId}/likes") {
 
         test("좋아요를 취소하면 likeCount가 0으로 복귀하고 좋아요 행이 삭제된다") {
-            // Given - 좋아요 누른 상태
             val email = "comment-unlike-e2e@example.com"
             insertMember(email = email)
             val accessToken = login(email)
@@ -196,14 +179,12 @@ class CommentLikeIntegrationTest(
                 authorization("Bearer $accessToken")
             }.andExpect { status { isCreated() } }
 
-            // When
             val result = mockMvc.deleteJson("/api/community/comments/{commentId}/likes", commentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then
             val response = mapper.readTree(result.response.contentAsString)
             response.get("liked").asBoolean() shouldBe false
             response.get("likeCount").asInt() shouldBe 0
@@ -211,7 +192,6 @@ class CommentLikeIntegrationTest(
         }
 
         test("3명 좋아요 후 1명이 취소하면 likeCount=2로 행 수와 정확히 일치한다") {
-            // Given
             val postId = insertPost()
             val commentId = insertComment(postId)
             val emails = listOf("cmulti1@example.com", "cmulti2@example.com", "cmulti3@example.com")
@@ -223,7 +203,6 @@ class CommentLikeIntegrationTest(
                 }.andExpect { status { isCreated() } }
             }
 
-            // When
             val cancelToken = login(emails.first())
             val result = mockMvc.deleteJson("/api/community/comments/{commentId}/likes", commentId) {
                 authorization("Bearer $cancelToken")
@@ -231,17 +210,14 @@ class CommentLikeIntegrationTest(
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then
             mapper.readTree(result.response.contentAsString).get("likeCount").asInt() shouldBe 2
             countActiveLikes(commentId) shouldBe 2L
         }
 
         test("인증 토큰 없이 좋아요를 취소하면 401이 반환된다") {
-            // Given
             val postId = insertPost()
             val commentId = insertComment(postId)
 
-            // When & Then
             mockMvc.deleteJson("/api/community/comments/{commentId}/likes", commentId)
                 .andExpect { status { isUnauthorized() } }
         }

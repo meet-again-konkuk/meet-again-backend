@@ -19,8 +19,7 @@ subprojects {
 	apply(plugin = "kotlin-spring")
 	apply(plugin = "kotlin-kapt")
 
-	// AWS SDK apache5-client(2.46.x)는 httpclient5 5.4+/httpcore5 5.4+를 요구 —
-	// Spring Boot BOM이 5.3.1/5.2.5로 내리면 S3Client 생성이 NoClassDefFoundError로 실패한다
+	// 외부 제약: AWS SDK apache5-client 2.46.x는 httpclient5·httpcore5 5.4+를 요구하며 Spring Boot BOM의 5.3.1·5.2.5에서는 S3Client 생성 시 NoClassDefFoundError가 발생한다.
 	ext["httpclient5.version"] = "5.6.1"
 	ext["httpcore5.version"] = "5.4.3"
 
@@ -32,14 +31,12 @@ subprojects {
 
 	dependencies {
 
-		// KoTest
 		testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.5")
 		testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.5")
 		testImplementation("io.kotest:kotest-extensions-jvm:5.5.5")
 		testImplementation("io.kotest:kotest-property-jvm:5.5.5")
 		testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
 
-		// Mockk
 		testImplementation("com.ninja-squad:springmockk:4.0.0")
 	}
 

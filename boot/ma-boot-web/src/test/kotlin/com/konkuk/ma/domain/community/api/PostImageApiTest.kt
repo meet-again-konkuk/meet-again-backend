@@ -46,7 +46,6 @@ class PostImageApiTest(
     )
 
     test("커뮤니티 게시글 이미지 업로드 API 문서화") {
-        // Given
         every {
             postImageCommandService.upload(1L, authMemberId, any<PhotoFile>())
         } returns PostImageUploadResult(
@@ -56,7 +55,6 @@ class PostImageApiTest(
             thumbnailUrl = "/files/community/post/1/thumb.jpg",
         )
 
-        // When & Then
         mockMvc.perform(
             multipart("/api/community/posts/{postId}/image", 1L).file(imagePart()),
         )
@@ -79,7 +77,6 @@ class PostImageApiTest(
     }
 
     test("지원하지 않는 확장자면 400을 반환한다") {
-        // Given
         val unsupported = MockMultipartFile(
             "image",
             "malware.exe",
@@ -87,7 +84,6 @@ class PostImageApiTest(
             "fake-content".toByteArray(),
         )
 
-        // When & Then
         mockMvc.perform(
             multipart("/api/community/posts/{postId}/image", 1L).file(unsupported),
         )
@@ -95,12 +91,10 @@ class PostImageApiTest(
     }
 
     test("소유권이 없는 게시글에 이미지 업로드 시 403을 반환한다") {
-        // Given
         every {
             postImageCommandService.upload(any(), any(), any())
         } throws AccessDeniedException(EntityType.COMMUNITY_POST, "owner@example.com", "holeman@naver.com")
 
-        // When & Then
         mockMvc.perform(
             multipart("/api/community/posts/{postId}/image", 1L).file(imagePart()),
         )
@@ -108,12 +102,10 @@ class PostImageApiTest(
     }
 
     test("존재하지 않는 게시글에 이미지 업로드 시 404를 반환한다") {
-        // Given
         every {
             postImageCommandService.upload(any(), any(), any())
         } throws EntityNotFoundException(EntityType.COMMUNITY_POST, "999")
 
-        // When & Then
         mockMvc.perform(
             multipart("/api/community/posts/{postId}/image", 999L).file(imagePart()),
         )
@@ -121,10 +113,8 @@ class PostImageApiTest(
     }
 
     test("커뮤니티 게시글 이미지 삭제 API 문서화") {
-        // Given
         every { postImageCommandService.delete(1L, authMemberId) } just runs
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}/image", 1L)
             .andExpect { status { isNoContent() } }
             .andDocument(
@@ -136,12 +126,10 @@ class PostImageApiTest(
     }
 
     test("소유권이 없는 게시글 이미지 삭제 시 403을 반환한다") {
-        // Given
         every {
             postImageCommandService.delete(any(), any())
         } throws AccessDeniedException(EntityType.COMMUNITY_POST, "owner@example.com", "holeman@naver.com")
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}/image", 1L)
             .andExpect { status { isForbidden() } }
     }

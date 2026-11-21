@@ -43,7 +43,6 @@ class MemoryCommandApiTest(
     val authMemberId = 1L
 
     test("기억 추가 API 문서화") {
-        // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val request = mapOf(
             "title" to "첫 만남",
@@ -57,7 +56,6 @@ class MemoryCommandApiTest(
             memoryCommandService.addMemory(authMemberId, any<NewMemory>())
         } returns 1L
 
-        // When & Then
         mockMvc.postJson("/api/xrooms/{xroomId}/memories", encodedXroomId) {
             content = mapper.writeValueAsString(request)
         }
@@ -83,7 +81,6 @@ class MemoryCommandApiTest(
     }
 
     test("기억 수정 API 문서화") {
-        // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, 1L)
         val request = mapOf(
@@ -98,7 +95,6 @@ class MemoryCommandApiTest(
             memoryCommandService.updateMemory(1L, 1L, authMemberId, any<MemoryDetails>())
         } returns 1L
 
-        // When & Then
         mockMvc.patchJson(
             "/api/xrooms/{xroomId}/memories/{memoryId}",
             encodedXroomId,
@@ -129,14 +125,12 @@ class MemoryCommandApiTest(
     }
 
     test("기억 삭제 API 문서화") {
-        // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, 1L)
         every {
             memoryCommandService.removeMemory(1L, 1L, authMemberId)
         } returns 1L
 
-        // When & Then
         mockMvc.deleteJson(
             "/api/xrooms/{xroomId}/memories/{memoryId}",
             encodedXroomId,

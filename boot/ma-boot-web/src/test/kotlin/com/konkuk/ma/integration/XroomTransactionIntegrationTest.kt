@@ -30,16 +30,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 
-/**
- * POST /api/xrooms/with-memories 의 존재 이유인 **원자성**을 관측한다.
- *
- * 도메인 검증 한도와 DB 컬럼 폭이 같아(title 200/200, tag 50/50) API 입력만으로는
- * 트랜잭션 **내부** 실패를 만들 수 없다. 그래서 MemoryCommandRepository 포트를 @MockkBean 으로 대체하고,
- * 실제 DAO로 MEMORIES·MEMORY_EMOTION_TAGS 를 insert 한 직후 예외를 던지게 해
- * "방 insert 가 이미 커밋 대상이 된 뒤 기억 저장이 실패하는" 상황을 재현한다.
- *
- * 포트를 모킹하므로 실제 저장이 필요한 XroomIntegrationTest 와는 스펙을 분리한다.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -162,46 +152,39 @@ class XroomTransactionIntegrationTest(
     context("POST /api/xrooms/with-memories 트랜잭션 원자성") {
 
         test("기억 저장이 트랜잭션 안에서 실패하면 방까지 롤백되어 XROOMS row가 남지 않는다") {
-            // Given - 방 소유 조건을 갖춘 회원
             val email = "xroom-tx-rollback@example.com"
             val password = "password123"
             val memberId = insertMember(email = email, rawPassword = password)
             val targetInfoId = insertTargetInfo(registerId = memberId)
             val accessToken = login(email, password)
 
-            // Given - 기억을 실제로 insert 한 뒤 실패시킨다 (방 insert 가 이미 커밋 대상이 된 시점)
             every { memoryCommandRepository.saveAll(any()) } answers {
                 memoryCommandDao.saveAll(firstArg<List<NewMemory>>())
                 throw IllegalStateException("기억 저장 중 장애가 발생했습니다.")
             }
 
-            // When
             mockMvc.postJson("/api/xrooms/with-memories") {
                 content = mapper.writeValueAsString(withMemoriesRequest(targetInfoId))
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { is5xxServerError() } }
 
-            // Then - 방·기억·감정태그가 전부 롤백되어 한 건도 남지 않는다
             xroomCount() shouldBe 0L
             memoryCount() shouldBe 0L
             emotionTagCount() shouldBe 0L
         }
 
         test("대조군 - 기억 저장이 정상 동작하면 같은 요청으로 XROOMS row가 1건 남는다") {
-            // Given - 롤백 케이스와 동일한 사전 조건·요청
             val email = "xroom-tx-commit@example.com"
             val password = "password123"
             val memberId = insertMember(email = email, rawPassword = password)
             val targetInfoId = insertTargetInfo(registerId = memberId)
             val accessToken = login(email, password)
 
-            // Given - 예외 없이 실제 저장만 수행한다
             every { memoryCommandRepository.saveAll(any()) } answers {
                 memoryCommandDao.saveAll(firstArg<List<NewMemory>>())
             }
 
-            // When
             val result = mockMvc.postJson("/api/xrooms/with-memories") {
                 content = mapper.writeValueAsString(withMemoriesRequest(targetInfoId))
                 authorization("Bearer $accessToken")
@@ -209,12 +192,10 @@ class XroomTransactionIntegrationTest(
                 .andExpect { status { isCreated() } }
                 .andReturn()
 
-            // Then - 롤백 케이스의 0건이 "원래 안 만들어져서"가 아님을 드러낸다
             xroomCount() shouldBe 1L
             memoryCount() shouldBe 2L
             emotionTagCount() shouldBe 3L
 
-            // Then - 커밋된 방·기억이 응답 식별자와 일치한다
             val body = mapper.readTree(result.response.contentAsString)
             val xroomId = transaction { XroomTable.selectAll().single()[XroomTable.id].value }
             idObfuscator.decode(ObfuscationType.XROOM, body.get("xroomId").asText()) shouldBe xroomId

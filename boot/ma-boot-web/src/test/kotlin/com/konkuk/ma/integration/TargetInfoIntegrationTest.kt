@@ -80,7 +80,6 @@ class TargetInfoIntegrationTest(
     context("POST /api/target-infos") {
 
         test("로그인 후 찾는 사람 정보를 등록하면 성공한다") {
-            // Given
             val email = "targetinfo-e2e@example.com"
             val password = "password123"
             insertMember(email = email, rawPassword = password)
@@ -96,7 +95,6 @@ class TargetInfoIntegrationTest(
                 "region" to "SEOUL"
             )
 
-            // When & Then
             val result = mockMvc.postJson("/api/target-infos") {
                 content = mapper.writeValueAsString(request)
                 authorization("Bearer $accessToken")
@@ -110,13 +108,11 @@ class TargetInfoIntegrationTest(
         }
 
         test("인증 토큰 없이 찾는 사람 정보를 등록하면 401이 반환된다") {
-            // Given
             val request = mapOf(
                 "name" to "홍길동",
                 "region" to "SEOUL"
             )
 
-            // When & Then
             mockMvc.postJson("/api/target-infos") {
                 content = mapper.writeValueAsString(request)
             }

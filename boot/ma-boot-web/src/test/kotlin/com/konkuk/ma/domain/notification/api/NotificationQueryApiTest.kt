@@ -38,7 +38,6 @@ class NotificationQueryApiTest(
 ) : FunSpec({
 
     test("알림 목록 조회 API 문서화") {
-        // Given
         val notification = Notification(
             id = 12L,
             recipientId = 1L,
@@ -57,7 +56,6 @@ class NotificationQueryApiTest(
 
         every { notificationQueryService.find(any(), any()) } returns cursorResult
 
-        // When & Then
         mockMvc.getJson("/api/notifications") {
             param("cursorId", "20")
             param("size", "20")
@@ -85,7 +83,6 @@ class NotificationQueryApiTest(
     }
 
     test("알림이 없는 경우 빈 목록을 반환한다") {
-        // Given
         val cursorResult: CursorResult<List<NotificationWithActor>> = CursorResult(
             data = emptyList(),
             hasNext = false,
@@ -94,7 +91,6 @@ class NotificationQueryApiTest(
 
         every { notificationQueryService.find(any(), any()) } returns cursorResult
 
-        // When & Then
         mockMvc.getJson("/api/notifications")
             .andExpect { status { isOk() } }
             .andDocument(
@@ -103,10 +99,8 @@ class NotificationQueryApiTest(
     }
 
     test("안읽음 알림 개수 조회 API 문서화") {
-        // Given
         every { notificationQueryService.countUnread(any()) } returns 3L
 
-        // When & Then
         mockMvc.getJson("/api/notifications/unread-count")
             .andExpect { status { isOk() } }
             .andDocument(

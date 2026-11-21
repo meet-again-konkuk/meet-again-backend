@@ -43,7 +43,6 @@ class CommentQueryApiTest(
 ) : FunSpec({
 
     test("댓글 상세 조회 API 문서화") {
-        // Given
         val reply = ReplyWithAuthor(
             comment = CommentFixture.create(id = 2L, parentCommentId = 1L, content = "감사합니다!"),
             nickname = "대댓글작성자",
@@ -63,7 +62,6 @@ class CommentQueryApiTest(
 
         every { commentQueryService.findDetail(1L, any<Long>()) } returns commentWithAuthor
 
-        // When & Then
         mockMvc.getJson("/api/community/comments/{commentId}", 1L)
             .andExpect { status { isOk() } }
             .andDocument(
@@ -95,11 +93,9 @@ class CommentQueryApiTest(
     }
 
     test("존재하지 않는 댓글 조회 시 404를 반환한다") {
-        // Given
         every { commentQueryService.findDetail(999L, any<Long>()) } throws
             EntityNotFoundException(EntityType.COMMUNITY_COMMENT, "999")
 
-        // When & Then
         mockMvc.getJson("/api/community/comments/{commentId}", 999L)
             .andExpect { status { isNotFound() } }
     }

@@ -30,7 +30,6 @@ class MemoryCountsTest : FunSpec({
     context("hasNoMemory") {
 
         test("집계 결과에 키가 아예 없는 방은 기억이 없다고 판단한다") {
-            // group by 집계는 기억이 0건인 방을 아예 키로 내려주지 않는다
             val memoryCounts = MemoryCounts(mapOf(1L to 3))
 
             memoryCounts.hasNoMemory(999L) shouldBe true

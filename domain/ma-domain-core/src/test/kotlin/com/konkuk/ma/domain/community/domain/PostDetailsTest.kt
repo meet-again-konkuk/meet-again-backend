@@ -6,13 +6,6 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-/**
- * 게시글 수정용 값 객체 PostDetails 생성/검증 테스트.
- *
- * 검증 규칙은 NewPost 를 미러링한다(제목 30자 · 내용 2000자 이하, 공백 불가).
- * InvalidValueException 의 사유 문자열은 예외 객체에 보존되지 않고 로그(dataMessage)로만 소비되므로
- * (BusinessException 구조 참조), NewPostTest 컨벤션대로 예외 타입만 단언하고 케이스는 입력값과 이름으로 구분한다.
- */
 class PostDetailsTest : FunSpec({
 
     context("PostDetails 객체 생성 테스트") {

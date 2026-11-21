@@ -14,16 +14,13 @@ class CommentDetailTest : FunSpec({
     context("extractAuthorIds") {
 
         test("루트 댓글과 대댓글의 작성자 id를 모두 추출한다") {
-            // Given
             val rootComment = CommentFixture.create(authorId = 1L)
             val reply1 = CommentFixture.create(id = 2L, authorId = 2L, parentCommentId = rootComment.id)
             val reply2 = CommentFixture.create(id = 3L, authorId = 3L, parentCommentId = rootComment.id)
             val commentDetail = CommentDetail(rootComment, Replies(listOf(reply1, reply2)))
 
-            // When
             val result = commentDetail.extractAuthorIds()
 
-            // Then
             result shouldContainExactlyInAnyOrder setOf(
                 rootComment.authorId,
                 reply1.authorId,
@@ -32,29 +29,23 @@ class CommentDetailTest : FunSpec({
         }
 
         test("대댓글 작성자와 루트 댓글 작성자가 같으면 중복 없이 추출한다") {
-            // Given
             val sameId = 1L
             val rootComment = CommentFixture.create(authorId = sameId)
             val reply = CommentFixture.create(id = 2L, authorId = sameId, parentCommentId = rootComment.id)
             val commentDetail = CommentDetail(rootComment, Replies(listOf(reply)))
 
-            // When
             val result = commentDetail.extractAuthorIds()
 
-            // Then
             result shouldHaveSize 1
             result shouldContainExactlyInAnyOrder setOf(sameId)
         }
 
         test("대댓글이 없으면 루트 댓글 작성자 id만 추출한다") {
-            // Given
             val rootComment = CommentFixture.create(authorId = 1L)
             val commentDetail = CommentDetail(rootComment, Replies(emptyList()))
 
-            // When
             val result = commentDetail.extractAuthorIds()
 
-            // Then
             result shouldHaveSize 1
             result shouldContainExactlyInAnyOrder setOf(rootComment.authorId)
         }
@@ -63,7 +54,6 @@ class CommentDetailTest : FunSpec({
     context("combineWithAuthors") {
 
         test("루트 댓글과 대댓글에 닉네임을 매핑하여 반환한다") {
-            // Given
             val rootComment = CommentFixture.create(authorId = 1L)
             val reply1 = CommentFixture.create(id = 2L, authorId = 2L, parentCommentId = rootComment.id)
             val reply2 = CommentFixture.create(id = 3L, authorId = 3L, parentCommentId = rootComment.id)
@@ -74,10 +64,8 @@ class CommentDetailTest : FunSpec({
             val reply2Member = MemberFixture.create(id = reply2.authorId, nickname = "대댓글작성자2")
             val members = Members(listOf(rootMember, reply1Member, reply2Member))
 
-            // When
             val result = commentDetail.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
-            // Then
             result.comment shouldBe rootComment
             result.nickname shouldBe rootMember.nickname
             result.replies shouldHaveSize 2
@@ -87,17 +75,14 @@ class CommentDetailTest : FunSpec({
         }
 
         test("대댓글이 없으면 빈 대댓글 목록과 remainingReplyCount 0을 반환한다") {
-            // Given
             val rootComment = CommentFixture.create(authorId = 1L)
             val commentDetail = CommentDetail(rootComment, Replies(emptyList()))
 
             val rootMember = MemberFixture.create(id = rootComment.authorId, nickname = "루트작성자")
             val members = Members(listOf(rootMember))
 
-            // When
             val result = commentDetail.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
-            // Then
             result.comment shouldBe rootComment
             result.nickname shouldBe rootMember.nickname
             result.replies shouldHaveSize 0
@@ -105,15 +90,12 @@ class CommentDetailTest : FunSpec({
         }
 
         test("닉네임을 찾을 수 없으면 '알 수 없음'으로 표시한다") {
-            // Given
             val rootComment = CommentFixture.create(authorId = 1L)
             val commentDetail = CommentDetail(rootComment, Replies(emptyList()))
             val members = Members(emptyList())
 
-            // When
             val result = commentDetail.combineWithAuthor(members, LikeCounts.from(emptyMap()), ViewerFixture.create())
 
-            // Then
             result.nickname shouldBe "알 수 없음"
         }
     }

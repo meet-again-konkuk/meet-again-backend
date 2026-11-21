@@ -58,7 +58,6 @@ class PostDetailQueryApiTest(
 ) : FunSpec({
 
     test("게시글 상세 조회 API 문서화") {
-        // Given
         val reply = ReplyWithAuthor(
             comment = CommentFixture.create(id = 2L, parentCommentId = 1L, content = "감사합니다!"),
             nickname = "대댓글작성자",
@@ -88,7 +87,6 @@ class PostDetailQueryApiTest(
 
         every { postQueryService.findDetail(1L, any<Long>()) } returns postDetail
 
-        // When & Then
         mockMvc.getJson("/api/community/posts/{id}", 1L)
             .andExpect { status { isOk() } }
             .andDocument(
@@ -132,11 +130,9 @@ class PostDetailQueryApiTest(
     }
 
     test("존재하지 않는 게시글 조회 시 404를 반환한다") {
-        // Given
         every { postQueryService.findDetail(999L, any<Long>()) } throws
             EntityNotFoundException(EntityType.COMMUNITY_POST, "999")
 
-        // When & Then
         mockMvc.getJson("/api/community/posts/{id}", 999L)
             .andExpect { status { isNotFound() } }
     }

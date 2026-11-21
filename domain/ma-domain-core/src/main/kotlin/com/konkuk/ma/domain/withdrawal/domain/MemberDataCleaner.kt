@@ -45,19 +45,15 @@ class MemberDataCleaner(
     }
 
     private fun cleanMatching(member: Member) {
-        // 매칭은 memberId(비PII)를 참조하므로 익명화 불필요 — 등록자 본인 데이터만 삭제한다.
-        // 내가 타인의 target으로 잡힌 매칭 결과(targetId=내 id)는 그대로 두며, 조회 시 소프트삭제된 회원이 제외돼 withdrawn으로 표시된다.
         targetInfoCommandRepository.delete(member.id)
         matchingResultRepository.deleteByRegister(member.id)
     }
 
     private fun cleanPoint(member: Member) {
-        // 포인트는 ownerId(비PII)를 참조하므로 익명화 불필요 — 잔액만 삭제하고, 결제 이력은 ownerId로 보존한다.
         memberPointRepository.delete(member.id)
     }
 
     private fun cleanCommunity(member: Member) {
-        // 글·댓글은 authorId(비PII) 참조라 익명화 불필요(소프트삭제 회원은 조회 시 "알 수 없음"); 좋아요만 삭제.
         postLikeRepository.deleteByMember(member.id)
         commentLikeRepository.deleteByMember(member.id)
     }

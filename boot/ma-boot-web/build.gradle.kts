@@ -14,7 +14,6 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
-	// RestDocs 의존성 추가
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 
 	implementation(project(":domain:ma-domain-core"))
@@ -32,7 +31,6 @@ dependencies {
 	testImplementation(testFixtures(project(":infrastructure:storage:ma-db-core")))
 	testImplementation(testFixtures(project(":domain:ma-domain-core")))
 
-	// AsciiDocs
 	val asciidoctorExt: Configuration by configurations.creating
 	asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
@@ -43,7 +41,6 @@ configure<org.springframework.boot.gradle.dsl.SpringBootExtension> {
 
 
 tasks {
-	// Spring REST Docs
 	val snippetsDir = file("build/generated-snippets")
 
 	withType<Test> {
@@ -51,7 +48,6 @@ tasks {
 		outputs.dir(snippetsDir)
 	}
 
-	// AsciiDocs
 	withType<AsciidoctorTask> {
 		asciidoctor.get().doFirst {
 			delete {
@@ -62,7 +58,6 @@ tasks {
 		configurations("asciidoctorExt")
 		inputs.dir(snippetsDir)
 		dependsOn(test)
-		// 빌드 시, 아래 경로의 파일 삭제
 		forkOptions {
 			jvmArgs(
 				"--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
@@ -82,9 +77,7 @@ tasks {
 			into("static/docs")
 		}
 
-		// BootJar 파일명
 		archiveBaseName.set("api")
-		// BootJar 버전
 		archiveVersion.set("")
 	}
 

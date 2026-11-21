@@ -22,18 +22,6 @@ import io.mockk.runs
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 
-/**
- * 비밀번호 재설정(POST /api/auth/find-password) API 슬라이스 테스트.
- *
- * PasswordResetService 는 @MockkBean 으로 대체하여 컨트롤러 계약(HTTP 매핑·상태코드·Bean Validation)만 검증한다.
- * 정상/예외 위임 케이스에는 REST Docs(andDocument) 스니펫(auth-find-password*)을 함께 생성한다.
- *
- * 확정 계약(이 테스트가 명세):
- *  - 정상 요청 → 204 No Content (본문 없음).
- *  - Service 가 SmsNotVerifiedException → 400 (SMS 인증 미완료).
- *  - Service 가 EntityNotFoundException → 404 (3필드 일치 회원 부재).
- *  - Bean Validation 위반(email/name/phone/newPassword 형식·필수) → 400, Service 도달 이전에 차단.
- */
 @WebMvcTest(PasswordResetApi::class)
 @BaseApiTest
 class PasswordResetApiTest(
@@ -44,7 +32,6 @@ class PasswordResetApiTest(
 
     val uri = "/api/auth/find-password"
 
-    // 유효한 기본값 — 관심 있는 한 필드만 오버라이드해 Bean Validation 위반을 만든다.
     val validEmail = "holeman@naver.com"
     val validName = "홍길동"
     val validPhone = "01012345678"
@@ -65,13 +52,11 @@ class PasswordResetApiTest(
     context("정상/예외 위임 (Service 결과에 따른 상태코드)") {
 
         test("유효한 요청이면 204 No Content 를 반환한다") {
-            // Given - 4필드 raw String 위임, Service 는 정상 수행
             val request = PasswordResetRequest(validEmail, validName, validPhone, validNewPassword)
             every {
                 passwordResetService.resetPassword(request.email, request.name, request.phone, request.newPassword)
             } just runs
 
-            // When & Then
             mockMvc.postJson(uri) { content = mapper.writeValueAsString(request) }
                 .andExpect { status { isNoContent() } }
                 .andDocument(
@@ -86,13 +71,11 @@ class PasswordResetApiTest(
         }
 
         test("Service 가 SmsNotVerifiedException 을 던지면 400 을 반환한다") {
-            // Given - SMS 인증 미완료
             val request = PasswordResetRequest(validEmail, validName, validPhone, validNewPassword)
             every {
                 passwordResetService.resetPassword(request.email, request.name, request.phone, request.newPassword)
             } throws SmsNotVerifiedException(request.phone)
 
-            // When & Then
             mockMvc.postJson(uri) { content = mapper.writeValueAsString(request) }
                 .andExpect { status { isBadRequest() } }
                 .andDocument(
@@ -107,13 +90,11 @@ class PasswordResetApiTest(
         }
 
         test("Service 가 EntityNotFoundException 을 던지면 404 를 반환한다") {
-            // Given - 3필드 일치 회원 부재
             val request = PasswordResetRequest(validEmail, validName, validPhone, validNewPassword)
             every {
                 passwordResetService.resetPassword(request.email, request.name, request.phone, request.newPassword)
             } throws EntityNotFoundException(EntityType.MEMBER, request.email)
 
-            // When & Then
             mockMvc.postJson(uri) { content = mapper.writeValueAsString(request) }
                 .andExpect { status { isNotFound() } }
                 .andDocument(
@@ -205,13 +186,11 @@ class PasswordResetApiTest(
         }
 
         test("새 비밀번호가 8자 미만이면 400을 반환한다") {
-            // "pass1" = 5자
             mockMvc.postJson(uri) { content = mapper.writeValueAsString(body(newPassword = "pass1")) }
                 .andExpect { status { isBadRequest() } }
         }
 
         test("새 비밀번호가 16자를 초과하면 400을 반환한다") {
-            // 영문 16자 + 숫자 1자 = 17자
             mockMvc.postJson(uri) { content = mapper.writeValueAsString(body(newPassword = "a".repeat(16) + "1")) }
                 .andExpect { status { isBadRequest() } }
         }
@@ -227,7 +206,6 @@ class PasswordResetApiTest(
         }
 
         test("새 비밀번호에 특수문자가 포함되면 400을 반환한다") {
-            // 패턴 [A-Za-z\d] 는 특수문자를 허용하지 않는다
             mockMvc.postJson(uri) { content = mapper.writeValueAsString(body(newPassword = "password1!")) }
                 .andExpect { status { isBadRequest() } }
         }

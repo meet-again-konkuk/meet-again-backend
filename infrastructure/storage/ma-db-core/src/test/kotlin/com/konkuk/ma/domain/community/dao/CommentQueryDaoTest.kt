@@ -35,54 +35,43 @@ class CommentQueryDaoTest(
         context("findOne") {
 
             test("ID로 댓글을 조회한다") {
-                // Given
                 insertComment(content = "테스트 댓글")
                 val commentId = CommentTable.selectAll().first()[CommentTable.id].value
 
-                // When
                 val result = commentQueryDao.findOne(commentId)
 
-                // Then
                 result shouldNotBe null
                 result!!.id shouldBe commentId
                 result.content shouldBe "테스트 댓글"
             }
 
             test("parentCommentId가 있는 대댓글을 조회한다") {
-                // Given
                 insertComment(content = "부모 댓글")
                 val parentId = CommentTable.selectAll().first()[CommentTable.id].value
                 insertComment(content = "대댓글", parentCommentId = parentId)
                 val childId = CommentTable.selectAll().toList().last()[CommentTable.id].value
 
-                // When
                 val result = commentQueryDao.findOne(childId)
 
-                // Then
                 result shouldNotBe null
                 result!!.parentCommentId shouldBe parentId
             }
 
             test("deleted가 true인 댓글은 조회되지 않는다") {
-                // Given
                 insertComment()
                 val commentId = CommentTable.selectAll().first()[CommentTable.id].value
                 CommentTable.update({ CommentTable.id eq commentId }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = commentQueryDao.findOne(commentId)
 
-                // Then
                 result shouldBe null
             }
 
             test("존재하지 않는 ID로 조회하면 null을 반환한다") {
-                // When
                 val result = commentQueryDao.findOne(9999L)
 
-                // Then
                 result shouldBe null
             }
         }
@@ -90,7 +79,6 @@ class CommentQueryDaoTest(
         context("find") {
 
             test("삭제된 댓글도 함께 조회된다") {
-                // Given
                 val postId = PostTable.selectAll().first()[PostTable.id].value
                 insertComment(content = "일반 댓글")
                 insertComment(content = "삭제된 댓글")
@@ -99,10 +87,8 @@ class CommentQueryDaoTest(
                     it[deleted] = true
                 }
 
-                // When
                 val result = commentQueryDao.find(postId)
 
-                // Then
                 result.size shouldBe 2
                 result.last().deleted shouldBe true
             }
@@ -111,7 +97,6 @@ class CommentQueryDaoTest(
         context("findReplies") {
 
             test("삭제된 대댓글도 함께 조회된다") {
-                // Given
                 insertComment(content = "부모 댓글")
                 val parentId = CommentTable.selectAll().first()[CommentTable.id].value
                 insertComment(content = "일반 대댓글", parentCommentId = parentId)
@@ -121,10 +106,8 @@ class CommentQueryDaoTest(
                     it[deleted] = true
                 }
 
-                // When
                 val result = commentQueryDao.findReplies(parentId)
 
-                // Then
                 result.size shouldBe 2
                 result.any { it.deleted } shouldBe true
             }

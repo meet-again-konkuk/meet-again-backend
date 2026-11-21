@@ -6,8 +6,6 @@ import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.requestParam
 import com.konkuk.ma.extension.responseType
 
-// --- 매칭 관련 필드 ---
-
 fun targetInfoId(fieldName: String = "targetInfoId") =
     fieldName responseType STRING means "찾는 사람 정보 ID (인코딩)" example "abc123"
 
@@ -38,9 +36,6 @@ fun targetGender(fieldName: String = "targetGender") =
 fun targetRegion(fieldName: String = "region") =
     fieldName responseType STRING means "지역" example "SEOUL"
 
-// --- 매칭 결과 고유 필드 ---
-// 회원 프로필 관련 필드(이름, 닉네임, 프로필 이미지, 탈퇴 여부, 회원 ID)는 MemberVocabulary의 generic 함수를 path와 함께 호출하여 재사용한다
-
 fun matchingResultId(fieldName: String = "matchingResults[].matchingResultId") =
     fieldName responseType STRING means "매칭 결과 ID (인코딩)" example "abc123"
 
@@ -52,8 +47,6 @@ fun matchRate(fieldName: String = "matchingResults[].matchRate") =
 
 fun claimed(fieldName: String = "matchingResults[].claimed") =
     fieldName responseType BOOLEAN means "claim 진행 여부 (거절된 경우 포함, NONE이 아니면 true)" example "false"
-
-// --- 매칭 결과 상세 고유 필드 ---
 
 fun detailMatchingResultId(fieldName: String = "matchingResultId") =
     fieldName responseType STRING means "매칭 결과 ID (인코딩)" example "abc123"
@@ -87,8 +80,6 @@ fun resultExcludedParam(fieldName: String = "excluded") =
 
 fun matchingResultIdPath(fieldName: String = "matchingResultId") =
     fieldName requestParam "매칭 결과 ID (인코딩)"
-
-// --- Claimer(나를 X로 신청한 요청자) 고유 필드 ---
 
 fun hasXroom(fieldName: String = "claimers[].hasXroom") =
     fieldName responseType BOOLEAN means "해당 TargetInfo로 X룸을 만들었는지 여부" example "true"

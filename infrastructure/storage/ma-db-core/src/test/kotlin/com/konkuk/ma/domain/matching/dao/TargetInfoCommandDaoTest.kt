@@ -40,7 +40,6 @@ class TargetInfoCommandDaoTest(
         context("save") {
 
             test("모든 필드가 채워진 NewTargetInfo를 저장하고 ID를 반환한다") {
-                // Given
                 val newTargetInfo = NewTargetInfo(
                     registerId = registerId,
                     targetName = "타겟이름",
@@ -52,16 +51,13 @@ class TargetInfoCommandDaoTest(
                     region = Region.SEOUL
                 )
 
-                // When
                 val id = targetInfoCommandDao.save(newTargetInfo, Gender.FEMALE)
 
-                // Then
                 id shouldBeGreaterThan 0L
                 TargetInfoTable.selectAll().count() shouldBe 1
             }
 
             test("nullable 필드가 null인 NewTargetInfo를 저장한다") {
-                // Given
                 val newTargetInfo = NewTargetInfo(
                     registerId = registerId,
                     targetName = "타겟이름",
@@ -73,10 +69,8 @@ class TargetInfoCommandDaoTest(
                     region = null
                 )
 
-                // When
                 val id = targetInfoCommandDao.save(newTargetInfo, Gender.MALE)
 
-                // Then
                 id shouldBeGreaterThan 0L
                 val row = TargetInfoTable.selectAll().first()
                 row[TargetInfoTable.middleNumber] shouldBe null
@@ -88,15 +82,12 @@ class TargetInfoCommandDaoTest(
             }
 
             test("여러 건을 저장하면 각각 다른 ID를 반환한다") {
-                // Given
                 val newTargetInfo1 = createNewTargetInfo(targetName = "타겟1")
                 val newTargetInfo2 = createNewTargetInfo(targetName = "타겟2")
 
-                // When
                 val id1 = targetInfoCommandDao.save(newTargetInfo1, Gender.FEMALE)
                 val id2 = targetInfoCommandDao.save(newTargetInfo2, Gender.MALE)
 
-                // Then
                 id1 shouldBeGreaterThan 0L
                 id2 shouldBeGreaterThan id1
                 TargetInfoTable.selectAll().count() shouldBe 2

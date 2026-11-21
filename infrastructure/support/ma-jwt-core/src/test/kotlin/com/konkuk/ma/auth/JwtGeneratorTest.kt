@@ -16,12 +16,11 @@ import java.time.ZoneId
 
 class JwtGeneratorTest : FunSpec({
 
-    val secret = "a".repeat(64) // 512-bit key for HS256
+    val secret = "a".repeat(64)
 
     context("generateAccessToken") {
 
         test("액세스 토큰은 생성되고 유효하며, 회원 식별자(subject)가 일치한다") {
-            // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
@@ -29,10 +28,8 @@ class JwtGeneratorTest : FunSpec({
             )
             val memberId = 42L
 
-            // When
             val token = generator.generateAccessToken(memberId)
 
-            // Then
             generator.validateToken(token).shouldBeTrue()
             generator.getMemberIdFromToken(token) shouldBe memberId
         }
@@ -41,18 +38,15 @@ class JwtGeneratorTest : FunSpec({
     context("generateRefreshToken") {
 
         test("리프레시 토큰은 값 객체로 반환되고, 만료 시각이 적절하다") {
-            // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
                 refreshTokenExpiration = 10_000L
             )
 
-            // When
             val before = LocalDateTime.now()
             val refresh: RefreshToken = generator.generateRefreshToken(42L)
 
-            // Then
             refresh.token shouldNotBe null
             generator.validateToken(refresh.token).shouldBeTrue()
 
@@ -61,17 +55,14 @@ class JwtGeneratorTest : FunSpec({
         }
 
         test("리프레시 토큰의 만료 시각과 JWT exp 클레임이 동일하다") {
-            // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
                 refreshTokenExpiration = 10_000L
             )
 
-            // When
             val refresh = generator.generateRefreshToken(42L)
 
-            // Then
             val parser = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secret.toByteArray()))
                 .build()
@@ -82,7 +73,6 @@ class JwtGeneratorTest : FunSpec({
         }
 
         test("만료된 리프레시 토큰은 회원 식별자 추출 시 예외가 발생하고 isExpired() 메소드는 true를 리턴한다.") {
-            // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
@@ -90,11 +80,8 @@ class JwtGeneratorTest : FunSpec({
             )
             val refresh = generator.generateRefreshToken(42L)
 
-            // When
-            // 만료 시간을 충분히 초과하여 대기
             Thread.sleep(500)
 
-            // Then
             shouldThrow<AuthTokenException> { generator.validateToken(refresh.token) }
             refresh.isExpired() shouldBe true
         }
@@ -103,7 +90,6 @@ class JwtGeneratorTest : FunSpec({
     context("validateToken") {
 
         test("형식이 잘못된 토큰은 검증에 실패한다") {
-            // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 5_000L,
@@ -111,13 +97,11 @@ class JwtGeneratorTest : FunSpec({
             )
             val invalidToken = "not-a-jwt"
 
-            // When & Then
             shouldThrow<AuthTokenException> { generator.validateToken(invalidToken) }
             shouldThrow<AuthTokenException> { generator.getMemberIdFromToken(invalidToken) }
         }
 
         test("만료된 토큰은 검증에 실패하고, 회원 식별자 추출 시 예외가 발생한다") {
-            // Given
             val generator = JwtManager(
                 secretKey = secret,
                 accessTokenExpiration = 50L,
@@ -125,11 +109,8 @@ class JwtGeneratorTest : FunSpec({
             )
             val token = generator.generateAccessToken(42L)
 
-            // When
-            // 경계 시간 문제 방지를 위해 만료 시간을 충분히 초과하여 대기
             Thread.sleep(200)
 
-            // Then
             shouldThrow<AuthTokenException> { generator.validateToken(token) }
             shouldThrow<AuthTokenException> { generator.getMemberIdFromToken(token) }
         }

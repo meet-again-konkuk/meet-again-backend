@@ -28,14 +28,12 @@ class SmsVerificationApiTest(
 ) : FunSpec({
 
     test("SMS 인증 코드 발송 API 문서화") {
-        // Given
         val request = mapOf(
             "phoneNumber" to "01012345678"
         )
 
         every { smsVerificationService.sendSmsVerificationCode("01012345678") } just runs
 
-        // When & Then
         mockMvc.postJson("/api/sms/verification-code")
         { content = mapper.writeValueAsString(request) }
             .andExpect {
@@ -50,12 +48,10 @@ class SmsVerificationApiTest(
     }
 
     test("유효하지 않은 휴대폰 번호로 SMS 발송 요청 시 실패") {
-        // Given
         val request = mapOf(
-            "phoneNumber" to "010123456789" // 11자리
+            "phoneNumber" to "010123456789"
         )
 
-        // When & Then
         mockMvc.postJson("/api/sms/verification-code")
         { content = mapper.writeValueAsString(request) }
             .andExpect { status { isBadRequest() } }
@@ -68,7 +64,6 @@ class SmsVerificationApiTest(
     }
 
     test("SMS 인증 코드 확인 API 문서화 - 성공") {
-        // Given
         val request = mapOf(
             "phoneNumber" to "01012345678",
             "verificationCode" to "123456"
@@ -76,7 +71,6 @@ class SmsVerificationApiTest(
 
         every { smsVerificationService.confirmVerificationCode("01012345678", "123456") } returns true
 
-        // When & Then
         mockMvc.postJson("/api/sms/verification-code/confirm")
         { content = mapper.writeValueAsString(request) }
             .andExpect {
@@ -100,7 +94,6 @@ class SmsVerificationApiTest(
     }
 
     test("SMS 인증 코드 확인 API 문서화 - 실패") {
-        // Given
         val request = mapOf(
             "phoneNumber" to "01012345678",
             "verificationCode" to "999999"
@@ -108,7 +101,6 @@ class SmsVerificationApiTest(
 
         every { smsVerificationService.confirmVerificationCode("01012345678", "999999") } returns false
 
-        // When & Then
         mockMvc.postJson("/api/sms/verification-code/confirm")
         { content = mapper.writeValueAsString(request) }
             .andExpect {
@@ -132,13 +124,11 @@ class SmsVerificationApiTest(
     }
 
     test("유효하지 않은 휴대폰 번호로 SMS 인증 확인 요청 시 실패") {
-        // Given
         val request = mapOf(
             "phoneNumber" to "invalid-phone",
             "verificationCode" to "123456"
         )
 
-        // When & Then
         mockMvc.postJson("/api/sms/verification-code/confirm")
         { content = mapper.writeValueAsString(request) }
             .andExpect { status { isBadRequest() } }

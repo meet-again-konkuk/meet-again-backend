@@ -42,7 +42,6 @@ class XroomCommandApiTest(
     val authMemberId = 1L
 
     test("X룸 생성 API 문서화") {
-        // Given
         val encryptedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L)
         val encryptedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val request = mapOf(
@@ -51,7 +50,6 @@ class XroomCommandApiTest(
         )
         every { xroomCommandService.create(1L, authMemberId, "고마웠어") } returns 1L
 
-        // When & Then
         mockMvc.postJson("/api/xrooms") {
             content = mapper.writeValueAsString(request)
         }
@@ -71,7 +69,6 @@ class XroomCommandApiTest(
     }
 
     test("X룸 기억 일괄 생성 API 문서화") {
-        // Given
         val encryptedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L)
         val request = mapOf(
             "targetInfoId" to encryptedTargetInfoId,
@@ -98,7 +95,6 @@ class XroomCommandApiTest(
             xroomCommandService.createWithMemories(authMemberId, 1L, "고마웠어", any<NewMemories>())
         } returns CreatedXroom(1L, listOf(1L, 2L))
 
-        // When & Then
         mockMvc.postJson("/api/xrooms/with-memories") {
             content = mapper.writeValueAsString(request)
         }
@@ -127,14 +123,12 @@ class XroomCommandApiTest(
     }
 
     test("X룸 마지막 메시지 수정 API 문서화") {
-        // Given
         val encryptedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val request = mapOf(
             "finalMessage" to "잘 지내",
         )
         every { xroomCommandService.updateFinalMessage(1L, authMemberId, "잘 지내") } returns 1L
 
-        // When & Then
         mockMvc.patchJson("/api/xrooms/$encryptedXroomId") {
             content = mapper.writeValueAsString(request)
         }

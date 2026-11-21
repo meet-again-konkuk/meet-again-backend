@@ -91,7 +91,6 @@ class MatchRateCalculatorTest : FunSpec({
                 regionMatched = true,
             )
 
-            // Phone partial(30) + Birth partial(2*10=20) + Region(10) = 60
             calculator.calculate() shouldBe 60
         }
 

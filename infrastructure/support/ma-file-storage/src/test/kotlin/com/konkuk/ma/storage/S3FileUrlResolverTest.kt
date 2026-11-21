@@ -20,7 +20,6 @@ class S3FileUrlResolverTest : FunSpec({
     context("resolve") {
 
         test("bucket·storageKey·TTL(분)로 presigned GET URL을 요청하고 URL 문자열을 반환한다") {
-            // Given
             val presignTtlMinutes = 10L
             val resolver = S3FileUrlResolver(s3Presigner, bucket, presignTtlMinutes)
             val storageKey = "memory/memory-photo/1/photo.jpg"
@@ -30,10 +29,8 @@ class S3FileUrlResolverTest : FunSpec({
             val requestSlot = slot<GetObjectPresignRequest>()
             every { s3Presigner.presignGetObject(capture(requestSlot)) } returns presigned
 
-            // When
             val result = resolver.resolve(storageKey)
 
-            // Then
             result shouldBe expectedUrl.toString()
             requestSlot.captured.signatureDuration() shouldBe Duration.ofMinutes(presignTtlMinutes)
             val getObjectRequest: GetObjectRequest = requestSlot.captured.getObjectRequest()
@@ -42,7 +39,6 @@ class S3FileUrlResolverTest : FunSpec({
         }
 
         test("설정된 TTL(분)이 signatureDuration에 그대로 반영된다") {
-            // Given
             val presignTtlMinutes = 30L
             val resolver = S3FileUrlResolver(s3Presigner, bucket, presignTtlMinutes)
             val storageKey = "memory/thumbnail/1/thumb_photo.jpg"
@@ -51,10 +47,8 @@ class S3FileUrlResolverTest : FunSpec({
             val requestSlot = slot<GetObjectPresignRequest>()
             every { s3Presigner.presignGetObject(capture(requestSlot)) } returns presigned
 
-            // When
             resolver.resolve(storageKey)
 
-            // Then
             requestSlot.captured.signatureDuration() shouldBe Duration.ofMinutes(presignTtlMinutes)
         }
     }

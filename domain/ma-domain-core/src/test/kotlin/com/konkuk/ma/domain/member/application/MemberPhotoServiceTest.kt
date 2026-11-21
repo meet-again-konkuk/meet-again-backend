@@ -29,7 +29,6 @@ class MemberPhotoServiceTest : FunSpec({
     context("upload") {
 
         test("새 사진을 업로드하면 processor로 처리하고 DB에 저장한다") {
-            // Given
             val memberId = 1L
             val photoFile = PhotoFileFixture.create()
             val processed = ProcessedPhoto("stored/path.jpg", "stored/thumb.jpg")
@@ -39,17 +38,14 @@ class MemberPhotoServiceTest : FunSpec({
             val capturedNewPhoto = slot<NewPhoto>()
             every { memberPhotoRepository.save(capture(capturedNewPhoto)) } returns 1L
 
-            // When
             service.upload(memberId, photoFile)
 
-            // Then
             capturedNewPhoto.captured.storageKey shouldBe processed.storageKey
             capturedNewPhoto.captured.thumbnailKey shouldBe processed.thumbnailKey
             capturedNewPhoto.captured.memberId shouldBe memberId
         }
 
         test("기존 사진이 있으면 삭제 후 새 사진을 업로드한다") {
-            // Given
             val memberId = 1L
             val photoFile = PhotoFileFixture.create()
             val existingPhoto = MemberPhotoFixture.create(
@@ -64,10 +60,8 @@ class MemberPhotoServiceTest : FunSpec({
             every { memberPhotoProcessor.process(any(), photoFile) } returns processed
             every { memberPhotoRepository.save(any()) } returns 2L
 
-            // When
             service.upload(memberId, photoFile)
 
-            // Then
             verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
             verify { memberPhotoRepository.delete(any()) }
             verify { memberPhotoProcessor.process(any(), photoFile) }
@@ -78,7 +72,6 @@ class MemberPhotoServiceTest : FunSpec({
     context("delete") {
 
         test("기존 사진이 있으면 파일과 DB 레코드를 삭제한다") {
-            // Given
             val memberId = 1L
             val existingPhoto = MemberPhotoFixture.create(memberId = memberId)
 
@@ -86,24 +79,19 @@ class MemberPhotoServiceTest : FunSpec({
             every { memberPhotoProcessor.deleteFiles(existingPhoto) } just runs
             every { memberPhotoRepository.delete(any()) } just runs
 
-            // When
             service.delete(memberId)
 
-            // Then
             verify { memberPhotoProcessor.deleteFiles(existingPhoto) }
             verify { memberPhotoRepository.delete(any()) }
         }
 
         test("기존 사진이 없으면 아무 동작도 하지 않는다") {
-            // Given
             val memberId = 99L
 
             every { memberPhotoRepository.findOne(any()) } returns null
 
-            // When
             service.delete(memberId)
 
-            // Then
             verify(exactly = 0) { memberPhotoProcessor.deleteFiles(any()) }
             verify(exactly = 0) { memberPhotoRepository.delete(any()) }
         }

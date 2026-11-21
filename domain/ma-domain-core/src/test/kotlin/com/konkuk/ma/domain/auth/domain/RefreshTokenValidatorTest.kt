@@ -19,24 +19,20 @@ class RefreshTokenValidatorTest : FunSpec({
     context("validate") {
 
         test("만료되지 않은 토큰이면 예외 없이 통과한다") {
-            // Given
             val refreshToken = RefreshTokenFixture.create(
                 expirationDate = LocalDateTime.now().plusDays(7),
             )
 
-            // When & Then
             refreshTokenValidator.validate(refreshToken)
         }
 
         test("만료된 토큰이면 delete 후 RefreshTokenExpiredException이 발생한다") {
-            // Given
             val refreshToken = RefreshTokenFixture.create(
                 expirationDate = LocalDateTime.now().minusDays(1),
             )
 
             every { refreshTokenRepository.delete(refreshToken.memberId) } returns Unit
 
-            // When & Then
             shouldThrow<RefreshTokenExpiredException> {
                 refreshTokenValidator.validate(refreshToken)
             }.message shouldBe "Refresh token이 만료되었습니다."

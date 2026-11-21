@@ -32,15 +32,12 @@ class PointProductQueryDaoTest(
         context("find") {
 
             test("활성 상품 목록을 displayOrder 오름차순으로 조회한다") {
-                // Given
                 insertPointProduct(name = "50개", displayOrder = 3)
                 insertPointProduct(name = "10개", displayOrder = 1)
                 insertPointProduct(name = "30개", displayOrder = 2)
 
-                // When
                 val result = pointProductQueryDao.find()
 
-                // Then
                 result shouldHaveSize 3
                 result[0].name shouldBe "10개"
                 result[1].name shouldBe "30개"
@@ -48,25 +45,20 @@ class PointProductQueryDaoTest(
             }
 
             test("상품이 없으면 빈 리스트를 반환한다") {
-                // When
                 val result = pointProductQueryDao.find()
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("deleted=true인 상품은 조회되지 않는다") {
-                // Given
                 insertPointProduct(name = "활성 상품", displayOrder = 1)
                 insertPointProduct(name = "삭제된 상품", displayOrder = 2)
                 PointProductTable.update({ PointProductTable.name eq "삭제된 상품" }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = pointProductQueryDao.find()
 
-                // Then
                 result shouldHaveSize 1
                 result[0].name shouldBe "활성 상품"
             }

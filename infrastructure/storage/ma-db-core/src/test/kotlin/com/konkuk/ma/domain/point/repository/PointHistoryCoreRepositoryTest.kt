@@ -45,13 +45,10 @@ class PointHistoryCoreRepositoryTest(
         context("save") {
 
             test("NewPointHistory를 저장하고 생성된 ID를 반환한다") {
-                // Given
                 val newHistory = createNewCharge(idempotencyKey = "idem-key-1")
 
-                // When
                 val savedId = pointHistoryCoreRepository.save(newHistory)
 
-                // Then
                 savedId shouldNotBe 0L
                 val row = PointHistoryTable.selectAll().first()
                 row[PointHistoryTable.ownerId] shouldBe newHistory.ownerId
@@ -65,11 +62,9 @@ class PointHistoryCoreRepositoryTest(
             }
 
             test("동일한 idempotencyKey로 두 번 save하면 UNIQUE 제약 위반 예외가 발생한다") {
-                // Given
                 val duplicatedKey = "duplicated-key"
                 pointHistoryCoreRepository.save(createNewCharge(idempotencyKey = duplicatedKey))
 
-                // When & Then
                 shouldThrow<ExposedSQLException> {
                     pointHistoryCoreRepository.save(createNewCharge(idempotencyKey = duplicatedKey))
                 }
@@ -79,15 +74,12 @@ class PointHistoryCoreRepositoryTest(
         context("findOneOrNull") {
 
             test("해당 멱등키의 이력이 존재하면 도메인 객체로 반환한다") {
-                // Given
                 val idempotencyKey = "existing-key"
                 val newHistory = createNewCharge(idempotencyKey = idempotencyKey)
                 val savedId = pointHistoryCoreRepository.save(newHistory)
 
-                // When
                 val result = pointHistoryCoreRepository.findOneOrNull(idempotencyKey)
 
-                // Then
                 result shouldNotBe null
                 result!!.id shouldBe savedId
                 result.ownerId shouldBe newHistory.ownerId
@@ -100,10 +92,8 @@ class PointHistoryCoreRepositoryTest(
             }
 
             test("해당 멱등키의 이력이 없으면 null을 반환한다") {
-                // When
                 val result = pointHistoryCoreRepository.findOneOrNull("not-exist")
 
-                // Then
                 result shouldBe null
             }
         }

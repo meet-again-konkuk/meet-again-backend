@@ -25,21 +25,17 @@ class JwtAuthenticationFilterTest : FunSpec({
     context("doFilter") {
 
         test("Authorization 헤더가 없으면 체인을 그대로 통과한다") {
-            // Given
             val request = MockHttpServletRequest()
             val response = MockHttpServletResponse()
             var chainCalled = false
             val chain = FilterChain { _, _ -> chainCalled = true }
 
-            // When
             filter.doFilter(request, response, chain)
 
-            // Then
             chainCalled.shouldBeTrue()
         }
 
         test("유효한 토큰이면 memberId를 principal로 세팅하고 체인을 통과한다") {
-            // Given
             val jwt = "valid-jwt-token"
             val memberId = 42L
             every { tokenManager.getMemberIdFromToken(jwt) } returns memberId
@@ -51,10 +47,8 @@ class JwtAuthenticationFilterTest : FunSpec({
             var chainCalled = false
             val chain = FilterChain { _, _ -> chainCalled = true }
 
-            // When
             filter.doFilter(request, response, chain)
 
-            // Then
             chainCalled.shouldBeTrue()
             val principal = SecurityContextHolder.getContext().authentication.principal
             principal shouldBe memberId

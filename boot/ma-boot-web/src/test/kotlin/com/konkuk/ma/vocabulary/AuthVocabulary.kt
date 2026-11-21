@@ -4,8 +4,6 @@ import com.konkuk.ma.extension.BOOLEAN
 import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 
-// --- 인증 관련 필드 ---
-
 fun accessToken(fieldName: String = "accessToken") =
     fieldName responseType STRING means "액세스 토큰" example "eyJhbGciOi..."
 

@@ -17,13 +17,6 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.test.context.ContextConfiguration
 
-/**
- * 게시글 이미지 DAO 통합 테스트 (MediaDaoTest 미러).
- *
- * PostImageCommandDao(save/softDeleteByPost/delete) 와 PostImageQueryDao(findActiveByPost(s)/findDeletedBefore)
- * 가 실제 H2 위에서 의도한 쿼리대로 동작하는지 검증한다. deletedDate 를 특정 시각으로 제어해야 하는
- * findDeletedBefore 케이스는 softDelete 헬퍼(now 사용) 대신 직접 삽입한다.
- */
 @ContextConfiguration(classes = [TestDatabaseConfig::class, PostImageCommandDao::class, PostImageQueryDao::class])
 @DatabaseTest
 class PostImageDaoTest(
@@ -58,7 +51,6 @@ class PostImageDaoTest(
             thumbnailKey = thumbnailKey,
         )
 
-        // save 는 아직 미구현이므로, 쿼리 검증용 행은 Exposed DSL 로 직접 삽입한다.
         fun insertPostImage(
             postId: Long = 1L,
             storageKey: String = "community/post-image/1/photo.jpg",
@@ -191,9 +183,9 @@ class PostImageDaoTest(
             val afterCutoff = LocalDateTime.of(2026, 6, 15, 0, 0)
 
             test("cutoff 이전에 soft delete 된 이미지만 반환한다 (active·cutoff 이후 제외)") {
-                insertPostImage() // active → 제외
+                insertPostImage()
                 val expiredId = insertPostImage(deleted = true, deletedDate = beforeCutoff)
-                insertPostImage(deleted = true, deletedDate = afterCutoff) // cutoff 이후 → 제외
+                insertPostImage(deleted = true, deletedDate = afterCutoff)
 
                 val found = postImageQueryDao.findDeletedBefore(cutoff, null, 100)
 

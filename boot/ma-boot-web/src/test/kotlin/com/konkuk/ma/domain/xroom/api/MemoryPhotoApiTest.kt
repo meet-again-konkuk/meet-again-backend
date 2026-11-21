@@ -41,7 +41,6 @@ class MemoryPhotoApiTest(
     val authMemberId = 1L
 
     test("기억 사진 업로드 API 문서화") {
-        // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, 1L)
         val photo = MockMultipartFile(
@@ -58,7 +57,6 @@ class MemoryPhotoApiTest(
             thumbnailUrl = "/files/memory/thumbnail/1/thumb_photo.jpg",
         )
 
-        // When & Then
         mockMvc.perform(
             multipart(
                 "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
@@ -85,14 +83,12 @@ class MemoryPhotoApiTest(
     }
 
     test("기억 사진 삭제 API 문서화") {
-        // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val encodedMemoryId = idObfuscator.encode(ObfuscationType.MEMORY, 1L)
         every {
             memoryPhotoCommandService.removePhoto(1L, 1L, authMemberId)
         } just runs
 
-        // When & Then
         mockMvc.deleteJson(
             "/api/xrooms/{xroomId}/memories/{memoryId}/photo",
             encodedXroomId,

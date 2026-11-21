@@ -41,14 +41,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
-/**
- * 회원 탈퇴 완료 배치(memberWithdrawalCompleteJob) E2E 통합 테스트.
- * 실제 Job 을 H2 DB 위에서 실행하여, 정리 동작을 "관심사(백업 / 회원 익명화 / 하드삭제 / soft삭제 /
- * 작성데이터 보존 / 미만료 보호)별로 한 테스트씩" 검증한다.
- *
- * 운영 DDL 에는 FK 가 없으나 Exposed 가 생성하는 테스트 스키마에는 FK 가 생기므로,
- * H2 URL 의 INIT(SET REFERENTIAL_INTEGRITY FALSE)로 운영과 동일하게 FK 미적용 상태로 맞춘다.
- */
 @SpringBootTest(properties = ["spring.batch.job.enabled=false"])
 @ActiveProfiles("test")
 class MemberWithdrawalCompleteJobIntegrationTest(
@@ -65,7 +57,6 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         NotificationTable, CommentNotificationSettingTable,
     )
 
-    // inputDate(2026-06-17) - 유예 7일 → cutoff 2026-06-10. 그 이전이면 만료.
     val inputDate = "2026-06-17"
     val expiredAt = LocalDateTime.of(2026, 6, 1, 0, 0)
     val notExpiredAt = LocalDateTime.of(2026, 6, 16, 0, 0)
@@ -270,20 +261,17 @@ class MemberWithdrawalCompleteJobIntegrationTest(
                 it[idempotencyKey] = "idem-key-1"
             }
         }
-        // 다른 회원이 등록했고 내가 타겟인 매칭 → memberId(비PII) 참조라 익명화 불필요, 행도 삭제되지 않음
         insertMatchingResult(registerId = 999L, targetId = memberId)
 
         runCleanupJob(5L) shouldBe BatchStatus.COMPLETED
 
         transaction {
-            // 글·댓글·문의는 authorId(비PII) 참조라 익명화하지 않고 행을 그대로 둔다 (soft delete 안 됨).
             PostTable.selectAll().where { PostTable.authorId eq memberId }.single()
                 .let { it[PostTable.deleted] shouldBe false }
             CommentTable.selectAll().where { CommentTable.authorId eq memberId }.single()
                 .let { it[CommentTable.deleted] shouldBe false }
             InquiryTable.selectAll().where { InquiryTable.authorId eq memberId }.single()
                 .let { it[InquiryTable.deleted] shouldBe false }
-            // 포인트이력도 ownerId(비PII) 참조라 익명화하지 않고 행을 그대로 둔다.
             PointHistoryTable.selectAll().where { PointHistoryTable.ownerId eq memberId }.count() shouldBe 1L
             val targetedMatch = MatchingResultTable.selectAll()
                 .where { MatchingResultTable.targetId eq memberId }.single()
@@ -318,7 +306,6 @@ class MemberWithdrawalCompleteJobIntegrationTest(
         val xroomId = insertXroom(ownerId = memberId)
         val memoryId = insertMemory(xroomId = xroomId)
         insertMedia(memoryId = memoryId)
-        // 탈퇴 대상이 아닌 다른 회원의 방·기억·미디어는 영향받지 않아야 한다
         val survivorMemberId = insertMember("survivor@example.com", withdrawalRequestedAt = null)
         val survivorXroomId = insertXroom(ownerId = survivorMemberId)
         val survivorMemoryId = insertMemory(xroomId = survivorXroomId)

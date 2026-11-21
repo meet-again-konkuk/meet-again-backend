@@ -1,6 +1,6 @@
 package com.konkuk.ma.domain.community.api.request
 
 class CommentNotificationSettingRequest(
-    // null/누락은 fail-on-null-for-primitives + MissingKotlinParameter로 역직렬화 단계에서 400 처리
+    // 외부 제약: Jackson은 FAIL_ON_NULL_FOR_PRIMITIVES 설정 시 Boolean의 null·누락 입력을 역직렬화 오류로 처리한다.
     val enabled: Boolean,
 )

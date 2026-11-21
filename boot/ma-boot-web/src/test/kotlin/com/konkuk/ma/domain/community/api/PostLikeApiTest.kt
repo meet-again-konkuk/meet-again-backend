@@ -25,11 +25,9 @@ class PostLikeApiTest(
 ) : FunSpec({
 
     test("게시글 좋아요 추가 API 문서화") {
-        // Given
         every { postLikeService.like(1L, 1L) } returns
             PostLikeResult(liked = true, likeCount = 3)
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/likes", 1L)
             .andExpect { status { isCreated() } }
             .andDocument(
@@ -45,11 +43,9 @@ class PostLikeApiTest(
     }
 
     test("게시글 좋아요 취소 API 문서화") {
-        // Given
         every { postLikeService.unlike(1L, 1L) } returns
             PostLikeResult(liked = false, likeCount = 2)
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}/likes", 1L)
             .andExpect { status { isOk() } }
             .andDocument(

@@ -131,7 +131,7 @@ class MediaDaoTest(
                 val memberId = 7L
                 mediaCommandDao.save(newMedia(memoryId = 1L))
                 mediaCommandDao.save(newMedia(memoryId = 2L))
-                mediaCommandDao.save(newMedia(memoryId = 3L)) // 대상 외 기억
+                mediaCommandDao.save(newMedia(memoryId = 3L))
 
                 mediaCommandDao.softDeleteByMemories(setOf(1L, 2L), memberId)
 
@@ -153,7 +153,6 @@ class MediaDaoTest(
             }
         }
 
-        // deletedDate를 특정 시각으로 제어해야 하므로 softDelete 헬퍼(now 사용) 대신 직접 삽입한다.
         fun insertDeletedMedia(
             storageKey: String = "memory/memory-photo/1/photo.jpg",
             thumbnailKey: String? = "memory/thumbnail/1/thumb_photo.jpg",
@@ -176,9 +175,9 @@ class MediaDaoTest(
             val afterCutoff = LocalDateTime.of(2026, 6, 15, 0, 0)
 
             test("cutoff 이전에 soft delete된 미디어만 반환한다 (active·cutoff 이후 제외)") {
-                mediaCommandDao.save(newMedia()) // active → 제외
+                mediaCommandDao.save(newMedia())
                 val expiredId = insertDeletedMedia(deletedDate = beforeCutoff)
-                insertDeletedMedia(deletedDate = afterCutoff) // cutoff 이후 → 제외
+                insertDeletedMedia(deletedDate = afterCutoff)
 
                 val found = mediaQueryDao.findDeletedBefore(cutoff, null, 100)
 

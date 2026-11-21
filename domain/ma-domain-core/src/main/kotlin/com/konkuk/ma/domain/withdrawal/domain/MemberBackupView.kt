@@ -6,10 +6,6 @@ import com.konkuk.ma.domain.member.domain.Region
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-/**
- * 탈퇴 백업 스냅샷에 담기는 회원 표현.
- * password 는 담지 않고, 전화번호는 마스킹된 값만 보관한다.
- */
 class MemberBackupView(
     val id: Long,
     val email: String,

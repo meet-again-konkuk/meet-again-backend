@@ -27,13 +27,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 
-/**
- * 신고(REQ-014) API E2E 통합 테스트 (REST Docs 제외, HTTP 상태 계약 검증).
- *
- * POST /api/community/posts/{postId}/reports · /comments/{commentId}/reports 의
- * 성공(201)·본인 신고(400)·중복(409)·없는 대상(404)·detail 초과(400)·미인증(401) 상태 매핑을
- * API → Service → DB 관통으로 검증한다.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -113,7 +106,6 @@ class ReportIntegrationTest(
         }
     }
 
-    // 저장된 활성 신고 row 를 (신고자·대상 타입·대상 식별자)로 직접 조회한다.
     fun findStoredReport(reporterId: Long, targetType: String, targetId: Long): ResultRow? {
         return transaction {
             ReportTable.selectAll()
@@ -141,7 +133,6 @@ class ReportIntegrationTest(
         }
     }
 
-    // 신고자(로그인 회원)를 만들고 로그인해 (memberId, accessToken) 을 반환한다.
     fun loginReporter(): Pair<Long, String> {
         val rawPassword = "password123"
         val email = nextEmail("reporter")
@@ -159,12 +150,10 @@ class ReportIntegrationTest(
     context("POST /api/community/posts/{postId}/reports") {
 
         test("타인 게시글을 정상 신고하면 201을 반환한다") {
-            // Given
             val (_, token) = loginReporter()
             val authorId = insertAuthor()
             val postId = insertPost(authorId = authorId)
 
-            // When & Then
             mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
@@ -172,7 +161,6 @@ class ReportIntegrationTest(
         }
 
         test("게시글을 신고하면 대상 작성자·제목·본문 스냅샷과 RECEIVED 상태가 저장된다") {
-            // Given
             val (reporterId, token) = loginReporter()
             val authorId = insertAuthor()
             val postTitle = "혐오 표현이 담긴 제목"
@@ -180,18 +168,15 @@ class ReportIntegrationTest(
             val postId = insertPost(authorId = authorId, title = postTitle, content = postContent)
             val reason = "HATE"
 
-            // When
             val result = mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to reason))
             }.andExpect { status { isCreated() } }.andReturn()
 
-            // Then - 응답 도메인
             val body = mapper.readTree(result.response.contentAsString)
             body.get("reportId").asLong() shouldBeGreaterThan 0L
             body.get("status").asText() shouldBe "RECEIVED"
 
-            // Then - 저장된 신고 시점 스냅샷
             val stored = findStoredReport(reporterId, "POST", postId)
             stored.shouldNotBeNull()
             stored[ReportTable.targetAuthorId] shouldBe authorId
@@ -202,11 +187,9 @@ class ReportIntegrationTest(
         }
 
         test("본인 게시글을 신고하면 400을 반환한다") {
-            // Given - 로그인한 회원이 자기 게시글을 신고
             val (reporterId, token) = loginReporter()
             val postId = insertPost(authorId = reporterId)
 
-            // When & Then
             mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
@@ -214,13 +197,11 @@ class ReportIntegrationTest(
         }
 
         test("이미 신고한 게시글을 다시 신고하면 409를 반환한다") {
-            // Given - 동일 신고자·대상의 기존 활성 신고 존재
             val (reporterId, token) = loginReporter()
             val authorId = insertAuthor()
             val postId = insertPost(authorId = authorId)
             insertReport(reporterId, "POST", postId, authorId)
 
-            // When & Then
             mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
@@ -228,10 +209,8 @@ class ReportIntegrationTest(
         }
 
         test("존재하지 않는 게시글을 신고하면 404를 반환한다") {
-            // Given
             val (_, token) = loginReporter()
 
-            // When & Then
             mockMvc.postJson("/api/community/posts/{postId}/reports", 999_999L) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
@@ -239,13 +218,11 @@ class ReportIntegrationTest(
         }
 
         test("detail이 500자를 초과하면 400을 반환한다") {
-            // Given
             val (_, token) = loginReporter()
             val authorId = insertAuthor()
             val postId = insertPost(authorId = authorId)
             val overSizeDetail = "가".repeat(501)
 
-            // When & Then
             mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM", "detail" to overSizeDetail))
@@ -253,11 +230,9 @@ class ReportIntegrationTest(
         }
 
         test("인증 토큰 없이 신고하면 401을 반환한다") {
-            // Given
             val authorId = insertAuthor()
             val postId = insertPost(authorId = authorId)
 
-            // When & Then
             mockMvc.postJson("/api/community/posts/{postId}/reports", postId) {
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
             }.andExpect { status { isUnauthorized() } }
@@ -267,13 +242,11 @@ class ReportIntegrationTest(
     context("POST /api/community/comments/{commentId}/reports") {
 
         test("타인 댓글을 정상 신고하면 201을 반환한다") {
-            // Given
             val (_, token) = loginReporter()
             val authorId = insertAuthor(nickname = "댓글작성자")
             val postId = insertPost(authorId = authorId)
             val commentId = insertComment(postId = postId, authorId = authorId)
 
-            // When & Then
             mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "HARASSMENT"))
@@ -281,20 +254,17 @@ class ReportIntegrationTest(
         }
 
         test("댓글을 신고하면 대상 작성자·내용 스냅샷이 저장되고 제목 스냅샷은 null이다") {
-            // Given
             val (reporterId, token) = loginReporter()
             val authorId = insertAuthor(nickname = "댓글작성자")
             val postId = insertPost(authorId = authorId)
             val commentContent = "신고 대상 댓글 본문"
             val commentId = insertComment(postId = postId, authorId = authorId, content = commentContent)
 
-            // When
             mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "HARASSMENT", "detail" to "괴롭힘"))
             }.andExpect { status { isCreated() } }
 
-            // Then
             val stored = findStoredReport(reporterId, "COMMENT", commentId)
             stored.shouldNotBeNull()
             stored[ReportTable.targetAuthorId] shouldBe authorId
@@ -303,12 +273,10 @@ class ReportIntegrationTest(
         }
 
         test("본인이 작성한 댓글을 신고하면 400을 반환한다") {
-            // Given - 로그인한 회원이 자기 댓글을 신고
             val (reporterId, token) = loginReporter()
             val postId = insertPost(authorId = reporterId)
             val commentId = insertComment(postId = postId, authorId = reporterId)
 
-            // When & Then
             mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
@@ -316,14 +284,12 @@ class ReportIntegrationTest(
         }
 
         test("이미 신고한 댓글을 다시 신고하면 409를 반환한다") {
-            // Given - 동일 신고자·대상의 기존 활성 신고 존재
             val (reporterId, token) = loginReporter()
             val authorId = insertAuthor()
             val postId = insertPost(authorId = authorId)
             val commentId = insertComment(postId = postId, authorId = authorId)
             insertReport(reporterId, "COMMENT", commentId, authorId)
 
-            // When & Then
             mockMvc.postJson("/api/community/comments/{commentId}/reports", commentId) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
@@ -331,10 +297,8 @@ class ReportIntegrationTest(
         }
 
         test("존재하지 않는 댓글을 신고하면 404를 반환한다") {
-            // Given
             val (_, token) = loginReporter()
 
-            // When & Then
             mockMvc.postJson("/api/community/comments/{commentId}/reports", 999_999L) {
                 authorization("Bearer $token")
                 content = mapper.writeValueAsString(mapOf("reason" to "SPAM"))
