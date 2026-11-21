@@ -39,11 +39,9 @@ class BlockApiTest(
 ) : FunSpec({
 
     test("게시글 작성자 차단 API 문서화") {
-        // Given
         every { blockCommandService.blockPostAuthor(1L, 1L) } returns
             BlockResult(blockId = 1L, blockedNickname = "차단된작성자")
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/author/block", 1L)
             .andExpect { status { isCreated() } }
             .andDocument(
@@ -60,11 +58,9 @@ class BlockApiTest(
     }
 
     test("댓글 작성자 차단 API 문서화") {
-        // Given
         every { blockCommandService.blockCommentAuthor(1L, 1L) } returns
             BlockResult(blockId = 2L, blockedNickname = "차단된작성자")
 
-        // When & Then
         mockMvc.postJson("/api/community/comments/{commentId}/author/block", 1L)
             .andExpect { status { isCreated() } }
             .andDocument(
@@ -81,7 +77,6 @@ class BlockApiTest(
     }
 
     test("차단 목록 조회 API 문서화") {
-        // Given
         every { blockQueryService.findBlocks(1L) } returns listOf(
             BlockView(
                 blockId = 1L,
@@ -90,7 +85,6 @@ class BlockApiTest(
             ),
         )
 
-        // When & Then
         mockMvc.getJson("/api/community/blocks")
             .andExpect { status { isOk() } }
             .andDocument(
@@ -105,10 +99,8 @@ class BlockApiTest(
     }
 
     test("차단 해제 API 문서화") {
-        // Given
         every { blockCommandService.unblock(1L, 1L) } just runs
 
-        // When & Then
         mockMvc.deleteJson("/api/community/blocks/{blockId}", 1L)
             .andExpect { status { isNoContent() } }
             .andDocument(

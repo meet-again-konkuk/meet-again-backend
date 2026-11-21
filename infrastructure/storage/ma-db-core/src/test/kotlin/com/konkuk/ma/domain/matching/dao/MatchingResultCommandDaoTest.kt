@@ -47,93 +47,72 @@ class MatchingResultCommandDaoTest(
         context("deleteExpired") {
 
             test("만료일이 기준일보다 이전인 데이터를 삭제한다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
-                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31)) // 만료됨
-                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 30)) // 만료됨
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31))
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 30))
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 2
                 MatchingResultTable.selectAll().count() shouldBe 0
             }
 
             test("만료일이 기준일과 같은 데이터는 삭제하지 않는다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 6, 1))
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
 
             test("만료일이 기준일보다 이후인 데이터는 삭제하지 않는다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 6, 2))
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
 
             test("만료된 데이터만 삭제하고 유효한 데이터는 남긴다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
-                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 15)) // 만료됨
-                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 7, 1))  // 유효
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 15))
+                insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 7, 1))
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 1
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
 
             test("삭제할 데이터가 없으면 0을 반환한다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
             }
 
             test("excluded=true인 만료된 데이터는 삭제하지 않는다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = true)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
 
             test("excluded=false인 만료된 데이터만 삭제한다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = false)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 30), excluded = true)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 1
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
@@ -142,53 +121,41 @@ class MatchingResultCommandDaoTest(
         context("deleteExcludedExpired") {
 
             test("excluded=true이고 만료일이 기준일보다 이전인 데이터를 삭제한다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = true)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 30), excluded = true)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 2
                 MatchingResultTable.selectAll().count() shouldBe 0
             }
 
             test("excluded=false인 만료된 데이터는 삭제하지 않는다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 5, 31), excluded = false)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
 
             test("excluded=true이지만 만료일이 기준일 이후인 데이터는 삭제하지 않는다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
                 insertMatchingResult(matchingExpiryDate = LocalDate.of(2025, 6, 2), excluded = true)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
                 MatchingResultTable.selectAll().count() shouldBe 1
             }
 
             test("삭제할 데이터가 없으면 0을 반환한다") {
-                // Given
                 val baseDate = LocalDate.of(2025, 6, 1)
 
-                // When
                 val deletedCount = matchingResultCommandDao.deleteExcludedExpired(baseDate)
 
-                // Then
                 deletedCount shouldBe 0
             }
         }
@@ -196,35 +163,26 @@ class MatchingResultCommandDaoTest(
         context("deleteByRegister") {
 
             test("회원이 register인 매칭을 soft delete 한다") {
-                // Given
                 insertMatchingResult()
 
-                // When
                 matchingResultCommandDao.deleteByRegister(registerId)
 
-                // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe true
             }
 
             test("회원이 target일 뿐이면 삭제하지 않는다") {
-                // Given
                 insertMatchingResult()
 
-                // When
                 matchingResultCommandDao.deleteByRegister(targetId)
 
-                // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
             }
 
             test("매칭과 무관한 회원이면 삭제하지 않는다") {
-                // Given
                 insertMatchingResult()
 
-                // When
                 matchingResultCommandDao.deleteByRegister(otherId)
 
-                // Then
                 MatchingResultTable.selectAll().first()[MatchingResultTable.deleted] shouldBe false
             }
         }
@@ -232,29 +190,23 @@ class MatchingResultCommandDaoTest(
         context("updateClaimStatus") {
 
             test("REJECTED로 갱신하면 DB에 REJECTED로 저장된다") {
-                // Given
                 insertMatchingResult()
                 val id = MatchingResultTable.selectAll().first()[MatchingResultTable.id].value
                 val matchingResult = buildMatchingResult(id = id, claimStatus = ClaimStatus.REJECTED)
 
-                // When
                 matchingResultCommandDao.updateClaimStatus(matchingResult)
 
-                // Then
                 val savedStatus = MatchingResultTable.selectAll().first()[MatchingResultTable.claimStatus]
                 savedStatus shouldBe ClaimStatus.REJECTED
             }
 
             test("CLAIMED로 갱신하면 DB에 CLAIMED로 저장된다") {
-                // Given
                 insertMatchingResult()
                 val id = MatchingResultTable.selectAll().first()[MatchingResultTable.id].value
                 val matchingResult = buildMatchingResult(id = id, claimStatus = ClaimStatus.CLAIMED)
 
-                // When
                 matchingResultCommandDao.updateClaimStatus(matchingResult)
 
-                // Then
                 val savedStatus = MatchingResultTable.selectAll().first()[MatchingResultTable.claimStatus]
                 savedStatus shouldBe ClaimStatus.CLAIMED
             }

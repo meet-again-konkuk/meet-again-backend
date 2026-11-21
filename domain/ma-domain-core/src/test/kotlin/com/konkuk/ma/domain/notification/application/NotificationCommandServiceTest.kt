@@ -26,26 +26,21 @@ class NotificationCommandServiceTest : FunSpec({
     context("markAsRead") {
 
         test("본인 알림이면 읽음 처리한다") {
-            // Given
             val notification = NotificationFixture.create(recipientId = 1L)
 
             every { notificationQueryRepository.findOne(notification.id) } returns notification
 
-            // When
             service.markAsRead(notification.id, notification.recipientId)
 
-            // Then
             verify { notificationCommandRepository.markAsRead(notification.id) }
         }
 
         test("타인 알림이면 AccessDeniedException이 발생하고 읽음 처리하지 않는다") {
-            // Given
             val notification = NotificationFixture.create(recipientId = 1L)
             val otherMemberId = notification.recipientId + 1
 
             every { notificationQueryRepository.findOne(notification.id) } returns notification
 
-            // When & Then
             shouldThrow<AccessDeniedException> {
                 service.markAsRead(notification.id, otherMemberId)
             }
@@ -53,14 +48,12 @@ class NotificationCommandServiceTest : FunSpec({
         }
 
         test("존재하지 않는 알림이면 EntityNotFoundException이 발생한다") {
-            // Given
             val nonExistentId = 999L
             val memberId = 1L
 
             every { notificationQueryRepository.findOne(nonExistentId) } throws
                 EntityNotFoundException(EntityType.NOTIFICATION, nonExistentId.toString())
 
-            // When & Then
             shouldThrow<EntityNotFoundException> {
                 service.markAsRead(nonExistentId, memberId)
             }
@@ -71,13 +64,10 @@ class NotificationCommandServiceTest : FunSpec({
     context("markAllAsRead") {
 
         test("수신자의 전체 읽음 처리를 위임한다") {
-            // Given
             val memberId = 1L
 
-            // When
             service.markAllAsRead(memberId)
 
-            // Then
             verify { notificationCommandRepository.markAllAsRead(memberId) }
         }
     }

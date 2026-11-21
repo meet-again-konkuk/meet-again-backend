@@ -14,7 +14,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner
     "'\${file.storage.mode:local}' == 's3' or '\${backup.storage.mode:local}' == 's3'",
 )
 class S3StorageConfig(
-    // 사진(S3FileStorage)·백업(S3MemberBackupStorage)이 공유하는 리전 — 백업만 s3 모드여도 필수
     @Value("\${file.s3.region}")
     private val region: String,
 ) {

@@ -48,46 +48,36 @@ class MatchingResultQueryDaoTest(
         context("find(targetInfoIds)") {
 
             test("targetInfoId 목록에 해당하는 매칭 결과를 조회한다") {
-                // Given
                 val targetInfoId = getTargetInfoId()
                 insertMatchingResult()
 
-                // When
                 val result = matchingResultQueryDao.find(listOf(targetInfoId))
 
-                // Then
                 result shouldHaveSize 1
                 result[0].targetInfoId shouldBe targetInfoId
             }
 
             test("빈 targetInfoIds로 조회하면 빈 리스트를 반환한다") {
-                // When
                 val result = matchingResultQueryDao.find(emptyList())
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("일치하는 targetInfoId가 없으면 빈 리스트를 반환한다") {
-                // When
                 val result = matchingResultQueryDao.find(listOf(9999L))
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("deleted=true인 매칭 결과는 조회되지 않는다") {
-                // Given
                 val targetInfoId = getTargetInfoId()
                 insertMatchingResult()
                 MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = matchingResultQueryDao.find(listOf(targetInfoId))
 
-                // Then
                 result shouldHaveSize 0
             }
         }
@@ -95,50 +85,39 @@ class MatchingResultQueryDaoTest(
         context("find(memberId, excluded)") {
 
             test("memberId로 excluded=false인 매칭 결과를 조회한다") {
-                // Given
                 insertMatchingResult(excluded = false)
 
-                // When
                 val result = matchingResultQueryDao.find(registerId)
 
-                // Then
                 result shouldHaveSize 1
                 result[0].registerId shouldBe registerId
                 result[0].excluded shouldBe false
             }
 
             test("excluded=true를 지정하면 excluded 매칭 결과만 조회한다") {
-                // Given
                 insertMatchingResult(excluded = true)
                 insertMatchingResult(excluded = false)
 
-                // When
                 val result = matchingResultQueryDao.find(registerId, excluded = true)
 
-                // Then
                 result shouldHaveSize 1
                 result[0].excluded shouldBe true
             }
 
             test("deleted=true인 매칭 결과는 조회되지 않는다") {
-                // Given
                 insertMatchingResult()
                 MatchingResultTable.update({ MatchingResultTable.registerId eq registerId }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = matchingResultQueryDao.find(registerId)
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("일치하는 회원이 없으면 빈 리스트를 반환한다") {
-                // When
                 val result = matchingResultQueryDao.find(9999L)
 
-                // Then
                 result shouldHaveSize 0
             }
         }
@@ -146,38 +125,30 @@ class MatchingResultQueryDaoTest(
         context("findOne") {
 
             test("ID로 매칭 결과를 조회한다") {
-                // Given
                 insertMatchingResult()
                 val id = MatchingResultTable.selectAll().first()[MatchingResultTable.id].value
 
-                // When
                 val result = matchingResultQueryDao.findOne(id)
 
-                // Then
                 result shouldNotBe null
                 result!!.id shouldBe id
             }
 
             test("deleted=true인 매칭 결과는 조회되지 않는다") {
-                // Given
                 insertMatchingResult()
                 val id = MatchingResultTable.selectAll().first()[MatchingResultTable.id].value
                 MatchingResultTable.update({ MatchingResultTable.id eq id }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = matchingResultQueryDao.findOne(id)
 
-                // Then
                 result shouldBe null
             }
 
             test("존재하지 않는 ID로 조회하면 null을 반환한다") {
-                // When
                 val result = matchingResultQueryDao.findOne(9999L)
 
-                // Then
                 result shouldBe null
             }
         }
@@ -185,37 +156,29 @@ class MatchingResultQueryDaoTest(
         context("exists") {
 
             test("해당 targetInfoId의 매칭 결과가 존재하면 true를 반환한다") {
-                // Given
                 val targetInfoId = getTargetInfoId()
                 insertMatchingResult()
 
-                // When
                 val result = matchingResultQueryDao.exists(targetInfoId)
 
-                // Then
                 result.shouldBeTrue()
             }
 
             test("해당 targetInfoId의 매칭 결과가 없으면 false를 반환한다") {
-                // When
                 val result = matchingResultQueryDao.exists(9999L)
 
-                // Then
                 result.shouldBeFalse()
             }
 
             test("deleted=true인 매칭 결과는 존재하지 않는 것으로 판단한다") {
-                // Given
                 val targetInfoId = getTargetInfoId()
                 insertMatchingResult()
                 MatchingResultTable.update({ MatchingResultTable.targetInfoId eq targetInfoId }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = matchingResultQueryDao.exists(targetInfoId)
 
-                // Then
                 result.shouldBeFalse()
             }
         }

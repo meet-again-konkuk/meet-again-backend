@@ -25,10 +25,8 @@ class NotificationCommandApiTest(
 ) : FunSpec({
 
     test("단건 알림 읽음 처리 API 문서화") {
-        // Given
         every { notificationCommandService.markAsRead(any(), any()) } just runs
 
-        // When & Then
         mockMvc.patchJson("/api/notifications/{notificationId}/read", 1L)
             .andExpect { status { isOk() } }
             .andDocument(
@@ -40,30 +38,24 @@ class NotificationCommandApiTest(
     }
 
     test("본인의 알림이 아니면 403을 반환한다") {
-        // Given
         every { notificationCommandService.markAsRead(any(), any()) } throws
             AccessDeniedException(EntityType.NOTIFICATION, "2", "1")
 
-        // When & Then
         mockMvc.patchJson("/api/notifications/{notificationId}/read", 1L)
             .andExpect { status { isForbidden() } }
     }
 
     test("존재하지 않는 알림이면 404를 반환한다") {
-        // Given
         every { notificationCommandService.markAsRead(any(), any()) } throws
             EntityNotFoundException(EntityType.NOTIFICATION, "999")
 
-        // When & Then
         mockMvc.patchJson("/api/notifications/{notificationId}/read", 999L)
             .andExpect { status { isNotFound() } }
     }
 
     test("전체 알림 읽음 처리 API 문서화") {
-        // Given
         every { notificationCommandService.markAllAsRead(any()) } just runs
 
-        // When & Then
         mockMvc.patchJson("/api/notifications/read-all")
             .andExpect { status { isOk() } }
             .andDocument(

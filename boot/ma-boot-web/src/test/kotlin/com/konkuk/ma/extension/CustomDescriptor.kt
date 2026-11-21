@@ -78,19 +78,12 @@ open class CustomDescriptor<T : IgnorableDescriptor<T>>(
     }
 }
 
-/**
- * DocsFieldType.ENUM 타입의 요청 필드 생성 시 사용
- */
 infix fun <E : Enum<E>> String.requestType(enumFieldType: ENUM<E>): CustomDescriptor<FieldDescriptor> {
     val field = createField(this, JsonFieldType.STRING, false)
     field.formattedAs(enumFieldType.toString())
     return field
 }
 
-/**
- * DocsFieldType.ENUM 타입을 제외한 타입의 응답 필드 생성 시 사용
- * ("data." prefix 추가)
- */
 infix fun String.responseType(docsFieldType: DocsFieldType): CustomDescriptor<FieldDescriptor> {
     val field = createField(this, docsFieldType.type, true)
     when (docsFieldType) {
@@ -115,10 +108,6 @@ private fun createResponseType(prefix: String, docsFieldType: DocsFieldType): Cu
     return field
 }
 
-/**
- * DocsFieldType.ENUM 타입의 응답 필드 생성 시 사용
- * ("data." prefix 추가)
- */
 infix fun <E : Enum<E>> String.responseType(enumFieldType: ENUM<E>): CustomDescriptor<FieldDescriptor> {
     val field = createField(this, JsonFieldType.STRING, false)
     field.formattedAs(enumFieldType.toString())

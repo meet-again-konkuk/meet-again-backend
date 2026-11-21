@@ -34,14 +34,12 @@ class CommentCommandApiTest(
 ) : FunSpec({
 
     test("일반 댓글 작성 API 문서화") {
-        // Given
         val request = mapOf(
             "content" to "좋은 글이네요!",
         )
 
         every { commentCommandService.create(any()) } returns 1L
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -62,7 +60,6 @@ class CommentCommandApiTest(
     }
 
     test("대댓글 작성 API 문서화") {
-        // Given
         val request = mapOf(
             "content" to "저도 동감합니다!",
             "parentCommentId" to 1L,
@@ -70,7 +67,6 @@ class CommentCommandApiTest(
 
         every { commentCommandService.create(any()) } returns 2L
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -91,11 +87,9 @@ class CommentCommandApiTest(
     }
 
     test("댓글 내용이 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val overLengthContent = "a".repeat(NewComment.MAX_CONTENT_LENGTH + 1)
         val request = mapOf("content" to overLengthContent)
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -103,10 +97,8 @@ class CommentCommandApiTest(
     }
 
     test("댓글 내용이 비어있으면 400을 반환한다") {
-        // Given
         val request = mapOf("content" to " ")
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/comments", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -114,10 +106,8 @@ class CommentCommandApiTest(
     }
 
     test("댓글 삭제 API 문서화") {
-        // Given
         every { commentCommandService.delete(any(), any()) } just runs
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}/comments/{commentId}", 1L, 1L)
             .andExpect { status { isOk() } }
             .andDocument(
@@ -130,11 +120,9 @@ class CommentCommandApiTest(
     }
 
     test("소유권이 없는 댓글 삭제 시 403을 반환한다") {
-        // Given
         every { commentCommandService.delete(any(), any()) } throws
             AccessDeniedException(EntityType.COMMUNITY_COMMENT, "owner@example.com", "holeman@naver.com")
 
-        // When & Then
         mockMvc.deleteJson("/api/community/posts/{postId}/comments/{commentId}", 1L, 1L)
             .andExpect { status { isForbidden() } }
     }

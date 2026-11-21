@@ -41,7 +41,6 @@ class SignUpApiTest(
 ) : FunSpec({
 
     test("signUp - 유효한 회원가입 요청시 성공한다") {
-        // Given
         val memberId = 1L
         val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, memberId)
         val request = mapOf(
@@ -59,7 +58,6 @@ class SignUpApiTest(
 
         every { signUpService.signUp(any()) } returns memberId
 
-        // When & Then
         mockMvc.postJson("/api/auth/sign-up") {
             content = mapper.writeValueAsString(request)
         }
@@ -94,7 +92,6 @@ class SignUpApiTest(
     }
 
     test("signUp - 선택 필드 없이 회원가입 요청시 성공한다") {
-        // Given
         val memberId = 2L
         val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, memberId)
         val request = mapOf(
@@ -110,7 +107,6 @@ class SignUpApiTest(
 
         every { signUpService.signUp(any()) } returns memberId
 
-        // When & Then
         mockMvc.postJson("/api/auth/sign-up") {
             content = mapper.writeValueAsString(request)
         }

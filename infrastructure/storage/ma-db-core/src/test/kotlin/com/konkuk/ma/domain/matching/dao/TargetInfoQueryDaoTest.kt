@@ -39,13 +39,10 @@ class TargetInfoQueryDaoTest(
         context("findNoOffset") {
 
             test("cursorId가 null이면 처음부터 size만큼 조회한다") {
-                // Given
                 repeat(5) { insertTargetInfo(name = "타겟$it") }
 
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 3)
 
-                // Then
                 result shouldHaveSize 3
                 result[0].name shouldBe "타겟0"
                 result[1].name shouldBe "타겟1"
@@ -53,15 +50,12 @@ class TargetInfoQueryDaoTest(
             }
 
             test("cursorId를 기준으로 이후 데이터를 조회한다") {
-                // Given
                 repeat(5) { insertTargetInfo(name = "타겟$it") }
                 val allItems = targetInfoQueryDao.findNoOffset(cursorId = null, size = 5)
                 val cursorId = allItems[1].id
 
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = cursorId, size = 3)
 
-                // Then
                 result shouldHaveSize 3
                 result[0].name shouldBe "타겟2"
                 result[1].name shouldBe "타겟3"
@@ -69,60 +63,46 @@ class TargetInfoQueryDaoTest(
             }
 
             test("데이터가 size보다 적으면 있는 만큼만 반환한다") {
-                // Given
                 insertTargetInfo(name = "타겟0")
 
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 10)
 
-                // Then
                 result shouldHaveSize 1
             }
 
             test("데이터가 없으면 빈 리스트를 반환한다") {
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 10)
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("cursorId 이후에 데이터가 없으면 빈 리스트를 반환한다") {
-                // Given
                 repeat(3) { insertTargetInfo(name = "타겟$it") }
                 val allItems = targetInfoQueryDao.findNoOffset(cursorId = null, size = 3)
                 val lastId = allItems.last().id
 
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = lastId, size = 10)
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("ID 오름차순으로 정렬되어 반환한다") {
-                // Given
                 repeat(3) { insertTargetInfo(name = "타겟$it") }
 
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 3)
 
-                // Then
                 result[0].id shouldBe result.minOf { it.id }
                 result[2].id shouldBe result.maxOf { it.id }
             }
 
             test("탈퇴 신청한 등록 회원의 타겟은 제외되고 활성 회원의 타겟만 조회된다") {
-                // Given
                 val activeMemberId = insertMember("active@example.com")
                 insertTargetInfo(registerId = activeMemberId, name = "활성타겟")
                 insertTargetInfo(registerId = registerId, name = "탈퇴타겟")
                 markWithdrawalPending("test@example.com")
 
-                // When
                 val result = targetInfoQueryDao.findNoOffset(cursorId = null, size = 10)
 
-                // Then
                 result shouldHaveSize 1
                 result[0].name shouldBe "활성타겟"
             }

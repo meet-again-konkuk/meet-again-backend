@@ -69,14 +69,12 @@ class LoginIntegrationTest(
     context("POST /api/auth/login") {
 
         test("올바른 이메일과 비밀번호로 로그인하면 JWT 토큰이 반환된다") {
-            // Given
             val email = "login-test@example.com"
             val password = "password123"
             insertMember(email = email, rawPassword = password, nickname = "로그인유저")
 
             val request = mapOf("email" to email, "password" to password)
 
-            // When & Then
             val result = mockMvc.postJson("/api/auth/login") {
                 content = mapper.writeValueAsString(request)
             }
@@ -92,13 +90,11 @@ class LoginIntegrationTest(
         }
 
         test("잘못된 비밀번호로 로그인하면 실패한다") {
-            // Given
             val email = "wrong-pw-test@example.com"
             insertMember(email = email, rawPassword = "password123")
 
             val request = mapOf("email" to email, "password" to "wrongPassword1")
 
-            // When & Then
             mockMvc.postJson("/api/auth/login") {
                 content = mapper.writeValueAsString(request)
             }
@@ -106,13 +102,11 @@ class LoginIntegrationTest(
         }
 
         test("존재하지 않는 이메일로 로그인하면 실패한다") {
-            // Given
             val request = mapOf(
                 "email" to "nonexistent@example.com",
                 "password" to "password123"
             )
 
-            // When & Then
             mockMvc.postJson("/api/auth/login") {
                 content = mapper.writeValueAsString(request)
             }

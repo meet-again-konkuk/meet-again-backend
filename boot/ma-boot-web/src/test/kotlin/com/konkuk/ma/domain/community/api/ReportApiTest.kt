@@ -34,7 +34,6 @@ class ReportApiTest(
 ) : FunSpec({
 
     test("게시글 신고 API 문서화") {
-        // Given
         val request = mapOf(
             "reason" to "SPAM",
             "detail" to "욕설이 포함되어 있습니다.",
@@ -56,7 +55,6 @@ class ReportApiTest(
             status = ReportStatus.RECEIVED,
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/reports", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -78,7 +76,6 @@ class ReportApiTest(
     }
 
     test("댓글 신고 API 문서화") {
-        // Given
         val request = mapOf(
             "reason" to "HARASSMENT",
             "detail" to "지속적으로 괴롭힙니다.",
@@ -100,7 +97,6 @@ class ReportApiTest(
             status = ReportStatus.RECEIVED,
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/comments/{commentId}/reports", 1L) {
             content = mapper.writeValueAsString(request)
         }
@@ -122,13 +118,11 @@ class ReportApiTest(
     }
 
     test("신고 상세 사유가 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "reason" to "SPAM",
             "detail" to "가".repeat(NewReport.MAX_DETAIL_LENGTH + 1),
         )
 
-        // When & Then
         mockMvc.postJson("/api/community/posts/{postId}/reports", 1L) {
             content = mapper.writeValueAsString(request)
         }

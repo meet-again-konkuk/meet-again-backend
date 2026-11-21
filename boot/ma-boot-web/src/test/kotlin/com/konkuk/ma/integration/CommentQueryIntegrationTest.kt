@@ -25,15 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 
-/**
- * 댓글 상세 조회 E2E 통합 테스트.
- *
- * 좋아요 카운터 컬럼 제거 → 좋아요 행 COUNT 도출 리팩터 이후,
- * GET /api/community/comments/{commentId} 응답에서 루트 댓글과 대댓글의 `likes` 값이
- * 실제 좋아요 행 수와 항상 일치하는지 API → Service → DB 관통으로 검증한다.
- *
- * 핵심 검증: 루트/대댓글 likes 실제값, 좋아요 0인 케이스는 0.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -94,7 +85,6 @@ class CommentQueryIntegrationTest(
         return mapper.readTree(result.response.contentAsString).get("accessToken").asText()
     }
 
-    // 조회 엔드포인트도 인증이 필요하므로, 조회용 로그인 회원을 만들고 (memberId, accessToken) 을 반환한다.
     fun loginAsViewer(): Pair<Long, String> {
         val viewerId = insertMember(email = viewerEmail, nickname = "조회자", rawPassword = viewerPassword)
         return viewerId to login(viewerEmail, viewerPassword)
@@ -158,7 +148,6 @@ class CommentQueryIntegrationTest(
     context("GET /api/community/comments/{commentId}") {
 
         test("루트 댓글과 대댓글의 likes가 실제 좋아요 행 수와 일치한다") {
-            // Given - 루트 댓글(좋아요 3) + 대댓글 2개(좋아요 1, 5)
             val (_, accessToken) = loginAsViewer()
             insertMember(email = "author@example.com")
             val postId = insertPost()
@@ -170,19 +159,16 @@ class CommentQueryIntegrationTest(
             addCommentLikes(firstReplyId, 1)
             addCommentLikes(secondReplyId, 5)
 
-            // When
             val result = mockMvc.getJson("/api/community/comments/{commentId}", rootCommentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then - 루트 댓글 likes
             val comment = mapper.readTree(result.response.contentAsString)
             comment.get("id").asLong() shouldBe rootCommentId
             comment.get("likes").asInt() shouldBe 3
 
-            // Then - 각 대댓글 likes
             val replies = comment.get("replies")
             val firstReply = replies.first { it.get("id").asLong() == firstReplyId }
             val secondReply = replies.first { it.get("id").asLong() == secondReplyId }
@@ -191,21 +177,18 @@ class CommentQueryIntegrationTest(
         }
 
         test("좋아요가 0인 루트 댓글과 대댓글은 likes가 0이다") {
-            // Given - 좋아요를 전혀 추가하지 않음
             val (_, accessToken) = loginAsViewer()
             insertMember(email = "author@example.com")
             val postId = insertPost()
             val rootCommentId = insertComment(postId)
             val replyId = insertComment(postId, parentCommentId = rootCommentId)
 
-            // When
             val result = mockMvc.getJson("/api/community/comments/{commentId}", rootCommentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then
             val comment = mapper.readTree(result.response.contentAsString)
             comment.get("likes").asInt() shouldBe 0
             val reply = comment.get("replies").first { it.get("id").asLong() == replyId }
@@ -213,21 +196,18 @@ class CommentQueryIntegrationTest(
         }
 
         test("대댓글이 없는 루트 댓글의 likes는 실제 행 수와 일치하고 replies는 비어 있다") {
-            // Given
             val (_, accessToken) = loginAsViewer()
             insertMember(email = "author@example.com")
             val postId = insertPost()
             val rootCommentId = insertComment(postId)
             addCommentLikes(rootCommentId, 2)
 
-            // When
             val result = mockMvc.getJson("/api/community/comments/{commentId}", rootCommentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then
             val comment = mapper.readTree(result.response.contentAsString)
             comment.get("likes").asInt() shouldBe 2
             comment.get("replies").size() shouldBe 0
@@ -237,7 +217,6 @@ class CommentQueryIntegrationTest(
     context("GET /api/community/comments/{commentId} (상태 필드)") {
 
         test("내가 작성하고 좋아요한 루트 댓글은 isMine·likedByMe=true, 타인 루트 댓글은 둘 다 false 다") {
-            // Given
             val (viewerId, accessToken) = loginAsViewer()
             val authorId = insertMember(email = "comment-author@example.com")
             val postId = insertPost(authorId)
@@ -245,7 +224,6 @@ class CommentQueryIntegrationTest(
             val othersRoot = insertComment(postId, authorId)
             likeComment(myRoot, viewerId)
 
-            // When & Then - 내 루트 댓글
             val mine = mockMvc.getJson("/api/community/comments/{commentId}", myRoot) {
                 authorization("Bearer $accessToken")
             }
@@ -255,7 +233,6 @@ class CommentQueryIntegrationTest(
             mineNode.get("isMine").asBoolean().shouldBeTrue()
             mineNode.get("likedByMe").asBoolean().shouldBeTrue()
 
-            // When & Then - 타인 루트 댓글
             val others = mockMvc.getJson("/api/community/comments/{commentId}", othersRoot) {
                 authorization("Bearer $accessToken")
             }
@@ -267,7 +244,6 @@ class CommentQueryIntegrationTest(
         }
 
         test("대댓글도 작성자/좋아요 여부에 따라 isMine·likedByMe가 채워진다") {
-            // Given - 내가 쓴 대댓글(내가 좋아요) + 타인 대댓글
             val (viewerId, accessToken) = loginAsViewer()
             val authorId = insertMember(email = "comment-author@example.com")
             val postId = insertPost(authorId)
@@ -276,14 +252,12 @@ class CommentQueryIntegrationTest(
             val othersReply = insertComment(postId, authorId, parentCommentId = rootCommentId)
             likeComment(myReply, viewerId)
 
-            // When
             val result = mockMvc.getJson("/api/community/comments/{commentId}", rootCommentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then
             val replies = mapper.readTree(result.response.contentAsString).get("replies")
             val mine = replies.first { it.get("id").asLong() == myReply }
             val others = replies.first { it.get("id").asLong() == othersReply }
@@ -297,28 +271,24 @@ class CommentQueryIntegrationTest(
     context("GET /api/community/comments/{commentId} (차단 필터)") {
 
         test("차단한 작성자의 루트 댓글은 placeholder로 노출되고 blockedAuthor=true다") {
-            // Given - 조회자가 루트 댓글 작성자를 차단
             val (viewerId, accessToken) = loginAsViewer()
             val blockedAuthorId = insertMember(email = "blocked-author@example.com")
             val postId = insertPost(blockedAuthorId)
             val rootCommentId = insertComment(postId, blockedAuthorId)
             blockMember(blockerId = viewerId, blockedId = blockedAuthorId)
 
-            // When
             val result = mockMvc.getJson("/api/community/comments/{commentId}", rootCommentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then
             val root = mapper.readTree(result.response.contentAsByteArray)
             root.get("blockedAuthor").asBoolean().shouldBeTrue()
             root.get("content").asText() shouldBe "차단한 사용자의 댓글입니다."
         }
 
         test("차단한 작성자의 대댓글만 placeholder이고 루트·미차단 대댓글은 원문으로 노출된다") {
-            // Given - 루트 작성자는 차단하지 않고 대댓글 작성자 한 명만 차단
             val (viewerId, accessToken) = loginAsViewer()
             val rootAuthorId = insertMember(email = "root-author@example.com")
             val blockedReplyAuthorId = insertMember(email = "blocked-replier@example.com")
@@ -329,14 +299,12 @@ class CommentQueryIntegrationTest(
             val normalReply = insertComment(postId, normalReplyAuthorId, parentCommentId = rootCommentId)
             blockMember(blockerId = viewerId, blockedId = blockedReplyAuthorId)
 
-            // When
             val result = mockMvc.getJson("/api/community/comments/{commentId}", rootCommentId) {
                 authorization("Bearer $accessToken")
             }
                 .andExpect { status { isOk() } }
                 .andReturn()
 
-            // Then - 루트는 정상, 차단 대댓글만 placeholder
             val root = mapper.readTree(result.response.contentAsByteArray)
             root.get("blockedAuthor").asBoolean().shouldBeFalse()
             val replies = root.get("replies")

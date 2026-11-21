@@ -27,7 +27,6 @@ class InquiryCommandApiTest(
 ) : FunSpec({
 
     test("1:1 문의 접수 API 문서화") {
-        // Given
         val request = mapOf(
             "title" to "로그인이 안됩니다",
             "content" to "비밀번호를 올바르게 입력해도 로그인이 되지 않습니다.",
@@ -41,7 +40,6 @@ class InquiryCommandApiTest(
             })
         } returns 1L
 
-        // When & Then
         mockMvc.postJson("/api/domain/inquiries") {
             content = mapper.writeValueAsString(request)
         }
@@ -59,13 +57,11 @@ class InquiryCommandApiTest(
     }
 
     test("제목이 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "title" to "가".repeat(NewInquiry.MAX_TITLE_LENGTH + 1),
             "content" to "문의 내용",
         )
 
-        // When & Then
         mockMvc.postJson("/api/domain/inquiries") {
             content = mapper.writeValueAsString(request)
         }
@@ -73,13 +69,11 @@ class InquiryCommandApiTest(
     }
 
     test("내용이 최대 글자수를 초과하면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "title" to "문의 제목",
             "content" to "가".repeat(NewInquiry.MAX_CONTENT_LENGTH + 1),
         )
 
-        // When & Then
         mockMvc.postJson("/api/domain/inquiries") {
             content = mapper.writeValueAsString(request)
         }
@@ -87,13 +81,11 @@ class InquiryCommandApiTest(
     }
 
     test("제목이 비어있으면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "title" to "",
             "content" to "문의 내용",
         )
 
-        // When & Then
         mockMvc.postJson("/api/domain/inquiries") {
             content = mapper.writeValueAsString(request)
         }
@@ -101,13 +93,11 @@ class InquiryCommandApiTest(
     }
 
     test("내용이 비어있으면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "title" to "문의 제목",
             "content" to "",
         )
 
-        // When & Then
         mockMvc.postJson("/api/domain/inquiries") {
             content = mapper.writeValueAsString(request)
         }

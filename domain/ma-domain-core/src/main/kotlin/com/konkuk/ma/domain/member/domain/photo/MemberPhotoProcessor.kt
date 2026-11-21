@@ -46,7 +46,6 @@ class MemberPhotoProcessor(
         }
     }
 
-    // FileStorage.store 가 반환한 절대경로에서 파일명만 추출해 DB에 저장할 상대 storageKey 로 만든다.
     private fun toRelativeKey(directory: String, storedPath: String): String {
         val fileName = Paths.get(storedPath).fileName.toString()
         return "$directory/$fileName"

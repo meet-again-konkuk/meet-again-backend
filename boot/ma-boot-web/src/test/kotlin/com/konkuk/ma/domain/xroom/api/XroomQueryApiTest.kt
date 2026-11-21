@@ -59,7 +59,6 @@ class XroomQueryApiTest(
     )
 
     test("내가 만든 방 목록 조회 API 문서화") {
-        // Given
         val myXrooms = MyXrooms(
             data = listOf(
                 myXroom(id = 1L, targetInfoId = 10L, recipientName = "김만남"),
@@ -68,7 +67,6 @@ class XroomQueryApiTest(
         )
         every { xroomQueryService.findMine(authMemberId) } returns myXrooms
 
-        // When & Then
         mockMvc.getJson("/api/xrooms/me") {}
             .andExpect { status { isOk() } }
             .andDocument(
@@ -85,7 +83,6 @@ class XroomQueryApiTest(
     }
 
     test("수신한 방 목록 조회 API 문서화") {
-        // Given
         val receivedXrooms = ReceivedXrooms(
             data = listOf(
                 ReceivedXroom(
@@ -102,7 +99,6 @@ class XroomQueryApiTest(
         )
         every { xroomQueryService.findReceived(authMemberId) } returns receivedXrooms
 
-        // When & Then
         mockMvc.getJson("/api/xrooms/received") {}
             .andExpect { status { isOk() } }
             .andDocument(
@@ -117,7 +113,6 @@ class XroomQueryApiTest(
     }
 
     test("X룸 상세 조회 API 문서화") {
-        // Given
         val encodedXroomId = idObfuscator.encode(ObfuscationType.XROOM, 1L)
         val xroomDetail = XroomDetail(
             xroom = XroomFixture.create(id = 1L, finalMessage = FinalMessage("고마웠어")),
@@ -127,7 +122,6 @@ class XroomQueryApiTest(
         )
         every { xroomQueryService.findDetail(1L, authMemberId) } returns xroomDetail
 
-        // When & Then
         mockMvc.getJson("/api/xrooms/{xroomId}", encodedXroomId)
             .andExpect { status { isOk() } }
             .andDocument(

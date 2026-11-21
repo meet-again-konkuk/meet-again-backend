@@ -40,7 +40,6 @@ class TargetInfoQueryApiTest(
     val authMemberId = 1L
 
     test("내가 등록한 찾는 사람 목록 조회 API 문서화") {
-        // Given
         every { targetInfoQueryService.find(authMemberId) } returns listOf(
             TargetInfo(
                 targetInfoId = 1L,
@@ -56,7 +55,6 @@ class TargetInfoQueryApiTest(
             ),
         )
 
-        // When & Then
         mockMvc.getJson("/api/target-infos") {}
             .andExpect { status { isOk() } }
             .andDocument(
@@ -76,10 +74,8 @@ class TargetInfoQueryApiTest(
     }
 
     test("등록한 찾는 사람이 없으면 빈 목록을 반환한다") {
-        // Given
         every { targetInfoQueryService.find(authMemberId) } returns emptyList()
 
-        // When & Then
         mockMvc.getJson("/api/target-infos") {}
             .andExpect { status { isOk() } }
             .andExpect { jsonPath("$") { isArray() } }
@@ -87,7 +83,6 @@ class TargetInfoQueryApiTest(
     }
 
     test("찾는 사람 상세 조회 API 문서화") {
-        // Given
         val encryptedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, 1L)
 
         every { targetInfoQueryService.findDetail(1L, authMemberId) } returns TargetInfo(
@@ -103,7 +98,6 @@ class TargetInfoQueryApiTest(
             region = Region.SEOUL,
         )
 
-        // When & Then
         mockMvc.getJson("/api/target-infos/$encryptedId") {}
             .andExpect { status { isOk() } }
             .andDocument(

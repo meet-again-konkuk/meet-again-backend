@@ -37,18 +37,14 @@ class CommentLikeDaoTest(
         context("save") {
 
             test("좋아요를 저장한다") {
-                // When
                 commentLikeDao.save(1L, 100L)
 
-                // Then
                 CommentLikeTable.selectAll().count() shouldBe 1
             }
 
             test("같은 회원이 같은 댓글에 중복 저장하면 유니크 제약이 거부한다") {
-                // Given
                 commentLikeDao.save(1L, 100L)
 
-                // When & Then
                 shouldThrow<ExposedSQLException> {
                     commentLikeDao.save(1L, 100L)
                 }
@@ -59,23 +55,18 @@ class CommentLikeDaoTest(
         context("exists") {
 
             test("좋아요가 존재하면 true를 반환한다") {
-                // Given
                 commentLikeDao.save(1L, 100L)
 
-                // When & Then
                 commentLikeDao.exists(1L, 100L) shouldBe true
             }
 
             test("좋아요가 없으면 false를 반환한다") {
-                // When & Then
                 commentLikeDao.exists(1L, 100L) shouldBe false
             }
 
             test("다른 회원의 좋아요는 존재로 판단하지 않는다") {
-                // Given
                 commentLikeDao.save(1L, 100L)
 
-                // When & Then
                 commentLikeDao.exists(1L, 999L) shouldBe false
             }
         }
@@ -83,21 +74,16 @@ class CommentLikeDaoTest(
         context("delete") {
 
             test("좋아요를 삭제한다") {
-                // Given
                 commentLikeDao.save(1L, 100L)
 
-                // When
                 commentLikeDao.delete(1L, 100L)
 
-                // Then
                 CommentLikeTable.selectAll().count() shouldBe 0
             }
 
             test("존재하지 않는 좋아요 삭제 시 아무 일도 일어나지 않는다") {
-                // When
                 commentLikeDao.delete(999L, 999L)
 
-                // Then
                 CommentLikeTable.selectAll().count() shouldBe 0
             }
         }
@@ -105,35 +91,27 @@ class CommentLikeDaoTest(
         context("count(commentId): 단건 집계") {
 
             test("좋아요 N개가 저장된 댓글의 좋아요 수를 반환한다") {
-                // Given
                 commentLikeDao.save(1L, 101L)
                 commentLikeDao.save(1L, 102L)
                 commentLikeDao.save(1L, 103L)
 
-                // When
                 val count = commentLikeDao.count(1L)
 
-                // Then
                 count shouldBe 3
             }
 
             test("좋아요가 없는 댓글의 좋아요 수는 0이다") {
-                // When
                 val count = commentLikeDao.count(1L)
 
-                // Then
                 count shouldBe 0
             }
 
             test("soft delete된 좋아요는 단건 집계에서 제외된다") {
-                // Given
                 commentLikeDao.save(1L, 101L)
                 insertDeletedLike(commentId = 1L, memberId = 200L)
 
-                // When
                 val count = commentLikeDao.count(1L)
 
-                // Then - 삭제되지 않은 1건만 집계된다
                 count shouldBe 1
             }
         }
@@ -141,52 +119,40 @@ class CommentLikeDaoTest(
         context("count(commentIds): 다건 집계") {
 
             test("여러 댓글의 좋아요 수를 한 번에 정확히 집계한다") {
-                // Given - 댓글마다 서로 다른 좋아요 수
                 commentLikeDao.save(1L, 101L)
                 commentLikeDao.save(1L, 102L)
                 commentLikeDao.save(2L, 103L)
 
-                // When
                 val counts = commentLikeDao.count(listOf(1L, 2L))
 
-                // Then
                 counts[1L] shouldBe 2
                 counts[2L] shouldBe 1
             }
 
             test("좋아요가 0인 댓글은 결과 맵에 포함되지 않는다") {
-                // Given - 1번 댓글만 좋아요, 3번은 좋아요 없음
                 commentLikeDao.save(1L, 101L)
 
-                // When
                 val counts = commentLikeDao.count(listOf(1L, 3L))
 
-                // Then - 좋아요 0인 3번은 맵에 없다 (LikeCounts가 0으로 보정)
                 counts[1L] shouldBe 1
                 counts.containsKey(3L) shouldBe false
             }
 
             test("빈 ids를 입력하면 쿼리 없이 빈 맵을 반환한다") {
-                // Given - 좋아요 행이 존재해도
                 commentLikeDao.save(1L, 101L)
 
-                // When
                 val counts = commentLikeDao.count(emptyList())
 
-                // Then
                 counts shouldBe emptyMap<Long, Int>()
             }
 
             test("soft delete된 좋아요는 다건 집계에서 제외된다") {
-                // Given - 1번: 활성 1건 + 삭제 1건, 2번: 활성 1건
                 commentLikeDao.save(1L, 101L)
                 insertDeletedLike(commentId = 1L, memberId = 200L)
                 commentLikeDao.save(2L, 102L)
 
-                // When
                 val counts = commentLikeDao.count(listOf(1L, 2L))
 
-                // Then - 삭제된 행은 빠지고 활성 행만 집계된다
                 counts[1L] shouldBe 1
                 counts[2L] shouldBe 1
             }

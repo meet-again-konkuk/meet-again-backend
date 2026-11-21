@@ -50,10 +50,8 @@ class MemberProfileApiTest(
     val encodedMemberId = idObfuscator.encode(ObfuscationType.MEMBER, AUTHENTICATED_MEMBER_ID)
 
     test("내 프로필 조회 API 문서화") {
-        // Given
         every { memberProfileQueryService.findOne(AUTHENTICATED_MEMBER_ID) } returns profileOf()
 
-        // When & Then
         mockMvc.getJson("/api/members/me") {
             authorization("Bearer $accessToken")
         }
@@ -79,11 +77,9 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 조회 - 학교 정보와 프로필 사진이 없으면 null 로 내려온다") {
-        // Given
         every { memberProfileQueryService.findOne(AUTHENTICATED_MEMBER_ID) } returns
             profileOf(highSchool = null, university = null, profileImageUrl = null)
 
-        // When & Then
         mockMvc.getJson("/api/members/me") {
             authorization("Bearer $accessToken")
         }
@@ -101,7 +97,6 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 API 문서화") {
-        // Given
         every { memberProfileCommandService.update(eq(AUTHENTICATED_MEMBER_ID), any()) } returns
             profileOf(
                 nickname = "새닉네임",
@@ -110,7 +105,6 @@ class MemberProfileApiTest(
                 university = "새대학교",
             )
 
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """
@@ -138,11 +132,9 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - 생략한 필드는 변경되지 않는다") {
-        // Given
         every { memberProfileCommandService.update(eq(AUTHENTICATED_MEMBER_ID), any()) } returns
             profileOf(nickname = "새닉네임")
 
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"nickname":"새닉네임"}"""
@@ -163,11 +155,9 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - highSchool·university 에 null 을 명시하면 비워진다") {
-        // Given
         every { memberProfileCommandService.update(eq(AUTHENTICATED_MEMBER_ID), any()) } returns
             profileOf(highSchool = null, university = null)
 
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"highSchool":null,"university":null}"""
@@ -189,7 +179,6 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - 닉네임 형식이 유효하지 않으면 400 을 반환한다") {
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"nickname":"a"}"""
@@ -205,7 +194,6 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - nickname 에 명시적 null 을 보내면 400 을 반환한다") {
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"nickname":null}"""
@@ -214,7 +202,6 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - region 에 명시적 null 을 보내면 400 을 반환한다") {
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"region":null}"""
@@ -223,7 +210,6 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - 알 수 없는 region 코드를 보내면 400 을 반환한다") {
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"region":"MARS"}"""
@@ -232,11 +218,9 @@ class MemberProfileApiTest(
     }
 
     test("내 프로필 수정 - 이미 사용중인 닉네임이면 409 를 반환한다") {
-        // Given
         every { memberProfileCommandService.update(eq(AUTHENTICATED_MEMBER_ID), any()) } throws
             DuplicateException(EntityType.MEMBER, "nickname", "중복닉네임")
 
-        // When & Then
         mockMvc.patchJson("/api/members/me") {
             authorization("Bearer $accessToken")
             content = """{"nickname":"중복닉네임"}"""

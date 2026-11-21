@@ -41,7 +41,6 @@ class PointChargeApiTest(
 ) : FunSpec({
 
     test("인연 충전 API 문서화 - 할인 없는 상품") {
-        // Given
         val request = mapOf(
             "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
@@ -58,7 +57,6 @@ class PointChargeApiTest(
             approvalNumber = "MOCK-550e8400-e29b-41d4-a716-446655440000",
         )
 
-        // When & Then
         mockMvc.postJson("/api/points") {
             content = mapper.writeValueAsString(request)
         }
@@ -83,7 +81,6 @@ class PointChargeApiTest(
     }
 
     test("인연 충전 API 문서화 - 할인 적용 상품") {
-        // Given
         val request = mapOf(
             "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.KAKAO_PAY.name,
@@ -100,7 +97,6 @@ class PointChargeApiTest(
             approvalNumber = "MOCK-1234abcd-5678-90ef-1234-567890abcdef",
         )
 
-        // When & Then
         mockMvc.postJson("/api/points") {
             content = mapper.writeValueAsString(request)
         }
@@ -125,7 +121,6 @@ class PointChargeApiTest(
     }
 
     test("멱등키가 중복되면 409를 반환한다") {
-        // Given
         val request = mapOf(
             "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
@@ -140,7 +135,6 @@ class PointChargeApiTest(
             "duplicated-idempotency-key",
         )
 
-        // When & Then
         mockMvc.postJson("/api/points") {
             content = mapper.writeValueAsString(request)
         }
@@ -149,7 +143,6 @@ class PointChargeApiTest(
     }
 
     test("orderPointPrice와 서버 계산 금액이 다르면 400을 반환한다") {
-        // Given
         val request = mapOf(
             "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
@@ -164,7 +157,6 @@ class PointChargeApiTest(
             "주문 가격(999원)과 상품 가격(1000원)이 다릅니다.",
         )
 
-        // When & Then
         mockMvc.postJson("/api/points") {
             content = mapper.writeValueAsString(request)
         }
@@ -173,7 +165,6 @@ class PointChargeApiTest(
     }
 
     test("PointProduct가 존재하지 않으면 404를 반환한다") {
-        // Given
         val request = mapOf(
             "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
@@ -187,7 +178,6 @@ class PointChargeApiTest(
             "1",
         )
 
-        // When & Then
         mockMvc.postJson("/api/points") {
             content = mapper.writeValueAsString(request)
         }
@@ -196,7 +186,6 @@ class PointChargeApiTest(
     }
 
     test("PG 결제 승인에 실패하면 402를 반환한다") {
-        // Given
         val request = mapOf(
             "pointProductId" to 1L,
             "paymentMethod" to PaymentMethod.CARD.name,
@@ -210,7 +199,6 @@ class PointChargeApiTest(
             reason = "Mock 결제 승인이 FAIL 토큰으로 거부되었습니다.",
         )
 
-        // When & Then
         mockMvc.postJson("/api/points") {
             content = mapper.writeValueAsString(request)
         }

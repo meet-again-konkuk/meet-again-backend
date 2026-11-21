@@ -11,7 +11,6 @@ import org.springframework.core.env.MapPropertySource
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 
-// 문자열 SpEL 전환 조건과 S3Client 실생성(httpclient5/httpcore5 버전 오버라이드)은 단위 테스트로 잡히지 않아 실제 컨텍스트로 고정
 class MemberBackupStorageWiringTest : FunSpec({
 
     fun contextWith(properties: Map<String, Any>): AnnotationConfigApplicationContext {

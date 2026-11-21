@@ -35,10 +35,8 @@ class CommentNotificationSettingDaoTest(
         context("optOut") {
 
             test("opt-out 설정을 저장한다") {
-                // When
                 commentNotificationSettingDao.optOut(1L, 10L)
 
-                // Then
                 CommentNotificationSettingTable.selectAll().count() shouldBe 1
                 commentNotificationSettingDao.isOptedOut(1L, 10L).shouldBeTrue()
             }
@@ -48,23 +46,18 @@ class CommentNotificationSettingDaoTest(
         context("isOptedOut") {
 
             test("opt-out 되어 있으면 true를 반환한다") {
-                // Given
                 commentNotificationSettingDao.optOut(1L, 10L)
 
-                // When & Then
                 commentNotificationSettingDao.isOptedOut(1L, 10L).shouldBeTrue()
             }
 
             test("opt-out 되어 있지 않으면 false를 반환한다") {
-                // When & Then
                 commentNotificationSettingDao.isOptedOut(1L, 10L).shouldBeFalse()
             }
 
             test("다른 게시글의 opt-out은 영향을 주지 않는다") {
-                // Given
                 commentNotificationSettingDao.optOut(1L, 10L)
 
-                // When & Then
                 commentNotificationSettingDao.isOptedOut(1L, 99L).shouldBeFalse()
             }
         }
@@ -72,22 +65,17 @@ class CommentNotificationSettingDaoTest(
         context("optIn") {
 
             test("opt-out 설정을 삭제한다") {
-                // Given
                 commentNotificationSettingDao.optOut(1L, 10L)
 
-                // When
                 commentNotificationSettingDao.optIn(1L, 10L)
 
-                // Then
                 commentNotificationSettingDao.isOptedOut(1L, 10L).shouldBeFalse()
                 CommentNotificationSettingTable.selectAll().count() shouldBe 0
             }
 
             test("opt-out 설정이 없을 때 opt-in해도 아무 일도 일어나지 않는다") {
-                // When
                 commentNotificationSettingDao.optIn(1L, 10L)
 
-                // Then
                 CommentNotificationSettingTable.selectAll().count() shouldBe 0
             }
         }
@@ -95,15 +83,12 @@ class CommentNotificationSettingDaoTest(
         context("deleteByMember") {
 
             test("회원의 모든 opt-out 설정을 삭제하고 다른 회원의 설정은 보존한다") {
-                // Given
                 commentNotificationSettingDao.optOut(1L, 10L)
                 commentNotificationSettingDao.optOut(1L, 20L)
                 commentNotificationSettingDao.optOut(2L, 10L)
 
-                // When
                 commentNotificationSettingDao.deleteByMember(1L)
 
-                // Then
                 CommentNotificationSettingTable.selectAll().count() shouldBe 1
                 commentNotificationSettingDao.isOptedOut(2L, 10L).shouldBeTrue()
             }
@@ -112,10 +97,8 @@ class CommentNotificationSettingDaoTest(
         context("유니크 제약") {
 
             test("같은 회원·게시글로 직접 중복 삽입하면 유니크 제약이 거부한다") {
-                // Given
                 insertSetting(1L, 10L)
 
-                // When & Then
                 shouldThrow<ExposedSQLException> {
                     insertSetting(1L, 10L)
                 }

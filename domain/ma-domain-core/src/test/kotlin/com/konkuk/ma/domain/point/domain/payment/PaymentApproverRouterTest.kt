@@ -30,7 +30,6 @@ class PaymentApproverRouterTest : FunSpec({
     context("approve") {
 
         test("주어진 결제 수단을 지원하는 첫 어댑터를 찾아 승인을 위임한다") {
-            // Given
             val cardApprover = mockk<PaymentApprover>()
             val kakaoApprover = mockk<PaymentApprover>()
             val order = createOrder(PaymentMethod.CARD)
@@ -40,17 +39,14 @@ class PaymentApproverRouterTest : FunSpec({
             every { cardApprover.approve(order) } returns approval
             val router = PaymentApproverRouter(listOf(cardApprover, kakaoApprover))
 
-            // When
             val result = router.approve(PaymentMethod.CARD, order)
 
-            // Then
             result shouldBe approval
             verify { cardApprover.approve(order) }
             verify(exactly = 0) { kakaoApprover.approve(any()) }
         }
 
         test("여러 어댑터가 supports=true이면 리스트의 첫 어댑터가 승인한다") {
-            // Given
             val firstApprover = mockk<PaymentApprover>()
             val secondApprover = mockk<PaymentApprover>()
             val order = createOrder(PaymentMethod.KAKAO_PAY)
@@ -59,21 +55,17 @@ class PaymentApproverRouterTest : FunSpec({
             every { firstApprover.approve(order) } returns approval
             val router = PaymentApproverRouter(listOf(firstApprover, secondApprover))
 
-            // When
             val result = router.approve(PaymentMethod.KAKAO_PAY, order)
 
-            // Then
             result shouldBe approval
             verify(exactly = 0) { secondApprover.approve(any()) }
         }
 
         test("지원하는 어댑터가 없으면 InvalidStateException이 발생한다") {
-            // Given
             val approver = mockk<PaymentApprover>()
             every { approver.supports(any()) } returns false
             val router = PaymentApproverRouter(listOf(approver))
 
-            // When & Then
             shouldThrow<InvalidStateException> {
                 router.approve(PaymentMethod.CARD, createOrder())
             }

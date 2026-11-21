@@ -47,7 +47,6 @@ class TargetInfoCommandApiTest(
 ) : FunSpec({
 
     test("찾는 사람 정보 등록 API 문서화") {
-        // Given
         val targetInfoId = 1L
         val encodedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId)
         val request = mapOf(
@@ -75,7 +74,6 @@ class TargetInfoCommandApiTest(
             )
         } returns targetInfoId
 
-        // When & Then
         mockMvc.postJson("/api/target-infos") {
             content = mapper.writeValueAsString(request)
         }
@@ -103,7 +101,6 @@ class TargetInfoCommandApiTest(
     }
 
     test("찾는 사람 정보 등록 - 필수 정보만 입력") {
-        // Given
         val targetInfoId = 2L
         val encodedTargetInfoId = idObfuscator.encode(ObfuscationType.TARGET_INFO, targetInfoId)
         val request = mapOf(
@@ -131,7 +128,6 @@ class TargetInfoCommandApiTest(
             )
         } returns targetInfoId
 
-        // When & Then
         mockMvc.postJson("/api/target-infos") {
             content = mapper.writeValueAsString(request)
         }
@@ -159,14 +155,12 @@ class TargetInfoCommandApiTest(
     }
 
     test("찾는 사람 정보 등록 - 유효하지 않은 이름 형식") {
-        // Given
         val request = mapOf(
-            "name" to "a", // 너무 짧음
+            "name" to "a",
             "middleNumber" to "1234",
             "lastNumber" to "5678"
         )
 
-        // When & Then
         mockMvc.postJson("/api/target-infos") {
             content = mapper.writeValueAsString(request)
         }
@@ -182,7 +176,6 @@ class TargetInfoCommandApiTest(
     }
 
     test("찾는 사람 정보 수정 API 문서화") {
-        // Given
         val id = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
         val request = mapOf(
@@ -209,7 +202,6 @@ class TargetInfoCommandApiTest(
             region = Region.BUSAN,
         )
 
-        // When & Then
         mockMvc.putJson("/api/target-infos/$encodedId") {
             content = mapper.writeValueAsString(request)
         }
@@ -239,28 +231,24 @@ class TargetInfoCommandApiTest(
     }
 
     test("찾는 사람 정보 삭제 API 문서화") {
-        // Given
         val id = 1L
         val encodedId = idObfuscator.encode(ObfuscationType.TARGET_INFO, id)
 
         justRun { targetInfoCommandService.delete(id, 1L) }
 
-        // When & Then
         mockMvc.deleteJson("/api/target-infos/$encodedId")
             .andExpect { status { isNoContent() } }
             .andDocument("matching/delete-target-info")
     }
 
     test("찾는 사람 정보 등록 - 유효하지 않은 생년월일") {
-        // Given
         val request = mapOf(
             "name" to "김만남",
-            "year" to 1800, // 너무 오래된 연도
-            "month" to 13, // 잘못된 월
-            "day" to 32 // 잘못된 일
+            "year" to 1800,
+            "month" to 13,
+            "day" to 32
         )
 
-        // When & Then
         mockMvc.postJson("/api/target-infos")
         { content = mapper.writeValueAsString(request) }
             .andExpect { status { isBadRequest() } }

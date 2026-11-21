@@ -298,7 +298,7 @@ class MemoryDaoTest(
             test("여러 방의 active 기억만 반환하고 soft-deleted·대상 외 방 기억은 제외한다") {
                 val firstRoomId = memoryCommandDao.save(newMemory(xroomId = 1L))
                 val secondRoomId = memoryCommandDao.save(newMemory(xroomId = 2L))
-                memoryCommandDao.save(newMemory(xroomId = 3L)) // 대상 외 방
+                memoryCommandDao.save(newMemory(xroomId = 3L))
                 val deletedId = memoryCommandDao.save(newMemory(xroomId = 1L))
                 MemoryTable.softDelete({ MemoryTable.id eq deletedId }, "1")
 

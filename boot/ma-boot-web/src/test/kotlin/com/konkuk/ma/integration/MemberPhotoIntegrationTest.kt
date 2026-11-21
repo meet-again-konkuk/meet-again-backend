@@ -57,7 +57,6 @@ class MemberPhotoIntegrationTest(
             RefreshTokenTable.deleteAll()
             MemberTable.deleteAll()
         }
-        // 테스트에서 생성된 업로드 파일 정리
         if (Files.exists(testUploadDir)) {
             Files.walk(testUploadDir)
                 .sorted(Comparator.reverseOrder())
@@ -70,7 +69,6 @@ class MemberPhotoIntegrationTest(
         transaction {
             SchemaUtils.drop(MemberPhotoTable, RefreshTokenTable, MemberTable)
         }
-        // 임시 디렉토리 삭제
         if (Files.exists(testUploadDir)) {
             Files.walk(testUploadDir)
                 .sorted(Comparator.reverseOrder())
@@ -121,7 +119,6 @@ class MemberPhotoIntegrationTest(
     context("POST /api/members/photos") {
 
         test("사진을 업로드하면 원본과 썸네일이 저장되고 DB에 기록된다") {
-            // Given
             val email = "photo-test@example.com"
             val password = "password123"
             val memberId = insertMember(email = email, rawPassword = password)
@@ -135,14 +132,12 @@ class MemberPhotoIntegrationTest(
                 pngBytes
             )
 
-            // When
             mockMvc.multipart("/api/members/photos") {
                 file(photoFile)
                 header("Authorization", "Bearer $accessToken")
             }
                 .andExpect { status { isCreated() } }
 
-            // Then - DB에 사진 레코드가 저장되었는지 확인
             val savedPhoto = transaction {
                 MemberPhotoTable.selectAll()
                     .where { MemberPhotoTable.memberId eq memberId }
@@ -152,7 +147,6 @@ class MemberPhotoIntegrationTest(
             savedPhoto shouldNotBe null
             savedPhoto!![MemberPhotoTable.originalFileName] shouldBe "test-photo.png"
 
-            // DB에는 서버 파일시스템 절대경로가 아니라 상대 storageKey 만 담긴다
             val storageKey = savedPhoto[MemberPhotoTable.storageKey]
             storageKey shouldStartWith "member/profile/$memberId/"
             storageKey shouldEndWith ".png"
@@ -162,7 +156,6 @@ class MemberPhotoIntegrationTest(
         }
 
         test("기존 사진이 있을 때 새 사진을 업로드하면 기존 사진이 교체된다") {
-            // Given
             val email = "photo-replace@example.com"
             val password = "password123"
             val memberId = insertMember(email = email, rawPassword = password)
@@ -170,21 +163,18 @@ class MemberPhotoIntegrationTest(
 
             val pngBytes = createTestPngBytes()
 
-            // 첫 번째 업로드
             val firstPhoto = MockMultipartFile("photo", "first.png", MediaType.IMAGE_PNG_VALUE, pngBytes)
             mockMvc.multipart("/api/members/photos") {
                 file(firstPhoto)
                 header("Authorization", "Bearer $accessToken")
             }.andExpect { status { isCreated() } }
 
-            // When - 두 번째 업로드
             val secondPhoto = MockMultipartFile("photo", "second.png", MediaType.IMAGE_PNG_VALUE, pngBytes)
             mockMvc.multipart("/api/members/photos") {
                 file(secondPhoto)
                 header("Authorization", "Bearer $accessToken")
             }.andExpect { status { isCreated() } }
 
-            // Then - 활성 사진은 1개, 기존 사진은 soft delete
             val activePhotos = transaction {
                 MemberPhotoTable.selectAll()
                     .where { (MemberPhotoTable.memberId eq memberId) and (MemberPhotoTable.deleted eq false) }
@@ -196,11 +186,9 @@ class MemberPhotoIntegrationTest(
         }
 
         test("인증 토큰 없이 사진을 업로드하면 401이 반환된다") {
-            // Given
             val pngBytes = createTestPngBytes()
             val photoFile = MockMultipartFile("photo", "test.png", MediaType.IMAGE_PNG_VALUE, pngBytes)
 
-            // When & Then
             mockMvc.multipart("/api/members/photos") {
                 file(photoFile)
             }.andExpect { status { isUnauthorized() } }
@@ -210,7 +198,6 @@ class MemberPhotoIntegrationTest(
     context("DELETE /api/members/photos") {
 
         test("업로드된 사진을 삭제하면 soft delete 처리된다") {
-            // Given
             val email = "photo-delete@example.com"
             val password = "password123"
             val memberId = insertMember(email = email, rawPassword = password)
@@ -223,12 +210,10 @@ class MemberPhotoIntegrationTest(
                 header("Authorization", "Bearer $accessToken")
             }.andExpect { status { isCreated() } }
 
-            // When
             mockMvc.deleteJson("/api/members/photos") {
                 authorization("Bearer $accessToken")
             }.andExpect { status { isOk() } }
 
-            // Then
             val photo = transaction {
                 MemberPhotoTable.selectAll()
                     .where { MemberPhotoTable.memberId eq memberId }

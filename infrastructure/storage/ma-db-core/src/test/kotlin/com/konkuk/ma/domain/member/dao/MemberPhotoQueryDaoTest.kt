@@ -33,38 +33,30 @@ class MemberPhotoQueryDaoTest(
         context("findOne") {
 
             test("회원에 해당하는 사진을 조회한다") {
-                // Given
                 val memberId = 1L
                 insertMemberPhoto(memberId = memberId)
 
-                // When
                 val result = memberPhotoQueryDao.findOne(memberId)
 
-                // Then
                 result shouldNotBe null
                 result!!.memberId shouldBe memberId
             }
 
             test("deleted가 true인 사진은 조회되지 않는다") {
-                // Given
                 val memberId = 1L
                 insertMemberPhoto(memberId = memberId)
                 MemberPhotoTable.update({ MemberPhotoTable.memberId eq memberId }) {
                     it[deleted] = true
                 }
 
-                // When
                 val result = memberPhotoQueryDao.findOne(memberId)
 
-                // Then
                 result shouldBe null
             }
 
             test("존재하지 않는 회원으로 조회하면 null을 반환한다") {
-                // When
                 val result = memberPhotoQueryDao.findOne(99L)
 
-                // Then
                 result shouldBe null
             }
         }
@@ -72,21 +64,17 @@ class MemberPhotoQueryDaoTest(
         context("find") {
 
             test("여러 회원에 해당하는 사진을 조회한다") {
-                // Given
                 val memberId1 = 1L
                 val memberId2 = 2L
                 insertMemberPhoto(memberId = memberId1)
                 insertMemberPhoto(memberId = memberId2)
 
-                // When
                 val result = memberPhotoQueryDao.find(setOf(memberId1, memberId2))
 
-                // Then
                 result shouldHaveSize 2
             }
 
             test("deleted가 true인 사진은 제외한다") {
-                // Given
                 val memberId1 = 1L
                 val memberId2 = 2L
                 insertMemberPhoto(memberId = memberId1)
@@ -95,27 +83,21 @@ class MemberPhotoQueryDaoTest(
                     it[deleted] = true
                 }
 
-                // When
                 val result = memberPhotoQueryDao.find(setOf(memberId1, memberId2))
 
-                // Then
                 result shouldHaveSize 1
                 result[0].memberId shouldBe memberId1
             }
 
             test("빈 회원 Set으로 조회하면 빈 리스트를 반환한다") {
-                // When
                 val result = memberPhotoQueryDao.find(emptySet())
 
-                // Then
                 result shouldHaveSize 0
             }
 
             test("일치하는 회원이 없으면 빈 리스트를 반환한다") {
-                // When
                 val result = memberPhotoQueryDao.find(setOf(99L))
 
-                // Then
                 result shouldHaveSize 0
             }
         }

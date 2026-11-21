@@ -25,7 +25,6 @@ class S3FileStorageTest : FunSpec({
     context("store") {
 
         test("directory/UUID.확장자 키로 mimeType과 함께 putObject를 호출하고 키를 반환한다") {
-            // Given
             val directory = "memory/memory-photo/1"
             val photoFile = PhotoFileFixture.create(originalFileName = "photo.jpg")
             val requestSlot = slot<PutObjectRequest>()
@@ -33,10 +32,8 @@ class S3FileStorageTest : FunSpec({
                 s3Client.putObject(capture(requestSlot), any<RequestBody>())
             } returns PutObjectResponse.builder().build()
 
-            // When
             val storedKey = storage.store(directory, photoFile)
 
-            // Then
             val captured = requestSlot.captured
             captured.bucket() shouldBe bucket
             captured.key() shouldBe storedKey
@@ -48,7 +45,6 @@ class S3FileStorageTest : FunSpec({
     context("storeBytes") {
 
         test("directory/fileName 키로 contentType 없이 putObject를 호출하고 키를 반환한다") {
-            // Given
             val directory = "memory/thumbnail/1"
             val fileName = "thumb_photo.jpg"
             val bytes = ByteArray(512) { 7 }
@@ -57,10 +53,8 @@ class S3FileStorageTest : FunSpec({
                 s3Client.putObject(capture(requestSlot), any<RequestBody>())
             } returns PutObjectResponse.builder().build()
 
-            // When
             val storedKey = storage.storeBytes(directory, fileName, bytes)
 
-            // Then
             val captured = requestSlot.captured
             storedKey shouldBe "$directory/$fileName"
             captured.bucket() shouldBe bucket
@@ -72,17 +66,14 @@ class S3FileStorageTest : FunSpec({
     context("deleteByKey") {
 
         test("주어진 storageKey를 키로 deleteObject를 호출한다") {
-            // Given
             val storageKey = "memory/thumbnail/1/thumb_photo.jpg"
             val requestSlot = slot<DeleteObjectRequest>()
             every {
                 s3Client.deleteObject(capture(requestSlot))
             } returns DeleteObjectResponse.builder().build()
 
-            // When
             storage.deleteByKey(storageKey)
 
-            // Then
             val captured = requestSlot.captured
             captured.bucket() shouldBe bucket
             captured.key() shouldBe storageKey

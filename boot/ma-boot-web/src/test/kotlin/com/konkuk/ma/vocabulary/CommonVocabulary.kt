@@ -7,14 +7,10 @@ import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.snippet.Snippet
 
-// --- 공통 요청 헤더 ---
-
 fun authorizationHeader(description: String = "Bearer 액세스 토큰"): Snippet =
     requestHeaders(
         headerWithName("Authorization").description(description)
     )
-
-// --- 공통 필드 ---
 
 fun email(fieldName: String = "email") =
     fieldName responseType STRING means "이메일" example "user@example.com"

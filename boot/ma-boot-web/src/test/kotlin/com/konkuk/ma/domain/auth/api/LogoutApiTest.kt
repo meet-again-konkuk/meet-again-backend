@@ -23,11 +23,9 @@ class LogoutApiTest(
 ) : FunSpec({
 
     test("로그아웃 API 문서화") {
-        // Given - 인증된 회원(id=1)의 유효한 액세스 토큰
         val accessToken = jwtManager.generateAccessToken(1L)
         every { logoutService.logout(any()) } just runs
 
-        // When & Then
         mockMvc.postJson("/api/auth/logout") {
             authorization("Bearer $accessToken")
         }

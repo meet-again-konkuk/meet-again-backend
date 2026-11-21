@@ -14,41 +14,32 @@ class PostsTest : FunSpec({
     context("extractAuthorIds") {
 
         test("게시글 작성자들의 id를 추출한다") {
-            // Given
             val post1 = PostFixture.create(id = 1L, authorId = 10L)
             val post2 = PostFixture.create(id = 2L, authorId = 20L)
             val posts = Posts(listOf(post1, post2))
 
-            // When
             val result = posts.extractAuthorIds()
 
-            // Then
             result shouldContainExactlyInAnyOrder setOf(post1.authorId, post2.authorId)
         }
 
         test("동일한 작성자가 여러 게시글을 작성해도 id가 중복되지 않는다") {
-            // Given
             val sameAuthorId = 10L
             val post1 = PostFixture.create(id = 1L, authorId = sameAuthorId)
             val post2 = PostFixture.create(id = 2L, authorId = sameAuthorId)
             val posts = Posts(listOf(post1, post2))
 
-            // When
             val result = posts.extractAuthorIds()
 
-            // Then
             result shouldHaveSize 1
             result.first() shouldBe sameAuthorId
         }
 
         test("게시글이 없으면 빈 Set을 반환한다") {
-            // Given
             val posts = Posts(emptyList())
 
-            // When
             val result = posts.extractAuthorIds()
 
-            // Then
             result shouldHaveSize 0
         }
     }
@@ -56,7 +47,6 @@ class PostsTest : FunSpec({
     context("combineWithAuthors") {
 
         test("게시글에 작성자 닉네임이 매핑된 PostWithAuthor를 반환한다") {
-            // Given
             val post1 = PostFixture.create(id = 1L, authorId = 10L)
             val post2 = PostFixture.create(id = 2L, authorId = 20L)
             val posts = Posts(listOf(post1, post2))
@@ -67,10 +57,8 @@ class PostsTest : FunSpec({
                 )
             )
 
-            // When
             val result = posts.combineWithAuthors(members, LikeCounts.from(emptyMap()), CommentCounts.from(emptyMap()), ViewerFixture.create())
 
-            // Then
             result shouldHaveSize 2
             result[0].post shouldBe post1
             result[0].nickname shouldBe "작성자1"
@@ -79,28 +67,22 @@ class PostsTest : FunSpec({
         }
 
         test("탈퇴한 회원의 닉네임은 '알 수 없음'으로 표시된다") {
-            // Given
             val post = PostFixture.create(id = 1L, authorId = 10L)
             val posts = Posts(listOf(post))
             val members = Members(emptyList())
 
-            // When
             val result = posts.combineWithAuthors(members, LikeCounts.from(emptyMap()), CommentCounts.from(emptyMap()), ViewerFixture.create())
 
-            // Then
             result shouldHaveSize 1
             result[0].nickname shouldBe "알 수 없음"
         }
 
         test("게시글이 없으면 빈 목록을 반환한다") {
-            // Given
             val posts = Posts(emptyList())
             val members = Members(emptyList())
 
-            // When
             val result = posts.combineWithAuthors(members, LikeCounts.from(emptyMap()), CommentCounts.from(emptyMap()), ViewerFixture.create())
 
-            // Then
             result shouldHaveSize 0
         }
     }

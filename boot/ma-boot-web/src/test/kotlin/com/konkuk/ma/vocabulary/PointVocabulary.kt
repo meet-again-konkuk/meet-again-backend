@@ -7,8 +7,6 @@ import com.konkuk.ma.extension.STRING
 import com.konkuk.ma.extension.responseType
 import com.konkuk.ma.domain.point.domain.payment.PaymentMethod
 
-// --- 포인트 상품 관련 필드 ---
-
 fun pointProductId(fieldName: String = "pointProductId") =
     fieldName responseType NUMBER means "포인트 상품 ID" example "1"
 
@@ -33,8 +31,6 @@ fun discountType(fieldName: String = "discountType") =
 fun isDiscountActive(fieldName: String = "isDiscountActive") =
     fieldName responseType BOOLEAN means "할인 활성 여부" example "true"
 
-// --- 인연 충전 요청 필드 ---
-
 fun chargePointProductId(fieldName: String = "pointProductId") =
     fieldName responseType NUMBER means "구매할 포인트 상품 ID" example "1"
 
@@ -49,8 +45,6 @@ fun orderPointPrice(fieldName: String = "orderPointPrice") =
 
 fun idempotencyKey(fieldName: String = "idempotencyKey") =
     fieldName responseType STRING means "멱등키 (클라이언트 생성 UUID, 동일 키 재요청은 409)" example "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-
-// --- 인연 충전 응답 필드 ---
 
 fun pointHistoryId(fieldName: String = "pointHistoryId") =
     fieldName responseType STRING means "인연 충전 이력 ID (암호화)" example "XyZaBcD0"

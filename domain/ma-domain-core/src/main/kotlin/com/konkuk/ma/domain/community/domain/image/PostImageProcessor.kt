@@ -25,7 +25,6 @@ class PostImageProcessor(
         return NewPostImage.of(postId, photoFile, storageKey, thumbnailKey)
     }
 
-    // community 는 jpg/jpeg/png/webp 만 허용(svg 배제)하며, 확장자와 실제 내용물 서명이 일치해야 한다(결정 D2).
     private fun validateSupportedImage(photoFile: PhotoFile) {
         if (!ImageSignature.matches(photoFile.content, photoFile.extension.normalized)) {
             throw InvalidValueException(
@@ -55,7 +54,6 @@ class PostImageProcessor(
         }
     }
 
-    // FileStorage.store 가 반환한 절대경로에서 파일명만 추출해 DB에 저장할 상대 storageKey 로 만든다.
     private fun toRelativeKey(directory: String, storedPath: String): String {
         val fileName = Paths.get(storedPath).fileName.toString()
         return "$directory/$fileName"

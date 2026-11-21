@@ -38,28 +38,22 @@ class MemberCommandDaoTest(
         context("save") {
 
             test("필수 필드만 있는 NewMember를 저장하고 ID를 반환한다") {
-                // Given
                 val newMember = createNewMember()
 
-                // When
                 val id = memberCommandDao.save(newMember)
 
-                // Then
                 id shouldBeGreaterThan 0L
                 MemberTable.selectAll().count() shouldBe 1
             }
 
             test("저장된 회원의 필드 값이 정확히 일치한다") {
-                // Given
                 val newMember = createNewMember(
                     email = "verify@example.com",
                     nickname = "검증닉네임"
                 )
 
-                // When
                 memberCommandDao.save(newMember)
 
-                // Then
                 val row = MemberTable.selectAll().first()
                 row[MemberTable.email] shouldBe newMember.email.value
                 row[MemberTable.nickname] shouldBe newMember.nickname
@@ -70,13 +64,10 @@ class MemberCommandDaoTest(
             }
 
             test("highSchool과 university가 null인 회원을 저장한다") {
-                // Given
                 val newMember = createNewMember(highSchool = null, university = null)
 
-                // When
                 val id = memberCommandDao.save(newMember)
 
-                // Then
                 id shouldBeGreaterThan 0L
                 val row = MemberTable.selectAll().first()
                 row[MemberTable.highSchool] shouldBe null
@@ -84,31 +75,25 @@ class MemberCommandDaoTest(
             }
 
             test("highSchool과 university가 있는 회원을 저장한다") {
-                // Given
                 val newMember = createNewMember(
                     highSchool = "건국고등학교",
                     university = "건국대학교"
                 )
 
-                // When
                 memberCommandDao.save(newMember)
 
-                // Then
                 val row = MemberTable.selectAll().first()
                 row[MemberTable.highSchool] shouldBe "건국고등학교"
                 row[MemberTable.university] shouldBe "건국대학교"
             }
 
             test("여러 회원을 저장하면 각각 다른 ID를 반환한다") {
-                // Given
                 val member1 = createNewMember(email = "user1@example.com", nickname = "닉네임1")
                 val member2 = createNewMember(email = "user2@example.com", nickname = "닉네임2")
 
-                // When
                 val id1 = memberCommandDao.save(member1)
                 val id2 = memberCommandDao.save(member2)
 
-                // Then
                 id1 shouldBeGreaterThan 0L
                 id2 shouldBeGreaterThan id1
                 MemberTable.selectAll().count() shouldBe 2
@@ -118,7 +103,6 @@ class MemberCommandDaoTest(
         context("anonymizeAndSoftDelete") {
 
             test("회원 정보를 익명 값으로 덮어쓰고 soft delete 처리한다") {
-                // Given
                 val id = memberCommandDao.save(createNewMember(email = "user@example.com", nickname = "원래닉네임"))
                 val anonymized = Member.create(
                     id = id,
@@ -134,10 +118,8 @@ class MemberCommandDaoTest(
                     university = null,
                 )
 
-                // When
                 memberCommandDao.anonymizeAndSoftDelete(anonymized)
 
-                // Then
                 val row = MemberTable.selectAll().first()
                 row[MemberTable.email] shouldBe anonymized.email.value
                 row[MemberTable.nickname] shouldBe anonymized.nickname

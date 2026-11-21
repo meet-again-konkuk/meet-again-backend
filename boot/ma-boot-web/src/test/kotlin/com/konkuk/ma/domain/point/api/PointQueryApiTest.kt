@@ -33,7 +33,6 @@ class PointQueryApiTest(
 ) : FunSpec({
 
     test("포인트 상품 목록 조회 API 문서화") {
-        // Given
         every { pointQueryService.findProducts() } returns listOf(
             PointProductWithDiscount(
                 pointProduct = PointProduct(
@@ -73,7 +72,6 @@ class PointQueryApiTest(
             ),
         )
 
-        // When & Then
         mockMvc.getJson("/api/points") {}
             .andExpect { status { isOk() } }
             .andDocument(
@@ -92,10 +90,8 @@ class PointQueryApiTest(
     }
 
     test("포인트 상품이 없으면 빈 목록을 반환한다") {
-        // Given
         every { pointQueryService.findProducts() } returns emptyList()
 
-        // When & Then
         mockMvc.getJson("/api/points") {}
             .andExpect { status { isOk() } }
             .andExpect { jsonPath("$") { isArray() } }

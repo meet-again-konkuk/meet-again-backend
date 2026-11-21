@@ -54,11 +54,8 @@ class MoneyTest : FunSpec({
             Money.wons(300).percentageOf(Money.wons(1000)) shouldBe BigDecimal("30.00")
         }
         test("HALF_UP 반올림 (0.5 이상 올림)") {
-            // 333 * 100 / 1000 = 33.3 → 33.30
             Money.wons(333).percentageOf(Money.wons(1000)) shouldBe BigDecimal("33.30")
-            // 1 * 100 / 3 = 33.333... → 33.33
             Money.wons(1).percentageOf(Money.wons(3)) shouldBe BigDecimal("33.33")
-            // 2 * 100 / 3 = 66.666... → 66.67
             Money.wons(2).percentageOf(Money.wons(3)) shouldBe BigDecimal("66.67")
         }
         test("base가 0이면 0") {

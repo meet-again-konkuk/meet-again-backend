@@ -22,28 +22,22 @@ class MediaUrlResolverTest : FunSpec({
     context("resolve") {
 
         test("원본과 썸네일 키를 각각 URL로 변환한다") {
-            // Given
             val media = MediaFixture.create(
                 storageKey = "memory/memory-photo/1/photo.jpg",
                 thumbnailKey = "memory/thumbnail/1/thumb_photo.jpg",
             )
 
-            // When
             val urls = resolver.resolve(media)
 
-            // Then
             urls.photoUrl shouldBe "/resolved/${media.storageKey}"
             urls.thumbnailUrl shouldBe "/resolved/${media.thumbnailKey}"
         }
 
         test("썸네일 키가 없으면 thumbnailUrl은 null이다") {
-            // Given
             val media = MediaFixture.create(thumbnailKey = null)
 
-            // When
             val urls = resolver.resolve(media)
 
-            // Then
             urls.photoUrl shouldBe "/resolved/${media.storageKey}"
             urls.thumbnailUrl.shouldBeNull()
         }
@@ -52,23 +46,18 @@ class MediaUrlResolverTest : FunSpec({
     context("resolveByMemory") {
 
         test("기억별로 원본 storageKey를 URL로 변환해 담는다") {
-            // Given
             val first = MediaFixture.create(memoryId = 1L, storageKey = "memory/memory-photo/1/a.jpg")
             val second = MediaFixture.create(memoryId = 2L, storageKey = "memory/memory-photo/2/b.jpg")
 
-            // When
             val photoUrls = resolver.resolveByMemory(listOf(first, second))
 
-            // Then
             photoUrls.urlOf(first.memoryId) shouldBe "/resolved/${first.storageKey}"
             photoUrls.urlOf(second.memoryId) shouldBe "/resolved/${second.storageKey}"
         }
 
         test("빈 목록이면 어떤 기억의 URL도 없다") {
-            // When
             val photoUrls = resolver.resolveByMemory(emptyList())
 
-            // Then
             photoUrls.urlOf(1L).shouldBeNull()
         }
     }

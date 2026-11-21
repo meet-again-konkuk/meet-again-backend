@@ -7,10 +7,6 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import io.kotest.core.spec.style.StringSpec
 
-/**
- * 도메인 패키지 간 의존 방향을 강제한다.
- * 단일 모듈이라 컴파일러가 패키지 순환을 막아주지 못하므로, 이 테스트가 그 역할을 대신한다.
- */
 class DomainDependencyTest : StringSpec({
 
     val domainClasses = ClassFileImporter()
@@ -39,7 +35,6 @@ class DomainDependencyTest : StringSpec({
             .matching("com.konkuk.ma.domain.(*)..")
             .should().beFreeOfCycles()
             // TODO: matching <-> xroom 는 이번 작업 범위 밖의 기존 순환이라 한시적으로 예외 처리한다.
-            //       (matching.application -> xroom, xroom.domain.XroomValidator -> matching)
             .ignoreDependency(resideInAPackage("..matching.."), resideInAPackage("..xroom.."))
             .ignoreDependency(resideInAPackage("..xroom.."), resideInAPackage("..matching.."))
             .check(domainClasses)
